@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title F-RESULT</title>
+
+    <!-- Bootstrap -->
+    @Styles.Render("~/Content/Spacelab/css")
+
+    @*
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/Spacelab/css")
+        @Styles.Render("~/Content/Superhero/css")
+    *@
+
+    @Scripts.Render("~/bundles/modernizr")
+
+    <!--[if lt IE 9]>
+      <script src="~/Scripts/html5shiv.js"></script>
+      <script src="~/Scripts/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- You'll want to use a responsive image option so this logo looks good on devices - I recommend using something like retina.js (do a quick Google search for it and you'll find it) -->
+                @Html.ActionLink("F-RESULT", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                @Html.Partial("_LoginPartial")
+                <ul class="nav navbar-nav navbar-right">
+                    <li id="about">
+                        @Html.ActionLink("Плановые показатели", "About", "Home")
+                    </li>
+                    <li id="contact">
+                        @Html.ActionLink("Контакты", "Contact", "Home")
+                    </li>
+                    <li id="other" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="fullwidthpage">
+                                @Html.ActionLink("Full Width Page", "FullWidth", "Other")
+                            </li>
+                            <li id="sidebarpage">
+                                @Html.ActionLink("Sidebar Page", "Sidebar", "Other")
+                            </li>
+                            <li id="faq">
+                                @Html.ActionLink("FAQ", "Faq", "Other")
+                            </li>
+                            <li id="404">
+                                @Html.ActionLink("404", "FourOhFour", "Other")
+                            </li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    @RenderBody()
+
+    <div class="container">
+
+        <hr>
+
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; <a href="http://triada.com.ua/">ИПП "Триада"</a> @DateTime.Now.Year</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <!-- /.container -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
