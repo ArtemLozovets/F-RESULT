@@ -17,6 +17,7 @@ namespace F_Result.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public AccountController()
         {
@@ -52,8 +53,8 @@ namespace F_Result.Controllers
             }
         }
 
-        //
-        // GET: /Account/Login
+        #region Метод входу автентифікації користувача в системі----------------------------------------------
+        // GET: /UsersManagement/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -62,9 +63,10 @@ namespace F_Result.Controllers
         }
 
         //
-        // POST: /Account/Login
+        // POST: /UsersManagement/Login
         [HttpPost]
         [AllowAnonymous]
+       // [LoginAudit]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
@@ -73,23 +75,35 @@ namespace F_Result.Controllers
                 return View(model);
             }
 
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName.ToLowerInvariant(), model.Password, model.RememberMe, shouldLockout: true);
+
+            TempData["LoginName"] = model.UserName;
+            TempData["ReturnUrl"] = "/" + returnUrl;
+
             switch (result)
             {
                 case SignInStatus.Success:
+                    TempData["Password"] = "************";
+                    TempData["LoginResult"] = "Success";
                     return RedirectToLocal(returnUrl);
+
                 case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    TempData["Password"] = "************";
+                    TempData["LoginResult"] = "Blocked";
+                    return View("~/Areas/Administrator/Views/UsersManagement/ForbiddenError.cshtml");
+
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    TempData["Password"] = model.Password;
+                    TempData["LoginResult"] = "Failure";
+                    ModelState.AddModelError("", "Вы ввели неверный логин или пароль!");
                     return View(model);
             }
         }
+        #endregion
 
         //
         // GET: /Account/VerifyCode
@@ -134,43 +148,51 @@ namespace F_Result.Controllers
             }
         }
 
-        //
-        // GET: /Account/Register
+
+        #region Регистрация нового пользователя-----------------------------------------------------------
+        // GET: /UsersManagement/Register
         [AllowAnonymous]
         public ActionResult Register()
         {
+            SelectList _roles = new SelectList(db.Roles.Where(Name => Name.Name != "blockeduser"), "Name", "Description");
+            ViewBag.RolesList = _roles;
             return View();
         }
 
-        //
-        // POST: /Account/Register
+        // POST: /UsersManagement/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
+            SelectList _roles = new SelectList(db.Roles.Where(Name => Name.Name != "blockeduser"), "Name", "Name");
+            ViewBag.RolesList = _roles;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug information------------------------------------
+                if (db.Users.Where(u => u.UserName.ToLower() == model.UserName.ToLower()).Count() > 0)
+                {
+                    TempData["MessageError"] = string.Format("Ошибка создания учетной записи. Пользователь с логином \"{0}\" уже существует", model.UserName);
+                    return View(model);
+                }
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName, Post = model.Post, UserRole = model.UserRole };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    return RedirectToAction("Index", "Home");
+                    await UserManager.AddToRoleAsync(user.Id, model.UserRole);
+                    TempData["MessageOk"] = "Учетная запись создана";
+                    return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
                 }
-                AddErrors(result);
+                else
+                {
+                    TempData["MessageError"] = "Ошибка создания учетной записи";
+                    return View(model);
+                }
             }
-
-            // If we got this far, something failed, redisplay form
+            TempData["MessageError"] = "Ошибка валидации модели";
             return View(model);
         }
+        #endregion
 
         //
         // GET: /Account/ConfirmEmail
@@ -407,6 +429,8 @@ namespace F_Result.Controllers
         {
             if (disposing)
             {
+                db.Dispose();
+
                 if (_userManager != null)
                 {
                     _userManager.Dispose();

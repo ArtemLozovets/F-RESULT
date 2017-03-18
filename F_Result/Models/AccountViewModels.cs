@@ -48,37 +48,61 @@ namespace F_Result.Models
 
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Не заполнено поле \"Логин\"")]
         [Display(Name = "Логин")]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Не заполнено поле \"Пароль\"")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
 
-        [Display(Name = "Запомнить меня?")]
+        [Display(Name = "Запомнить меня")]
         public bool RememberMe { get; set; }
     }
 
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Email\"")]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Логин\"")]
+        [Display(Name = "Логин")]
+        public string UserName { get; set; }
+
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Фамилия\"")]
+        [Display(Name = "Фамилия")]
+        public string LastName { get; set; }
+
+
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Имя\"")]
+        [Display(Name = "Имя")]
+        public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Отчество\"")]
+        [Display(Name = "Отчество")]
+        public string MiddleName { get; set; }
+
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Должность\"")]
+        [Display(Name = "Должность")]
+        public string Post { get; set; }
+
+        [Required(ErrorMessage = "Необходимо заполнить поле \"Пароль\"")]
+        [StringLength(100, ErrorMessage = "Поле \"{0}\" должно содержать не меньше {2} символов.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Подтверждение пароля")]
+        [Compare("Password", ErrorMessage = "Введенные пароли не совпадают")]
         public string ConfirmPassword { get; set; }
+
+        [Required(ErrorMessage = "Необходимо указать роль пользователя")]
+        [Display(Name = "Роль")]
+        public string UserRole { get; set; }
     }
 
     public class ResetPasswordViewModel
