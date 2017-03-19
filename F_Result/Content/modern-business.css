@@ -130,3 +130,8 @@ footer {
  /* increases the carousel height so it looks good on phones */
   }
 }
+
+
+.gridtable tr th{
+    text-align:center;
+}

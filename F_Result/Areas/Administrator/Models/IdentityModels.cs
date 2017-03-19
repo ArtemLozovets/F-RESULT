@@ -1,9 +1,12 @@
-п»їusing System.Data.Entity;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.Migrations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System;
 
 
 namespace F_Result.Models
@@ -22,13 +25,51 @@ namespace F_Result.Models
         {
         }
     }
-   public class ApplicationUser : IdentityUser
+
+    [Table("AspVisitor")]
+    public class AspVisitor
     {
+        public int Id { get; set; }
+
+        [Display(Name = "Логин")]
+        public string Login { get; set; }
+
+        [Display(Name = "Пароль")]
+        public string Password { get; set; }
+
+        [Display(Name = "ІР")]
+        public string Ip { get; set; }
+
+        [Display(Name = "Маршрут")]
+        public string Url { get; set; }
+
+        [Display(Name = "Результат")]
+        public bool? Result { get; set; }
+
+        [Display(Name = "Дата/Время")]
+        public DateTime Date { get; set; }
+    }
+
+    public class ApplicationUser : IdentityUser
+    {
+        [Display(Name = "Имя")]
         public string FirstName { get; set; }
+
+        [Display(Name = "Фамилия")]
         public string LastName { get; set; }
+
+        [Display(Name = "Отчество")]
         public string MiddleName { get; set; }
+
+        [Display(Name = "Должность")]
         public string Post { get; set; }
+
+        [Display(Name = "Роль")]
         public string UserRole { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Роль")]
+        public string UserRoleName { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -45,22 +86,22 @@ namespace F_Result.Models
         }
     }
 
-   public class ApplicationRole : IdentityRole
-   {
-       public ApplicationRole(string name)
-           : base(name)
-       { }
+    public class ApplicationRole : IdentityRole
+    {
+        public ApplicationRole(string name)
+            : base(name)
+        { }
 
-       public ApplicationRole()
-       { }
+        public ApplicationRole()
+        { }
 
-       public string Description { get; set; }
-   }
+        public string Description { get; set; }
+    }
 
-   class AppContextInitializer : MigrateDatabaseToLatestVersion<ApplicationDbContext, ConfigurationA>
-   {
+    class AppContextInitializer : MigrateDatabaseToLatestVersion<ApplicationDbContext, ConfigurationA>
+    {
 
-   }
+    }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -80,5 +121,6 @@ namespace F_Result.Models
         }
 
         //public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<AspVisitor> AspVisitors { get; set; }
     }
 }
