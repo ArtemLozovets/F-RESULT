@@ -122,5 +122,6 @@ namespace F_Result.Models
 
         //public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<AspVisitor> AspVisitors { get; set; }
+
     }
 }
