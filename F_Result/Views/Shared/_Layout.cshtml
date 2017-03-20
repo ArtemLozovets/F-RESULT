@@ -44,39 +44,22 @@
                 @Html.Partial("_LoginPartial")
                 <ul class="nav navbar-nav navbar-right">
                     <li id="about">
-                        @Html.ActionLink("Плановые показатели", "About", "Home")
+                        @Html.ActionLink("Плановые показатели", "About", "Home", new { Area = "" }, null)
                     </li>
                     <li id="contact">
-                        @Html.ActionLink("Контакты", "Contact", "Home")
+                        @Html.ActionLink("Контакты", "Contact", "Home", new { Area = "" }, null)
                     </li>
-                    <li id="other" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li id="fullwidthpage">
-                                @Html.ActionLink("Full Width Page", "FullWidth", "Other")
-                            </li>
-                            <li id="sidebarpage">
-                                @Html.ActionLink("Sidebar Page", "Sidebar", "Other")
-                            </li>
-                            <li id="faq">
-                                @Html.ActionLink("FAQ", "Faq", "Other")
-                            </li>
-                            <li id="404">
-                                @Html.ActionLink("404", "FourOhFour", "Other")
-                            </li>
-
-                        </ul>
                     <li id="admin" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Управление <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li id="fullwidthpage">
-                            <li>@Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement", new { Area = "Administrator" }, null)</li>
+                                @Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement", new { Area = "Administrator" }, null)
+                            </li>
+                            <li id="fullwidthpage">
+                                @Html.ActionLink("Аудит входа", "LoginAudit", "UsersManagement", new { Area = "Administrator" }, null)
+                            </li>
+                        </ul>
                     </li>
-
-
-                </ul>
-                </li>
-                </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
