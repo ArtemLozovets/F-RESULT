@@ -9,108 +9,109 @@
         color: #d9534f;
     }
 
-    #cleardate{
-        cursor:pointer;
+    #cleardate {
+        cursor: pointer;
     }
 </style>
 
 <div class="container">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            @ViewBag.Title
-            <small>Реестр событий входа в систему</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
-            <li>Управление</li>
-            <li>@Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement")</li>
-            <li class="active">Аудит входа</li>
-        </ol>
-    </div>
     <div class="row">
         <div class="col-lg-12">
-            @using (Html.BeginForm("LoginAudit", "UsersManagement", FormMethod.Get, new { @id = "auditform" }))
-            {
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <span class="input-group-addon" id="cleardate"><i class="fa fa-calendar"></i></span>
-                            <input type="text"
-                                   class="form-control"
-                                   id="SearchDate"
-                                   name="SearchDate"
-                                   placeholder="Дата"
-                                   style="width:150px; text-align:center;"
-                                   value="@ViewData["SearchDate"]">
-                        </div>
-                    </div>
-                </div>
-            }
-            <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Login)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Password)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Ip)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Url)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Result)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Date)
-                    </th>
-                </tr>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Login)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Password)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Ip)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Url)
-                        </td>
-
-                        @if (item.Result ?? false)
-                        {
-                            <td style="color:#5cb85c; text-align:center;">
-                                <i class="fa fa-check"></i>
-                            </td>
-                        }
-                        else
-                        {
-                            <td style="color:#d9534f;text-align:center; ">
-                                <i class="fa fa-exclamation-triangle"></i>
-                            </td>
-                        }
-
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Date)
-                        </td>
-                    </tr>
-                }
-            </table>
-
-            <a href="#" class="scrollup1">Наверх</a>
-
-            <div>
-                <a class="btn btn-default" href='@Url.Action("ShowUsers", "UsersManagement", new {Area = "Administrator" }, null)'><span class="glyphicon glyphicon-circle-arrow-left"> Назад</span></a>
-            </div>
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Реестр событий входа в систему</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Управление</li>
+                <li>@Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement")</li>
+                <li class="active">Аудит входа</li>
+            </ol>
         </div>
     </div>
+    <div class="row">
+        @using (Html.BeginForm("LoginAudit", "UsersManagement", FormMethod.Get, new { @id = "auditform" }))
+        {
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="cleardate"><i class="fa fa-calendar"></i></span>
+                        <input type="text"
+                               class="form-control"
+                               id="SearchDate"
+                               name="SearchDate"
+                               placeholder="Дата"
+                               style="width:150px; text-align:center;"
+                               value="@ViewData["SearchDate"]">
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Login)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ip)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Url)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Result)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Login)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Password)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ip)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Url)
+                </td>
+
+                @if (item.Result ?? false)
+                {
+                    <td style="color:#5cb85c; text-align:center;">
+                        <i class="fa fa-check"></i>
+                    </td>
+                }
+                else
+                {
+                    <td style="color:#d9534f;text-align:center; ">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </td>
+                }
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+            </tr>
+        }
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+
+    <div>
+        <a class="btn btn-default" href='@Url.Action("ShowUsers", "UsersManagement", new {Area = "Administrator" }, null)'><span class="glyphicon glyphicon-circle-arrow-left"> Назад</span></a>
+    </div>
 </div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

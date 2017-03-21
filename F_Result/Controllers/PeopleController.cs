@@ -12,7 +12,7 @@ namespace F_Result.Controllers
 {
     public class PeopleController : Controller
     {
-        private Model1 db = new Model1();
+        private PersonModel db = new PersonModel();
 
         // GET: People
         public ActionResult Index()
