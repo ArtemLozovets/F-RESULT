@@ -23,6 +23,27 @@ if (!String.IsNullOrEmpty(LayoutPageFile)) {
 }
 
 <#
+} else {
+#>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title><#= ViewName #></title>
+</head>
+<body>
+<#
+    PushIndent("    ");
+}
+#>
+
+<#
 // Контейнер шаблона
 #>
 <div class="container">
@@ -46,30 +67,8 @@ if (!String.IsNullOrEmpty(LayoutPageFile)) {
 		</div>
 	</div>
 
-
-<#
-// Частичное представление
-} else {
-#>
-
-@{
-    Layout = null;
-}
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title><#= ViewName #></title>
-</head>
-<body>
-<#
-    PushIndent("    ");
-}
-#>
 <p>
-    @Html.ActionLink("Create New", "Create")
+	 <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("Create")'><i class="fa fa-plus-circle"></i> Добавить...</a>
 </p>
 <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
     <tr>
@@ -92,7 +91,7 @@ foreach (PropertyMetadata property in properties) {
     }
 }
 #>
-        <th></th>
+        <th style="width:128px; min-width:128px"></th>
     </tr>
 
 	@if (Model.Count() == 0)
@@ -127,19 +126,20 @@ foreach (PropertyMetadata property in properties) {
 string pkName = GetPrimaryKeyName();
 if (pkName != null) {
 #>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.<#= pkName #> }) |
-            @Html.ActionLink("Details", "Details", new { id=item.<#= pkName #> }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.<#= pkName #> })
+        <td style="text-align:center;">
+			 <a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-info-sign"></span></a>
+             <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("Edit", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-edit"></span></a>
+             <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-trash"></span></a>
         </td>
 <#
 } else {
 #>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        <td style="text-align:center;">
+			<a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-info-sign"></span></a>
+            <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("Edit", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-edit"></span></a>
+            <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-trash"></span></a>
         </td>
+
 <#
 }
 #>
@@ -147,11 +147,9 @@ if (pkName != null) {
 }
  </table>
  <a href="#" class="scrollup1">Наверх</a>
-<#
-// The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
-#>
-</div>
-@section Scripts {
+ </div>
+
+ @section Scripts {
             @Scripts.Render("~/bundles/jqueryval")
             <script src="~/Scripts/toparrow.js"></script>
             <script type="text/javascript">
@@ -160,6 +158,10 @@ if (pkName != null) {
 				});
 			</script>
 }
+
+<#
+// The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
+#>
 <#
 if(!IsPartialView && !IsLayoutPageSelected) {
     ClearIndent();
@@ -169,4 +171,5 @@ if(!IsPartialView && !IsLayoutPageSelected) {
 <#
 }
 #>
+
 <#@ include file="ModelMetadataFunctions.cs.include.t4" #>

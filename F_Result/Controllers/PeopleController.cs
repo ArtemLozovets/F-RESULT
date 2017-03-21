@@ -12,12 +12,12 @@ namespace F_Result.Controllers
 {
     public class PeopleController : Controller
     {
-        private PersonModel db = new PersonModel();
+        private FRModel db = new FRModel();
 
         // GET: People
         public ActionResult Index()
         {
-            return View(db.Persons.ToList());
+            return View(db.employees.ToList());
         }
 
         // GET: People/Details/5
@@ -27,12 +27,12 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Person person = db.Persons.Find(id);
-            if (person == null)
+            employee employee = db.employees.Find(id);
+            if (employee == null)
             {
                 return HttpNotFound();
             }
-            return View(person);
+            return View(employee);
         }
 
         // GET: People/Create
@@ -46,16 +46,16 @@ namespace F_Result.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PersonId,FirstName,LastName,MiddleName,DateOfBirth,Note,Sex,CreateDate")] Person person)
+        public ActionResult Create([Bind(Include = "emp_id,fname,minit,lname,job_id,job_lvl,pub_id,hire_date")] employee employee)
         {
             if (ModelState.IsValid)
             {
-                db.Persons.Add(person);
+                db.employees.Add(employee);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(person);
+            return View(employee);
         }
 
         // GET: People/Edit/5
@@ -65,12 +65,12 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Person person = db.Persons.Find(id);
-            if (person == null)
+            employee employee = db.employees.Find(id);
+            if (employee == null)
             {
                 return HttpNotFound();
             }
-            return View(person);
+            return View(employee);
         }
 
         // POST: People/Edit/5
@@ -78,15 +78,15 @@ namespace F_Result.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "PersonId,FirstName,LastName,MiddleName,DateOfBirth,Note,Sex,CreateDate")] Person person)
+        public ActionResult Edit([Bind(Include = "emp_id,fname,minit,lname,job_id,job_lvl,pub_id,hire_date")] employee employee)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(person).State = EntityState.Modified;
+                db.Entry(employee).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(person);
+            return View(employee);
         }
 
         // GET: People/Delete/5
@@ -96,12 +96,12 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Person person = db.Persons.Find(id);
-            if (person == null)
+            employee employee = db.employees.Find(id);
+            if (employee == null)
             {
                 return HttpNotFound();
             }
-            return View(person);
+            return View(employee);
         }
 
         // POST: People/Delete/5
@@ -109,8 +109,8 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Person person = db.Persons.Find(id);
-            db.Persons.Remove(person);
+            employee employee = db.employees.Find(id);
+            db.employees.Remove(employee);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

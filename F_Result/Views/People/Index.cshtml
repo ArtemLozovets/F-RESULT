@@ -1,8 +1,9 @@
-﻿@model IEnumerable<F_Result.Models.Person>
+﻿@model IEnumerable<F_Result.Models.employee>
 
 @{
     ViewBag.Title = "Index";
 }
+
 
 <div class="container">
     <div class="row">
@@ -13,7 +14,7 @@
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
-                <li class="active">Персоны</li>
+                <li class="active">!!!!!!</li>
             </ol>
         </div>
     </div>
@@ -25,34 +26,33 @@
         </div>
     </div>
 
-
     <p>
-        @Html.ActionLink("Create New", "Create")
+        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("Create")'><i class="fa fa-plus-circle"></i> Добавить...</a>
     </p>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                @Html.DisplayNameFor(model => model.fname)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @Html.DisplayNameFor(model => model.minit)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MiddleName)
+                @Html.DisplayNameFor(model => model.lname)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateOfBirth)
+                @Html.DisplayNameFor(model => model.job_id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Note)
+                @Html.DisplayNameFor(model => model.job_lvl)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Sex)
+                @Html.DisplayNameFor(model => model.pub_id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreateDate)
+                @Html.DisplayNameFor(model => model.hire_date)
             </th>
-            <th></th>
+            <th style="width:128px; min-width:128px"></th>
         </tr>
 
         @if (Model.Count() == 0)
@@ -68,36 +68,37 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
+                    @Html.DisplayFor(modelItem => item.fname)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
+                    @Html.DisplayFor(modelItem => item.minit)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.MiddleName)
+                    @Html.DisplayFor(modelItem => item.lname)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DateOfBirth)
+                    @Html.DisplayFor(modelItem => item.job_id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Note)
+                    @Html.DisplayFor(modelItem => item.job_lvl)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Sex)
+                    @Html.DisplayFor(modelItem => item.pub_id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreateDate)
+                    @Html.DisplayFor(modelItem => item.hire_date)
                 </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.PersonId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.PersonId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.PersonId })
+                <td style="text-align:center;">
+                    <a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.emp_id})'><span class="glyphicon glyphicon-info-sign"></span></a>
+                    <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("Edit", new {id=item.emp_id})'><span class="glyphicon glyphicon-edit"></span></a>
+                    <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new {id=item.emp_id})'><span class="glyphicon glyphicon-trash"></span></a>
                 </td>
             </tr>
         }
     </table>
     <a href="#" class="scrollup1">Наверх</a>
 </div>
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script src="~/Scripts/toparrow.js"></script>
@@ -107,3 +108,5 @@
         });
     </script>
 }
+
+
