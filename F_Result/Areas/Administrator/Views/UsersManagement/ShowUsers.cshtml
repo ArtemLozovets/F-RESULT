@@ -1,0 +1,113 @@
+﻿@model IEnumerable<F_Result.Models.UsRoleViewModel>
+@{
+    ViewBag.Title = "Пользователи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Список пользователей</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    @Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)
+                </li>
+                <li>
+                    Управление
+                </li>
+                <li class="active">Пользователи</li>
+            </ol>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="text-success"> @TempData["MessageOk"]</p>
+            <p class="text-danger"> @TempData["MessageError"]</p>
+        </div>
+    </div>
+    <p>
+        <a title="Статистика событий авторизации в приложении" class="btn btn-default" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
+        <a title="Создание новой учетной записи" class="btn btn-default" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
+        @*<a title="Кнопка доступна в период тестирования приложения. В дальнейшем будет удалена." class="btn btn-default btn-danger" href="~/Administrator/Init/CreateUsers">Создать Администратора</a>*@
+    </p>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UUserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ULastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UFirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UMiddleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UPost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.URole)
+            </th>
+            <th style="width:128px; min-width:128px;"> </th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UUserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ULastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UFirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UMiddleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UPost)
+                </td>
+
+                @if (item.URole.Contains("Заблокирован"))
+                {
+                    <td class="text-danger">
+                        @Html.DisplayFor(modelItem => item.URole)
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.URole)
+                    </td>
+                }
+
+                <td style="text-align:center;">
+                    <a class="btn btn-default btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
+                    @if (@item.URole.Contains("Заблокирован"))
+                    {
+                        <a class="btn btn-default btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-default btn-sm" href='@Url.Action("BlockUser", "UsersManagement", new {UserId = @item.UId})' title="Блокировать учетную запись"><span class="glyphicon glyphicon-eye-close"></span></a>
+                    }
+                    <a class="btn btn-default btn-sm" href='@Url.Action("ChangePassword", "UsersManagement", new {UserID = @item.UId})' title="Изменить пароль пользователя"><span class="glyphicon glyphicon-certificate"></span></a>
+                </td>
+            </tr>
+        }
+    </table>
+
+
+
+</div>

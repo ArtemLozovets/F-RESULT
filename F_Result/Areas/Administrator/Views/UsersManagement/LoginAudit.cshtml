@@ -1,0 +1,158 @@
+﻿@model IEnumerable<F_Result.Models.AspVisitor>
+@{
+    ViewBag.Title = "Аудит входа";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<style type="text/css">
+    #cleardate:hover {
+        color: #d9534f;
+    }
+
+    #cleardate{
+        cursor:pointer;
+    }
+</style>
+
+<div class="container">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            @ViewBag.Title
+            <small>Реестр событий входа в систему</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+            <li>Управление</li>
+            <li>@Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement")</li>
+            <li class="active">Аудит входа</li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            @using (Html.BeginForm("LoginAudit", "UsersManagement", FormMethod.Get, new { @id = "auditform" }))
+            {
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="cleardate"><i class="fa fa-calendar"></i></span>
+                            <input type="text"
+                                   class="form-control"
+                                   id="SearchDate"
+                                   name="SearchDate"
+                                   placeholder="Дата"
+                                   style="width:150px; text-align:center;"
+                                   value="@ViewData["SearchDate"]">
+                        </div>
+                    </div>
+                </div>
+            }
+            <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Login)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Password)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Ip)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Url)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Result)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Login)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Password)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ip)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Url)
+                        </td>
+
+                        @if (item.Result ?? false)
+                        {
+                            <td style="color:#5cb85c; text-align:center;">
+                                <i class="fa fa-check"></i>
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="color:#d9534f;text-align:center; ">
+                                <i class="fa fa-exclamation-triangle"></i>
+                            </td>
+                        }
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                    </tr>
+                }
+            </table>
+
+            <a href="#" class="scrollup1">Наверх</a>
+
+            <div>
+                <a class="btn btn-default" href='@Url.Action("ShowUsers", "UsersManagement", new {Area = "Administrator" }, null)'><span class="glyphicon glyphicon-circle-arrow-left"> Назад</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('#SearchDate').datetimepicker({
+                format: 'd.m.Y',
+                formatDate: 'd.m.Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+        $.validator.methods.date = function (value, element) {
+            if (value) {
+                try {
+                    $.datepicker.parseDate('dd.MM.yy', value);
+                } catch (ex) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#cleardate').on('click', function (e) {
+                $('#SearchDate').val("");
+                $('#auditform').submit();
+            });
+            $('#SearchDate').on('change', function (e) {
+                $('#auditform').submit();
+            });
+        });
+    </script>
+}
