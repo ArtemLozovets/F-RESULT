@@ -12,24 +12,24 @@ namespace F_Result.Models
         {
         }
 
-        public virtual DbSet<employee> employees { get; set; }
+        public virtual DbSet<Person> Persons { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<employee>()
+            modelBuilder.Entity<Person>()
                 .Property(e => e.fname)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<employee>()
+            modelBuilder.Entity<Person>()
                 .Property(e => e.minit)
                 .IsFixedLength()
                 .IsUnicode(false);
 
-            modelBuilder.Entity<employee>()
+            modelBuilder.Entity<Person>()
                 .Property(e => e.lname)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<employee>()
+            modelBuilder.Entity<Person>()
                 .Property(e => e.pub_id)
                 .IsFixedLength()
                 .IsUnicode(false);
