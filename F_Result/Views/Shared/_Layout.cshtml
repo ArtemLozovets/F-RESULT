@@ -4,12 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title F-RESULT</title>
+    <title>@ViewBag.Title</title>
 
     <!-- Bootstrap -->
     @Styles.Render("~/Content/fontawesome")
     @Styles.Render("~/Content/Spacelab/css")
-
 
     @*
         @Styles.Render("~/Content/css")
@@ -49,9 +48,19 @@
                     <li id="contact">
                         @Html.ActionLink("Контакты", "Contact", "Home", new { Area = "" }, null)
                     </li>
-                    <li id="database">
-                        @Html.ActionLink("База", "Index", "People", new { Area = "" }, null)
+
+                    <li id="findicators" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Финансовые показатели<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="fullwidthpage">
+                                @Html.ActionLink("Реестр оплат", "Index", "Payments", new { Area = "" }, null)
+                            </li>
+                            <li id="fullwidthpage">
+                                @Html.ActionLink("Реестр оплат (New)", "ShowPayments", "Payments", new { Area = "" }, null)
+                            </li>
+                        </ul>
                     </li>
+
                     <li id="admin" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Управление <b class="caret"></b></a>
                         <ul class="dropdown-menu">

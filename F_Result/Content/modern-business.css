@@ -136,6 +136,9 @@ footer {
     text-align:center;
 }
 
+.gridtable {
+    font-size:13px !important;
+}
 
 /*Блок стилей для кнопки "НАВЕРХ"*/
 .scrollup1 {
