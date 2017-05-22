@@ -136,8 +136,28 @@ namespace F_Result.Controllers
             int skip = start != null ? Convert.ToInt32(start) : 0;
             int totalRecords = 0;
 
-            var _payments = (from payment in db.Payments
+            string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+            var _client = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault();
+            var _agreement = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault();
+            var _agrdate = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault();
+            var _summ = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault();
+            var _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault();
+            var _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault();
+            var _payment = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault();
+            var _paymentdate = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault();
+            var _paymentdesc = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault();
 
+            var _payments = (from payment in db.Payments
+                             where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
+                                    && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
+                                    && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
+                                    //&& (payment.AgrDate == Convert.ToDateTime(_agrdate) || string.IsNullOrEmpty(_agrdate))
+                                   // && (payment.Summ == Convert.ToDouble(_summ) || string.IsNullOrEmpty(_summ))
+                                    && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
+                                    && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
+                                   // && (payment.Payment == Convert.ToDouble(_payment) || string.IsNullOrEmpty(_payment))
+                                   // && (payment.PaymentDate == Convert.ToDateTime(_paymentdate) || string.IsNullOrEmpty(_paymentdate))
+                                    && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
                              select payment).AsEnumerable().Select(x => new Payments { 
                                 Project = x.Project,
                                 Client = x.Client,
@@ -150,6 +170,8 @@ namespace F_Result.Controllers
                                 PaymentDate = x.PaymentDate,
                                 PaymentDesc = x.PaymentDesc
                              });
+
+           
 
 
             if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

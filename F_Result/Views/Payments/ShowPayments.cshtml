@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "Оплаты";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    #paymenttable > thead > tr > th {
+        border-bottom: 0 !important;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Реестр оплат</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Финасовые показатели</li>
+                <li class="active">Реестр оплат</li>
+            </ol>
+        </div>
+    </div>
+
+    <i class="fa fa-filter text-info pull-right" style="cursor:pointer; font-size:16px !important;" id="filterBtn">&nbsp;Фильтр</i>
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="paymenttable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Клиент" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Договор" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
+            </tr>
+
+            <tr role="row">
+                <th rowspan="2">Проект</th>
+                <th rowspan="2">Клиент</th>
+                <th colspan="4">Договор</th>
+                <th rowspan="2">Менеджер</th>
+                <th colspan="3">Оплата</th>
+            </tr>
+
+            <tr role="row">
+                @*<th>Проект</th>
+                <th>Клиент</th>*@
+                <th>Договор</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Тип</th>
+                @*<th>Менеджер</th>*@
+                <th>Сумма</th>
+                <th>Дата</th>
+                <th>Тип</th>
+            </tr>
+        </thead>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            var table = $('#paymenttable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                //"dom":'<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_-_END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "Обработка...",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Payments/LoadPayments",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Project", "name": "Project", "autoWidth": true },
+                    { "data": "Client", "name": "Client", "autoWidth": true },
+                    { "data": "Agreement", "name": "Agreement", "autoWidth": true },
+                    {
+                        "data": "AgrDate", "name": "AgrDate", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "Summ", "name": "Summ", "autoWidth": true },
+                    { "data": "AgrType", "name": "AgrType", "autoWidth": true },
+                    { "data": "Manager", "name": "Manager", "autoWidth": true },
+                    { "data": "Payment", "name": "Payment", "autoWidth": true },
+                    {
+                        "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true }
+                ]
+
+            });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('input', $('th')[colIdx]).on('keyup change',
+                    function () {
+                        table
+                            .column(colIdx)
+                            .search(this.value)
+                            .draw();
+                    });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+    </script>
+}
