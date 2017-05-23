@@ -1,14 +1,25 @@
 ﻿@{
-    ViewBag.Title = "Оплаты";
+    ViewBag.Title = "Реестр оплат - Оплаты";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 
 <style>
     #paymenttable > thead > tr > th {
         border-bottom: 0 !important;
+    }
+
+    .sb, .dff {
+        font-size: 10px;
+        margin: 0;
+        padding: 3px;
+    }
+
+    #search-row > th {
+        padding: 3px;
     }
 </style>
 
@@ -27,7 +38,8 @@
         </div>
     </div>
 
-    <i class="fa fa-filter text-info pull-right" style="cursor:pointer; font-size:16px !important;" id="filterBtn">&nbsp;Фильтр</i>
+    <i class="fa fa-refresh text-info pull-right" title="Сброс фильтра" style="margin:0 10px 0 10px; cursor:pointer;" id="filterClear"></i>
+    <i class="fa fa-filter text-info pull-right" title="Панель фильтрации" style="cursor:pointer; font-size:16px !important;" id="filterBtn"></i>
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -41,12 +53,12 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Клиент" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Договор" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
             </tr>
 
@@ -59,8 +71,8 @@
             </tr>
 
             <tr role="row">
-                @*<th>Проект</th>
-                <th>Клиент</th>*@
+                @*<th>Проект</th>*@
+                @*<th>Клиент</th>*@
                 <th>Договор</th>
                 <th>Дата</th>
                 <th>Сумма</th>
@@ -83,6 +95,34 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+        $.validator.methods.date = function (value, element) {
+            if (value) {
+                try {
+                    $.datepicker.parseDate('dd/MM/yy', value);
+                } catch (ex) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    </script>
+
     <script type="text/javascript">
         $(function () {
 
@@ -93,7 +133,7 @@
                 "orderMulti": true,
                 "responsive": true,
                 "pagingType": "simple_numbers",
-                //"dom":'<"top"l>rt<"bottom"ip><"clear">',
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",
@@ -151,14 +191,15 @@
 
             });
 
+
             table.columns().eq(0).each(function (colIdx) {
-                $('input', $('th')[colIdx]).on('keyup change',
-                    function () {
-                        table
-                            .column(colIdx)
-                            .search(this.value)
-                            .draw();
-                    });
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
             });
 
         });
@@ -169,5 +210,16 @@
         $('body').on('click', '#filterBtn', function () {
             $('#search-row').toggle(300);
         });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#paymenttable').DataTable().draw();
+
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        });
     </script>
+
 }

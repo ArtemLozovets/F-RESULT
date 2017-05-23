@@ -25,7 +25,7 @@ namespace F_Result.Models
 
         [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Сумма договора")]
-        public double? Summ { get; set; }
+        public decimal? Summ { get; set; }
 
         [Display(Name = "Тип договора")]
         public string AgrType { get; set; }
@@ -34,7 +34,7 @@ namespace F_Result.Models
         public string Manager { get; set; }
 
         [Display(Name = "Оплата")]
-        public double? Payment { get; set; }
+        public decimal? Payment { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата оплаты")]

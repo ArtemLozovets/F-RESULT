@@ -42,21 +42,19 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 @Html.Partial("_LoginPartial")
                 <ul class="nav navbar-nav navbar-right">
-                    <li id="about">
-                        @Html.ActionLink("Плановые показатели", "About", "Home", new { Area = "" }, null)
+                    <li id="fplan" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Плановые показатели<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="fullwidthpage">
+                                @Html.ActionLink("В разработке", "Index", "Home", new { Area = "" }, null)
+                            </li>
+                        </ul>
                     </li>
-                    <li id="contact">
-                        @Html.ActionLink("Контакты", "Contact", "Home", new { Area = "" }, null)
-                    </li>
-
                     <li id="findicators" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Финансовые показатели<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li id="fullwidthpage">
-                                @Html.ActionLink("Реестр оплат", "Index", "Payments", new { Area = "" }, null)
-                            </li>
-                            <li id="fullwidthpage">
-                                @Html.ActionLink("Реестр оплат (New)", "ShowPayments", "Payments", new { Area = "" }, null)
+                                @Html.ActionLink("Реестр оплат", "ShowPayments", "Payments", new { Area = "" }, null)
                             </li>
                         </ul>
                     </li>
