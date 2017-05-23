@@ -153,3 +153,28 @@ footer {
     background: url('Images/icon_top.png') no-repeat;
     z-index:999999;
 }
+
+/* Блок стилей для прелоадера*/
+#loadingImg {
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 50%;
+    width: 132px;
+    height: 132px;
+    margin: -66px 0 0 -66px;
+    background: #706d5d;
+    opacity: 0.3;
+    border-radius: 10px;
+    z-index: 999990;
+}
+
+    #loadingImg > #preloadImg {
+        text-align: center;
+        position: absolute;
+        top: 33px;
+        left: 33px;
+        width: 66px;
+        height: 66px;
+        overflow: visible;
+        display: block;
+    }

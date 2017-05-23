@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Реестр оплат - Оплаты";
+    ViewBag.Title = "Оплаты";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -22,6 +22,12 @@
         padding: 3px;
     }
 </style>
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
 
 <div class="container">
     <div class="row">
@@ -125,7 +131,7 @@
 
     <script type="text/javascript">
         $(function () {
-
+            $('#loadingImg').hide();
             var table = $('#paymenttable').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -141,7 +147,7 @@
                     "infoEmpty": "Записи отсутствуют",
                     "infoFiltered": "(Отфильтровано из _MAX_ записей)",
                     "search": "Поиск",
-                    "processing": "Обработка...",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
                     "sInfoThousands": " ",
                     "oPaginate": {
                         "sNext": ">",
@@ -188,8 +194,8 @@
                     },
                     { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true }
                 ]
-
             });
+
 
 
             table.columns().eq(0).each(function (colIdx) {
@@ -213,12 +219,12 @@
 
         $('body').on('click', '#filterClear', function () {
             var table = $('#paymenttable').DataTable().draw();
-
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
             });
             table.draw();
+
         });
     </script>
 

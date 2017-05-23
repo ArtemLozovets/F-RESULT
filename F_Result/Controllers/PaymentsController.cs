@@ -126,68 +126,77 @@ namespace F_Result.Controllers
         [HttpPost]
         public ActionResult LoadPayments()
         {
-
-            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
-
-            var draw = Request.Form.GetValues("draw").FirstOrDefault();
-            var start = Request.Form.GetValues("start").FirstOrDefault();
-            var length = Request.Form.GetValues("length").FirstOrDefault();
-            var sortColumn = Request.Form.GetValues("columns["+Request.Form.GetValues("order[0][column]").FirstOrDefault()+"][name]").FirstOrDefault();
-            var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
-
-           
-            int pageSize = length != null ? Convert.ToInt32(length) : 0;
-            int skip = start != null ? Convert.ToInt32(start) : 0;
-            int totalRecords = 0;
-
-            CultureInfo provider = CultureInfo.InvariantCulture;
-
-            string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-            string _client = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-            string _agreement = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-            string _agrdatetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-            DateTime? _agrdate = string.IsNullOrEmpty(_agrdatetxt) ? (DateTime?)null : DateTime.Parse(_agrdatetxt);
-            string _summ = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-            string _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-            string _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-            string _payment = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-            string _paymentdatetxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
-            DateTime? _paymentdate = string.IsNullOrEmpty(_paymentdatetxt) ? (DateTime?)null : DateTime.Parse(_paymentdatetxt);
-            string _paymentdesc = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
-
-            var _payments = (from payment in db.Payments
-                             where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
-                                    && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
-                                    && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
-                                    && (payment.AgrDate == _agrdate || _agrdate == null)
-                                    && (payment.Summ.ToString().Contains(_summ) || string.IsNullOrEmpty(_summ))
-                                    && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
-                                    && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
-                                    && (payment.Payment.ToString().Contains(_payment) || string.IsNullOrEmpty(_payment))
-                                    && (payment.PaymentDate == _paymentdate || _paymentdate == null)
-                                    && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                             select payment).AsEnumerable().Select(x => new Payments { 
-                                Project = x.Project,
-                                Client = x.Client,
-                                Agreement = x.Agreement,
-                                AgrDate = x.AgrDate,
-                                Summ = x.Summ,
-                                AgrType =x.AgrType,
-                                Manager = x.Manager,
-                                Payment = x.Payment,
-                                PaymentDate = x.PaymentDate,
-                                PaymentDesc = x.PaymentDesc
-                             });
-
-            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            try
             {
-                _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir);
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                CultureInfo provider = CultureInfo.InvariantCulture;
+
+                string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _client = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _agreement = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _agrdatetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                DateTime? _agrdate = string.IsNullOrEmpty(_agrdatetxt) ? (DateTime?)null : DateTime.Parse(_agrdatetxt);
+                string _summ = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _payment = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                DateTime? _paymentdate = string.IsNullOrEmpty(_paymentdatetxt) ? (DateTime?)null : DateTime.Parse(_paymentdatetxt);
+                string _paymentdesc = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+
+                var _payments = (from payment in db.Payments
+                                 where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
+                                        && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
+                                        && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
+                                        && (payment.AgrDate == _agrdate || _agrdate == null)
+                                        && (payment.Summ.ToString().Contains(_summ) || string.IsNullOrEmpty(_summ))
+                                        && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
+                                        && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
+                                        && (payment.Payment.ToString().Contains(_payment) || string.IsNullOrEmpty(_payment))
+                                        && (payment.PaymentDate == _paymentdate || _paymentdate == null)
+                                        && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
+                                 select payment).AsEnumerable().Select(x => new Payments
+                                 {
+                                     Project = x.Project,
+                                     Client = x.Client,
+                                     Agreement = x.Agreement,
+                                     AgrDate = x.AgrDate,
+                                     Summ = x.Summ,
+                                     AgrType = x.AgrType,
+                                     Manager = x.Manager,
+                                     Payment = x.Payment,
+                                     PaymentDate = x.PaymentDate,
+                                     PaymentDesc = x.PaymentDesc
+                                 });
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir);
+                }
+
+                totalRecords = _payments.Count();
+
+                var data = _payments.Skip(skip).Take(pageSize).ToList();
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data }, JsonRequestBehavior.AllowGet);
             }
-
-            totalRecords = _payments.Count();
-
-            var data = _payments.Skip(skip).Take(pageSize).ToList();
-            return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data }, JsonRequestBehavior.AllowGet);
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                return View("Error");               
+            }
 
         }
 

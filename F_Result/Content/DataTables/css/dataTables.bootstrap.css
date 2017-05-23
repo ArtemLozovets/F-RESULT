@@ -59,6 +59,8 @@ div.dataTables_wrapper div.dataTables_processing {
   top: 50%;
   left: 50%;
   width: 200px;
+  border:none !important;
+  background-color:transparent !important;
   margin-left: -100px;
   margin-top: -26px;
   text-align: center;
