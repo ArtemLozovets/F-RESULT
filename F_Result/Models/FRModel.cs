@@ -11,7 +11,7 @@ namespace F_Result.Models
     {
         public DirectumViewConfiguration()
         {
-            this.HasKey(t => t.AgrDate);
+            this.HasKey(t => t.Analit);
             this.ToTable("DirectumPayments");
         }
     }

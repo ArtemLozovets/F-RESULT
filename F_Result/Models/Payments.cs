@@ -9,6 +9,9 @@ namespace F_Result.Models
 
     public partial class Payments
     {
+        [Key]
+        public int Analit { get; set; }
+
         [Display(Name = "Проект")]
         public string Project { get; set; }
 

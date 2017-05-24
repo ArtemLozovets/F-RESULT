@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using System.Linq.Dynamic; //!=====!
 using F_Result.Models;
-using System.Globalization;
 
 namespace F_Result.Controllers
 {
@@ -141,17 +138,15 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                CultureInfo provider = CultureInfo.InvariantCulture;
-
                 string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _client = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _agreement = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _agrdatetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 DateTime? _agrdate = string.IsNullOrEmpty(_agrdatetxt) ? (DateTime?)null : DateTime.Parse(_agrdatetxt);
-                string _summ = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _summtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 string _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 string _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _payment = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 string _paymentdatetxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 DateTime? _paymentdate = string.IsNullOrEmpty(_paymentdatetxt) ? (DateTime?)null : DateTime.Parse(_paymentdatetxt);
                 string _paymentdesc = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
@@ -161,10 +156,8 @@ namespace F_Result.Controllers
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
                                         && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
                                         && (payment.AgrDate == _agrdate || _agrdate == null)
-                                        && (payment.Summ.ToString().Contains(_summ) || string.IsNullOrEmpty(_summ))
                                         && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
-                                        && (payment.Payment.ToString().Contains(_payment) || string.IsNullOrEmpty(_payment))
                                         && (payment.PaymentDate == _paymentdate || _paymentdate == null)
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
                                  select payment).AsEnumerable().Select(x => new Payments
@@ -179,11 +172,13 @@ namespace F_Result.Controllers
                                      Payment = x.Payment,
                                      PaymentDate = x.PaymentDate,
                                      PaymentDesc = x.PaymentDesc
-                                 });
+                                 }).ToList();
+
+                              _payments = _payments.Where(x=>(x.Summ.ToString().Contains(_summtxt) || string.IsNullOrEmpty(_summtxt)) && (x.Payment.ToString().Contains(_paymenttxt) || string.IsNullOrEmpty(_paymenttxt))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir);
+                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
 
                 totalRecords = _payments.Count();
