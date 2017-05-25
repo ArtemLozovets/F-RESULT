@@ -9,6 +9,7 @@ using F_Result.Models;
 
 namespace F_Result.Controllers
 {
+    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
     public class PaymentsController : Controller
     {
         private FRModel db = new FRModel();
