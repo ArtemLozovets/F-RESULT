@@ -7,12 +7,21 @@ namespace F_Result.Models
     using System.Data.Entity.ModelConfiguration;
 
 
-    public class DirectumViewConfiguration : EntityTypeConfiguration<Payments>
+    public class DirectumPaymentsConfiguration : EntityTypeConfiguration<Payments>
     {
-        public DirectumViewConfiguration()
+        public DirectumPaymentsConfiguration()
         {
             this.HasKey(t => t.Analit);
             this.ToTable("DirectumPayments");
+        }
+    }
+
+    public class DirectumProjectsConfiguration : EntityTypeConfiguration<Projects>
+    {
+        public DirectumProjectsConfiguration()
+        {
+            this.HasKey(t => t.id);
+            this.ToTable("Projects");
         }
     }
     
@@ -46,9 +55,11 @@ namespace F_Result.Models
                 .IsFixedLength()
                 .IsUnicode(false);
 
-            modelBuilder.Configurations.Add(new DirectumViewConfiguration());
+            modelBuilder.Configurations.Add(new DirectumPaymentsConfiguration());
+            modelBuilder.Configurations.Add(new DirectumProjectsConfiguration());
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.Payments> Payments { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.Projects> Projects { get; set; }
     }
 }

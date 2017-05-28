@@ -10,111 +10,9 @@ using F_Result.Models;
 namespace F_Result.Controllers
 {
     [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
-    public class PaymentsController : Controller
+    public class DirectumController : Controller
     {
         private FRModel db = new FRModel();
-
-        // GET: Payments
-        public ActionResult Index()
-        {
-            return View(db.Payments.ToList());
-        }
-
-        // GET: Payments/Details/5
-        public ActionResult Details(DateTime id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Payments payments = db.Payments.Find(id);
-            if (payments == null)
-            {
-                return HttpNotFound();
-            }
-            return View(payments);
-        }
-
-        // GET: Payments/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Payments/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AgrDate,Project,Client,Agreement,Summ,AgrType,Manager,Payment,PaymentDate,PaymentDesc")] Payments payments)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Payments.Add(payments);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(payments);
-        }
-
-        // GET: Payments/Edit/5
-        public ActionResult Edit(DateTime id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Payments payments = db.Payments.Find(id);
-            if (payments == null)
-            {
-                return HttpNotFound();
-            }
-            return View(payments);
-        }
-
-        // POST: Payments/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AgrDate,Project,Client,Agreement,Summ,AgrType,Manager,Payment,PaymentDate,PaymentDesc")] Payments payments)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(payments).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(payments);
-        }
-
-        // GET: Payments/Delete/5
-        public ActionResult Delete(DateTime id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Payments payments = db.Payments.Find(id);
-            if (payments == null)
-            {
-                return HttpNotFound();
-            }
-            return View(payments);
-        }
-
-        // POST: Payments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(DateTime id)
-        {
-            Payments payments = db.Payments.Find(id);
-            db.Payments.Remove(payments);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
 
         public ActionResult ShowPayments()
         {
@@ -195,6 +93,82 @@ namespace F_Result.Controllers
             }
 
         }
+
+        public ActionResult ShowProjects()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult LoadProjects()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _fullname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _shortname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _desc = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _projecttype = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _state = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+               
+                string _startdatefacttxt = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                DateTime? _startdatefact = string.IsNullOrEmpty(_startdatefacttxt) ? (DateTime?)null : DateTime.Parse(_startdatefacttxt);
+
+                string _enddatefacttxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                DateTime? _enddatefact = string.IsNullOrEmpty(_enddatefacttxt) ? (DateTime?)null : DateTime.Parse(_enddatefacttxt);
+
+                string _startdateplantxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                DateTime? _startdateplan = string.IsNullOrEmpty(_startdateplantxt) ? (DateTime?)null : DateTime.Parse(_startdateplantxt);
+
+                string _enddateplantxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                DateTime? _enddateplan = string.IsNullOrEmpty(_enddateplantxt) ? (DateTime?)null : DateTime.Parse(_enddateplantxt);
+
+                var _projects = (from project in db.Projects 
+                                 where (project.FullName.Contains(_fullname) || string.IsNullOrEmpty(_fullname))
+                                        && (project.ShortName.Contains(_shortname) || string.IsNullOrEmpty(_shortname))
+                                        && (project.Desc.Contains(_desc) || string.IsNullOrEmpty(_desc))
+                                        && (project.ProjectType.Contains(_projecttype) || string.IsNullOrEmpty(_projecttype))
+                                        && (project.State.Contains(_state) || string.IsNullOrEmpty(_state))
+                                        && (project.StartDateFact == _startdatefact || _startdatefact == null)
+                                        && (project.EndDateFact == _enddatefact || _enddatefact == null)
+                                        && (project.StartDatePlan == _startdateplan || _startdateplan == null)
+                                        && (project.EndDatePlan == _enddateplan || _enddateplan == null)
+                                 select project);
+
+                
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir);
+                }
+
+                totalRecords = _projects.Count();
+
+                var data = _projects.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                return View("Error");      
+            }
+        }
+
+
 
         protected override void Dispose(bool disposing)
         {
