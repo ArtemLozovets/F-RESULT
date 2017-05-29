@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -176,13 +177,16 @@
     <Compile Include="Areas\Administrator\Models\UsersManagementViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
-    <Compile Include="Controllers\PaymentsController.cs" />
+    <Compile Include="Controllers\DirectumController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\FRModel.cs" />
+    <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\Projects.cs" />
+    <Compile Include="Models\DUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -370,6 +374,8 @@
     <Content Include="Content\Images\sl1.jpg" />
     <Content Include="Content\Images\sl2.jpg" />
     <Content Include="Content\Images\sl3.jpg" />
+    <Content Include="Content\jquery.contextMenu.css" />
+    <Content Include="Content\jquery.contextMenu.min.css" />
     <Content Include="Content\jquery.datetimepicker.min.css" />
     <Content Include="Content\modern-business.css" />
     <Content Include="Content\Site.css" />
@@ -480,7 +486,11 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Scripts\jquery.contextMenu.js" />
+    <Content Include="Scripts\jquery.contextMenu.min.js" />
     <Content Include="Scripts\jquery.datetimepicker.full.min.js" />
+    <Content Include="Scripts\jquery.ui.position.js" />
+    <Content Include="Scripts\jquery.ui.position.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -496,6 +506,12 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Scripts\jquery.contextMenu.min.js.map" />
+    <Content Include="Content\font\context-menu-icons.woff2" />
+    <Content Include="Content\font\context-menu-icons.woff" />
+    <Content Include="Content\font\context-menu-icons.ttf" />
+    <Content Include="Content\font\context-menu-icons.eot" />
+    <Content Include="Content\jquery.contextMenu.min.css.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -511,7 +527,10 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Payments\ShowPayments.cshtml" />
+    <Content Include="Views\Directum\ShowPayments.cshtml" />
+    <Content Include="Views\Directum\ShowProjects.cshtml" />
+    <Content Include="Views\Directum\ShowOrganizations.cshtml" />
+    <Content Include="Views\Directum\ShowUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

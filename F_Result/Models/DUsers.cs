@@ -29,5 +29,8 @@ namespace F_Result.Models
         [Display(Name = "Состояние")]
         public string State { get; set; }
 
+        [NotMapped]
+        public string DT_RowId { get; set; }
+
     }
 }

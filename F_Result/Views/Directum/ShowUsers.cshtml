@@ -6,6 +6,7 @@
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <style>
     #gridtable > thead > tr > th {
@@ -81,6 +82,7 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     @*Блок скриптов для работы с DateTimePicker*@
     <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript">
@@ -111,6 +113,34 @@
 
     <script type="text/javascript">
         $(function () {
+
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    var m = "clicked: " + key + "\n\rПользователь: ";
+                    window.console && console.log(m) || alert(m);
+                },
+                items: {
+                    "edit": { name: "Редактировать", icon: "edit" },
+                    "cut": { name: "Вырезать", icon: "cut" },
+                    copy: { name: "Копировать", icon: "copy" },
+                    "paste": { name: "Вставить", icon: "paste" },
+                    "delete": { name: "Удалить", icon: "delete" },
+                    "sep1": "---------",
+                    "quit": {
+                        name: "Закрыть", icon: function () {
+                            return 'context-menu-icon context-menu-icon-quit';
+                        }
+                    }
+                }
+            });
+
+            $('.context-menu-one').on('click', function (e) {
+                console.log('clicked', this);
+            })
+
+
+
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "processing": true,
@@ -152,7 +182,12 @@
                     { "data": "Name", "name": "Name", "autoWidth": true },
                     { "data": "Code", "name": "Code", "autoWidth": true },
                     { "data": "State", "name": "State", "autoWidth": true }
-                ]
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-userid', data.id);
+                    $(row).attr('class', 'context-menu-one');
+                }
+                
             });
 
 
