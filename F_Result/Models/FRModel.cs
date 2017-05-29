@@ -11,7 +11,7 @@ namespace F_Result.Models
     {
         public DirectumPaymentsConfiguration()
         {
-            this.HasKey(t => t.Analit);
+            this.HasKey(t => t.id);
             this.ToTable("DirectumPayments");
         }
     }
@@ -24,7 +24,16 @@ namespace F_Result.Models
             this.ToTable("Projects");
         }
     }
-    
+
+    public class DirectumUsersConfiguration : EntityTypeConfiguration<DUsers>
+    {
+        public DirectumUsersConfiguration()
+        {
+            this.HasKey(t => t.id);
+            this.ToTable("Users");
+        }
+    }
+
     public partial class FRModel : DbContext
     {
         public FRModel()
@@ -57,9 +66,12 @@ namespace F_Result.Models
 
             modelBuilder.Configurations.Add(new DirectumPaymentsConfiguration());
             modelBuilder.Configurations.Add(new DirectumProjectsConfiguration());
+            modelBuilder.Configurations.Add(new DirectumUsersConfiguration());
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.Payments> Payments { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.Projects> Projects { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.Organizations> Organizations { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.DUsers> DUsers { get; set; }
     }
 }

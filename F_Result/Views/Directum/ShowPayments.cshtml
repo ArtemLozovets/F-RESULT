@@ -8,7 +8,7 @@
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 
 <style>
-    #paymenttable > thead > tr > th {
+    #gridtable > thead > tr > th {
         border-bottom: 0 !important;
     }
 
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="paymenttable" style="width:100%">
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
@@ -132,7 +132,7 @@
     <script type="text/javascript">
         $(function () {
             $('#loadingImg').hide();
-            var table = $('#paymenttable').DataTable({
+            var table = $('#gridtable').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -157,7 +157,15 @@
                 "ajax": {
                     "url": "/Directum/LoadPayments",
                     "type": "POST",
-                    "datatype": "json"
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
                 },
                 "columns": [
                     { "data": "Project", "name": "Project", "autoWidth": true },
@@ -218,7 +226,7 @@
         });
 
         $('body').on('click', '#filterClear', function () {
-            var table = $('#paymenttable').DataTable().draw();
+            var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');

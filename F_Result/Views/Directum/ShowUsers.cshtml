@@ -1,0 +1,190 @@
+﻿@{
+    ViewBag.Title = "Пользователи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+
+<style>
+    #gridtable > thead > tr > th {
+        border-bottom: 0 !important;
+    }
+
+    .sb, .dff {
+        font-size: 10px;
+        margin: 0;
+        padding: 3px;
+    }
+
+    #search-row > th {
+        padding: 3px;
+    }
+</style>
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Список пользователей</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Справочники</li>
+                <li class="active">Пользователи</li>
+            </ol>
+        </div>
+    </div>
+
+    <i class="fa fa-refresh text-info pull-right" title="Сброс фильтра" style="margin:0 10px 0 10px; cursor:pointer;" id="filterClear"></i>
+    <i class="fa fa-filter text-info pull-right" title="Панель фильтрации" style="cursor:pointer; font-size:16px !important;" id="filterBtn"></i>
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Полное имя" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Имя" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
+            </tr>
+
+            <tr role="row">
+                <th>Полное имя</th>
+                <th>Имя</th>
+                <th>Код</th>
+                <th title="Состояние">СТ</th>
+            </tr>
+        </thead>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+        $.validator.methods.date = function (value, element) {
+            if (value) {
+                try {
+                    $.datepicker.parseDate('dd/MM/yy', value);
+                } catch (ex) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_-_END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Directum/LoadDUsers",
+                    "type": "POST",
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    { "data": "FullName", "name": "FullName", "autoWidth": true },
+                    { "data": "Name", "name": "Name", "autoWidth": true },
+                    { "data": "Code", "name": "Code", "autoWidth": true },
+                    { "data": "State", "name": "State", "autoWidth": true }
+                ]
+            });
+
+
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#gridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+
+        });
+    </script>
+
+}

@@ -46,7 +46,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Плановые показатели<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="@Url.Action("Index", "Home", new {Area = "" })"><i class="glyphicon glyphicon-stats"></i>&nbsp;В разработке</a>
+                                <a href="@Url.Action("Index", "Home", new {Area = "" })"><i class="glyphicon glyphicon-stats" style="margin-right:10px;"></i>&nbsp;В разработке</a>
                             </li>
                         </ul>
                     </li>
@@ -54,10 +54,22 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Финансовые показатели<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-usd"></i>&nbsp;Реестр оплат</a>
+                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-usd" style="margin-right:10px;"></i>&nbsp;Реестр оплат</a>
                             </li>
-                            <li>
-                                <a href="@Url.Action("ShowProjects", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Проекты</a>
+                        </ul>
+                    </li>
+
+                    <li id="dict" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Справочники <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="projects_li">
+                                <a href="@Url.Action("ShowProjects", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-briefcase" style="margin-right:10px;"></i>&nbsp;Проекты</a>
+                            </li>
+                            <li id="org_li">
+                                <a href="@Url.Action("ShowOrganizations", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-barcode" style="margin-right:10px;"></i>&nbsp;Организации</a>
+                            </li>
+                            <li id="usr_li">
+                                <a href="@Url.Action("ShowUsers", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
                             </li>
                         </ul>
                     </li>
@@ -65,11 +77,11 @@
                     <li id="admin" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Управление <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li id="fullwidthpage">
-                                <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-user"></i>&nbsp;Пользователи</a>
+                            <li id="fullwidthpage1">
+                                <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
                             </li>
-                            <li id="fullwidthpage">
-                                <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar"></i>&nbsp;Аудит входа</a>
+                            <li id="fullwidthpage2">
+                                <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
                             </li>
                         </ul>
                     </li>
