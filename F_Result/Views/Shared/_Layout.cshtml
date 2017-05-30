@@ -42,16 +42,8 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 @Html.Partial("_LoginPartial")
                 <ul class="nav navbar-nav navbar-right">
-                    <li id="fplan" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Плановые показатели<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="@Url.Action("Index", "Home", new {Area = "" })"><i class="glyphicon glyphicon-stats" style="margin-right:10px;"></i>&nbsp;В разработке</a>
-                            </li>
-                        </ul>
-                    </li>
                     <li id="findicators" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Финансовые показатели<b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Показатели<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-usd" style="margin-right:10px;"></i>&nbsp;Реестр оплат</a>
@@ -75,7 +67,7 @@
                     </li>
 
                     <li id="admin" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Управление <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li id="fullwidthpage1">
                                 <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
