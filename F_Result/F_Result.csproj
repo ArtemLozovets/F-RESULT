@@ -375,7 +375,9 @@
     <Content Include="Content\Images\sl2.jpg" />
     <Content Include="Content\Images\sl3.jpg" />
     <Content Include="Content\jquery.contextMenu.css" />
-    <Content Include="Content\jquery.contextMenu.min.css" />
+    <Content Include="Content\jquery.contextMenu.min.css">
+      <DependentUpon>jquery.contextMenu.css</DependentUpon>
+    </Content>
     <Content Include="Content\jquery.datetimepicker.min.css" />
     <Content Include="Content\modern-business.css" />
     <Content Include="Content\Site.css" />
@@ -507,11 +509,8 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <Content Include="Scripts\jquery.contextMenu.min.js.map" />
-    <Content Include="Content\font\context-menu-icons.woff2" />
-    <Content Include="Content\font\context-menu-icons.woff" />
-    <Content Include="Content\font\context-menu-icons.ttf" />
-    <Content Include="Content\font\context-menu-icons.eot" />
     <Content Include="Content\jquery.contextMenu.min.css.map" />
+    <None Include="bundleconfig.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

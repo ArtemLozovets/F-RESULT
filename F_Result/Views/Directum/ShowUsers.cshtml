@@ -113,18 +113,28 @@
 
     <script type="text/javascript">
         $(function () {
-
             $.contextMenu({
                 selector: '.context-menu-one',
                 callback: function (key, options) {
-                    var m = "clicked: " + key + "\n\rПользователь: ";
-                    window.console && console.log(m) || alert(m);
+                    var m = '';
+                    switch (key) {
+                        case 'details':
+                            m = "Пользователь: " + $(this).data('userid') + ' - Подробно';
+                            break;
+                        case 'edit':
+                            m = "Пользователь: " + $(this).data('userid') + ' - Редактирование';
+                            break;
+                        case 'delete':
+                            m = "Пользователь: " + $(this).data('userid') + ' - Удаление';
+                            break;
+                        default:
+                            return;
+                    }
+                    alert(m);
                 },
                 items: {
+                    "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
-                    "cut": { name: "Вырезать", icon: "cut" },
-                    copy: { name: "Копировать", icon: "copy" },
-                    "paste": { name: "Вставить", icon: "paste" },
                     "delete": { name: "Удалить", icon: "delete" },
                     "sep1": "---------",
                     "quit": {
@@ -138,8 +148,6 @@
             $('.context-menu-one').on('click', function (e) {
                 console.log('clicked', this);
             })
-
-
 
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
@@ -187,7 +195,7 @@
                     $(row).attr('data-userid', data.id);
                     $(row).attr('class', 'context-menu-one');
                 }
-                
+
             });
 
 

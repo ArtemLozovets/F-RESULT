@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /*!
  * jQuery contextMenu - Plugin for simple contextMenu handling
  *
@@ -19,36 +19,40 @@
   font-style: normal; 
   font-weight: normal;
 
-  src: url("font/context-menu-icons.eot?2cl8a");
-  src: url("font/context-menu-icons.eot?2cl8a#iefix") format("embedded-opentype"), url("font/context-menu-icons.woff2?2cl8a") format("woff2"), url("font/context-menu-icons.woff?2cl8a") format("woff"), url("font/context-menu-icons.ttf?2cl8a") format("truetype");
+  src: url("fonts/fontawesome-webfont.eot?2cl8a");
+  src: url("fonts/fontawesome-webfont.eot?2cl8a#iefix") format("embedded-opentype"), url("fonts/fontawesome-webfont.woff2?2cl8a") format("woff2"), url("fonts/fontawesome-webfont.woff?2cl8a") format("woff"), url("fonts/fontawesome-webfont.ttf?2cl8a") format("truetype");
 }
 
 .context-menu-icon-add:before {
-  content: "\EA01";
+  content: "\F067";
 }
 
 .context-menu-icon-copy:before {
-  content: "\EA02";
+  content: "\F0C5";
 }
 
 .context-menu-icon-cut:before {
-  content: "\EA03";
+  content: "\F0C4";
 }
 
 .context-menu-icon-delete:before {
-  content: "\EA04";
+  content: "\F1F8";
 }
 
 .context-menu-icon-edit:before {
-  content: "\EA05";
+  content: "\F044";
 }
 
 .context-menu-icon-paste:before {
-  content: "\EA06";
+  content: "\F0EA";
 }
 
 .context-menu-icon-quit:before {
-  content: "\EA07";
+  content: "\F00D";
+}
+
+.context-menu-icon-details:before {
+  content: "\F129";
 }
 
 .context-menu-icon::before {

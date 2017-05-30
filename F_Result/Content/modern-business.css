@@ -17,6 +17,12 @@ body {
  /* body padding for fixed top nav */
 }
 
+	
+*:focus {
+    outline:none !important
+
+}
+
 .img-home-portfolio,
 .img-customer,
 .portfolio-item {
