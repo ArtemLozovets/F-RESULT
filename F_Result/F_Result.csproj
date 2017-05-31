@@ -175,12 +175,19 @@
     <Compile Include="Areas\Administrator\Controllers\UsersManagementController.cs" />
     <Compile Include="Areas\Administrator\Models\IdentityModels.cs" />
     <Compile Include="Areas\Administrator\Models\UsersManagementViewModel.cs" />
+    <Compile Include="Controllers\ActualDebitsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
     <Compile Include="Controllers\DirectumController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705312139283_Initial.cs" />
+    <Compile Include="Migrations\201705312139283_Initial.Designer.cs">
+      <DependentUpon>201705312139283_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
@@ -530,6 +537,11 @@
     <Content Include="Views\Directum\ShowProjects.cshtml" />
     <Content Include="Views\Directum\ShowOrganizations.cshtml" />
     <Content Include="Views\Directum\ShowUsers.cshtml" />
+    <Content Include="Views\ActualDebits\Create.cshtml" />
+    <Content Include="Views\ActualDebits\Delete.cshtml" />
+    <Content Include="Views\ActualDebits\Details.cshtml" />
+    <Content Include="Views\ActualDebits\Edit.cshtml" />
+    <Content Include="Views\ActualDebits\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -540,6 +552,11 @@
   <ItemGroup>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201705312139283_Initial.resx">
+      <DependentUpon>201705312139283_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

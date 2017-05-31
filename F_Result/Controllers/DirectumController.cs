@@ -147,7 +147,31 @@ namespace F_Result.Controllers
                                         && (project.EndDateFact == _enddatefact || _enddatefact == null)
                                         && (project.StartDatePlan == _startdateplan || _startdateplan == null)
                                         && (project.EndDatePlan == _enddateplan || _enddateplan == null)
-                                 select project);
+                                 select new { 
+                                    id = project.id,
+                                    FullName = project.FullName,
+                                    Name = project.ShortName,
+                                    Desc = project.Desc,
+                                    ProjectType = project.ProjectType,
+                                    State = project.State,
+                                    StartDateFact = project.StartDateFact,
+                                    EndDateFact = project.EndDateFact,
+                                    StartDatePlan = project.StartDatePlan,
+                                    EndDatePlan = project.EndDatePlan
+
+                                 }).AsEnumerable().Select(x => new Projects { 
+                                     id = x.id,
+                                     FullName = x.FullName,
+                                     ShortName = x.Name,
+                                     Desc = x.Desc,
+                                     ProjectType = x.ProjectType,
+                                     State = x.State,
+                                     StartDateFact =x.StartDateFact,
+                                     EndDateFact = x.EndDateFact,
+                                     StartDatePlan = x.StartDatePlan,
+                                     EndDatePlan = x.EndDatePlan
+                                 
+                                 });
 
 
 

@@ -6,7 +6,7 @@ using System.Data.Entity.Spatial;
 
 namespace F_Result.Models
 {
-
+    [NotMapped]
     public partial class Projects
     {
         [Key]
@@ -43,6 +43,8 @@ namespace F_Result.Models
         [MaxLength(1)]
         [Display(Name = "Состояние")]
         public string State{get; set;}
+
+        public virtual ICollection<ActualDebit> ActualDebit { get; set; }
 		
     }
 }
