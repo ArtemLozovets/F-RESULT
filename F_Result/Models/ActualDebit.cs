@@ -18,7 +18,7 @@ namespace F_Result.Models
          public DateTime Date { get; set; }
 
          [Required(ErrorMessage = "Необходимо указать сумму")]
-         [RegularExpression("(^\\d{1,5}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
+         [RegularExpression("(^\\d{1,16}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
          [Display(Name = "Сумма")]
          public decimal Sum { get; set; }
 
@@ -33,12 +33,6 @@ namespace F_Result.Models
          [Display(Name = "Номер документа")]
          public string DocNumber { get; set; }
 
-         [Display(Name = "Пользователь")]
-         public Guid UserId { get; set; }
-
-         [ForeignKey("ProjectId")]
-         public virtual Projects Projects { get; set; }
-
-
+         public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

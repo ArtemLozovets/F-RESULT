@@ -27,7 +27,7 @@ public class LoginAuditAttribute : ActionFilterAttribute
             Date = DateTime.Now,
         };
 
-        using (ApplicationDbContext db = new ApplicationDbContext())
+        using (FRModel db = new FRModel())
         {
             db.AspVisitors.Add(visitor);
             db.SaveChanges();

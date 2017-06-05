@@ -10,6 +10,7 @@ using F_Result.Models;
 
 namespace F_Result.Controllers
 {
+    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
     public class ActualDebitsController : Controller
     {
         private FRModel db = new FRModel();
@@ -17,8 +18,7 @@ namespace F_Result.Controllers
         // GET: ActualDebits
         public ActionResult Index()
         {
-            var actualDebit = db.ActualDebit.Include(a => a.Projects);
-            return View(actualDebit.ToList());
+            return View(db.ActualDebit.ToList());
         }
 
         // GET: ActualDebits/Details/5
@@ -39,7 +39,6 @@ namespace F_Result.Controllers
         // GET: ActualDebits/Create
         public ActionResult Create()
         {
-            ViewBag.ProjectId = new SelectList(db.Projects, "id", "FullName");
             return View();
         }
 
@@ -48,7 +47,7 @@ namespace F_Result.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber,UserId")] ActualDebit actualDebit)
+        public ActionResult Create([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +56,6 @@ namespace F_Result.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ProjectId = new SelectList(db.Projects, "id", "FullName", actualDebit.ProjectId);
             return View(actualDebit);
         }
 
@@ -73,7 +71,6 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProjectId = new SelectList(db.Projects, "id", "FullName", actualDebit.ProjectId);
             return View(actualDebit);
         }
 
@@ -82,7 +79,7 @@ namespace F_Result.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber,UserId")] ActualDebit actualDebit)
+        public ActionResult Edit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +87,6 @@ namespace F_Result.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.ProjectId = new SelectList(db.Projects, "id", "FullName", actualDebit.ProjectId);
             return View(actualDebit);
         }
 

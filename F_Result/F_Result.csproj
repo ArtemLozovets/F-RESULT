@@ -188,10 +188,10 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ActualDebit.cs" />
+    <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
-    <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\DUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

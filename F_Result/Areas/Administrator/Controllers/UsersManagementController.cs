@@ -111,7 +111,7 @@ namespace F_Result.Areas.Administrator.Controllers
             DateTime _date;
             DateTime.TryParse(SearchDate, out _date);
 
-            using (ApplicationDbContext visitorcontext = new ApplicationDbContext())
+            using (FRModel visitorcontext = new FRModel())
             {
                 return View(visitorcontext.AspVisitors.Where(x=>DbFunctions.TruncateTime(x.Date) == _date || String.IsNullOrEmpty(SearchDate)).OrderByDescending(x=>x.Date).ToList());
             }

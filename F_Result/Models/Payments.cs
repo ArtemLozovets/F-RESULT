@@ -26,7 +26,7 @@ namespace F_Result.Models
         [DataType(DataType.Date)]
         public DateTime? AgrDate { get; set; }
 
-        [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
+        [RegularExpression("(^\\d{1,16}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Сумма договора")]
         public decimal? Summ { get; set; }
 
@@ -36,6 +36,7 @@ namespace F_Result.Models
         [Display(Name = "Менеджер")]
         public string Manager { get; set; }
 
+        [RegularExpression("(^\\d{1,16}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Оплата")]
         public decimal? Payment { get; set; }
 

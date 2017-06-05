@@ -33,22 +33,19 @@
 <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Projects.FullName)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.Date)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Sum)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.ProjectId)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.Appointment)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.DocNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
         </th>
         <th style="width:128px; min-width:128px"></th>
     </tr>
@@ -65,22 +62,19 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Projects.FullName)
-        </td>
-        <td>
             @Html.DisplayFor(modelItem => item.Date)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Sum)
         </td>
         <td>
+            @Html.DisplayFor(modelItem => item.ProjectId)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.Appointment)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.DocNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserId)
         </td>
         <td style="text-align:center;">
 			 <a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.ActualDebitId})'><span class="glyphicon glyphicon-info-sign"></span></a>

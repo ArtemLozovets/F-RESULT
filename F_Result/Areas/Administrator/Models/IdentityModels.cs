@@ -7,6 +7,7 @@ using System.Data.Entity.Migrations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System;
+using System.Collections.Generic;
 
 
 namespace F_Result.Models
@@ -26,33 +27,9 @@ namespace F_Result.Models
         }
     }
 
-    [Table("AspVisitor")]
-    public class AspVisitor
-    {
-        public int Id { get; set; }
-
-        [Display(Name = "Логин")]
-        public string Login { get; set; }
-
-        [Display(Name = "Пароль")]
-        public string Password { get; set; }
-
-        [Display(Name = "ІР")]
-        public string Ip { get; set; }
-
-        [Display(Name = "Маршрут")]
-        public string Url { get; set; }
-
-        [Display(Name = "Результат")]
-        public bool? Result { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:dd'.'MM'.'yyyy HH':'mm}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Дата/Время")]
-        public DateTime Date { get; set; }
-    }
-
     public class ApplicationUser : IdentityUser
     {
+   
         [Display(Name = "Имя")]
         public string FirstName { get; set; }
 
@@ -71,6 +48,8 @@ namespace F_Result.Models
         [NotMapped]
         [Display(Name = "Роль")]
         public string UserRoleName { get; set; }
+
+       public virtual ICollection<ActualDebit> ActualDebit { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -109,7 +88,7 @@ namespace F_Result.Models
 
         static ApplicationDbContext()
         {
-            Database.SetInitializer<ApplicationDbContext>(new AppContextInitializer());
+           // Database.SetInitializer<ApplicationDbContext>(new AppContextInitializer());
         }
         public ApplicationDbContext()
             : base("FResult", throwIfV1Schema: false)
@@ -121,8 +100,11 @@ namespace F_Result.Models
             return new ApplicationDbContext();
         }
 
-        //public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<AspVisitor> AspVisitors { get; set; }
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+        }
 
     }
 }
