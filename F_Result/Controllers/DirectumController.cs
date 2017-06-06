@@ -101,6 +101,11 @@ namespace F_Result.Controllers
             return View();
         }
 
+        public ActionResult ShowProjectsPartial()
+        {
+            return PartialView();
+        }
+
         [HttpPost]
         public ActionResult LoadProjects()
         {

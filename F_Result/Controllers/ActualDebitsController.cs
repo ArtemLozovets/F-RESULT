@@ -70,8 +70,6 @@ namespace F_Result.Controllers
                     ViewBag.ErInner = ex.InnerException.InnerException.Message;
                     return View("Error");
                 }
-
-
             }
 
             TempData["MessageError"] = "Ошибка валидации модели";

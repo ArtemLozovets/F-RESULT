@@ -1,0 +1,80 @@
+﻿<div class="modal-content ui-front">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <h4>Проекты</h4>
+    </div>
+
+    <div class="modal-body">
+
+
+        <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+
+        <style>
+            #gridtable > thead > tr > th {
+                border-bottom: 0 !important;
+            }
+
+            .sb, .dff {
+                font-size: 10px;
+                margin: 0;
+                padding: 3px;
+            }
+
+            #search-row > th {
+                padding: 3px;
+            }
+        </style>
+
+        <div id="loadingImg">
+            <div id="preloadImg">
+                <img src="~/Content/Images/loader.gif" />
+            </div>
+        </div>
+
+        <div class="container">
+
+            <i class="fa fa-refresh text-info pull-right" title="Сброс фильтра" style="margin:0 10px 0 10px; cursor:pointer;" id="filterClear"></i>
+            <i class="fa fa-filter text-info pull-right" title="Панель фильтрации" style="cursor:pointer; font-size:16px !important;" id="filterBtn"></i>
+
+            <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+                <thead>
+                    <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Короткое имя" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Описание" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
+                        <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Начало" /></th>
+                        <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Окончание" /></th>
+                        <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Начало" /></th>
+                        <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Окончание" /></th>
+                    </tr>
+
+                    <tr role="row">
+                        <th rowspan="2">Название</th>
+                        <th rowspan="2">Короткое имя</th>
+                        <th rowspan="2">Описание</th>
+                        <th rowspan="2">Тип</th>
+                        <th rowspan="2" title="Состояние">СТ</th>
+                        <th colspan="2">Факт</th>
+                        <th colspan="2">План</th>
+                    </tr>
+
+                    <tr role="row">
+                        <th>Начало</th>
+                        <th>Окончание</th>
+                        <th>Начало</th>
+                        <th>Окончание</th>
+                    </tr>
+
+                </thead>
+            </table>
+
+            <a href="#" class="scrollup1">Наверх</a>
+        </div>
+
+    </div>
+    
+</div>
