@@ -1,0 +1,125 @@
+﻿@model F_Result.Models.ActualDebit
+
+@{
+    ViewBag.Title = "Создание";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            @ViewBag.Title
+            <small>Добавление фактического платежа</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+            <li>Показатели</li>
+            <li>@Html.ActionLink("Фактические расходы", "Index", "ActualDebits")</li>
+            <li class="active">Создание</li>
+        </ol>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <p class="text-success"> @TempData["MessageOk"]</p>
+            <p class="text-danger"> @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @type = "text", @class = "form-control", @data_val_date = "Проверьте правильность ввода даты (ДД/ММ/ГГГГ)" } })
+                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Sum, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Sum, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Sum, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProjectId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.ProjectId, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Appointment, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Appointment, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Appointment, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DocNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.DocNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DocNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <input type="submit" value="Сохранить" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div>
+            @Html.ActionLink("Назад", "ADShow")
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        jQuery(function () {
+            jQuery('#Date').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+
+        //$.validator.methods.date = function (value, element) {
+        //    if (value) {
+        //        try {
+        //            $.datepicker.parseDate('dd.mm.yy', value);
+        //            console.log("----OK-----", element)
+        //        } catch (ex) {
+        //            console.log("----ERROR----", element)
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //};
+
+    </script>
+}

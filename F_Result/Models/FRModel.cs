@@ -31,7 +31,7 @@ namespace F_Result.Models
 
     public partial class FRModel : DbContext
     {
-         static FRModel()
+        static FRModel()
         {
             Database.SetInitializer<FRModel>(new FRContextInitializer());
         }
@@ -81,13 +81,13 @@ namespace F_Result.Models
             modelBuilder.Entity<IdentityUserRole>().HasKey(r => new { r.RoleId, r.UserId }).ToTable("AspNetUserRoles");
             modelBuilder.Entity<IdentityUserClaim>().ToTable("AspNetUserClaims");
 
-            modelBuilder.Entity<ApplicationUser>()
-            .HasOptional(m => m.ActualDebit)
-            .WithMany()
-            .Map(p => p.MapKey("UserId"));
+            modelBuilder.Entity<ActualDebit>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.ActualDebit)
+            .HasForeignKey(m => m.UserId);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
-        
+
     }
 }

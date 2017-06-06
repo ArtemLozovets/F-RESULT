@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using F_Result.Models;
+using Microsoft.AspNet.Identity;
 
 namespace F_Result.Controllers
 {
@@ -16,7 +17,7 @@ namespace F_Result.Controllers
         private FRModel db = new FRModel();
 
         // GET: ActualDebits
-        public ActionResult Index()
+        public ActionResult ADShow()
         {
             return View(db.ActualDebit.ToList());
         }
@@ -36,30 +37,47 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
-        // GET: ActualDebits/Create
-        public ActionResult Create()
+        public ActionResult ADCreate()
         {
             return View();
         }
 
-        // POST: ActualDebits/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
+        public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
         {
             if (ModelState.IsValid)
             {
-                db.ActualDebit.Add(actualDebit);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        actualDebit.UserId = user;
+                    }
+
+                    db.ActualDebit.Add(actualDebit);
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация добавлена";
+                    return RedirectToAction("ADShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
+
+
             }
 
+            TempData["MessageError"] = "Ошибка валидации модели";
             return View(actualDebit);
         }
 
-        // GET: ActualDebits/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -74,9 +92,6 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
-        // POST: ActualDebits/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
@@ -85,12 +100,11 @@ namespace F_Result.Controllers
             {
                 db.Entry(actualDebit).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("ADShow");
             }
             return View(actualDebit);
         }
 
-        // GET: ActualDebits/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -113,7 +127,7 @@ namespace F_Result.Controllers
             ActualDebit actualDebit = db.ActualDebit.Find(id);
             db.ActualDebit.Remove(actualDebit);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("ADShow");
         }
 
         protected override void Dispose(bool disposing)

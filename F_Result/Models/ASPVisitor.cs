@@ -27,7 +27,7 @@ namespace F_Result.Models
         [Display(Name = "Результат")]
         public bool? Result { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:dd'.'MM'.'yyyy HH':'mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy HH':'mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата/Время")]
         public DateTime Date { get; set; }
     }

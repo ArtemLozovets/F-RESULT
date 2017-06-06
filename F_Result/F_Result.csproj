@@ -537,11 +537,11 @@
     <Content Include="Views\Directum\ShowProjects.cshtml" />
     <Content Include="Views\Directum\ShowOrganizations.cshtml" />
     <Content Include="Views\Directum\ShowUsers.cshtml" />
-    <Content Include="Views\ActualDebits\Create.cshtml" />
+    <Content Include="Views\ActualDebits\ADCreate.cshtml" />
     <Content Include="Views\ActualDebits\Delete.cshtml" />
     <Content Include="Views\ActualDebits\Details.cshtml" />
     <Content Include="Views\ActualDebits\Edit.cshtml" />
-    <Content Include="Views\ActualDebits\Index.cshtml" />
+    <Content Include="Views\ActualDebits\ADShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

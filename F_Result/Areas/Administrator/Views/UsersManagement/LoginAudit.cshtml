@@ -115,7 +115,6 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script src="~/Scripts/toparrow.js"></script>
 
     @*Блок скриптов для работы с DateTimePicker*@
     <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
@@ -126,8 +125,8 @@
         // <![CDATA[
         jQuery(function () {
             jQuery('#SearchDate').datetimepicker({
-                format: 'd.m.Y',
-                formatDate: 'd.m.Y',
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
                 timepicker: false
             });
         });
@@ -136,7 +135,7 @@
         $.validator.methods.date = function (value, element) {
             if (value) {
                 try {
-                    $.datepicker.parseDate('dd.MM.yy', value);
+                    $.datepicker.parseDate('dd/MM/yy', value);
                 } catch (ex) {
                     return false;
                 }

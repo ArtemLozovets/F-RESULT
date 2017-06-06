@@ -23,7 +23,8 @@ namespace F_Result.Models
          public decimal Sum { get; set; }
 
          [Required(ErrorMessage = "Необходимо указать проект")]
-         public int ProjectId { get; set; }
+        [Display(Name = "Проект")]
+        public int ProjectId { get; set; }
 
          [StringLength(200, ErrorMessage = "Значение должно содержать не больше 200 символов")]
          [Display(Name = "Назначение")]
@@ -33,6 +34,7 @@ namespace F_Result.Models
          [Display(Name = "Номер документа")]
          public string DocNumber { get; set; }
 
+         public string UserId { get; set; }
          public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }
