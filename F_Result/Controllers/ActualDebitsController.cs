@@ -76,7 +76,7 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
-        public ActionResult Edit(int? id)
+        public ActionResult ADEdit(int? id)
         {
             if (id == null)
             {
@@ -87,19 +87,47 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            ViewData["ProjectName"] = _prgName;
+
             return View(actualDebit);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
+        public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
         {
+
             if (ModelState.IsValid)
             {
-                db.Entry(actualDebit).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("ADShow");
+                try
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        actualDebit.UserId = user;
+                    }
+
+                    db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+                    db.Entry(actualDebit).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация обновлена";
+                    return RedirectToAction("ADShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
             }
+
+            TempData["MessageError"] = "Ошибка валидации модели";
+            string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            ViewData["ProjectName"] = _prgName;
             return View(actualDebit);
         }
 

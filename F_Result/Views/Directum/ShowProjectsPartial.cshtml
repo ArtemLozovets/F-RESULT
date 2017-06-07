@@ -10,6 +10,7 @@
         <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
         <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
         <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
         <style>
             #gridtable > thead > tr > th {
@@ -71,10 +72,202 @@
 
                 </thead>
             </table>
-
             <a href="#" class="scrollup1">Наверх</a>
         </div>
 
     </div>
     
 </div>
+
+<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+<script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+<script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.contextMenu.min.js"></script>
+<script src="~/Scripts/toparrow.js"></script>
+@*Блок скриптов для работы с DateTimePicker*@
+<script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $.contextMenu({
+            selector: '.context-menu-one',
+            callback: function (key, options) {
+                var m = '';
+                switch (key) {
+                    case 'select':
+                        var prgId = $(this).data('prgid');
+                        var prgName = $(this).data('prgname');
+
+                        $("#ProjectId").val(prgId);
+                        $("#prgSelect").val(prgName);
+
+                        $('#modDialog').modal('hide');
+                        break;
+
+                    default:
+                        return;
+                }
+            },
+            items: {
+                "select": { name: "Выбрать", icon: "select" },
+                "sep1": "---------",
+                "quit": {
+                    name: "Закрыть", icon: function () {
+                        return 'context-menu-icon context-menu-icon-quit';
+                    }
+                }
+            }
+        });
+
+        $('.context-menu-one').on('click', function (e) {
+            console.log('clicked', this);
+        })
+
+
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_-_END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Directum/LoadProjects",
+                    "type": "POST",
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    { "data": "FullName", "name": "FullName", "autoWidth": true },
+                    { "data": "ShortName", "name": "ShortName", "autoWidth": true },
+                    { "data": "Desc", "name": "Desc", "autoWidth": true },
+                    { "data": "ProjectType", "name": "ProjectType", "autoWidth": true },
+                    { "data": "State", "name": "State", "autoWidth": true },
+                     {
+                         "data": "StartDateFact", "name": "StartDateFact", "autoWidth": true,
+                         "type": "date ",
+                         "render": function (value) {
+                             if (value === null) return "";
+                             var pattern = /Date\(([^)]+)\)/;
+                             var results = pattern.exec(value);
+                             var dt = new Date(parseFloat(results[1]));
+                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                             var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                             return _d + "/" + _m + "/" + dt.getFullYear();
+                         }
+                     },
+                    {
+                        "data": "EndDateFact", "name": "EndDateFact", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    {
+                        "data": "StartDatePlan", "name": "StartDatePlan", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    {
+                        "data": "EndDatePlan", "name": "EndDatePlan", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    }
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-prgid', data.id);
+                    $(row).attr('data-prgname', data.ShortName);
+                    $(row).attr('class', 'context-menu-one');
+                }
+            });
+
+
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+</script>
+
+<script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#gridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+
+        });
+</script>

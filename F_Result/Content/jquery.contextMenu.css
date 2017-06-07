@@ -55,6 +55,10 @@
   content: "\F129";
 }
 
+.context-menu-icon-select:before {
+  content: "\F00C";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;

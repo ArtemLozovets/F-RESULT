@@ -560,7 +560,6 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <Content Include="Scripts\jquery.contextMenu.min.js.map" />
-    <Content Include="Content\jquery.contextMenu.min.css.map" />
     <None Include="bundleconfig.json" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
@@ -586,7 +585,7 @@
     <Content Include="Views\ActualDebits\ADCreate.cshtml" />
     <Content Include="Views\ActualDebits\Delete.cshtml" />
     <Content Include="Views\ActualDebits\Details.cshtml" />
-    <Content Include="Views\ActualDebits\Edit.cshtml" />
+    <Content Include="Views\ActualDebits\ADEdit.cshtml" />
     <Content Include="Views\ActualDebits\ADShow.cshtml" />
     <Content Include="Views\Directum\ShowProjectsPartial.cshtml" />
   </ItemGroup>
