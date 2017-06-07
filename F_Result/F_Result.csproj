@@ -550,6 +550,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\messageClear.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -583,11 +584,12 @@
     <Content Include="Views\Directum\ShowOrganizations.cshtml" />
     <Content Include="Views\Directum\ShowUsers.cshtml" />
     <Content Include="Views\ActualDebits\ADCreate.cshtml" />
-    <Content Include="Views\ActualDebits\Delete.cshtml" />
+    <Content Include="Views\ActualDebits\ADDelete.cshtml" />
     <Content Include="Views\ActualDebits\Details.cshtml" />
     <Content Include="Views\ActualDebits\ADEdit.cshtml" />
-    <Content Include="Views\ActualDebits\ADShow.cshtml" />
+    <Content Include="Views\ActualDebits\_ADShow.cshtml" />
     <Content Include="Views\Directum\ShowProjectsPartial.cshtml" />
+    <Content Include="Views\ActualDebits\ADShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

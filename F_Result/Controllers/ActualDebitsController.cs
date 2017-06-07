@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using F_Result.Models;
 using Microsoft.AspNet.Identity;
+using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -19,7 +20,93 @@ namespace F_Result.Controllers
         // GET: ActualDebits
         public ActionResult ADShow()
         {
-            return View(db.ActualDebit.ToList());
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult LoadAD()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+
+                string _datetxt = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
+                string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _appoinment = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _docnumber = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+
+
+
+                var _ads = (from actualdebit in db.ActualDebit
+                            join prg in db.Projects on actualdebit.ProjectId equals prg.id
+                            join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
+                            where (actualdebit.Date == _date || _date == null)
+                                        && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
+                                        && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
+                                        && (actualdebit.DocNumber.Contains(_docnumber) || string.IsNullOrEmpty(_docnumber))
+                                        && (usr.LastName.Contains(_userfn)
+                                            || usr.FirstName.Contains(_userfn)
+                                            || usr.MiddleName.Contains(_userfn) 
+                                            || string.IsNullOrEmpty(_userfn))
+                            select new
+                         {
+                             ActualDebitId = actualdebit.ActualDebitId,
+                             Date = actualdebit.Date,
+                             Sum = actualdebit.Sum,
+                             ProjectId = actualdebit.ProjectId,
+                             Appointment = actualdebit.Appointment,
+                             DocNumber = actualdebit.DocNumber,
+                             UserId = actualdebit.UserId,
+                             UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
+                             ProjectName = prg.ShortName
+                         }).AsEnumerable().Select(x => new ActualDebit
+                            {
+                                ActualDebitId = x.ActualDebitId,
+                                Date = x.Date,
+                                Sum = x.Sum,
+                                ProjectId = x.ProjectId,
+                                ProjectName = x.ProjectName,
+                                Appointment = x.Appointment,
+                                DocNumber = x.DocNumber,
+                                UserId = x.UserId,
+                                UserFN = x.UserFN
+                            }).ToList();
+
+                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+
+                totalRecords = _ads.Count();
+
+                var data = _ads.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         // GET: ActualDebits/Details/5
@@ -131,7 +218,7 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
-        public ActionResult Delete(int? id)
+        public ActionResult ADDelete(int? id)
         {
             if (id == null)
             {
@@ -146,14 +233,33 @@ namespace F_Result.Controllers
         }
 
         // POST: ActualDebits/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("ADDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            ActualDebit actualDebit = db.ActualDebit.Find(id);
-            db.ActualDebit.Remove(actualDebit);
-            db.SaveChanges();
-            return RedirectToAction("ADShow");
+
+            try
+            {
+                ActualDebit actualDebit = db.ActualDebit.FirstOrDefault(x => x.ActualDebitId == id);
+                if (actualDebit == null)
+                {
+                    TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
+                    return RedirectToAction("ADShow");
+                }
+
+                db.ActualDebit.Remove(actualDebit);
+                db.SaveChanges();
+                TempData["MessageOK"] = "Информация удалена";
+                return RedirectToAction("ADShow");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return View("Error");
+            }
+
         }
 
         protected override void Dispose(bool disposing)

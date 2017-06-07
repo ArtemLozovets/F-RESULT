@@ -32,25 +32,24 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <p class="text-success"> @TempData["MessageOk"]</p>
-            <p class="text-danger"> @TempData["MessageError"]</p>
+        <div class="col-md-6" id="resultMessage" style="cursor:pointer">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-7" style="margin-top:10px;">
         @using (Html.BeginForm("ADCreate", "ActualDebits", FormMethod.Post, new { id = "ADForm" }))
         {
             @Html.AntiForgeryToken()
 
             <div class="form-horizontal">
-                <hr />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
                     @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         @Html.EditorFor(model => model.Date, new { htmlAttributes = new { type = "text", @class = "form-control", data_val_date = "Проверьте правильность ввода даты (ДД/ММ/ГГГГ)" } })
-                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger"})
+                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -99,7 +98,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Appointment, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.EditorFor(model => model.Appointment, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.TextAreaFor(model => model.Appointment, new { @class = "form-control", rows = "3", style = "resize:vertical;" })
                         @Html.ValidationMessageFor(model => model.Appointment, "", new { @class = "text-danger" })
                     </div>
                 </div>

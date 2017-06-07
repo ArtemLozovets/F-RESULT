@@ -1,101 +1,255 @@
-﻿@model IEnumerable<F_Result.Models.ActualDebit>
-
-@{
+﻿@{
     ViewBag.Title = "Фактические расходы";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<style>
+    #gridtable > thead > tr > th {
+        border-bottom: 0 !important;
+    }
+
+    .sb, .dff {
+        font-size: 10px;
+        margin: 0;
+        padding: 3px;
+    }
+
+    #search-row > th {
+        padding: 3px;
+    }
+</style>
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
 
 <div class="container">
-	 <div class="row">
-		<div class="col-lg-12">
-			<h1 class="page-header">
-				@ViewBag.Title
-				<small>Список фактических расходов</small>
-			</h1>
-			<ol class="breadcrumb">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Список фактических расходов</small>
+            </h1>
+            <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
                 <li>Показатели</li>
                 <li class="active">Фактические расходы</li>
-	        </ol>
-		</div>
-	</div>
+            </ol>
+        </div>
+    </div>
 
-	<div class="row">
-		<div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
-			<p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
-			<p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
-		</div>
-	</div>
+    <p class="pull-right">
+        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ADCreate")'><i class="fa fa-plus-circle"></i></a>
+        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
+        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
+    </p>
 
-<p>
-	 <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ADCreate")'><i class="fa fa-plus-circle"></i> Добавить...</a>
-</p>
-<table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Sum)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ProjectId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Appointment)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DocNumber)
-        </th>
-        <th style="width:128px; min-width:128px"></th>
-    </tr>
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер документа" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
+            </tr>
 
-	@if (Model.Count() == 0)
-            {
-                <tr>
-                    <td colspan="10">
-                        <p class="text-center text-danger" style="margin-top:12px;">Записи, соответствующие критериям поиска, не найдены<p>
-                    </td>
-                </tr>
+            <tr role="row">
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Проект</th>
+                <th>Назначение</th>
+                <th>Номер документа</th>
+                <th>Пользователь</th>
+            </tr>
+
+        </thead>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+        $.validator.methods.date = function (value, element) {
+            if (value) {
+                try {
+                    $.datepicker.parseDate('dd/MM/yy', value);
+                } catch (ex) {
+                    return false;
+                }
             }
+            return true;
+        };
+    </script>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Sum)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ProjectId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Appointment)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DocNumber)
-        </td>
-        <td style="text-align:center;">
-			 <a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.ActualDebitId})'><span class="glyphicon glyphicon-info-sign"></span></a>
-             <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("ADEdit", new {id=item.ActualDebitId})'><span class="glyphicon glyphicon-edit"></span></a>
-             <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new {id=item.ActualDebitId})'><span class="glyphicon glyphicon-trash"></span></a>
-        </td>
-    </tr>
+    <script type="text/javascript">
+        $(function () {
+
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    switch (key) {
+                        case 'details':
+                            window.location.href = "/ActualDebits/Details/" + $(this).data('objid');
+                            break;
+                        case 'edit':
+                            window.location.href = "/ActualDebits/ADEdit/" + $(this).data('objid');
+                            break;
+                        case 'delete':
+                            window.location.href = "/ActualDebits/ADDelete/" + $(this).data('objid');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "details": { name: "Подробно", icon: "details" },
+                    "edit": { name: "Редактировать", icon: "edit" },
+                    "delete": { name: "Удалить", icon: "delete" },
+                    "sep1": "---------",
+                    "quit": {
+                        name: "Закрыть", icon: function () {
+                            return 'context-menu-icon context-menu-icon-quit';
+                        }
+                    }
+                }
+            });
+
+            $('.context-menu-one').on('click', function (e) {
+                console.log('clicked', this);
+            })
+
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_-_END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/ActualDebits/LoadAD",
+                    "type": "POST",
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    {
+                        "data": "Date", "name": "Date", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
+                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
+
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-objid', data.ActualDebitId);
+                    $(row).attr('class', 'context-menu-one');
+                }
+            });
+
+
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#gridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+
+        });
+    </script>
+
 }
- </table>
- <a href="#" class="scrollup1">Наверх</a>
- </div>
-
- @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-            <script src="~/Scripts/toparrow.js"></script>
-            <script type="text/javascript">
-                $(function () {
-					
-				});
-			</script>
-}
-
-
