@@ -116,42 +116,6 @@
 
     <script type="text/javascript">
         $(function () {
-            $.contextMenu({
-                selector: '.context-menu-one',
-                callback: function (key, options) {
-                    var m = '';
-                    switch (key) {
-                        case 'details':
-                            m = "Пользователь: " + $(this).data('userid') + ' - Подробно';
-                            break;
-                        case 'edit':
-                            m = "Пользователь: " + $(this).data('userid') + ' - Редактирование';
-                            break;
-                        case 'delete':
-                            m = "Пользователь: " + $(this).data('userid') + ' - Удаление';
-                            break;
-                        default:
-                            return;
-                    }
-                    alert(m);
-                },
-                items: {
-                    "details": { name: "Подробно", icon: "details" },
-                    "edit": { name: "Редактировать", icon: "edit" },
-                    "delete": { name: "Удалить", icon: "delete" },
-                    "sep1": "---------",
-                    "quit": {
-                        name: "Закрыть", icon: function () {
-                            return 'context-menu-icon context-menu-icon-quit';
-                        }
-                    }
-                }
-            });
-
-            $('.context-menu-one').on('click', function (e) {
-                console.log('clicked', this);
-            })
-
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "processing": true,
@@ -164,7 +128,7 @@
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_-_END_ из _TOTAL_",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
                     "infoEmpty": "Записи отсутствуют",
                     "infoFiltered": "(Отфильтровано из _MAX_ записей)",
                     "search": "Поиск",
