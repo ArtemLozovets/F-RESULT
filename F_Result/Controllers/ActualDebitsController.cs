@@ -109,6 +109,7 @@ namespace F_Result.Controllers
             }
         }
 
+
         // GET: ActualDebits/Details/5
         public ActionResult Details(int? id)
         {
@@ -124,12 +125,15 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ADCreate()
         {
             return View();
         }
 
 
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
@@ -163,6 +167,8 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ADEdit(int? id)
         {
             if (id == null)
@@ -181,6 +187,8 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
@@ -218,6 +226,8 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ADDelete(int? id)
         {
             if (id == null)
@@ -232,6 +242,8 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, Accountant")]
         // POST: ActualDebits/Delete/5
         [HttpPost, ActionName("ADDelete")]
         [ValidateAntiForgeryToken]
