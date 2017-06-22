@@ -6,7 +6,7 @@
 }
 
 <style>
-    #basic-addon2:hover {
+    #prgbasic-addon2:hover, #orgbasic-addon2:hover {
         background-color: transparent;
     }
 </style>
@@ -77,21 +77,48 @@
                     <div class="col-md-8">
                         @Html.HiddenFor(model => model.ProjectId, new { id = "ProjectId" })
                         <div class="input-group">
-                            @Html.TextBox("prgSelect", @ViewData["ProjectName"], new
-                             {
-                                 @class = "form-control",
-                                 type = "text",
-                                 id = "prgSelect",
-                                 placeholder = "Щелкните для выбора",
-                                 aria_describedby = "basic-addon2",
-                                 data_url = "/Directum/ShowProjectsPartial",
-                                 style = "cursor:pointer;",
-                             })
-                            <span class="input-group-addon" id="basic-addon2" title="Очистить" style="cursor:pointer;">
+                            @Html.TextBox("prgSelect", ViewData["ProjectName"], new
+                        {
+                               @class = "form-control",
+                               type = "text",
+                               id = "prgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "prgbasic-addon2",
+                               data_url = "/Directum/ShowProjectsPartial",
+                               style = "cursor:pointer;"
+                        })
+                            <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
                         </div>
                         @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger", id = "ProjectValidator" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OrganizationId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.HiddenFor(model => model.OrganizationId, new { id = "OrganizationId" })
+                        <div class="input-group">
+                            @Html.TextBox("orgSelect", ViewData["OrganizationName"], new
+                        {
+
+                            @class = "form-control",
+                            type = "text",
+                            id = "orgSelect",
+                            @readonly = "readonly",
+                            placeholder = "Щелкните для выбора",
+                            aria_describedby = "orgbasic-addon2",
+                            data_url = "/Directum/ShowOrganizationsPartial",    
+                            style = "cursor:pointer;"
+
+                        })
+                            <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
+                                <i class="glyphicon glyphicon-refresh"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
                     </div>
                 </div>
 
@@ -184,9 +211,24 @@
                 });
             });
 
-            $('body').on('click', '#basic-addon2', function () {
+            $('body').on('click', '#orgSelect', function (e) {
+                e.preventDefault();
+                var _href = $(this).data('url');
+                $.get(_href, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modDialog').modal('show');
+                });
+            });
+
+
+            $('body').on('click', '#prgbasic-addon2', function () {
                 $("#ProjectId").val('');
                 $("#prgSelect").val('');
+            });
+
+            $('body').on('click', '#orgbasic-addon2', function () {
+                $("#OrganizationId").val('');
+                $("#orgSelect").val('');
             });
 
             $('#ADForm').submit(function (e) {
@@ -194,6 +236,11 @@
 
                 if ($("#ProjectId").val() == 0) {
                     $("#ProjectValidator").html("Необходимо выбрать проект");
+                    flag = true;
+                }
+
+                if ($("#OrganizationId").val() == 0) {
+                    $("#OrganizationValidator").html("Необходимо выбрать организацию");
                     flag = true;
                 }
 

@@ -103,7 +103,6 @@
                             $("#orgSelect").val(orgName);
                             $("#Appointment").focus();
                             $('#modDialog').modal('hide');
-                            alert(orgId);
                             break;
 
                         default:
@@ -124,8 +123,6 @@
                 $("#orgSelect").val(orgName);
                 $("#Appointment").focus();
                 $('#modDialog').modal('hide');
-                alert(orgId);
-
             });
 
 
@@ -196,7 +193,6 @@
     <script>
         $('body').on('click', '#orgfilterBtn', function () {
             $('#search-row').toggle(300);
-            alert('QQ');
         });
 
         $('body').on('click', '#orgfilterClear', function () {

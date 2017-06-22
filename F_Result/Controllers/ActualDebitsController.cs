@@ -46,17 +46,20 @@ namespace F_Result.Controllers
                 DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
                 string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _appoinment = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _docnumber = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _appoinment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _docnumber = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
 
 
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id
+                            join org in db.Organizations on actualdebit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
                             where (actualdebit.Date == _date || _date == null)
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
+                                        && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (actualdebit.DocNumber.Contains(_docnumber) || string.IsNullOrEmpty(_docnumber))
                                         && (usr.LastName.Contains(_userfn)
@@ -69,11 +72,13 @@ namespace F_Result.Controllers
                              Date = actualdebit.Date,
                              Sum = actualdebit.Sum,
                              ProjectId = actualdebit.ProjectId,
+                             OrgId = org.id,
                              Appointment = actualdebit.Appointment,
                              DocNumber = actualdebit.DocNumber,
                              UserId = actualdebit.UserId,
                              UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
-                             ProjectName = prg.ShortName
+                             ProjectName = prg.ShortName,
+                             OrgName = org.Title
                          }).AsEnumerable().Select(x => new ActualDebit
                             {
                                 ActualDebitId = x.ActualDebitId,
@@ -81,6 +86,8 @@ namespace F_Result.Controllers
                                 Sum = x.Sum,
                                 ProjectId = x.ProjectId,
                                 ProjectName = x.ProjectName,
+                                OrganizationId = x.OrgId,
+                                OrganizationName = x.OrgName,
                                 Appointment = x.Appointment,
                                 DocNumber = x.DocNumber,
                                 UserId = x.UserId,
@@ -136,7 +143,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
+        public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
         {
             if (ModelState.IsValid)
             {
@@ -184,6 +191,9 @@ namespace F_Result.Controllers
             string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             ViewData["ProjectName"] = _prgName;
 
+            string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            ViewData["OrganizationName"] = _orgName;
+
             return View(actualDebit);
         }
 
@@ -191,7 +201,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,Appointment,DocNumber")] ActualDebit actualDebit)
+        public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber")] ActualDebit actualDebit)
         {
 
             if (ModelState.IsValid)
