@@ -590,6 +590,7 @@
     <Content Include="Views\ActualDebits\_ADShow.cshtml" />
     <Content Include="Views\Directum\ShowProjectsPartial.cshtml" />
     <Content Include="Views\ActualDebits\ADShow.cshtml" />
+    <Content Include="Views\Directum\ShowOrganizationsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

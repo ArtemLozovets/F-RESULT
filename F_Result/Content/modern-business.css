@@ -184,3 +184,18 @@ footer {
         overflow: visible;
         display: block;
     }
+
+ /* Блок стилей для фильтра таблицы */
+    #gridtable > thead > tr > th {
+        border-bottom: 0 !important;
+    }
+
+    .sb, .dff {
+        font-size: 10px;
+        margin: 0;
+        padding: 3px;
+    }
+
+    #search-row > th {
+        padding: 3px;
+    }

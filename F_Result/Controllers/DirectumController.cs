@@ -206,6 +206,11 @@ namespace F_Result.Controllers
             return View();
         }
 
+        public ActionResult ShowOrganizationsPartial()
+        {
+            return PartialView();
+        }
+
         [HttpPost]
         public ActionResult LoadOrganizations()
         {

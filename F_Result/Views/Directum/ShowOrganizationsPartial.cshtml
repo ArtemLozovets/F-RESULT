@@ -1,0 +1,211 @@
+﻿<div class="modal-content ui-front">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <h4>Проекты</h4>
+    </div>
+
+    <div class="modal-body">
+        <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">
+                        @ViewBag.Title
+                        <small>Список организаций</small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                        <li>Справочники</li>
+                        <li class="active">Организации</li>
+                    </ol>
+                </div>
+            </div>
+
+            <p class="pull-right">
+                <a class="btn btn-default" style="margin:2px 2px;" id="orgfilterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
+                <a class="btn btn-default" style="margin:2px 2px;" id="orgfilterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
+            </p>
+            <div class="row">
+                <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+                    <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+                    <p class="text-danger" id="MessageError"> @TempData["MessageError"]</p>
+                </div>
+            </div>
+
+            <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="orggridtable" style="width:100%">
+                <thead>
+                    <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ИНН" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ЕДРПОУ" /></th>
+                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
+                    </tr>
+
+                    <tr role="row">
+                        <th>Название</th>
+                        <th>Код</th>
+                        <th>ИНН</th>
+                        <th>ЕДРПОУ</th>
+                        <th title="Состояние">СТ</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <a href="#" class="scrollup1">Наверх</a>
+        </div>
+    </div>
+</div>
+
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            //Блок для работы с контекстным меню
+            $.contextMenu({
+                selector: '.org-context-menu',
+                callback: function (key, options) {
+                    var m = '';
+                    switch (key) {
+                        case 'select':
+                            var orgId = $(this).data('orgid');
+                            var orgName = $(this).data('orgname');
+
+                            $("#OrganizationId").val(orgId);
+                            $("#orgSelect").val(orgName);
+                            $("#Appointment").focus();
+                            $('#modDialog').modal('hide');
+                            alert(orgId);
+                            break;
+
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "select": { name: "Выбрать", icon: "select" },
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#orggridtable tbody').on('dblclick', 'tr', function () {
+                var orgId = $(this).data('orgid');
+                var orgName = $(this).data('orgname');
+
+                $("#OrganizationId").val(orgId);
+                $("#orgSelect").val(orgName);
+                $("#Appointment").focus();
+                $('#modDialog').modal('hide');
+                alert(orgId);
+
+            });
+
+
+            $('#loadingImg').hide();
+            var table = $('#orggridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Directum/LoadOrganizations",
+                    "type": "POST",
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    { "data": "Title", "name": "Title", "autoWidth": true },
+                    { "data": "Code", "name": "Code", "autoWidth": true },
+                    { "data": "INN", "name": "INN", "autoWidth": true },
+                    { "data": "EDRPOU", "name": "EDRPOU", "autoWidth": true },
+                    { "data": "State", "name": "State", "autoWidth": true }
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-orgid', data.id);
+                    $(row).attr('data-orgname', data.Title);
+                    $(row).attr('class', 'org-context-menu');
+                }
+            });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#orgfilterBtn', function () {
+            $('#search-row').toggle(300);
+            alert('QQ');
+        });
+
+        $('body').on('click', '#orgfilterClear', function () {
+            var table = $('#orggridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+
+        });
+    </script>
