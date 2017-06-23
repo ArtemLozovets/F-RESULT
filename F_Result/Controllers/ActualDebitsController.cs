@@ -115,8 +115,8 @@ namespace F_Result.Controllers
         }
 
 
-        // GET: ActualDebits/Details/5
-        public ActionResult Details(int? id)
+        // GET: PlanCredits/Details/5
+        public ActionResult ADDetails(int? id)
         {
             if (id == null)
             {
@@ -127,6 +127,13 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            actualDebit.ProjectName = _prgName;
+
+            string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            actualDebit.OrganizationName = _orgName;
+
             return View(actualDebit);
         }
 
@@ -247,6 +254,13 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            actualDebit.ProjectName = _prgName;
+
+            string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            actualDebit.OrganizationName = _orgName;
+
             return View(actualDebit);
         }
 

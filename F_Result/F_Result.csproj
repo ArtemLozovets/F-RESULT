@@ -587,15 +587,14 @@
     <Content Include="Views\Directum\ShowUsers.cshtml" />
     <Content Include="Views\ActualDebits\ADCreate.cshtml" />
     <Content Include="Views\ActualDebits\ADDelete.cshtml" />
-    <Content Include="Views\ActualDebits\Details.cshtml" />
+    <Content Include="Views\ActualDebits\ADDetails.cshtml" />
     <Content Include="Views\ActualDebits\ADEdit.cshtml" />
-    <Content Include="Views\ActualDebits\_ADShow.cshtml" />
     <Content Include="Views\Directum\ShowProjectsPartial.cshtml" />
     <Content Include="Views\ActualDebits\ADShow.cshtml" />
     <Content Include="Views\Directum\ShowOrganizationsPartial.cshtml" />
     <Content Include="Views\PlanCredits\PCCreate.cshtml" />
     <Content Include="Views\PlanCredits\PCDelete.cshtml" />
-    <Content Include="Views\PlanCredits\Details.cshtml" />
+    <Content Include="Views\PlanCredits\PCDetails.cshtml" />
     <Content Include="Views\PlanCredits\PCEdit.cshtml" />
     <Content Include="Views\PlanCredits\PCShow.cshtml" />
   </ItemGroup>

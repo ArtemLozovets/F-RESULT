@@ -112,8 +112,11 @@
                 selector: '.context-menu-one',
                 callback: function (key, options) {
                     switch (key) {
+                        case 'add':
+                            window.location.href = "/PlanCredits/PCCreate/";
+                            break;
                         case 'details':
-                            window.location.href = "/PlanCredits/Details/" + $(this).data('objid');
+                            window.location.href = "/PlanCredits/PCDetails/" + $(this).data('objid');
                             break;
                         case 'edit':
                             window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
@@ -126,6 +129,7 @@
                     }
                 },
                 items: {
+                    "add": { name: "Создать", icon: "add" },
                     "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },

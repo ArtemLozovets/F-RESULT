@@ -114,8 +114,11 @@
                 selector: '.context-menu-one',
                 callback: function (key, options) {
                     switch (key) {
+                        case 'add':
+                            window.location.href = "/ActualDebits/ADCreate/";
+                            break;
                         case 'details':
-                            window.location.href = "/ActualDebits/Details/" + $(this).data('objid');
+                            window.location.href = "/ActualDebits/ADDetails/" + $(this).data('objid');
                             break;
                         case 'edit':
                             window.location.href = "/ActualDebits/ADEdit/" + $(this).data('objid');
@@ -128,6 +131,7 @@
                     }
                 },
                 items: {
+                    "add": { name: "Создать", icon: "add" },
                     "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },

@@ -70,9 +70,9 @@ namespace F_Result.Controllers
                                 UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
                                 ProjectName = prg.ShortName,
                                 OrgName = org.Title
-                            }).AsEnumerable().Select(x => new ActualDebit
+                            }).AsEnumerable().Select(x => new PlanCredit
                             {
-                                ActualDebitId = x.PlanCreditId,
+                                PlanCreditId = x.PlanCreditId,
                                 Date = x.Date,
                                 Sum = x.Sum,
                                 ProjectId = x.ProjectId,
@@ -107,7 +107,7 @@ namespace F_Result.Controllers
 
 
         // GET: PlanCredits/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult PCDetails(int? id)
         {
             if (id == null)
             {
@@ -118,6 +118,13 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            planCredit.ProjectName = _prgName;
+
+            string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            planCredit.OrganizationName = _orgName;
+
             return View(planCredit);
         }
 
@@ -161,7 +168,6 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
-        // GET: PlanCredits/Edit/5
         public ActionResult PCEdit(int? id)
         {
             if (id == null)
@@ -173,26 +179,54 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            ViewData["ProjectName"] = _prgName;
+
+            string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            ViewData["OrganizationName"] = _orgName;
+
             return View(planCredit);
         }
 
-        // POST: PlanCredits/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId")] PlanCredit planCredit)
+        public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment")] PlanCredit planCredit)
         {
+
             if (ModelState.IsValid)
             {
-                db.Entry(planCredit).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("PCShow");
+                try
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        planCredit.UserId = user;
+                    }
+
+                    db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+                    db.Entry(planCredit).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация обновлена";
+                    return RedirectToAction("PCShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
             }
+
+            TempData["MessageError"] = "Ошибка валидации модели";
+            string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            ViewData["ProjectName"] = _prgName;
             return View(planCredit);
         }
 
-        // GET: PlanCredits/Delete/5
         public ActionResult PCDelete(int? id)
         {
             if (id == null)
@@ -204,18 +238,46 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            planCredit.ProjectName = _prgName;
+
+            string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            planCredit.OrganizationName = _orgName;
+
             return View(planCredit);
         }
 
-        // POST: PlanCredits/Delete/5
+
+        [Authorize(Roles = "Administrator, Accountant")]
+        // POST: ActualDebits/Delete/5
         [HttpPost, ActionName("PCDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            PlanCredit planCredit = db.PlanCredits.Find(id);
-            db.PlanCredits.Remove(planCredit);
-            db.SaveChanges();
-            return RedirectToAction("PCShow");
+
+            try
+            {
+                PlanCredit planCredit = db.PlanCredits.FirstOrDefault(x => x.PlanCreditId == id);
+                if (planCredit == null)
+                {
+                    TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
+                    return RedirectToAction("PCShow");
+                }
+
+                db.PlanCredits.Remove(planCredit);
+                db.SaveChanges();
+                TempData["MessageOK"] = "Информация удалена";
+                return RedirectToAction("PCShow");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return View("Error");
+            }
+
         }
 
         protected override void Dispose(bool disposing)
