@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "Доходы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>План доходов</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Показатели</li>
+                <li class="active">План доходов</li>
+            </ol>
+        </div>
+    </div>
+
+    <p class="pull-right">
+        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("PCCreate")'><i class="fa fa-plus-circle"></i></a>
+        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
+        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
+    </p>
+
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
+            </tr>
+
+            <tr role="row">
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Проект</th>
+                <th>Организация</th>
+                <th>Назначение</th>
+                <th>Пользователь</th>
+            </tr>
+
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    @*Блок скриптов для работы с DateTimePicker*@
+    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript">
+
+        $.datetimepicker.setLocale('ru');
+
+        // <![CDATA[
+        jQuery(function () {
+            jQuery('.dff').datetimepicker({
+                format: 'd/m/Y',
+                formatDate: 'd/m/Y',
+                timepicker: false
+            });
+        });
+        // ]]>
+
+        $.validator.methods.date = function (value, element) {
+            if (value) {
+                try {
+                    $.datepicker.parseDate('dd/MM/yy', value);
+                } catch (ex) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    switch (key) {
+                        case 'details':
+                            window.location.href = "/PlanCredits/Details/" + $(this).data('objid');
+                            break;
+                        case 'edit':
+                            window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
+                            break;
+                        case 'delete':
+                            window.location.href = "/PlanCredits/PCDelete/" + $(this).data('objid');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "details": { name: "Подробно", icon: "details" },
+                    "edit": { name: "Редактировать", icon: "edit" },
+                    "delete": { name: "Удалить", icon: "delete" },
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
+            });
+
+
+
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/PlanCredits/LoadPC",
+                    "type": "POST",
+                    "datatype": "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    {
+                        "data": "Date", "name": "Date", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
+
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-objid', data.PlanCreditId);
+                    $(row).attr('class', 'context-menu-one');
+                }
+            });
+
+
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#gridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+
+        });
+    </script>
+
+}
+
+

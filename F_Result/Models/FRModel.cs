@@ -74,6 +74,8 @@ namespace F_Result.Models
                  .HasPrecision(10, 2);
             modelBuilder.Entity<ActualDebit>().Property(p => p.Sum)
                  .HasPrecision(10, 2);
+            modelBuilder.Entity<PlanCredit>().Property(p => p.Sum)
+                .HasPrecision(10, 2);
 
             modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
             modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers");
@@ -85,9 +87,15 @@ namespace F_Result.Models
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.ActualDebit)
             .HasForeignKey(m => m.UserId);
+
+            modelBuilder.Entity<PlanCredit>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.PlanCredit)
+            .HasForeignKey(m => m.UserId);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
 
+        public System.Data.Entity.DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
     }
 }

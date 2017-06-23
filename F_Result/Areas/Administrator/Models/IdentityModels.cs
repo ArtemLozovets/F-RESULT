@@ -50,6 +50,7 @@ namespace F_Result.Models
         public string UserRoleName { get; set; }
 
        public virtual ICollection<ActualDebit> ActualDebit { get; set; }
+       public virtual ICollection<PlanCredit> PlanCredit { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
