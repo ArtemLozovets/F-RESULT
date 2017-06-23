@@ -45,15 +45,23 @@
                     <li id="findicators" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Показатели<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-usd" style="margin-right:10px;"></i>&nbsp;Реестр оплат</a>
+                            <li style="text-align:center; background-color:#C9D2DC;  margin:0 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
+                                ФАКТ
                             </li>
                             <li>
-                                <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-hand-down" style="margin-right:10px;"></i>&nbsp;Реестр платежей</a>
+                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-up" style="margin-right:10px;"></i>&nbsp;Реестр оплат</a>
                             </li>
-                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Реестр платежей</a>
+                            </li>
+                            <li style="text-align:center; background-color:#C9D2DC; margin:2px 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
+                                ПЛАН
+                            </li>
                             <li>
                                 <a href="@Url.Action("PCShow", "PlanCredits", new {Area = "" })"><i class="glyphicon glyphicon-hand-up" style="margin-right:10px;"></i>&nbsp;План доходов</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("PDShow", "PlanDebits", new {Area = "" })"><i class="glyphicon glyphicon-hand-down" style="margin-right:10px;"></i>&nbsp;План расходов</a>
                             </li>
                         </ul>
                     </li>

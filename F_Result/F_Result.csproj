@@ -180,6 +180,7 @@
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
     <Compile Include="Controllers\DirectumController.cs" />
     <Compile Include="Controllers\PlanCreditsController.cs" />
+    <Compile Include="Controllers\PlanDebitsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -193,6 +194,7 @@
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
     <Compile Include="Models\PlanCredit.cs" />
+    <Compile Include="Models\PlanDebit.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\DUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -597,6 +599,11 @@
     <Content Include="Views\PlanCredits\PCDetails.cshtml" />
     <Content Include="Views\PlanCredits\PCEdit.cshtml" />
     <Content Include="Views\PlanCredits\PCShow.cshtml" />
+    <Content Include="Views\PlanDebits\PDCreate.cshtml" />
+    <Content Include="Views\PlanDebits\PDDelete.cshtml" />
+    <Content Include="Views\PlanDebits\PDDetails.cshtml" />
+    <Content Include="Views\PlanDebits\PDEdit.cshtml" />
+    <Content Include="Views\PlanDebits\PDShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,8 +1,7 @@
-﻿@model F_Result.Models.ActualDebit
+﻿@model F_Result.Models.PlanDebit
 
 @{
     ViewBag.Title = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container">
@@ -20,9 +19,17 @@
 	</div>
 
 <div>
-    <h4>ActualDebit</h4>
+    <h4>PlanDebit</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ApplicationUser.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApplicationUser.Email)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Date)
         </dt>
@@ -48,6 +55,14 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.OrganizationId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrganizationId)
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.Appointment)
         </dt>
 
@@ -55,18 +70,10 @@
             @Html.DisplayFor(model => model.Appointment)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.DocNumber)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.DocNumber)
-        </dd>
-
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ActualDebitId }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.PlanDebitId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
 </div>
