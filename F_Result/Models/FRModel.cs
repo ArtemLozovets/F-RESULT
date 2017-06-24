@@ -68,16 +68,12 @@ namespace F_Result.Models
                 .HasKey(t => t.id)
                 .ToTable("Organizations");
 
-            modelBuilder.Entity<Payments>().Property(p => p.Summ)
-                 .HasPrecision(10, 2);
-            modelBuilder.Entity<Payments>().Property(p => p.Payment)
-                 .HasPrecision(10, 2);
             modelBuilder.Entity<ActualDebit>().Property(p => p.Sum)
-                 .HasPrecision(10, 2);
+                 .HasPrecision(12, 2);
             modelBuilder.Entity<PlanCredit>().Property(p => p.Sum)
-                .HasPrecision(10, 2);
+                .HasPrecision(12, 2);
             modelBuilder.Entity<PlanDebit>().Property(p => p.Sum)
-                .HasPrecision(10, 2);
+                .HasPrecision(12, 2);
 
             modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
             modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers");

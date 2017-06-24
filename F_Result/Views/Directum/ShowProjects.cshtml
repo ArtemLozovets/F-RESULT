@@ -207,9 +207,14 @@
                             var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
-                    }
-                ]
-            });
+                    },
+                    
+                    { "data": "id", "name": "id", "autoWidth": false }
+
+                ],
+                "columnDefs": [{ "visible": false, "targets": [9] }],
+                "order": [[9, "desc"]]
+                });
 
 
 

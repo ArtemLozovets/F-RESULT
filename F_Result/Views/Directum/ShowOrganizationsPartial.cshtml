@@ -100,8 +100,7 @@
                             var orgName = $(this).data('orgname');
 
                             $("#OrganizationId").val(orgId);
-                            $("#orgSelect").val(orgName);
-                            $("#Appointment").focus();
+                            $("#orgSelect").val(orgName).focus();
                             $('#modDialog').modal('hide');
                             break;
 
@@ -120,8 +119,7 @@
                 var orgName = $(this).data('orgname');
 
                 $("#OrganizationId").val(orgId);
-                $("#orgSelect").val(orgName);
-                $("#Appointment").focus();
+                $("#orgSelect").val(orgName).focus();
                 $('#modDialog').modal('hide');
             });
 
@@ -167,8 +165,11 @@
                     { "data": "Code", "name": "Code", "autoWidth": true },
                     { "data": "INN", "name": "INN", "autoWidth": true },
                     { "data": "EDRPOU", "name": "EDRPOU", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true }
+                    { "data": "State", "name": "State", "autoWidth": true },
+                    { "data": "id", "name": "id", "autoWidth": false }
                 ],
+                "columnDefs": [{ "visible": false, "targets": [5] }],
+                "order": [[5, "desc"]],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-orgid', data.id);
                     $(row).attr('data-orgname', data.Title);

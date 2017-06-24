@@ -90,6 +90,10 @@ namespace F_Result.Controllers
                 {
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
+                else
+                {
+                    _ads = _ads.OrderByDescending(x => x.Date).ToList();
+                }
 
                 totalRecords = _ads.Count();
 
@@ -131,7 +135,10 @@ namespace F_Result.Controllers
         // GET: PlanCredits/Create
         public ActionResult PCCreate()
         {
-            return View();
+
+            PlanCredit _model = new PlanCredit();
+            _model.Date = DateTime.Today;
+            return View(_model);
         }
 
         // POST: PlanCredits/Create

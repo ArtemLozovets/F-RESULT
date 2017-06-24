@@ -94,8 +94,7 @@
                         var prgName = $(this).data('prgname');
 
                         $("#ProjectId").val(prgId);
-                        $("#prgSelect").val(prgName);
-                        $("#Appointment").focus();
+                        $("#prgSelect").val(prgName).focus();
                         $('#modDialog').modal('hide');
                         break;
 
@@ -114,8 +113,7 @@
             var prgName = $(this).data('prgname');
 
             $("#ProjectId").val(prgId);
-            $("#prgSelect").val(prgName);
-            $("#Appointment").focus();
+            $("#prgSelect").val(prgName).focus();
             $('#modDialog').modal('hide');
 
         });
@@ -214,8 +212,12 @@
                         var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                         return _d + "/" + _m + "/" + dt.getFullYear();
                     }
-                }
+                },
+
+                { "data": "id", "name": "id", "autoWidth": false }
             ],
+            "columnDefs": [{ "visible": false, "targets": [9] }],
+            "order": [[9, "desc"]],
             "createdRow": function (row, data, rowIndex) {
                 $(row).attr('data-prgid', data.id);
                 $(row).attr('data-prgname', data.ShortName);

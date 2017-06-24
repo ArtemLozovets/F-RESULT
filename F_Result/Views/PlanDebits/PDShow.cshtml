@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Пользователи";
+    ViewBag.Title = "Расходы";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -19,17 +19,18 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 @ViewBag.Title
-                <small>Список пользователей</small>
+                <small>План расходов</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
-                <li>Справочники</li>
-                <li class="active">Пользователи</li>
+                <li>Показатели</li>
+                <li class="active">План расходов</li>
             </ol>
         </div>
     </div>
 
     <p class="pull-right">
+        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("PDCreate")'><i class="fa fa-plus-circle"></i></a>
         <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
         <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
     </p>
@@ -40,27 +41,33 @@
             <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
-
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Полное имя" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Имя" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
+                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
             </tr>
 
             <tr role="row">
-                <th>Полное имя</th>
-                <th>Имя</th>
-                <th>Код</th>
-                <th title="Состояние">СТ</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Проект</th>
+                <th>Организация</th>
+                <th>Назначение</th>
+                <th>Пользователь</th>
             </tr>
+
         </thead>
+        <tbody></tbody>
     </table>
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -100,6 +107,42 @@
 
     <script type="text/javascript">
         $(function () {
+
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    switch (key) {
+                        case 'add':
+                            window.location.href = "/PlanDebits/PDCreate/";
+                            break;
+                        case 'details':
+                            window.location.href = "/PlanDebits/PDDetails/" + $(this).data('objid');
+                            break;
+                        case 'edit':
+                            window.location.href = "/PlanDebits/PDEdit/" + $(this).data('objid');
+                            break;
+                        case 'delete':
+                            window.location.href = "/PlanDebits/PDDelete/" + $(this).data('objid');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "add": { name: "Создать", icon: "add" },
+                    "details": { name: "Подробно", icon: "details" },
+                    "edit": { name: "Редактировать", icon: "edit" },
+                    "delete": { name: "Удалить", icon: "delete" },
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                window.location.href = "/PlanDebits/PDEdit/" + $(this).data('objid');
+            });
+
+
+
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "processing": true,
@@ -124,7 +167,7 @@
                     }
                 },
                 "ajax": {
-                    "url": "/Directum/LoadDUsers",
+                    "url": "/PlanDebits/LoadPD",
                     "type": "POST",
                     "datatype": "json",
                     dataSrc: function (d) {
@@ -136,20 +179,32 @@
                         return d.data;
                     }
                 },
+                "order": [[0, "desc"]],
                 "columns": [
-                    { "data": "FullName", "name": "FullName", "autoWidth": true },
-                    { "data": "Name", "name": "Name", "autoWidth": true },
-                    { "data": "Code", "name": "Code", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true },
-                    { "data": "id", "name": "id", "autoWidth": false }
+                    {
+                        "data": "Date", "name": "Date", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
+
                 ],
-                "columnDefs": [{ "visible": false, "targets": [4] }],
-                "order": [[4, "desc"]],
                 "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-userid', data.id);
+                    $(row).attr('data-objid', data.PlanDebitId);
                     $(row).attr('class', 'context-menu-one');
                 }
-
             });
 
 
@@ -185,3 +240,5 @@
     </script>
 
 }
+
+

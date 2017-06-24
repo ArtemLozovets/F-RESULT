@@ -188,6 +188,10 @@
     <Compile Include="Migrations\201706061834352_InitialMigration.Designer.cs">
       <DependentUpon>201706061834352_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706241550073_prec.cs" />
+    <Compile Include="Migrations\201706241550073_prec.Designer.cs">
+      <DependentUpon>201706241550073_prec.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\FRModel.cs" />
@@ -618,6 +622,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201706061834352_InitialMigration.resx">
       <DependentUpon>201706061834352_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706241550073_prec.resx">
+      <DependentUpon>201706241550073_prec.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

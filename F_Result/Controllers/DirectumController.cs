@@ -79,6 +79,10 @@ namespace F_Result.Controllers
                 {
                     _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
+                else
+                {
+                    _payments = _payments.OrderByDescending(x=>x.PaymentDate).ToList();
+                }
 
                 totalRecords = _payments.Count();
 
@@ -184,6 +188,10 @@ namespace F_Result.Controllers
                 {
                     _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir);
                 }
+                else
+                {
+                    _projects = _projects.OrderByDescending(x => x.id).ToList();
+                }
 
                 totalRecords = _projects.Count();
 
@@ -247,6 +255,11 @@ namespace F_Result.Controllers
                 {
                     _organizations = _organizations.OrderBy(sortColumn + " " + sortColumnDir);
                 }
+                else
+                {
+                    _organizations = _organizations.OrderByDescending(x=>x.id);
+                }
+
 
                 totalRecords = _organizations.Count();
 
@@ -300,6 +313,10 @@ namespace F_Result.Controllers
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
                     _dusers = _dusers.OrderBy(sortColumn + " " + sortColumnDir);
+                }
+                else
+                {
+                    _dusers = _dusers.OrderByDescending(x=>x.id);
                 }
 
                 totalRecords = _dusers.Count();

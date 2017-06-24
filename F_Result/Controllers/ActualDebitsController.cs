@@ -98,6 +98,10 @@ namespace F_Result.Controllers
                 {
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
+                else
+                {
+                    _ads = _ads.OrderByDescending(x => x.Date).ToList();
+                }
 
                 totalRecords = _ads.Count();
 
@@ -141,7 +145,9 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ADCreate()
         {
-            return View();
+            ActualDebit _model = new ActualDebit();
+            _model.Date = DateTime.Today;
+            return View(_model);
         }
 
 
