@@ -181,7 +181,7 @@
                         return d.data;
                     }
                 },
-                "order": [[ 0, "desc" ]],
+                "order": [[0, "desc"]],
                 "columns": [
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
@@ -196,7 +196,7 @@
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class" : "text-right" },
                     { "data": "ProjectName", "name": "ProjectName", "autoWidth": true },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true },

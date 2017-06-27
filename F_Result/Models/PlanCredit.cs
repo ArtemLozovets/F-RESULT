@@ -18,6 +18,7 @@ namespace F_Result.Models
         [Required(ErrorMessage = "Необходимо указать сумму")]
         [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Сумма")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal Sum { get; set; }
 
         [Required(ErrorMessage = "Необходимо указать проект")]

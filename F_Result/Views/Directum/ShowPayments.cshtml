@@ -170,10 +170,10 @@
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    { "data": "Summ", "name": "Summ", "autoWidth": true },
+                    { "data": "Summ", "name": "Summ", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     { "data": "AgrType", "name": "AgrType", "autoWidth": true },
                     { "data": "Manager", "name": "Manager", "autoWidth": true },
-                    { "data": "Payment", "name": "Payment", "autoWidth": true },
+                    { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     {
                         "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
                         "render": function (value) {
