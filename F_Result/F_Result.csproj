@@ -175,6 +175,8 @@
     <Compile Include="Areas\Administrator\Controllers\UsersManagementController.cs" />
     <Compile Include="Areas\Administrator\Models\IdentityModels.cs" />
     <Compile Include="Areas\Administrator\Models\UsersManagementViewModel.cs" />
+    <Compile Include="Controllers\AccountsBalancesController.cs" />
+    <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\ActualDebitsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
@@ -192,6 +194,8 @@
     <Compile Include="Migrations\201706241550073_prec.Designer.cs">
       <DependentUpon>201706241550073_prec.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\FRModel.cs" />
@@ -608,6 +612,16 @@
     <Content Include="Views\PlanDebits\PDDetails.cshtml" />
     <Content Include="Views\PlanDebits\PDEdit.cshtml" />
     <Content Include="Views\PlanDebits\PDShow.cshtml" />
+    <Content Include="Views\Accounts\Create.cshtml" />
+    <Content Include="Views\Accounts\Delete.cshtml" />
+    <Content Include="Views\Accounts\Details.cshtml" />
+    <Content Include="Views\Accounts\Edit.cshtml" />
+    <Content Include="Views\Accounts\Index.cshtml" />
+    <Content Include="Views\AccountsBalances\Create.cshtml" />
+    <Content Include="Views\AccountsBalances\Delete.cshtml" />
+    <Content Include="Views\AccountsBalances\Details.cshtml" />
+    <Content Include="Views\AccountsBalances\Edit.cshtml" />
+    <Content Include="Views\AccountsBalances\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -54,6 +54,9 @@
                             <li>
                                 <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Реестр платежей</a>
                             </li>
+                            <li>
+                                <a href="@Url.Action("Index", "AccountsBalances", new {Area = "" })"><i class="glyphicon glyphicon-piggy-bank" style="margin-right:10px;"></i>&nbsp;Остаток</a>
+                            </li>
                             <li style="text-align:center; background-color:#C9D2DC; margin:2px 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
                                 ПЛАН
                             </li>
@@ -74,6 +77,9 @@
                             </li>
                             <li id="org_li">
                                 <a href="@Url.Action("ShowOrganizations", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-barcode" style="margin-right:10px;"></i>&nbsp;Организации</a>
+                            </li>
+                            <li id="account_li">
+                                <a href="@Url.Action("Index", "Accounts", new {Area = "" })"><i class="glyphicon glyphicon-list-alt" style="margin-right:10px;"></i>&nbsp;Счета</a>
                             </li>
                             <li id="usr_li">
                                 <a href="@Url.Action("ShowUsers", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>

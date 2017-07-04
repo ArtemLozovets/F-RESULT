@@ -1,13 +1,8 @@
 namespace F_Result.Models
 {
-    using System;
     using System.Data.Entity;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using System.Data.Entity.ModelConfiguration;
     using System.Data.Entity.Migrations;
     using Microsoft.AspNet.Identity.EntityFramework;
-    using System.ComponentModel.DataAnnotations;
 
     public sealed class Configuration : DbMigrationsConfiguration<FRModel>
     {
@@ -95,10 +90,19 @@ namespace F_Result.Models
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.PlanDebit)
             .HasForeignKey(m => m.UserId);
+
+            modelBuilder.Entity<Account>()
+                .HasMany(e => e.AccountsBalance)
+                .WithRequired(e => e.Account)
+                .HasForeignKey(e => e.AccountId)
+                .WillCascadeOnDelete(false);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.Account> Accounts { get; set; }
+
+        public System.Data.Entity.DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
     }
 }
