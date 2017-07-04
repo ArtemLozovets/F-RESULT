@@ -31,7 +31,6 @@ namespace F_Result.Models
         [Display(Name = "Примечание")]
         public string Note { get; set; }
         
-        [Required]
         public string UserId { get; set; }
   
         //------------------------------------------------------

@@ -18,7 +18,7 @@ namespace F_Result.Models
         [Required(ErrorMessage = "Необходимо указать сумму")]
         [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Сумма")]
-        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
         public decimal Sum { get; set; }
 
         [Required(ErrorMessage = "Необходимо указать проект")]
@@ -37,7 +37,6 @@ namespace F_Result.Models
         [Display(Name = "Номер документа")]
         public string DocNumber { get; set; }
 
-        [Required]
         public string UserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
