@@ -37,6 +37,7 @@ namespace F_Result.Models
         [Display(Name = "Номер документа")]
         public string DocNumber { get; set; }
 
+        [Required]
         public string UserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 

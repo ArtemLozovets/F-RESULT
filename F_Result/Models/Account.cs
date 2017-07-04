@@ -28,9 +28,14 @@ namespace F_Result.Models
         public bool Status { get; set; }
 
         [StringLength(160, ErrorMessage = "Примечание должно содержать не более 160 символов")]
-        [Display(Name = "Прмечание")]
+        [Display(Name = "Примечание")]
         public string Note { get; set; }
-
+        
+        [Required]
+        public string UserId { get; set; }
+  
+        //------------------------------------------------------
+        public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
     }
 }

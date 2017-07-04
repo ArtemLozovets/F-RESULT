@@ -33,6 +33,7 @@ namespace F_Result.Models
         [Display(Name = "Назначение")]
         public string Appointment { get; set; }
 
+        [Required]
         public string UserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 

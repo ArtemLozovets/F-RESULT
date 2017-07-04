@@ -52,6 +52,8 @@ namespace F_Result.Models
        public virtual ICollection<ActualDebit> ActualDebit { get; set; }
        public virtual ICollection<PlanCredit> PlanCredit { get; set; }
        public virtual ICollection<PlanDebit> PlanDebit { get; set; }
+       public virtual ICollection<Account> Account { get; set; }
+       public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {

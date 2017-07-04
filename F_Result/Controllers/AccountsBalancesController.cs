@@ -21,8 +21,13 @@ namespace F_Result.Controllers
             return View(accountsBalances.ToList());
         }
 
+        public ActionResult ABSHow()
+        {
+            return View();
+        }
+
         // GET: AccountsBalances/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult ABDetails(int? id)
         {
             if (id == null)
             {
@@ -37,7 +42,7 @@ namespace F_Result.Controllers
         }
 
         // GET: AccountsBalances/Create
-        public ActionResult Create()
+        public ActionResult ABCreate()
         {
             ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO");
             return View();
@@ -48,13 +53,13 @@ namespace F_Result.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
+        public ActionResult ABCreate([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
             {
                 db.AccountsBalances.Add(accountsBalance);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("ABShow");
             }
 
             ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO", accountsBalance.AccountId);
@@ -62,7 +67,7 @@ namespace F_Result.Controllers
         }
 
         // GET: AccountsBalances/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult ABEdit(int? id)
         {
             if (id == null)
             {
@@ -77,25 +82,23 @@ namespace F_Result.Controllers
             return View(accountsBalance);
         }
 
-        // POST: AccountsBalances/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
+        public ActionResult ABEdit([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(accountsBalance).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("ABShow");
             }
             ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO", accountsBalance.AccountId);
             return View(accountsBalance);
         }
 
         // GET: AccountsBalances/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult ABDelete(int? id)
         {
             if (id == null)
             {
@@ -110,14 +113,14 @@ namespace F_Result.Controllers
         }
 
         // POST: AccountsBalances/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("ABDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             AccountsBalance accountsBalance = db.AccountsBalances.Find(id);
             db.AccountsBalances.Remove(accountsBalance);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("ABShow");
         }
 
         protected override void Dispose(bool disposing)

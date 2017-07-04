@@ -27,6 +27,11 @@ namespace F_Result.Models
 
         public int AccountId { get; set; }
 
+        [Required]
+        public string UserId { get; set; }
+
+        //---------------------------------------------------------------
+        public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Account Account { get; set; }
     }
 }

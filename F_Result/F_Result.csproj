@@ -387,6 +387,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\Images\construction.jpg" />
     <Content Include="Content\Images\icon_top.png" />
     <Content Include="Content\Images\loader.gif" />
     <Content Include="Content\Images\sl1.jpg" />
@@ -612,16 +613,19 @@
     <Content Include="Views\PlanDebits\PDDetails.cshtml" />
     <Content Include="Views\PlanDebits\PDEdit.cshtml" />
     <Content Include="Views\PlanDebits\PDShow.cshtml" />
-    <Content Include="Views\Accounts\Create.cshtml" />
-    <Content Include="Views\Accounts\Delete.cshtml" />
-    <Content Include="Views\Accounts\Details.cshtml" />
-    <Content Include="Views\Accounts\Edit.cshtml" />
+    <Content Include="Views\Accounts\ACCreate.cshtml" />
+    <Content Include="Views\Accounts\ACDelete.cshtml" />
+    <Content Include="Views\Accounts\ACDetails.cshtml" />
+    <Content Include="Views\Accounts\ACEdit.cshtml" />
     <Content Include="Views\Accounts\Index.cshtml" />
-    <Content Include="Views\AccountsBalances\Create.cshtml" />
-    <Content Include="Views\AccountsBalances\Delete.cshtml" />
-    <Content Include="Views\AccountsBalances\Details.cshtml" />
-    <Content Include="Views\AccountsBalances\Edit.cshtml" />
+    <Content Include="Views\AccountsBalances\ABCreate.cshtml" />
+    <Content Include="Views\AccountsBalances\ABDelete.cshtml" />
+    <Content Include="Views\AccountsBalances\ABDetails.cshtml" />
+    <Content Include="Views\AccountsBalances\ABEdit.cshtml" />
     <Content Include="Views\AccountsBalances\Index.cshtml" />
+    <Content Include="Views\Accounts\ACShow.cshtml" />
+    <Content Include="Views\AccountsBalances\ADShow.cshtml" />
+    <Content Include="Views\Shared\InDeveloping.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

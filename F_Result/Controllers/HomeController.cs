@@ -13,6 +13,11 @@ namespace F_Result.Controllers
             return View();
         }
 
+        public ActionResult InDeveloping()
+        {
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
