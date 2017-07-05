@@ -32,5 +32,20 @@ namespace F_Result.Models
         //---------------------------------------------------------------
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Account Account { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Пользователь")]
+        public string UserFN { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Счет")]
+        public string AccountNumber { get; set; }
+
+        [NotMapped]
+        public int OrganizationId { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Организация")]
+        public string OrganizationName { get; set; }
     }
 }
