@@ -32,7 +32,7 @@
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Справочники</li>
-            <li>@Html.ActionLink("Счета", "AСShow", "Accounts")</li>
+            <li>@Html.ActionLink("Счета организаций", "AСShow", "Accounts")</li>
             <li class="active">Создание</li>
         </ol>
     </div>
@@ -51,6 +51,34 @@
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OrganizationId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.HiddenFor(model => model.OrganizationId, new { id = "OrganizationId" })
+                        <div class="input-group">
+                            @Html.Editor("orgSelect", new
+                       {
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "orgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "orgbasic-addon2",
+                               data_url = "/Directum/ShowOrganizationsPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
+                            <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
+                                <i class="glyphicon glyphicon-refresh"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
+                    </div>
+                </div>
+
                 <div class="form-group">
                     @Html.LabelFor(model => model.MFO, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
@@ -71,7 +99,7 @@
                     @Html.Label("Активен", htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         <div class="checkbox" style="padding-left:20px">
-                            @Html.CheckBoxFor(model => model.Status, new {@checked = "true", @class="form-control", style="width:24px; height:24px;margin-top:-4px;"})
+                            @Html.CheckBoxFor(model => model.Status, new { @checked = "true", @class = "form-control", style = "width:24px; height:24px;margin-top:-4px;" })
                             @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -80,7 +108,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Note, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", rows="4", style="resize:vertical;" })
+                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", rows = "4", style = "resize:vertical;" })
                         @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -94,16 +122,42 @@
         }
 
         <div>
-            <a class="btn btn-default" href='@Url.Action("AСShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+            <a class="btn btn-default" href='@Url.Action("ACShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script>
         $(function () {
             $('#loadingImg').hide();
-        });
+
+            $('body').on('click', '#orgSelect', function (e) {
+                e.preventDefault();
+                var _href = $(this).data('url');
+                $.get(_href, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modDialog').modal('show');
+                });
+            });
+
+            $('body').on('click', '#orgbasic-addon2', function () {
+                $("#OrganizationId").val('');
+                $("#orgSelect").val('');
+            });
+
+            $('#ACForm').submit(function (e) {
+                var flag = false;
+
+                if ($("#OrganizationId").val() == 0) {
+                    $("#OrganizationValidator").html("Необходимо выбрать организацию");
+                    flag = true;
+                }
+
+                if (flag) { return false; }
+            });
+        })
     </script>
 }

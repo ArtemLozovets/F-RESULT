@@ -96,13 +96,22 @@ namespace F_Result.Models
                 .WithRequired(e => e.Account)
                 .HasForeignKey(e => e.AccountId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Account>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.Account)
+            .HasForeignKey(m => m.UserId);
+
+            modelBuilder.Entity<AccountsBalance>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.AccountsBalance)
+            .HasForeignKey(m => m.UserId);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.Account> Accounts { get; set; }
-
         public System.Data.Entity.DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
     }
 }

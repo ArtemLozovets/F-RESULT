@@ -244,6 +244,8 @@ namespace F_Result.Controllers
             TempData["MessageError"] = "Ошибка валидации модели";
             string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             ViewData["ProjectName"] = _prgName;
+            string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            ViewData["OrganizationName"] = _orgName;
             return View(actualDebit);
         }
 

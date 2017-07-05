@@ -9,6 +9,10 @@ namespace F_Result.Models
     {
         public int AccountId { get; set; }
 
+        [Required(ErrorMessage = "Необходимо указать организацию")]
+        [Display(Name = "Организация")]
+        public int OrganizationId { get; set; }
+
         [Column(TypeName = "VARCHAR")]
         [StringLength(6, ErrorMessage = "Значение поля должно состоять из шести цифр")]
         [RegularExpression("(^\\d{6}?$)", ErrorMessage = "Значение поля должно состоять из шести цифр")]
@@ -36,5 +40,13 @@ namespace F_Result.Models
         //------------------------------------------------------
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Пользователь")]
+        public string UserFN { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Организация")]
+        public string OrganizationName { get; set; }
     }
 }
