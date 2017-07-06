@@ -262,6 +262,27 @@ namespace F_Result.Controllers
             }
         }
 
+        public ActionResult ABBatchCreate()
+        {
+            ViewData["Date"] = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("dd'/'MM'/'yyyy");
+
+            var _acc = (from acc in db.Accounts
+                        join org in db.Organizations on acc.OrganizationId equals org.id
+                        where acc.Status
+                        select new
+                        {
+                            AccountId = acc.AccountId,
+                            AccountNumber = acc.AccountNumber,
+                            OrgName = org.Title
+                        }).AsEnumerable().Select(x => new Account { 
+                            AccountId = x.AccountId,
+                            AccountNumber = x.AccountNumber,
+                            OrganizationName = x.OrgName
+                        }).OrderBy(x=>x.OrganizationName).ThenBy(x=>x.AccountNumber);
+
+            return View(_acc.ToList());
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -623,6 +623,7 @@
     <Content Include="Views\Accounts\ACShow.cshtml" />
     <Content Include="Views\AccountsBalances\ABShow.cshtml" />
     <Content Include="Views\Shared\InDeveloping.cshtml" />
+    <Content Include="Views\AccountsBalances\ABBatchCreate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
