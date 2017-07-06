@@ -619,9 +619,7 @@
     <Content Include="Views\Accounts\ACEdit.cshtml" />
     <Content Include="Views\AccountsBalances\ABCreate.cshtml" />
     <Content Include="Views\AccountsBalances\ABDelete.cshtml" />
-    <Content Include="Views\AccountsBalances\ABDetails.cshtml" />
     <Content Include="Views\AccountsBalances\ABEdit.cshtml" />
-    <Content Include="Views\AccountsBalances\Index.cshtml" />
     <Content Include="Views\Accounts\ACShow.cshtml" />
     <Content Include="Views\AccountsBalances\ABShow.cshtml" />
     <Content Include="Views\Shared\InDeveloping.cshtml" />

@@ -8,19 +8,13 @@ using System.Web;
 using System.Web.Mvc;
 using F_Result.Models;
 using System.Linq.Dynamic; //!=====!
+using Microsoft.AspNet.Identity;
 
 namespace F_Result.Controllers
 {
     public class AccountsBalancesController : Controller
     {
         private FRModel db = new FRModel();
-
-        // GET: AccountsBalances
-        public ActionResult Index()
-        {
-            var accountsBalances = db.AccountsBalances.Include(a => a.Account);
-            return View(accountsBalances.ToList());
-        }
 
         public ActionResult ABShow()
         {
@@ -70,6 +64,7 @@ namespace F_Result.Controllers
                             select new
                             {
                                 AccountBalanceId = accbalance.AccountsBalanceId,
+                                AccountId = account.AccountId,
                                 OrgId = org.id,
                                 OrgName = org.Title,
                                 AccountNumber = account.AccountNumber,
@@ -81,6 +76,7 @@ namespace F_Result.Controllers
                             }).AsEnumerable().Select(x => new AccountsBalance
                             {
                                 AccountsBalanceId = x.AccountBalanceId,
+                                AccountId = x.AccountId,
                                 OrganizationId = x.OrgId,
                                 AccountNumber = x.AccountNumber,
                                 OrganizationName = x.OrgName,
@@ -99,7 +95,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.OrganizationName).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ToList();
                 }
 
                 totalRecords = _ads.Count();
@@ -117,43 +113,55 @@ namespace F_Result.Controllers
             }
         }
 
-        // GET: AccountsBalances/Details/5
-        public ActionResult ABDetails(int? id)
+        // GET: AccountsBalances/Create
+        public ActionResult ABCreate(int? AccountId)
         {
-            if (id == null)
+            if (AccountId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            AccountsBalance accountsBalance = db.AccountsBalances.Find(id);
-            if (accountsBalance == null)
-            {
-                return HttpNotFound();
-            }
-            return View(accountsBalance);
+
+            string _accNum = db.Accounts.FirstOrDefault(x => x.AccountId == AccountId).AccountNumber.ToString();
+            
+            DateTime _date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            AccountsBalance _acb = new AccountsBalance();
+            _acb.AccountNumber = _accNum;
+            _acb.Date = _date;
+
+            return View(_acb);
         }
 
-        // GET: AccountsBalances/Create
-        public ActionResult ABCreate()
-        {
-            ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO");
-            return View();
-        }
 
-        // POST: AccountsBalances/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ABCreate([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
             {
-                db.AccountsBalances.Add(accountsBalance);
-                db.SaveChanges();
-                return RedirectToAction("ABShow");
+                try
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        accountsBalance.UserId = user;
+                    }
+
+                    db.AccountsBalances.Add(accountsBalance);
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация добавлена";
+                    return RedirectToAction("ABShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
             }
 
-            ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO", accountsBalance.AccountId);
             return View(accountsBalance);
         }
 
@@ -169,7 +177,8 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO", accountsBalance.AccountId);
+
+            accountsBalance.AccountNumber = db.Accounts.FirstOrDefault(x => x.AccountId == accountsBalance.AccountId).AccountNumber.ToString();
             return View(accountsBalance);
         }
 
@@ -180,11 +189,32 @@ namespace F_Result.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(accountsBalance).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("ABShow");
+                try
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        accountsBalance.UserId = user;
+                    }
+
+                    db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //===================Debug===============
+                    db.Entry(accountsBalance).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация обновлена";
+                    return RedirectToAction("ABShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
             }
-            ViewBag.AccountId = new SelectList(db.Accounts, "AccountId", "MFO", accountsBalance.AccountId);
+
+            TempData["MessageError"] = "Ошибка валидации модели";
+            accountsBalance.AccountNumber = db.Accounts.FirstOrDefault(x => x.AccountId == accountsBalance.AccountId).AccountNumber.ToString();
             return View(accountsBalance);
         }
 
@@ -200,6 +230,7 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
             return View(accountsBalance);
         }
 
@@ -208,10 +239,27 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            AccountsBalance accountsBalance = db.AccountsBalances.Find(id);
-            db.AccountsBalances.Remove(accountsBalance);
-            db.SaveChanges();
-            return RedirectToAction("ABShow");
+            try
+            {
+                AccountsBalance _acb = db.AccountsBalances.FirstOrDefault(x => x.AccountId == id);
+                if (_acb == null)
+                {
+                    TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
+                    return RedirectToAction("ABShow");
+                }
+
+                db.AccountsBalances.Remove(_acb);
+                db.SaveChanges();
+                TempData["MessageOK"] = "Информация удалена";
+                return RedirectToAction("ABShow");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)

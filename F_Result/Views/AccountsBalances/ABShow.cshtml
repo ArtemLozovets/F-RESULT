@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Остатки";
+    ViewBag.Title = "Остатки на счетах";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
-                @ViewBag.Title
+                Остатки
                 <small>Список остатков на счетах организаций</small>
             </h1>
             <ol class="breadcrumb">
@@ -112,10 +112,7 @@
                 callback: function (key, options) {
                     switch (key) {
                         case 'add':
-                            window.location.href = "/AccountsBalances/ABCreate/";
-                            break;
-                        case 'details':
-                            window.location.href = "/AccountsBalances/ABDetails/" + $(this).data('objid');
+                            window.location.href = "/AccountsBalances/ABCreate?AccountId=" + $(this).data('accid');
                             break;
                         case 'edit':
                             window.location.href = "/AccountsBalances/ABEdit/" + $(this).data('objid');
@@ -129,7 +126,6 @@
                 },
                 items: {
                     "add": { name: "Создать", icon: "add" },
-                    "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },
                 }
@@ -201,6 +197,7 @@
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.AccountsBalanceId);
+                    $(row).attr('data-accid', data.AccountId);
                     $(row).attr('class', 'context-menu-one');
                 }
             });

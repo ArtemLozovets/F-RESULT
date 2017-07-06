@@ -101,6 +101,9 @@
                         case 'delete':
                             window.location.href = "/Accounts/ACDelete/" + $(this).data('objid');
                             break;
+                        case 'addBalance':
+                            window.location.href = "/AccountsBalances/ABCreate?AccountId=" + $(this).data('objid');
+                            break;
                         default:
                             return;
                     }
@@ -110,6 +113,8 @@
                     "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },
+                    separator: "-----",
+                    "addBalance": { name: "Внести остаток по счету", icon: "addBalance" }
                 }
             });
 

@@ -18,7 +18,7 @@ namespace F_Result.Models
         [Required(ErrorMessage = "Необходимо указать сумму остатка")]
         [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Остаток")]
-        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
         public decimal Balance { get; set; }
 
         [StringLength(160, ErrorMessage = "Примечание должно содержать не более 160 символов")]
