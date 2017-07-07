@@ -18,6 +18,16 @@
     .batchTable tr td {
         vertical-align: middle !important;
     }
+
+    .inputError {
+        background-color: #f3d8e0;
+        border: 1px solid #d9534f;
+    }
+
+    .inputOk {
+        background-color: #cfc;
+        border: 1px solid #3a3;
+    }
 </style>
 
 <div id="loadingImg">
@@ -65,8 +75,9 @@
 
 
     <div class="row">
-        <table class="table batchTable">
+        <table class="table batchTable" id="accTable">
             <tr>
+                <th></th>
                 <th>
                     Организация
                 </th>
@@ -82,7 +93,10 @@
             </tr>
             @foreach (var item in Model)
             {
-                <tr>
+                <tr class="accRow" data-accid="@item.AccountId">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountId)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.OrganizationName)
                     </td>
@@ -90,14 +104,20 @@
                         @Html.DisplayFor(modelItem => item.AccountNumber)
                     </td>
                     <td>
-                        <input type="text" value="" class="form-control" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
+                        <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
                     </td>
                     <td>
-                        <input type="text" value="" class="form-control" style="min-width:400px;"/>
+                        <input type="text" value="" maxlength="160" class="form-control" style="min-width:400px;" />
                     </td>
                 </tr>
             }
         </table>
+    </div>
+    <div class="row">
+        <div class="pull-right">
+            <a class="btn btn-default" href='@Url.Action("ABShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+            <button type="submit" id="saveBalances" title="Сохранить информацию" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
+        </div>
     </div>
 
 
@@ -112,6 +132,32 @@
     <script>
         $(function () {
             $('#loadingImg').hide();
+
+            $('#saveBalances').on('click', function () {
+                var _date = $('#Date').val();
+                $('#accTable > tbody  > tr.accRow').each(function () {
+                    console.log('Data:', _date);
+                    console.log('accountId:', $(this).data('accid'));
+                    console.log('Balance:', $(this).children('td > input.currtext').val());
+                    console.log('------------------------------------');
+
+                });
+            });
+
+            $('.currtext').focusout(function (elem) {
+                var strval = $(this).val();
+                if (strval.indexOf(",") == '-1') {
+                    strval += ',00';
+                    $(this).val(strval);
+                }
+
+                if (!this.value.match(/^\d{1,10}(\,\d{1,2})?$/)) {
+                    $(this).removeClass('inputOk').addClass('inputError');
+                }
+                else {
+                    $(this).removeClass('inputError').addClass('inputOk');
+                }
+            });
         });
     </script>
 
@@ -160,4 +206,5 @@
             }
         }
     </script>
+
 }
