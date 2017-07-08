@@ -107,7 +107,7 @@
                         <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
                     </td>
                     <td>
-                        <input type="text" value="" maxlength="160" class="form-control" style="min-width:400px;" />
+                        <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
                     </td>
                 </tr>
             }
@@ -126,22 +126,43 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script>
         $(function () {
             $('#loadingImg').hide();
-
             $('#saveBalances').on('click', function () {
+                var _array = [];
                 var _date = $('#Date').val();
+
                 $('#accTable > tbody  > tr.accRow').each(function () {
-                    console.log('Data:', _date);
-                    console.log('accountId:', $(this).data('accid'));
-                    console.log('Balance:', $(this).children('td > input.currtext').val());
-                    console.log('------------------------------------');
+                    _array.push({
+                        accountId : $(this).data('accid'),
+                        Balance : $(this).find("input.currtext").val(),
+                        Note : $(this).find("input.notetext").val()
+                    });
 
                 });
+
+                $.ajax({
+                    type: "POST",
+                    url: '/AccountsBalances/SaveBatch',
+                    //contentType: "application/json; charset=utf-8",
+                    data:  {'Date' : _date, 'dataJSON':JSON.stringify(_array)},
+                    dataType: "json",
+                    success: function (data) {
+                        if (!data.Result) {
+                            alert(data.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ошибка выполнения запроса!');
+                    }
+                });
+
+
             });
 
             $('.currtext').focusout(function (elem) {

@@ -16,6 +16,13 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
+        private class JSONBalances
+        {
+            public int AccountId { get; set; }
+            public string Balance { get; set; }
+            public string Note { get; set; }
+        }
+
         public ActionResult ABShow()
         {
             return View();
@@ -52,7 +59,7 @@ namespace F_Result.Controllers
                             join account in db.Accounts on accbalance.AccountId equals account.AccountId
                             join org in db.Organizations on account.OrganizationId equals org.id
                             join usr in db.IdentityUsers on account.UserId equals usr.Id
-                            where   (account.AccountNumber.Contains(_accnum) || string.IsNullOrEmpty(_accnum))
+                            where (account.AccountNumber.Contains(_accnum) || string.IsNullOrEmpty(_accnum))
                                     && (accbalance.Date == _date || _date == null)
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                     && (accbalance.Note.Contains(_note) || string.IsNullOrEmpty(_note))
@@ -122,7 +129,7 @@ namespace F_Result.Controllers
             }
 
             string _accNum = db.Accounts.FirstOrDefault(x => x.AccountId == AccountId).AccountNumber.ToString();
-            
+
             DateTime _date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             AccountsBalance _acb = new AccountsBalance();
@@ -182,7 +189,7 @@ namespace F_Result.Controllers
             return View(accountsBalance);
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ABEdit([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
@@ -244,6 +251,7 @@ namespace F_Result.Controllers
                 AccountsBalance _acb = db.AccountsBalances.FirstOrDefault(x => x.AccountId == id);
                 if (_acb == null)
                 {
+                    return RedirectToAction("ABShow");
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
                     return RedirectToAction("ABShow");
                 }
@@ -274,13 +282,76 @@ namespace F_Result.Controllers
                             AccountId = acc.AccountId,
                             AccountNumber = acc.AccountNumber,
                             OrgName = org.Title
-                        }).AsEnumerable().Select(x => new Account { 
+                        }).AsEnumerable().Select(x => new Account
+                        {
                             AccountId = x.AccountId,
                             AccountNumber = x.AccountNumber,
                             OrganizationName = x.OrgName
-                        }).OrderBy(x=>x.OrganizationName).ThenBy(x=>x.AccountNumber);
+                        }).OrderBy(x => x.OrganizationName).ThenBy(x => x.AccountNumber);
 
             return View(_acc.ToList());
+        }
+
+
+        [HttpPost]
+        public ActionResult SaveBatch(DateTime? Date, String dataJSON)
+        {
+
+            if (Date == null || String.IsNullOrEmpty(dataJSON))
+            {
+                return Json(new { Result = false, Message = "Ошибка валидации модели!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                string _user = String.Empty;
+                //Получаем идентификатор текущего пользователя
+                using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                {
+                    _user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                }
+
+                string _jsonObject = dataJSON.Replace(@"\", string.Empty);
+                var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                IList<JSONBalances> jsonObject = serializer.Deserialize<IList<JSONBalances>>(_jsonObject);
+                List<AccountsBalance> _balancelist = new List<AccountsBalance>();
+
+                DateTime _date;
+                DateTime.TryParse(Date.ToString(), out _date);
+
+
+                foreach (var Balances in jsonObject)
+                {
+                    decimal _balance;
+                    Decimal.TryParse(Balances.Balance.ToString(), out _balance);
+
+                    AccountsBalance _acb = new AccountsBalance
+                    {
+                        AccountId = Balances.AccountId,
+                        Date = _date,
+                        Balance = _balance,
+                        Note = Balances.Note,
+                        UserId = _user
+                    };
+
+                    _balancelist.Add(_acb);
+                }
+
+                db.AccountsBalances.AddRange(_balancelist);
+                db.SaveChanges();
+
+                TempData["MessageOK"] = "Информация добавлена";
+                return RedirectToAction("ABShow");
+            }
+
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return View("Error");
+            }
+
         }
 
         protected override void Dispose(bool disposing)
