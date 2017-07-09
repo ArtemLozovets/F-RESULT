@@ -156,6 +156,9 @@
                         if (!data.Result) {
                             alert(data.Message);
                         }
+                        else {
+                            window.location.href = "/AccountsBalances/ABShow?result=BatchSuccess";
+                        }
                     },
                     error: function (xhr, status, error) {
                         alert('Ошибка выполнения запроса!');

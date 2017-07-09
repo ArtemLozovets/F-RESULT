@@ -14,12 +14,13 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult ACShow()
         {
             return View();
         }
 
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         [HttpPost]
         public ActionResult LoadAC()
         {
@@ -91,7 +92,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                   _ads = _ads.OrderByDescending(x => x.OrganizationName).ToList();
+                    _ads = _ads.OrderBy(x => x.OrganizationName).ThenBy(x => x.AccountNumber).ToList();
                 }
 
                 totalRecords = _ads.Count();
@@ -111,6 +112,7 @@ namespace F_Result.Controllers
 
 
         // GET: Accounts/Details/5
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult ACDetails(int? id)
         {
             if (id == null)
@@ -126,12 +128,13 @@ namespace F_Result.Controllers
         }
 
         // GET: Accounts/Create
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACCreate()
         {
             return View();
         }
 
-
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ACCreate([Bind(Include = "AccountId,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
@@ -165,6 +168,7 @@ namespace F_Result.Controllers
         }
 
         // GET: Accounts/Edit/5
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACEdit(int? id)
         {
             if (id == null)
@@ -184,6 +188,7 @@ namespace F_Result.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACEdit([Bind(Include = "AccountId,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
         {
             if (ModelState.IsValid)
@@ -219,6 +224,7 @@ namespace F_Result.Controllers
         }
 
         // GET: Accounts/Delete/5
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACDelete(int? id)
         {
             if (id == null)
@@ -237,6 +243,7 @@ namespace F_Result.Controllers
         }
 
         // POST: Accounts/Delete/5
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ACDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

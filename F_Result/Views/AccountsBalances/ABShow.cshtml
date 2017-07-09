@@ -7,7 +7,6 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
-
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -142,6 +141,7 @@
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
+                "stateSave": true,
                 "orderMulti": true,
                 "responsive": true,
                 "pagingType": "simple_numbers",
@@ -173,7 +173,7 @@
                         return d.data;
                     }
                 },
-                "order": [[0, "desc"]],
+                "order": [[2, "desc"]],
                 "columns": [
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },

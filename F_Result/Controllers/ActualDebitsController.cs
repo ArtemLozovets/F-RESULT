@@ -10,18 +10,19 @@ using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
-    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
     public class ActualDebitsController : Controller
     {
         private FRModel db = new FRModel();
 
         // GET: ActualDebits
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult ADShow()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult LoadAD()
         {
             try
@@ -120,6 +121,7 @@ namespace F_Result.Controllers
 
 
         // GET: PlanCredits/Details/5
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult ADDetails(int? id)
         {
             if (id == null)

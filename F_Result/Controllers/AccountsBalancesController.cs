@@ -23,11 +23,18 @@ namespace F_Result.Controllers
             public string Note { get; set; }
         }
 
-        public ActionResult ABShow()
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        public ActionResult ABShow(string result)
         {
+            if (result == "BatchSuccess")
+            {
+                TempData["MessageOk"] = "Пакетное добавление остатков выполнено успешно";
+            }
+
             return View();
         }
 
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
         [HttpPost]
         public ActionResult LoadAB()
         {
@@ -121,6 +128,7 @@ namespace F_Result.Controllers
         }
 
         // GET: AccountsBalances/Create
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABCreate(int? AccountId)
         {
             if (AccountId == null)
@@ -142,6 +150,7 @@ namespace F_Result.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABCreate([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
@@ -173,6 +182,7 @@ namespace F_Result.Controllers
         }
 
         // GET: AccountsBalances/Edit/5
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABEdit(int? id)
         {
             if (id == null)
@@ -192,6 +202,7 @@ namespace F_Result.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABEdit([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
@@ -226,6 +237,7 @@ namespace F_Result.Controllers
         }
 
         // GET: AccountsBalances/Delete/5
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABDelete(int? id)
         {
             if (id == null)
@@ -242,6 +254,7 @@ namespace F_Result.Controllers
         }
 
         // POST: AccountsBalances/Delete/5
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ABDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -251,7 +264,6 @@ namespace F_Result.Controllers
                 AccountsBalance _acb = db.AccountsBalances.FirstOrDefault(x => x.AccountId == id);
                 if (_acb == null)
                 {
-                    return RedirectToAction("ABShow");
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
                     return RedirectToAction("ABShow");
                 }
@@ -270,6 +282,7 @@ namespace F_Result.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABBatchCreate()
         {
             ViewData["Date"] = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("dd'/'MM'/'yyyy");
@@ -292,9 +305,9 @@ namespace F_Result.Controllers
             return View(_acc.ToList());
         }
 
-
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
-        public ActionResult SaveBatch(DateTime? Date, String dataJSON)
+        public JsonResult SaveBatch(DateTime? Date, String dataJSON)
         {
 
             if (Date == null || String.IsNullOrEmpty(dataJSON))
@@ -340,8 +353,8 @@ namespace F_Result.Controllers
                 db.AccountsBalances.AddRange(_balancelist);
                 db.SaveChanges();
 
-                TempData["MessageOK"] = "Информация добавлена";
-                return RedirectToAction("ABShow");
+
+                return Json(new { Result = true, Message = "Информация добавлена " }, JsonRequestBehavior.AllowGet);
             }
 
             catch (Exception ex)
@@ -349,7 +362,7 @@ namespace F_Result.Controllers
                 ViewBag.ErMes = ex.Message;
                 ViewBag.ErStack = ex.StackTrace;
                 ViewBag.ErInner = ex.InnerException.InnerException.Message;
-                return View("Error");
+                return Json(new { Result = false, Message = "Ошибка выполнения запроса! " + ex.Message + ex.StackTrace }, JsonRequestBehavior.AllowGet);
             }
 
         }

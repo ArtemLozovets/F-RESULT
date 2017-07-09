@@ -250,3 +250,7 @@
 .context-menu-accesskey {
   text-decoration: underline;
 }
+
+ul.context-menu-list{
+      z-index:999 !important;
+}
