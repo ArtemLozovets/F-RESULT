@@ -82,7 +82,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.MFO, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.EditorFor(model => model.MFO, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.MFO, new { htmlAttributes = new { @class = "form-control", maxlength = "6" } })
                         @Html.ValidationMessageFor(model => model.MFO, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.AccountNumber, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control", maxlength = "21" } })
                         @Html.ValidationMessageFor(model => model.AccountNumber, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Note, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", rows = "4", style = "resize:vertical;" })
+                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", rows = "4", maxlength = "160", style = "resize:vertical;" })
                         @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
                     </div>
                 </div>

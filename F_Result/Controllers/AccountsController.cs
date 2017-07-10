@@ -257,6 +257,12 @@ namespace F_Result.Controllers
                     return RedirectToAction("ACShow");
                 }
 
+                if (account.AccountsBalance.Any())
+                {
+                    TempData["MessageError"] = "Невозможно удалить счет на котором имеются остатки";
+                    return RedirectToAction("ACShow");
+                }
+
                 db.Accounts.Remove(account);
                 db.SaveChanges();
                 TempData["MessageOK"] = "Информация удалена";

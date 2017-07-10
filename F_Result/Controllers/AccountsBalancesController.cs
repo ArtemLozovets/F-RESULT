@@ -261,7 +261,7 @@ namespace F_Result.Controllers
         {
             try
             {
-                AccountsBalance _acb = db.AccountsBalances.FirstOrDefault(x => x.AccountId == id);
+                AccountsBalance _acb = db.AccountsBalances.FirstOrDefault(x => x.AccountsBalanceId == id);
                 if (_acb == null)
                 {
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";

@@ -125,7 +125,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Appointment, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.TextAreaFor(model => model.Appointment, new { @class = "form-control", rows = "3", style = "resize:vertical;" })
+                        @Html.TextAreaFor(model => model.Appointment, new { @class = "form-control", rows = "3", maxlength = "200", style = "resize:vertical;" })
                         @Html.ValidationMessageFor(model => model.Appointment, "", new { @class = "text-danger" })
                     </div>
                 </div>

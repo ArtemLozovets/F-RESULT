@@ -73,49 +73,53 @@
         </div>
     </div>
 
-
-    <div class="row">
-        <table class="table batchTable" id="accTable">
-            <tr>
-                <th></th>
-                <th>
-                    Организация
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AccountNumber)
-                </th>
-                <th>
-                    Остаток
-                </th>
-                <th>
-                    Примечание
-                </th>
-            </tr>
-            @foreach (var item in Model)
-            {
-                <tr class="accRow" data-accid="@item.AccountId">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AccountId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.OrganizationName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AccountNumber)
-                    </td>
-                    <td>
-                        <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
-                    </td>
-                    <td>
-                        <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
-                    </td>
+    @if (Model.Count() > 0)
+    {
+        <div class="row">
+            <table class="table batchTable" id="accTable">
+                <tr>
+                    <th>
+                        Организация
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AccountNumber)
+                    </th>
+                    <th>
+                        Остаток
+                    </th>
+                    <th>
+                        Примечание
+                    </th>
                 </tr>
-            }
-        </table>
-    </div>
+                @foreach (var item in Model)
+                {
+                    <tr class="accRow" data-accid="@item.AccountId">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OrganizationName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AccountNumber)
+                        </td>
+                        <td>
+                            <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
+                        </td>
+                        <td>
+                            <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="row text-center" style="width:100%; margin:40px auto"><span class="text-danger">Счета организаций отсутствуют</span></div>
+    }
     <div class="row">
+        <div class="pull-left">
+            <a class="btn btn-default" title="Назад" href='@Url.Action("ABShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+        </div>
         <div class="pull-right">
-            <a class="btn btn-default" href='@Url.Action("ABShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
             <button type="submit" id="saveBalances" title="Сохранить информацию" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
         </div>
     </div>
@@ -139,9 +143,9 @@
 
                 $('#accTable > tbody  > tr.accRow').each(function () {
                     _array.push({
-                        accountId : $(this).data('accid'),
-                        Balance : $(this).find("input.currtext").val(),
-                        Note : $(this).find("input.notetext").val()
+                        accountId: $(this).data('accid'),
+                        Balance: $(this).find("input.currtext").val(),
+                        Note: $(this).find("input.notetext").val()
                     });
 
                 });
@@ -150,7 +154,7 @@
                     type: "POST",
                     url: '/AccountsBalances/SaveBatch',
                     //contentType: "application/json; charset=utf-8",
-                    data:  {'Date' : _date, 'dataJSON':JSON.stringify(_array)},
+                    data: { 'Date': _date, 'dataJSON': JSON.stringify(_array) },
                     dataType: "json",
                     success: function (data) {
                         if (!data.Result) {
