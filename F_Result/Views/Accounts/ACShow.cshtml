@@ -102,6 +102,7 @@
                             window.location.href = "/Accounts/ACDelete/" + $(this).data('objid');
                             break;
                         case 'addBalance':
+                            localStorage.setItem('ABCreateReturnURL', '/Accounts/ACShow')
                             window.location.href = "/AccountsBalances/ABCreate?AccountId=" + $(this).data('objid');
                             break;
                         default:

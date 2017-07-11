@@ -77,36 +77,44 @@
     {
         <div class="row">
             <table class="table batchTable" id="accTable">
-                <tr>
-                    <th>
-                        Организация
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.AccountNumber)
-                    </th>
-                    <th>
-                        Остаток
-                    </th>
-                    <th>
-                        Примечание
-                    </th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>
+                            Организация
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AccountNumber)
+                        </th>
+                        <th>
+                            Остаток
+                        </th>
+                        <th>
+                            Примечание
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
                 @foreach (var item in Model)
                 {
-                    <tr class="accRow" data-accid="@item.AccountId">
-                        <td>
-                            @Html.DisplayFor(modelItem => item.OrganizationName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.AccountNumber)
-                        </td>
-                        <td>
-                            <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
-                        </td>
-                        <td>
-                            <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr class="accRow" data-accid="@item.AccountId">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.OrganizationName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AccountNumber)
+                            </td>
+                            <td>
+                                <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" />
+                            </td>
+                            <td>
+                                <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
+                            </td>
+                            <td>
+                                <span class="glyphicon glyphicon-remove text-danger accRem" style="cursor:pointer;" data-accid="@item.AccountId"></span>
+                            </td>
+                        </tr>
+                    </tbody>
                 }
             </table>
         </div>
@@ -234,5 +242,17 @@
             }
         }
     </script>
+    <script>
+        $(".accRem").on('click', function (event) {
+            if ($('#accTable > tbody > tr.accRow').length > 1) {
+                $(this).parent().parent().remove();
+            }
+            else {
+                $('#MessageError').html('Удаление невозможно!&nbsp;Должен быть хотя бы один счет.');
+                return false;
+            }
+        });
+    </script>
+
 
 }

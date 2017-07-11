@@ -49,10 +49,10 @@
                                 ФАКТ
                             </li>
                             <li>
-                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-up" style="margin-right:10px;"></i>&nbsp;Реестр оплат</a>
+                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-up" style="margin-right:10px;"></i>&nbsp;Входящие платежи</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Реестр платежей</a>
+                                <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Исходящие платежи</a>
                             </li>
                             <li>
                                 <a href="@Url.Action("ABShow", "AccountsBalances", new {Area = "" })"><i class="glyphicon glyphicon-piggy-bank" style="margin-right:10px;"></i>&nbsp;Остатки на счетах</a>
@@ -66,6 +66,16 @@
                             </li>
                             <li>
                                 <a href="@Url.Action("PDShow", "PlanDebits", new {Area = "" })"><i class="glyphicon glyphicon-hand-down" style="margin-right:10px;"></i>&nbsp;План расходов</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li id="report" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отчеты <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="repAnal">
+                                @*<a href="@Url.Action("ShowProjects", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-briefcase" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>*@
+                                <a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="glyphicon glyphicon-signal" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>
                             </li>
                         </ul>
                     </li>

@@ -166,7 +166,7 @@
                             var results = pattern.exec(value);
                             var dt = new Date(parseFloat(results[1]));
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
@@ -182,7 +182,7 @@
                             var results = pattern.exec(value);
                             var dt = new Date(parseFloat(results[1]));
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },

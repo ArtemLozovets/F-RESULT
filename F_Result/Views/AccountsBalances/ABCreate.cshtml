@@ -92,7 +92,7 @@
         }
 
         <div>
-            <a class="btn btn-default" href='@Url.Action("ABShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+            <a class="btn btn-default" href='#' id="returnBTN"><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
         </div>
     </div>
 </div>
@@ -142,5 +142,16 @@
                 elem.value = outstr;
             }
         }
+    </script>
+    <script>
+        $('#returnBTN').on('click', function (element) {
+            element.preventDefault;
+            if (localStorage.getItem('ABCreateReturnURL') === null) {
+                window.location.href = '/Accounts/ACShow/';
+            }
+            else{
+                window.location.href = localStorage.getItem('ABCreateReturnURL');
+            }
+        })
     </script>
 }
