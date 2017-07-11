@@ -1,0 +1,193 @@
+﻿@{var years = Enumerable
+    .Range(DateTime.Now.Year - 10, 12)
+    .Select(year => new SelectListItem
+    {
+        Value = year.ToString(),
+        Text = year.ToString(),
+        Selected = (year == DateTime.Today.Year)
+    });
+}
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                ОТЧЕТЫ
+                <small>Анализ платежей</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Отчеты</li>
+                <li class="active">Анализ платежей</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row form-inline">
+        @Html.DropDownList("year", years, new
+           {
+               @class = "form-control form-inline",
+               style = "margin:2px; width:100px; display:inline-block;",
+               id = "YDDL",
+           })
+
+        <select id="chartType" class="form-control" style="width:140px;">
+            <option value="bar">Графбар</option>
+            <option value="line">Линейная</option>
+        </select>
+
+    </div>
+
+    <div class="row">
+        <div style="width:810px; margin: 2px auto;" id="cnvdiv">
+            <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/Chart.js"></script>
+    <script>
+        $(function () {
+            $('#loadingImg').hide();
+            var _Year = $('#YDDL').val();
+            var chartType = $("#chartType").val();
+            GetChart(_Year, chartType);
+        });
+
+
+        $('body').on('change', '#YDDL', function (e) {
+            var _Year = $('#YDDL').val();
+            var chartType = $("#chartType").val();
+            GetChart(_Year, chartType);
+        });
+
+        $('body').on('change', '#chartType', function (e) {
+            var _Year = $('#YDDL').val();
+            var chartType =$("#chartType").val();
+            GetChart(_Year, chartType);
+        });
+
+        function GetChart(_Year, chartType) {
+            $('#loadingImg').show();
+            $.get('/Reports/GetAOP', {
+                Year: _Year,
+            },
+                    function (data) {
+                        $('#loadingImg').hide();
+                        if (data.Result) {
+                            $("#ModeLabel").html(data.Message);
+                            $('#ModeElem').val(data.Mode);
+                            DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType);
+                        }
+                        else {
+                            alert(data.Message);
+                        }
+                    });
+        };
+
+        function DrawChart(mode, ChartData, ChartDataA, chartType) {
+
+            $('#myChart').remove();
+            $('#cnvdiv').append('<canvas id="myChart" width="800" height="400"><canvas>');
+
+            var canvas = $('#myChart');
+            var ctx = canvas.get(0).getContext("2d");
+
+            var myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Декабрь"],
+                    datasets: [
+                        {
+                            label: 'Входящие платежи',
+                            data: ChartData,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)',
+                                'rgba(240, 60, 132, 0.2)',
+                                'rgba(54, 80, 235, 0.2)',
+                                'rgba(255, 206, 156, 0.2)',
+                                'rgba(75, 120, 60, 0.2)',
+                                'rgba(102, 255, 100, 0.2)',
+                                'rgba(128, 200, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)',
+                                'rgba(240, 60, 132, 1)',
+                                'rgba(54, 80, 235, 1)',
+                                'rgba(255, 206, 156, 1)',
+                                'rgba(75, 120, 60, 1)',
+                                'rgba(102, 255, 100, 1)',
+                                'rgba(128, 200, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        },
+
+
+                         {
+                             label: 'Исходящие платежи',
+                             data: ChartDataA,
+                             backgroundColor: [
+                                 'rgba(255, 99, 132, 0.2)',
+                                 'rgba(54, 162, 235, 0.2)',
+                                 'rgba(255, 206, 86, 0.2)',
+                                 'rgba(75, 192, 192, 0.2)',
+                                 'rgba(153, 102, 255, 0.2)',
+                                 'rgba(255, 159, 64, 0.2)',
+                                 'rgba(240, 60, 132, 0.2)',
+                                 'rgba(54, 80, 235, 0.2)',
+                                 'rgba(255, 206, 156, 0.2)',
+                                 'rgba(75, 120, 60, 0.2)',
+                                 'rgba(102, 255, 100, 0.2)',
+                                 'rgba(128, 200, 64, 0.2)'
+                             ],
+                             borderColor: [
+                                 'rgba(255, 99, 132, 1)',
+                                 'rgba(54, 162, 235, 1)',
+                                 'rgba(255, 206, 86, 1)',
+                                 'rgba(75, 192, 192, 1)',
+                                 'rgba(153, 102, 255, 1)',
+                                 'rgba(255, 159, 64, 1)',
+                                 'rgba(240, 60, 132, 1)',
+                                 'rgba(54, 80, 235, 1)',
+                                 'rgba(255, 206, 156, 1)',
+                                 'rgba(75, 120, 60, 1)',
+                                 'rgba(102, 255, 100, 1)',
+                                 'rgba(128, 200, 64, 1)'
+                             ],
+                             borderWidth: 1
+                         }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        };
+
+    </script>
+}

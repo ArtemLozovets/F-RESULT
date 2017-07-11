@@ -10,18 +10,19 @@ using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
-    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
     public class PlanCreditsController : Controller
     {
         private FRModel db = new FRModel();
 
         // GET: ActualDebits
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PCShow()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult LoadPC()
         {
             try
@@ -111,6 +112,7 @@ namespace F_Result.Controllers
 
 
         // GET: PlanCredits/Details/5
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PCDetails(int? id)
         {
             if (id == null)
@@ -133,9 +135,9 @@ namespace F_Result.Controllers
         }
 
         // GET: PlanCredits/Create
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PCCreate()
         {
-
             PlanCredit _model = new PlanCredit();
             _model.Date = DateTime.Today;
             return View(_model);
@@ -143,6 +145,7 @@ namespace F_Result.Controllers
 
         // POST: PlanCredits/Create
         [HttpPost]
+        [Authorize(Roles = "Administrator, ProjectManager")]
         [ValidateAntiForgeryToken]
         public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId")] PlanCredit planCredit)
         {
@@ -175,6 +178,8 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
+
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PCEdit(int? id)
         {
             if (id == null)
@@ -198,6 +203,7 @@ namespace F_Result.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Administrator, ProjectManager")]
         [ValidateAntiForgeryToken]
         public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment")] PlanCredit planCredit)
         {
@@ -234,6 +240,7 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PCDelete(int? id)
         {
             if (id == null)
@@ -256,13 +263,12 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
         // POST: ActualDebits/Delete/5
+        [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost, ActionName("PCDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-
             try
             {
                 PlanCredit planCredit = db.PlanCredits.FirstOrDefault(x => x.PlanCreditId == id);

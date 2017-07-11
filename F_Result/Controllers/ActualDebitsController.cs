@@ -275,8 +275,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
         // POST: ActualDebits/Delete/5
+        [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ADDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

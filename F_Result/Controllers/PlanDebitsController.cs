@@ -10,17 +10,18 @@ using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
-    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
     public class PlanDebitsController : Controller
     {
         private FRModel db = new FRModel();
 
         // GET: ActualDebits
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PDShow()
         {
             return View();
         }
 
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         [HttpPost]
         public ActionResult LoadPD()
         {
@@ -111,6 +112,7 @@ namespace F_Result.Controllers
 
 
         // GET: PlanCredits/Details/5
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PDDetails(int? id)
         {
             if (id == null)
@@ -130,6 +132,7 @@ namespace F_Result.Controllers
         }
 
         // GET: PlanCredits/Create
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PDCreate()
         {
             PlanDebit _model = new PlanDebit();
@@ -138,6 +141,7 @@ namespace F_Result.Controllers
         }
 
         // POST: PlanCredits/Create
+        [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId")] PlanDebit planDebit)
@@ -171,6 +175,7 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PDEdit(int? id)
         {
             if (id == null)
@@ -190,6 +195,7 @@ namespace F_Result.Controllers
         }
 
 
+        [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment")] PlanDebit planDebit)
@@ -230,6 +236,8 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
+
+        [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PDDelete(int? id)
         {
             if (id == null)
@@ -249,7 +257,7 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, ProjectManager")]
         // POST: ActualDebits/Delete/5
         [HttpPost, ActionName("PDDelete")]
         [ValidateAntiForgeryToken]

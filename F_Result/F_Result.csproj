@@ -183,6 +183,7 @@
     <Compile Include="Controllers\DirectumController.cs" />
     <Compile Include="Controllers\PlanCreditsController.cs" />
     <Compile Include="Controllers\PlanDebitsController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -468,6 +469,7 @@
     <Content Include="CodeTemplates\MvcView\ModelMetadataFunctions.cs.include.t4" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap4.js" />
@@ -624,6 +626,7 @@
     <Content Include="Views\AccountsBalances\ABShow.cshtml" />
     <Content Include="Views\Shared\InDeveloping.cshtml" />
     <Content Include="Views\AccountsBalances\ABBatchCreate.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfPayments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

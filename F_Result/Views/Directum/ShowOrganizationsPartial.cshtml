@@ -1,7 +1,7 @@
 ﻿<div class="modal-content ui-front">
     <div class="modal-header">
         <button class="close" data-dismiss="modal" area-hidden="true">X</button>
-        <h4>Проекты</h4>
+        <h4>Организации</h4>
     </div>
 
     <div class="modal-body">
@@ -11,34 +11,14 @@
         <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">
-                        @ViewBag.Title
-                        <small>Список организаций</small>
-                    </h1>
-                    <ol class="breadcrumb">
-                        <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
-                        <li>Справочники</li>
-                        <li class="active">Организации</li>
-                    </ol>
-                </div>
-            </div>
-
             <p class="pull-right">
                 <a class="btn btn-default" style="margin:2px 2px;" id="orgfilterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
                 <a class="btn btn-default" style="margin:2px 2px;" id="orgfilterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
             </p>
-            <div class="row">
-                <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
-                    <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
-                    <p class="text-danger" id="MessageError"> @TempData["MessageError"]</p>
-                </div>
-            </div>
 
             <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="orggridtable" style="width:100%">
                 <thead>
-                    <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+                    <tr role="row" id="search-row" style="background-color:#ddddff">
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ИНН" /></th>
