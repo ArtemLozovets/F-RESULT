@@ -627,6 +627,7 @@
     <Content Include="Views\Shared\InDeveloping.cshtml" />
     <Content Include="Views\AccountsBalances\ABBatchCreate.cshtml" />
     <Content Include="Views\Reports\AnalysisOfPayments.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfPlanPayments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

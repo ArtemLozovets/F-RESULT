@@ -73,8 +73,11 @@
                     <li id="report" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отчеты <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li id="repAnal">
+                            <li id="repFactAnal">
                                 <a href="@Url.Action("AnalysisOfPayments", "Reports", new {Area = "" })"><i class="glyphicon glyphicon-signal" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>
+                            </li>
+                            <li id="repPlanAnal">
+                                <a href="@Url.Action("AnalysisOfPlanPayments", "Reports", new {Area = "" })"><i class="glyphicon glyphicon-equalizer" style="margin-right:10px;"></i>&nbsp;Анализ плановых показателей</a>
                                 @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="glyphicon glyphicon-signal" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>*@
                             </li>
                         </ul>

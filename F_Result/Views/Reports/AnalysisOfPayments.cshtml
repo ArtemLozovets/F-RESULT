@@ -1,5 +1,8 @@
-﻿@{var years = Enumerable
-    .Range(DateTime.Now.Year - 10, 12)
+﻿@{
+    ViewBag.Title = "Анализ платежей";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var years = Enumerable
+    .Range(DateTime.Now.Year - 10, 11)
     .Select(year => new SelectListItem
     {
         Value = year.ToString(),
@@ -86,7 +89,7 @@
                         if (data.Result) {
                             $("#ModeLabel").html(data.Message);
                             $('#ModeElem').val(data.Mode);
-                            DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType);
+                            DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
                         }
                         else {
                             alert(data.Message);
@@ -94,7 +97,7 @@
                     });
         };
 
-        function DrawChart(mode, ChartData, ChartDataA, chartType) {
+        function DrawChart(mode, ChartData, ChartDataA, chartType, _Year) {
 
             $('#myChart').remove();
             $('#cnvdiv').append('<canvas id="myChart" width="800" height="400"><canvas>');
@@ -110,74 +113,28 @@
                         {
                             label: 'Входящие платежи',
                             data: ChartData,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)',
-                                'rgba(240, 60, 132, 0.2)',
-                                'rgba(54, 80, 235, 0.2)',
-                                'rgba(255, 206, 156, 0.2)',
-                                'rgba(75, 120, 60, 0.2)',
-                                'rgba(102, 255, 100, 0.2)',
-                                'rgba(128, 200, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)',
-                                'rgba(240, 60, 132, 1)',
-                                'rgba(54, 80, 235, 1)',
-                                'rgba(255, 206, 156, 1)',
-                                'rgba(75, 120, 60, 1)',
-                                'rgba(102, 255, 100, 1)',
-                                'rgba(128, 200, 64, 1)'
-                            ],
+                            backgroundColor: 'rgba(128, 200, 64, 0.2)',
+                            borderColor: 'rgba(128, 200, 64, 1)',
                             borderWidth: 1
                         },
-
 
                          {
                              label: 'Исходящие платежи',
                              data: ChartDataA,
-                             backgroundColor: [
-                                 'rgba(255, 99, 132, 0.2)',
-                                 'rgba(54, 162, 235, 0.2)',
-                                 'rgba(255, 206, 86, 0.2)',
-                                 'rgba(75, 192, 192, 0.2)',
-                                 'rgba(153, 102, 255, 0.2)',
-                                 'rgba(255, 159, 64, 0.2)',
-                                 'rgba(240, 60, 132, 0.2)',
-                                 'rgba(54, 80, 235, 0.2)',
-                                 'rgba(255, 206, 156, 0.2)',
-                                 'rgba(75, 120, 60, 0.2)',
-                                 'rgba(102, 255, 100, 0.2)',
-                                 'rgba(128, 200, 64, 0.2)'
-                             ],
-                             borderColor: [
-                                 'rgba(255, 99, 132, 1)',
-                                 'rgba(54, 162, 235, 1)',
-                                 'rgba(255, 206, 86, 1)',
-                                 'rgba(75, 192, 192, 1)',
-                                 'rgba(153, 102, 255, 1)',
-                                 'rgba(255, 159, 64, 1)',
-                                 'rgba(240, 60, 132, 1)',
-                                 'rgba(54, 80, 235, 1)',
-                                 'rgba(255, 206, 156, 1)',
-                                 'rgba(75, 120, 60, 1)',
-                                 'rgba(102, 255, 100, 1)',
-                                 'rgba(128, 200, 64, 1)'
-                             ],
+                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                             borderColor: 'rgba(255, 99, 132, 1)',
                              borderWidth: 1
                          }
                     ]
                 },
                 options: {
+                    title: {
+                        display: true,
+                        position: 'top',
+                        fontSize: 14,
+                        fontColor: '#46709D',
+                        text: 'График входящих/исходящих платежей за '+_Year+' год'
+                    },
                     scales: {
                         yAxes: [{
                             ticks: {
