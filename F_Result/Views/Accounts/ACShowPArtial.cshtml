@@ -1,0 +1,147 @@
+﻿<div class="modal-content ui-front">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <h4>Счета организаций</h4>
+    </div>
+
+    <div class="modal-body">
+        <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+
+        <p class="pull-right">
+            <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
+            <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
+        </p>
+
+        <div class="row">
+            <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+                <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+                <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+            </div>
+        </div>
+        <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+            <thead>
+                <tr role="row" id="search-row" style="background-color:#ddddff">
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="МФО" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер счета" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                </tr>
+
+                <tr role="row">
+                    <th>Организация</th>
+                    <th>МФО</th>
+                    <th>Номер счета</th>
+                    <th>Примечание</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <a href="#" class="scrollup1">Наверх</a>
+    </div>
+</div>
+
+
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                alert($(this).data('objid'));
+                $('#modDialog').modal('hide');
+            });
+
+            var _array = [];
+            var _date = $('#Date').val();
+
+            $('#accTable > tbody  > tr.accRow').each(function () {
+                _array.push($(this).data('accid'));
+            });
+
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pagingType": "simple_numbers",
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Accounts/LoadACPartial",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data" : { 'Date': _date, 'accIDs': _array },
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "order": [[0, "desc"]],
+                "columns": [
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "MFO", "name": "MFO", "autoWidth": true },
+                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
+                    { "data": "Note", "name": "Note", "autoWidth": true }
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-objid', data.AccountId);
+                    $(row).attr('class', 'context-menu-one');
+                }
+            });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('body').on('click', '#filterBtn', function () {
+            $('#search-row').toggle(300);
+        });
+
+        $('body').on('click', '#filterClear', function () {
+            var table = $('#gridtable').DataTable().draw();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+            $('#statusList').val('all');
+        });
+    </script>
+
