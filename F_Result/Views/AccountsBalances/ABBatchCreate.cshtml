@@ -204,7 +204,7 @@
 
             });
 
-            $('.currtext').focusout(function (elem) {
+            $('body').on('focusout', '.currtext', (function (elem) {
                 var strval = $(this).val();
                 if (strval.indexOf(",") == '-1') {
                     strval += ',00';
@@ -219,7 +219,9 @@
                     $(this).removeClass('inputError').addClass('inputOk');
                     $('#saveBalances').removeAttr('disabled');
                 }
-            });
+
+            }));
+          
         });
     </script>
 
