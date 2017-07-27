@@ -45,103 +45,116 @@
 </div>
 
 
-    <script src="~/Scripts/toparrow.js"></script>
-    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
-    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            //Двойной щелчек по строке таблицы.
-            $('#gridtable tbody').on('dblclick', 'tr', function () {
-                alert($(this).data('objid'));
-                $('#modDialog').modal('hide');
-            });
+<script src="~/Scripts/toparrow.js"></script>
+<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+<script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+<script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //Двойной щелчек по строке таблицы.
+        $('#gridtable tbody').on('dblclick', 'tr', function () {
 
-            var _array = [];
-            var _date = $('#Date').val();
+            var orgName = $(this).find('td').eq(0).html();
+            var accNum = $(this).find('td').eq(2).html();
 
-            $('#accTable > tbody  > tr.accRow').each(function () {
-                _array.push($(this).data('accid'));
-            });
+            var _insRow = '<tr class="accRow" data-accid="' + $(this).data('objid') + '" style="background-color:#cfc"><td>' + orgName + '</td>'
+            _insRow += '<td>' + accNum + '</td>';
+            _insRow += '<td> <input type="text" value="0,00" class="form-control currtext" style="width:160px;" onkeyup="reppoint(this)" onchange="reppoint(this)" /> </td>';
+            _insRow += '<td> <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" /></td>';
+            _insRow += '<td> <span class="glyphicon glyphicon-remove text-danger accRem" style="cursor:pointer;" data-accid="' + $(this).data('objid') + '"></span></tr>';
 
-            $('#loadingImg').hide();
-            var table = $('#gridtable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "filter": true,
-                "orderMulti": true,
-                "responsive": true,
-                "pagingType": "simple_numbers",
-                "dom": '<"top"l>rt<"bottom"ip><"clear">',
-                "language": {
-                    "lengthMenu": "Записей: _MENU_",
-                    "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск",
-                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    "sInfoThousands": " ",
-                    "oPaginate": {
-                        "sNext": ">",
-                        "sPrevious": "<"
-                    }
-                },
-                "ajax": {
-                    "url": "/Accounts/LoadACPartial",
-                    "type": "POST",
-                    "datatype": "json",
-                    "data" : { 'Date': _date, 'accIDs': _array },
-                    dataSrc: function (d) {
-                        if (d.data.length === 0) {
-                            if (d.errormessage != "") {
-                                alert(d.errormessage);
-                            }
-                        }
-                        return d.data;
-                    }
-                },
-                "order": [[0, "desc"]],
-                "columns": [
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
-                    { "data": "MFO", "name": "MFO", "autoWidth": true },
-                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
-                    { "data": "Note", "name": "Note", "autoWidth": true }
-                ],
-                "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-objid', data.AccountId);
-                    $(row).attr('class', 'context-menu-one');
+            $('#accTable > tbody tr:first').before(_insRow);
+            $('.currtext:first').focus();
+            $('#modDialog').modal('hide');
+        });
+
+        var _array = [];
+        var _date = $('#Date').val();
+
+        $('#accTable > tbody  > tr.accRow').each(function () {
+            _array.push($(this).data('accid'));
+        });
+
+        $('#loadingImg').hide();
+        var table = $('#gridtable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": true,
+            "responsive": true,
+            "pagingType": "simple_numbers",
+            "dom": '<"top"l>rt<"bottom"ip><"clear">',
+            "language": {
+                "lengthMenu": "Записей: _MENU_",
+                "zeroRecords": "Записи отсутствуют",
+                "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                "infoEmpty": "Записи отсутствуют",
+                "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                "search": "Поиск",
+                "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                "sInfoThousands": " ",
+                "oPaginate": {
+                    "sNext": ">",
+                    "sPrevious": "<"
                 }
-            });
+            },
+            "ajax": {
+                "url": "/Accounts/LoadACPartial",
+                "type": "POST",
+                "datatype": "json",
+                "data": { 'Date': _date, 'accIDs': _array },
+                dataSrc: function (d) {
+                    if (d.data.length === 0) {
+                        if (d.errormessage != "") {
+                            alert(d.errormessage);
+                        }
+                    }
+                    return d.data;
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+                { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                { "data": "MFO", "name": "MFO", "autoWidth": true },
+                { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
+                { "data": "Note", "name": "Note", "autoWidth": true }
+            ],
+            "createdRow": function (row, data, rowIndex) {
+                $(row).attr('data-objid', data.AccountId);
+                $(row).attr('class', 'context-menu-one');
+                $(row).css('cursor', 'pointer');
 
-            table.columns().eq(0).each(function (colIdx) {
-                $('.sb', $('th')[colIdx]).on('keyup change', function () {
-                    table.column(colIdx).search(this.value).draw();
-                });
-
-                $('.dff', $('th')[colIdx]).on('change', function () {
-                    table.column(colIdx).search(this.value).draw();
-                });
-            });
-
+            }
         });
 
-    </script>
-
-    <script>
-        $('body').on('click', '#filterBtn', function () {
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            var table = $('#gridtable').DataTable().draw();
-            $(".sb, .dff").each(function (colIdx) {
-                $(this).val('');
-                table.column(colIdx).search('');
+        table.columns().eq(0).each(function (colIdx) {
+            $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                table.column(colIdx).search(this.value).draw();
             });
-            table.draw();
-            $('#statusList').val('all');
+
+            $('.dff', $('th')[colIdx]).on('change', function () {
+                table.column(colIdx).search(this.value).draw();
+            });
         });
-    </script>
+
+    });
+
+</script>
+
+<script>
+    $('body').on('click', '#filterBtn', function () {
+        $('#search-row').toggle(300);
+    });
+
+    $('body').on('click', '#filterClear', function () {
+        var table = $('#gridtable').DataTable().draw();
+        $(".sb, .dff").each(function (colIdx) {
+            $(this).val('');
+            table.column(colIdx).search('');
+        });
+        table.draw();
+        $('#statusList').val('all');
+    });
+</script>
 

@@ -17,6 +17,11 @@
 
     .batchTable tr td {
         vertical-align: middle !important;
+        border:none !important;
+    }
+
+    .batchTable tr {
+         border:none !important;
     }
 
     .inputError {
@@ -33,6 +38,7 @@
     .accRem:hover {
         color: #f52525;
     }
+
 </style>
 
 <div id="modDialog" class="modal fade">
@@ -111,9 +117,9 @@
                         <th></th>
                     </tr>
                 </thead>
-                @foreach (var item in Model)
-                {
-                    <tbody>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
                         <tr class="accRow" data-accid="@item.AccountId">
                             <td>
                                 @Html.DisplayFor(modelItem => item.OrganizationName)
@@ -131,8 +137,9 @@
                                 <span class="glyphicon glyphicon-remove text-danger accRem" style="cursor:pointer;" data-accid="@item.AccountId"></span>
                             </td>
                         </tr>
-                    </tbody>
-                }
+
+                    }
+                </tbody>
             </table>
         </div>
     }
@@ -206,9 +213,11 @@
 
                 if (!this.value.match(/^\d{1,10}(\,\d{1,2})?$/)) {
                     $(this).removeClass('inputOk').addClass('inputError');
+                    $('#saveBalances').attr('disabled', 'disabled');
                 }
                 else {
                     $(this).removeClass('inputError').addClass('inputOk');
+                    $('#saveBalances').removeAttr('disabled');
                 }
             });
         });
@@ -261,13 +270,13 @@
     </script>
     <script>
         //Скрипты удаления/добавления счетов для пакетного добавления остатков
-        $(".accRem").on('click', function (event) {
+        $("body").on('click', ".accRem", function (event) {
             $('#addBtn').removeAttr("disabled");
             if ($('#accTable > tbody > tr.accRow').length > 1) {
                 $(this).parent().parent().remove();
             }
             else {
-                $('#MessageError').html('Удаление невозможно!&nbsp;Должен быть хотя бы один счет.');
+                alert('Удаление невозможно! Должен быть хотя бы один счет.');
                 return false;
             }
         });

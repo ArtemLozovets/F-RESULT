@@ -65,7 +65,7 @@ namespace F_Result.Controllers
                 var _ads = (from accbalance in db.AccountsBalances
                             join account in db.Accounts on accbalance.AccountId equals account.AccountId
                             join org in db.Organizations on account.OrganizationId equals org.id
-                            join usr in db.IdentityUsers on account.UserId equals usr.Id
+                            join usr in db.IdentityUsers on accbalance.UserId equals usr.Id
                             where (account.AccountNumber.Contains(_accnum) || string.IsNullOrEmpty(_accnum))
                                     && (accbalance.Date == _date || _date == null)
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
