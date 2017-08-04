@@ -112,7 +112,7 @@
                     switch (key) {
                         case 'add':
                             localStorage.setItem('ABCreateReturnURL', '/AccountsBalances/ABShow')
-                            window.location.href = "/AccountsBalances/ABCreate?AccountId=" + $(this).data('accid');
+                            window.location.href = "/AccountsBalances/ABBatchCreate";
                             break;
                         case 'edit':
                             window.location.href = "/AccountsBalances/ABEdit/" + $(this).data('objid');
@@ -125,9 +125,9 @@
                     }
                 },
                 items: {
-                    "add": { name: "Создать", icon: "add" },
+                    "add": { name: "Внести остатки по счетам", icon: "addBalance" },
                     "edit": { name: "Редактировать", icon: "edit" },
-                    "delete": { name: "Удалить", icon: "delete" },
+                    //"delete": { name: "Удалить", icon: "delete" },
                 }
             });
 

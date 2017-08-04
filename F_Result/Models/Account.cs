@@ -48,5 +48,9 @@ namespace F_Result.Models
         [NotMapped]
         [Display(Name = "Организация")]
         public string OrganizationName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Остаток")]
+        public decimal? Balance { get; set; }
     }
 }

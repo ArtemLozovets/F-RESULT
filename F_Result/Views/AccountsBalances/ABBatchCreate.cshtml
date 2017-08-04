@@ -17,11 +17,11 @@
 
     .batchTable tr td {
         vertical-align: middle !important;
-        border:none !important;
+        border: none !important;
     }
 
     .batchTable tr {
-         border:none !important;
+        border: none !important;
     }
 
     .inputError {
@@ -38,7 +38,6 @@
     .accRem:hover {
         color: #f52525;
     }
-
 </style>
 
 <div id="modDialog" class="modal fade">
@@ -85,15 +84,18 @@
                 <i class="fa fa-calendar"></i>
             </span>
         </div>
-        <div class="pull-right">
-            <button class="btn btn-default"
-                    disabled
-                    id="addBtn"
-                    style="margin:2px 2px;"
-                    title="Добавить счет">
-                <i class="fa fa-plus-circle"></i>
-            </button>
-        </div>
+
+        @*  Убираем кнопку добавления счетов в пакет
+                <div class="pull-right">
+                <button class="btn btn-default"
+                        disabled
+                        id="addBtn"
+                        style="margin:2px 2px;"
+                        title="Добавить счет">
+                    <i class="fa fa-plus-circle"></i>
+                </button>
+            </div>
+        *@
     </div>
 
     @if (Model.Count() > 0)
@@ -114,7 +116,8 @@
                         <th>
                             Примечание
                         </th>
-                        <th></th>
+                        @* Скрываем столбец в заголовке таблицы
+                            <th></th>*@
                     </tr>
                 </thead>
                 <tbody>
@@ -133,9 +136,11 @@
                             <td>
                                 <input type="text" value="" maxlength="160" class="form-control notetext" style="min-width:400px;" />
                             </td>
-                            <td>
-                                <span class="glyphicon glyphicon-remove text-danger accRem" style="cursor:pointer;" data-accid="@item.AccountId"></span>
-                            </td>
+                            @* Убираем кнопки удаления счетов из пакета
+                                 <td>
+                                    <span class="glyphicon glyphicon-remove text-danger accRem" style="cursor:pointer;" data-accid="@item.AccountId"></span>
+                                </td>
+                            *@
                         </tr>
 
                     }
@@ -149,7 +154,7 @@
     }
     <div class="row">
         <div class="pull-left">
-            <a class="btn btn-default" title="Назад" href='@Url.Action("ABShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+            <a class="btn btn-default" href='#' id="returnBTN"><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
         </div>
         <div class="pull-right">
             <button type="submit" id="saveBalances" title="Сохранить информацию" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
@@ -221,7 +226,7 @@
                 }
 
             }));
-          
+
         });
     </script>
 
@@ -298,5 +303,17 @@
             });
         });
     </script>
-
+    <script>
+        $('#returnBTN').on('click', function (element) {
+            element.preventDefault;
+            if (localStorage.getItem('ABCreateReturnURL') === null) {
+                window.location.href = '/AccountsBalances/ABShow/';
+            }
+            else {
+                var url = localStorage.getItem('ABCreateReturnURL');
+                localStorage.removeItem('ABCreateReturnURL');
+                window.location.href = url;
+            }
+        })
+    </script>
 }

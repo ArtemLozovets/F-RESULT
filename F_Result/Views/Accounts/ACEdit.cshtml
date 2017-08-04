@@ -98,10 +98,20 @@
                 <div class="form-group">
                     @Html.Label("Активен", htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        <div class="checkbox" style="padding-left:20px">
-                            @Html.CheckBoxFor(model => model.Status, new { @checked = "true", @class = "form-control", style = "width:24px; height:24px;margin-top:-4px;" })
-                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-                        </div>
+                        @if (Model.Balance != 0 && Model.Status)
+                        {
+                            <div class="checkbox" style="padding-left:20px">
+                                @Html.CheckBoxFor(model => model.Status, new { @checked = "true", title = "На счету есть остаток. Блокирование невозможно.", disabled = "disabled", @class = "form-control", style = "width:24px; height:24px;margin-top:-4px;" })
+                                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="checkbox" style="padding-left:20px">
+                                @Html.CheckBoxFor(model => model.Status, new { @checked = "true", @class = "form-control", style = "width:24px; height:24px;margin-top:-4px;" })
+                                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                            </div>
+                        }
                     </div>
                 </div>
 

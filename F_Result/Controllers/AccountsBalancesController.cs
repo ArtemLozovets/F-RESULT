@@ -315,8 +315,14 @@ namespace F_Result.Controllers
                 return Json(new { Result = false, Message = "Ошибка валидации модели!" }, JsonRequestBehavior.AllowGet);
             }
 
+            if (db.AccountsBalances.Where(x => x.Date == Date).Count() > 0)
+            {
+                return Json(new { Result = false, Message = "В базе данных присутствует информация по остаткам на счетах на указанную дату!" }, JsonRequestBehavior.AllowGet);
+            }
+
             try
             {
+
                 string _user = String.Empty;
                 //Получаем идентификатор текущего пользователя
                 using (ApplicationDbContext aspdb = new ApplicationDbContext())

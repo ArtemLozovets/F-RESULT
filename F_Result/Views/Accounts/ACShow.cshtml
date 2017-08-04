@@ -46,6 +46,7 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="МФО" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер счета" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Остаток" /></th>
                 <th>
                     <select class="form-control input-sm sb" id="statusList">
                         <option value="all">Все</option>
@@ -61,6 +62,7 @@
                 <th>Организация</th>
                 <th>МФО</th>
                 <th>Номер счета</th>
+                <th>Остаток</th>
                 <th>Статус</th>
                 <th>Примечание</th>
                 <th>Пользователь</th>
@@ -103,7 +105,7 @@
                             break;
                         case 'addBalance':
                             localStorage.setItem('ABCreateReturnURL', '/Accounts/ACShow')
-                            window.location.href = "/AccountsBalances/ABCreate?AccountId=" + $(this).data('objid');
+                            window.location.href = "/AccountsBalances/ABBatchCreate";
                             break;
                         default:
                             return;
@@ -115,7 +117,7 @@
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },
                     separator: "-----",
-                    "addBalance": { name: "Внести остаток по счету", icon: "addBalance" }
+                    "addBalance": { name: "Внести остатки по счетам", icon: "addBalance" }
                 }
             });
 
@@ -165,6 +167,7 @@
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "MFO", "name": "MFO", "autoWidth": true },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     {
                         "data": "Status", "name": "Status", "autoWidth": true, "type": "boolean", "class" : "text-center",
                         "render": function (value) {

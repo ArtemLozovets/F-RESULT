@@ -43,16 +43,19 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _mfo = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _accountnumber = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _statusTXT = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _balancetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _statusTXT = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 bool _status = true;
                 if (_statusTXT == "all") { _statusTXT = String.Empty; }
                 else { Boolean.TryParse(_statusTXT, out _status); }
-                string _note = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _note = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from account in db.Accounts
                             join org in db.Organizations on account.OrganizationId equals org.id
                             join usr in db.IdentityUsers on account.UserId equals usr.Id
+                            join acb in db.AccountsBalances on account.AccountId equals acb.AccountId into accbTemp
+                            from acb in accbTemp.DefaultIfEmpty()
                             where (account.MFO.Contains(_mfo) || string.IsNullOrEmpty(_mfo))
                                     && (account.AccountNumber.Contains(_accountnumber) || string.IsNullOrEmpty(_accountnumber))
                                     && (account.Status == _status || string.IsNullOrEmpty(_statusTXT))
@@ -74,7 +77,8 @@ namespace F_Result.Controllers
                                 Note = account.Note,
                                 UserId = account.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
-                            }).AsEnumerable().Select(x => new Account
+                                Balance = db.AccountsBalances.Where(x=>x.AccountId == acb.AccountId).OrderByDescending(x=>x.Date).Select(x=>x.Balance).FirstOrDefault()
+                            }).Distinct().AsEnumerable().Select(x => new Account
                             {
                                 AccountId = x.AccountId,
                                 OrganizationId = x.OrgId,
@@ -84,8 +88,11 @@ namespace F_Result.Controllers
                                 Status = x.Status,
                                 Note = x.Note,
                                 UserId = x.UserId,
-                                UserFN = x.UserFN
+                                UserFN = x.UserFN,
+                                Balance = x.Balance
                             }).ToList();
+
+                _ads = _ads.Where(x => (x.Balance.ToString().Contains(_balancetxt) || string.IsNullOrEmpty(_balancetxt))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -177,6 +184,8 @@ namespace F_Result.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Account account = db.Accounts.Find(id);
+            account.Balance = db.AccountsBalances.Where(x => x.AccountId == account.AccountId).OrderByDescending(x => x.Date).Select(x => x.Balance).FirstOrDefault();
+
             if (account == null)
             {
                 return HttpNotFound();
