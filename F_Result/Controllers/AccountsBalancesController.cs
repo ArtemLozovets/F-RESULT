@@ -86,7 +86,7 @@ namespace F_Result.Controllers
                                 Balance = accbalance.Balance,
                                 Note = accbalance.Note,
                                 UserId = account.UserId,
-                                UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
+                                UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                             }).AsEnumerable().Select(x => new AccountsBalance
                             {
                                 AccountsBalanceId = x.AccountBalanceId,

@@ -394,6 +394,10 @@
     <Content Include="Content\Images\sl1.jpg" />
     <Content Include="Content\Images\sl2.jpg" />
     <Content Include="Content\Images\sl3.jpg" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\jquery-ui.min.css">
+      <DependentUpon>jquery-ui.css</DependentUpon>
+    </Content>
     <Content Include="Content\jquery.contextMenu.css" />
     <Content Include="Content\jquery.contextMenu.min.css">
       <DependentUpon>jquery.contextMenu.css</DependentUpon>

@@ -44,6 +44,7 @@
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Банк" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="МФО" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер счета" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Остаток" /></th>
@@ -60,6 +61,7 @@
 
             <tr role="row">
                 <th>Организация</th>
+                <th>Банк</th>
                 <th>МФО</th>
                 <th>Номер счета</th>
                 <th>Остаток</th>
@@ -165,6 +167,7 @@
                 "order": [[0, "desc"]],
                 "columns": [
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "BankName", "name": "BankName", "autoWidth": true },
                     { "data": "MFO", "name": "MFO", "autoWidth": true },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
                     { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },

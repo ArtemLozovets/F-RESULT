@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,6 +35,12 @@ namespace F_Result.Models
         [StringLength(160, ErrorMessage = "Примечание должно содержать не более 160 символов")]
         [Display(Name = "Примечание")]
         public string Note { get; set; }
+
+        [DefaultValue("")]
+        [Required(ErrorMessage = "Необходимо указать название банка")]
+        [StringLength(128, ErrorMessage = "Название банка должно содержать не более 128 символов")]
+        [Display(Name = "Название банка")]
+        public string BankName { get; set; }
         
         public string UserId { get; set; }
   

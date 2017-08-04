@@ -41,15 +41,16 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _organizationname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _mfo = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _accountnumber = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _balancetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _statusTXT = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _bankname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _mfo = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _accountnumber = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _balancetxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _statusTXT = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 bool _status = true;
                 if (_statusTXT == "all") { _statusTXT = String.Empty; }
                 else { Boolean.TryParse(_statusTXT, out _status); }
-                string _note = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _note = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from account in db.Accounts
                             join org in db.Organizations on account.OrganizationId equals org.id
@@ -57,6 +58,7 @@ namespace F_Result.Controllers
                             join acb in db.AccountsBalances on account.AccountId equals acb.AccountId into accbTemp
                             from acb in accbTemp.DefaultIfEmpty()
                             where (account.MFO.Contains(_mfo) || string.IsNullOrEmpty(_mfo))
+                                    && (account.BankName.Contains(_bankname) || string.IsNullOrEmpty(_bankname))
                                     && (account.AccountNumber.Contains(_accountnumber) || string.IsNullOrEmpty(_accountnumber))
                                     && (account.Status == _status || string.IsNullOrEmpty(_statusTXT))
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
@@ -71,18 +73,20 @@ namespace F_Result.Controllers
                                 AccountId = account.AccountId,
                                 OrgId = org.id,
                                 OrgName = org.Title,
+                                BankName = account.BankName,
                                 MFO = account.MFO,
                                 AccountNumber = account.AccountNumber,
                                 Status = account.Status,
                                 Note = account.Note,
                                 UserId = account.UserId,
-                                UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
+                                UserFN = usr.LastName + " " + usr.FirstName.Substring(0,1) + "." + usr.MiddleName.Substring(0,1)+".",
                                 Balance = db.AccountsBalances.Where(x=>x.AccountId == acb.AccountId).OrderByDescending(x=>x.Date).Select(x=>x.Balance).FirstOrDefault()
                             }).Distinct().AsEnumerable().Select(x => new Account
                             {
                                 AccountId = x.AccountId,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
+                                BankName = x.BankName,
                                 MFO = x.MFO,
                                 AccountNumber = x.AccountNumber,
                                 Status = x.Status,
@@ -128,6 +132,7 @@ namespace F_Result.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Account account = db.Accounts.Find(id);
+            account.Balance = db.AccountsBalances.Where(x => x.AccountId == account.AccountId).OrderByDescending(x => x.Date).Select(x => x.Balance).FirstOrDefault();
             if (account == null)
             {
                 return HttpNotFound();
@@ -145,7 +150,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ACCreate([Bind(Include = "AccountId,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
+        public ActionResult ACCreate([Bind(Include = "AccountId,BankName,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
         {
             if (ModelState.IsValid)
             {
@@ -199,7 +204,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator, Accountant")]
-        public ActionResult ACEdit([Bind(Include = "AccountId,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
+        public ActionResult ACEdit([Bind(Include = "AccountId,BankName,MFO,AccountNumber,Status,Note,OrganizationId")] Account account)
         {
             if (ModelState.IsValid)
             {
@@ -368,6 +373,11 @@ namespace F_Result.Controllers
             }
         }
 
+        public ActionResult AutocompleteBankName(string Term)
+        {
+            var result = db.Accounts.Where(c => c.BankName.Contains(Term)).Select(c => c.BankName).Distinct();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
         protected override void Dispose(bool disposing)
         {

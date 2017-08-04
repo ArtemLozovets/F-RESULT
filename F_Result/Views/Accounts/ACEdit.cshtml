@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
 <style>
     #prgbasic-addon2:hover, #orgbasic-addon2:hover {
         background-color: transparent;
@@ -59,23 +60,39 @@
                         @Html.HiddenFor(model => model.OrganizationId, new { id = "OrganizationId" })
                         <div class="input-group">
                             @Html.TextBox("orgSelect", ViewData["OrganizationName"], new
-                       {
+                           {
 
-                           @class = "form-control",
-                           type = "text",
-                           id = "orgSelect",
-                           @readonly = "readonly",
-                           placeholder = "Щелкните для выбора",
-                           aria_describedby = "orgbasic-addon2",
-                           data_url = "/Directum/ShowOrganizationsPartial",
-                           style = "cursor:pointer;"
+                               @class = "form-control",
+                               type = "text",
+                               id = "orgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "orgbasic-addon2",
+                               data_url = "/Directum/ShowOrganizationsPartial",
+                               style = "cursor:pointer;"
 
-                       })
+                           })
                             <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
                         </div>
                         @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.BankName, new
+                   {
+                       htmlAttributes = new
+                       {
+                           @class = "form-control",
+                           data_autocomplete_source = @Url.Action("AutocompleteBankName", "Accounts"),
+                           maxlength = "128"
+                       }
+                   })
+                        @Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -143,6 +160,11 @@
     <script>
         $(function () {
             $('#loadingImg').hide();
+
+            $("[data-autocomplete-source]").each(function () {
+                var target = $(this);
+                target.autocomplete({ source: target.attr("data-autocomplete-source") });
+            });
 
             $('body').on('click', '#orgSelect', function (e) {
                 e.preventDefault();

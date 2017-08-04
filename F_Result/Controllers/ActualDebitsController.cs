@@ -75,7 +75,7 @@ namespace F_Result.Controllers
                              Appointment = actualdebit.Appointment,
                              DocNumber = actualdebit.DocNumber,
                              UserId = actualdebit.UserId,
-                             UserFN = usr.LastName + " " + usr.FirstName + " " + usr.MiddleName,
+                             UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                              ProjectName = prg.ShortName,
                              OrgName = org.Title
                          }).AsEnumerable().Select(x => new ActualDebit

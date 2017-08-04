@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
 <style>
     #prgbasic-addon2:hover, #orgbasic-addon2:hover {
         background-color: transparent;
@@ -80,6 +81,22 @@
                 </div>
 
                 <div class="form-group">
+                    @Html.LabelFor(model => model.BankName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.BankName, new
+                   {
+                       htmlAttributes = new
+                       {
+                           @class = "form-control",
+                           maxlength = "128",
+                           data_autocomplete_source = @Url.Action("AutocompleteBankName", "Accounts")
+                       }
+                   })
+                        @Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
                     @Html.LabelFor(model => model.MFO, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         @Html.EditorFor(model => model.MFO, new { htmlAttributes = new { @class = "form-control", maxlength = "6" } })
@@ -129,10 +146,15 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script>
         $(function () {
             $('#loadingImg').hide();
+
+            $("[data-autocomplete-source]").each(function () {
+                var target = $(this);
+                target.autocomplete({ source: target.attr("data-autocomplete-source") });
+            });
 
             $('body').on('click', '#orgSelect', function (e) {
                 e.preventDefault();
