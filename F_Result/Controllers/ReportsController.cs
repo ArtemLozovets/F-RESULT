@@ -68,8 +68,30 @@ namespace F_Result.Controllers
                 else _outsum.Add(0);
             }
 
+            var _inSum = _insum.Sum(x => x.Value);
+            var _inAvg = _insum.Average(x => x.Value);
+            var _inMin = _insum.Min(x => x.Value);
+            var _inMax = _insum.Max(x => x.Value);
 
-            return Json(new { Result = true, ChartData = _insum, ChartDataA = _outsum }, JsonRequestBehavior.AllowGet);
+            var _outSum = _outsum.Sum(x => x.Value);
+            var _outAvg = _outsum.Average(x => x.Value);
+            var _outMin = _outsum.Min(x => x.Value);
+            var _outMax = _outsum.Max(x => x.Value);
+
+
+            return Json(new { 
+                Result = true,
+                insum = _inSum,
+                inavg = _inAvg,
+                inmin = _inMin,
+                inmax = _inMax,
+                outsum = _outSum,
+                outavg = _outAvg,
+                outmin = _outMin,
+                outmax = _outMax, 
+                ChartData = _insum, 
+                ChartDataA = _outsum 
+            }, JsonRequestBehavior.AllowGet);
 
         }
 
