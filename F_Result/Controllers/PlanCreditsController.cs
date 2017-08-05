@@ -96,10 +96,12 @@ namespace F_Result.Controllers
                     _ads = _ads.OrderByDescending(x => x.Date).ToList();
                 }
 
+                var fSum = _ads.Sum(x => x.Sum);
+
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
             }
             catch (Exception ex)

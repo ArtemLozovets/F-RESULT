@@ -6,6 +6,20 @@
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<style>
+    #sumSpan {
+        text-align: right;
+    }
+
+    .sum-block {
+        padding: 10px;
+        background-color: #436C98;
+    }
+
+    .sum-container:first-child{
+        margin-right:20px;
+    }
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -118,14 +132,23 @@
     <script type="text/javascript">
         $(function () {
             $('#loadingImg').hide();
-            var table = $('#gridtable').DataTable({
+            var table = $('#gridtable')
+                .on('xhr.dt', function (e, settings, json, xhr) {
+                    var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
+                        + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                })
+                .DataTable({
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
                 "orderMulti": true,
                 "responsive": true,
                 "pagingType": "simple_numbers",
-                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "dom":  "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",

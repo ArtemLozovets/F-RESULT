@@ -84,10 +84,13 @@ namespace F_Result.Controllers
                     _payments = _payments.OrderByDescending(x=>x.PaymentDate).ToList();
                 }
 
+                var pSum = _payments.Sum(x => x.Summ);
+                var fSum = _payments.Sum(x => x.Payment);
+
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { psum = pSum, fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }

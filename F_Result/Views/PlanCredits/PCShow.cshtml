@@ -7,6 +7,16 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+<style>
+    #sumSpan {
+        text-align: right;
+    }
+
+    .sum-block {
+        padding: 10px;
+        background-color: #436C98;
+    }
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -144,14 +154,21 @@
 
 
             $('#loadingImg').hide();
-            var table = $('#gridtable').DataTable({
+            var table = $('#gridtable')
+                .on('xhr.dt', function (e, settings, json, xhr) {
+                    var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                })
+                .DataTable({
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
                 "orderMulti": true,
                 "responsive": true,
                 "pagingType": "simple_numbers",
-                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",

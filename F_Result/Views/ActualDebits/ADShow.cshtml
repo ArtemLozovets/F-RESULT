@@ -7,6 +7,15 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+<style>
+    #sumSpan{
+       text-align:right;
+    }
+    .sum-block {
+        padding:10px;
+        background-color:#436C98;
+    }
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -28,12 +37,13 @@
             </ol>
         </div>
     </div>
-
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ADCreate")'><i class="fa fa-plus-circle"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
+    <div class="row">
+        <p class="pull-right">
+            <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ADCreate")'><i class="fa fa-plus-circle"></i></a>
+            <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
+            <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
+        </p>
+    </div>
 
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
@@ -41,6 +51,7 @@
             <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
@@ -109,7 +120,6 @@
 
     <script type="text/javascript">
         $(function () {
-
             $.contextMenu({
                 selector: '.context-menu-one',
                 callback: function (key, options) {
@@ -146,14 +156,22 @@
 
 
             $('#loadingImg').hide();
-            var table = $('#gridtable').DataTable({
+            var table = $('#gridtable')
+                .on('xhr.dt', function (e, settings, json, xhr) {
+                    var _cSum = json.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                })
+                .DataTable({
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
                 "orderMulti": true,
                 "responsive": true,
                 "pagingType": "simple_numbers",
-                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                //"dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +    "<'row'<'col-sm-12'tr>>" +    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",
@@ -169,17 +187,17 @@
                     }
                 },
                 "ajax": {
-                    "url": "/ActualDebits/LoadAD",
-                    "type": "POST",
-                    "datatype": "json",
-                    dataSrc: function (d) {
+                    "url" : "/ActualDebits/LoadAD",
+                    "type" : "POST",
+                    "datatype" : "json",
+                    "dataSrc" : function (d) {
                         if (d.data.length === 0) {
                             if (d.errormessage != "") {
                                 alert(d.errormessage);
                             }
                         }
                         return d.data;
-                    }
+                    },
                 },
                 "order": [[0, "desc"]],
                 "columns": [
@@ -196,7 +214,7 @@
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class" : "text-right" },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     { "data": "ProjectName", "name": "ProjectName", "autoWidth": true },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true },
