@@ -47,5 +47,9 @@ namespace F_Result.Models
         [NotMapped]
         [Display(Name = "Организация")]
         public string OrganizationName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Название банка")]
+        public string BankName { get; set; }
     }
 }

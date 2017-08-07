@@ -54,12 +54,13 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _organizationname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _accnum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _datetxt = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _bankname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _accnum = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _datetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
-                string _balance = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _note = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _balance = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _note = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
 
                 var _ads = (from accbalance in db.AccountsBalances
@@ -67,6 +68,7 @@ namespace F_Result.Controllers
                             join org in db.Organizations on account.OrganizationId equals org.id
                             join usr in db.IdentityUsers on accbalance.UserId equals usr.Id
                             where (account.AccountNumber.Contains(_accnum) || string.IsNullOrEmpty(_accnum))
+                                    && (account.BankName.Contains(_bankname) || string.IsNullOrEmpty(_bankname))
                                     && (accbalance.Date == _date || _date == null)
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                     && (accbalance.Note.Contains(_note) || string.IsNullOrEmpty(_note))
@@ -81,6 +83,7 @@ namespace F_Result.Controllers
                                 AccountId = account.AccountId,
                                 OrgId = org.id,
                                 OrgName = org.Title,
+                                BankName = account.BankName,
                                 AccountNumber = account.AccountNumber,
                                 Date = accbalance.Date,
                                 Balance = accbalance.Balance,
@@ -92,6 +95,7 @@ namespace F_Result.Controllers
                                 AccountsBalanceId = x.AccountBalanceId,
                                 AccountId = x.AccountId,
                                 OrganizationId = x.OrgId,
+                                BankName = x.BankName,
                                 AccountNumber = x.AccountNumber,
                                 OrganizationName = x.OrgName,
                                 Balance = x.Balance,
@@ -296,12 +300,14 @@ namespace F_Result.Controllers
                         {
                             AccountId = acc.AccountId,
                             AccountNumber = acc.AccountNumber,
-                            OrgName = org.Title
+                            OrgName = org.Title,
+                            BankName = acc.BankName
                         }).AsEnumerable().Select(x => new Account
                         {
                             AccountId = x.AccountId,
                             AccountNumber = x.AccountNumber,
-                            OrganizationName = x.OrgName
+                            OrganizationName = x.OrgName,
+                            BankName = x.BankName
                         }).OrderBy(x => x.OrganizationName).ThenBy(x => x.AccountNumber);
 
             return View(_acc.ToList());

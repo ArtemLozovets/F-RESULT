@@ -48,7 +48,7 @@
 
     </div>
 
-    <div class="row chartRow" style="position:relative;">
+    <div class="row chartRow">
         <div class="chartContainer" id="cnvdiv">
             <canvas id="myChart" width="800" height="400"></canvas>
         </div>
@@ -94,17 +94,17 @@
                         if (data.Result) {
                             $("#ModeLabel").html(data.Message);
                             $('#ModeElem').val(data.Mode);
-                            var insum = data.insum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var inavg = data.inavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var inmin = data.inmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var inmax = data.inmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            $('#insum').html('SUM: ' + insum + '<br />AVG: ' + inavg + '<br />MIN: ' + inmin + '<br />MAX: ' + inmax);
+                            var insum = data.insum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var inavg = data.inavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var inmin = data.inmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var inmax = data.inmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            $('#insum').html('SUM:&nbsp;' + insum + '<br />AVG:&nbsp;' + inavg + '<br />MIN:&nbsp;' + inmin + '<br />MAX:&nbsp;' + inmax);
 
-                            var outsum = data.outsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var outavg = data.outavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var outmin = data.outmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var outmax = data.outmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            $('#outsum').html('SUM: ' + outsum + '<br />AVG: ' + outavg + '<br />MIN: ' + outmin + '<br />MAX: ' + outmax);
+                            var outsum = data.outsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var outavg = data.outavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var outmin = data.outmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var outmax = data.outmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            $('#outsum').html('SUM:&nbsp;' + outsum + '<br />AVG:&nbsp;' + outavg + '<br />MIN:&nbsp;' + outmin + '<br />MAX:&nbsp;' + outmax);
                             DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
                         }
                         else {

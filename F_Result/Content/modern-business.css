@@ -127,15 +127,6 @@ footer {
     margin: 50px 0;
 }
 
-/* Responsive Styles */
-@media (max-width: 767px) {
-
-    .carousel {
-        height: 70%;
-        /* increases the carousel height so it looks good on phones */
-    }
-}
-
 
 .gridtable tr th {
     text-align: center;
@@ -200,12 +191,14 @@ footer {
 }
 
 /* ----------------CHART BLOCK---------------*/
+
 .chartRow {
     position: relative;
 }
 
 .chartContainer {
     display: inline-block;
+    position: relative;
     width: 810px;
 }
 
@@ -246,33 +239,46 @@ footer {
     border-radius: .7em;
 }
 
-/* ----------------RESPONSIVE---------------*/
-@media screen and (max-width: 1024px) {
-
-    .chartRow {
-    position: absolute;
+/*Blocked Row*/
+.blocked-color {
+    background-color: rgba(255, 99, 132, 0.2) !important;
 }
+
+/* ----------------RESPONSIVE---------------*/
+
+
+@media (max-width: 767px) {
+
+    .carousel {
+        height: 70%;
+        /* increases the carousel height so it looks good on phones */
+    }
+}
+
+@media screen and (max-width: 1024px) {
 
     .chartContainer {
         display: block;
-        position:relative;
-        width: 810px;
     }
 
     .chartInfoes {
+        width: 100%;
         display: block;
-        position:relative;
+        text-align: center;
+        position: relative;
+        margin: 1em auto;
+        top: 100%;
+        -moz-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        -o-transform: translate(0, 0);
+        -webkit-transform: translate(0, 0);
+        transform: translate(0, 0);
     }
 
     .inStat {
         display: inline-block;
-        padding: 2em;
-        color: black;
-        font-size: .9em;
-        background-color: rgba(128, 200, 64, 0.2);
-        border: 1px solid rgba(128, 200, 64, 1);
-        opacity: 1;
-        border-radius: .7em;
+        text-align: left;
+        padding: 1em 2em;
     }
 
         .inStat:first-child {
@@ -281,12 +287,7 @@ footer {
 
     .outStat {
         display: inline-block;
-        padding: 2em;
-        color: black;
-        font-size: .9em;
-        background-color: rgba(255, 99, 132, 0.2);
-        border: 1px solid rgba(255, 99, 132, 1);
-        opacity: 1;
-        border-radius: .7em;
+        text-align: left;
+        padding: 1em 2em;
     }
 }

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Остатки на счетах";
+    ViewBag.Title = "Остатки";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -29,7 +29,7 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 Остатки
-                <small>Список остатков на счетах организаций</small>
+                <small>Остатки на счетах организаций</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
@@ -55,6 +55,7 @@
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Банк" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Счет" /></th>
                 <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
@@ -64,6 +65,7 @@
 
             <tr role="row">
                 <th>Организация</th>
+                <th>Банк</th>
                 <th>Счет</th>
                 <th>Дата</th>
                 <th>Сумма</th>
@@ -192,9 +194,10 @@
                         return d.data;
                     }
                 },
-                "order": [[2, "desc"]],
+                "order": [[3, "desc"], [0, "asc"]],
                 "columns": [
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "BankName", "name": "BankName", "autoWidth": true },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,

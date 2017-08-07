@@ -1,4 +1,4 @@
-﻿<div class="modal-content ui-front">
+﻿<div class="modal-content ">
     <div class="modal-header">
         <button class="close" data-dismiss="modal" area-hidden="true">X</button>
         <h4>Проекты</h4>
@@ -21,10 +21,8 @@
                 <thead>
                     <tr role="row" id="search-row" style="background-color:#ddddff">
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
-                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Короткое имя" /></th>
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Описание" /></th>
                         <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
-                        <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
                         <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Начало" /></th>
                         <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Окончание" /></th>
                         <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Начало" /></th>
@@ -33,10 +31,8 @@
 
                     <tr role="row">
                         <th rowspan="2">Название</th>
-                        <th rowspan="2">Короткое имя</th>
                         <th rowspan="2">Описание</th>
                         <th rowspan="2">Тип</th>
-                        <th rowspan="2" title="Состояние">СТ</th>
                         <th colspan="2">Факт</th>
                         <th colspan="2">План</th>
                     </tr>
@@ -142,7 +138,7 @@
                 }
             },
             "ajax": {
-                "url": "/Directum/LoadProjects",
+                "url": "/Directum/LoadProjectsPartial",
                 "type": "POST",
                 "datatype": "json",
                 dataSrc: function (d) {
@@ -155,24 +151,22 @@
                 }
             },
             "columns": [
-                { "data": "FullName", "name": "FullName", "autoWidth": true },
                 { "data": "ShortName", "name": "ShortName", "autoWidth": true },
                 { "data": "Desc", "name": "Desc", "autoWidth": true },
                 { "data": "ProjectType", "name": "ProjectType", "autoWidth": true },
-                { "data": "State", "name": "State", "autoWidth": true },
-                 {
-                     "data": "StartDateFact", "name": "StartDateFact", "autoWidth": true,
-                     "type": "date ",
-                     "render": function (value) {
-                         if (value === null) return "";
-                         var pattern = /Date\(([^)]+)\)/;
-                         var results = pattern.exec(value);
-                         var dt = new Date(parseFloat(results[1]));
-                         var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                         var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                         return _d + "/" + _m + "/" + dt.getFullYear();
-                     }
-                 },
+                {
+                    "data": "StartDateFact", "name": "StartDateFact", "autoWidth": true,
+                    "type": "date ",
+                    "render": function (value) {
+                        if (value === null) return "";
+                        var pattern = /Date\(([^)]+)\)/;
+                        var results = pattern.exec(value);
+                        var dt = new Date(parseFloat(results[1]));
+                        var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                        var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                        return _d + "/" + _m + "/" + dt.getFullYear();
+                    }
+                },
                 {
                     "data": "EndDateFact", "name": "EndDateFact", "autoWidth": true,
                     "type": "date ",
@@ -215,15 +209,20 @@
 
                 { "data": "id", "name": "id", "autoWidth": false }
             ],
-            "columnDefs": [{ "visible": false, "targets": [9] }],
-            "order": [[9, "desc"]],
+            "columnDefs": [{ "visible": false, "targets": [7] }],
+            "order": [[7, "desc"]],
             "createdRow": function (row, data, rowIndex) {
                 $(row).attr('data-prgid', data.id);
                 $(row).attr('data-prgname', data.ShortName);
-                $(row).attr('class', 'context-menu-one');
+                if (data.State === 'Д') {
+                    $(row).attr('class', 'context-menu-one');
+                }
+                else {
+                    $(row).attr('class', 'context-menu-one');
+                    $(row).attr('class', 'blocked-color');
+                }
             }
         });
-
 
 
         table.columns().eq(0).each(function (colIdx) {

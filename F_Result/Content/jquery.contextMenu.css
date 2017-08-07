@@ -181,20 +181,21 @@
 }
 
 .context-menu-submenu:after {
-  position: absolute;
-  top: 50%;
-  right: .5em;
-  z-index: 1; 
-  width: 0;
-  height: 0;
-  content: '';
-  border-color: transparent transparent transparent #2f2f2f;
-  border-style: solid;
-  border-width: .25em 0 .25em .25em;
-  -webkit-transform: translateY(-50%);
-      -ms-transform: translateY(-50%);
-       -o-transform: translateY(-50%);
-          transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    right: .5em;
+    z-index: 1;
+    width: 0;
+    height: 0;
+    content: '';
+    border-color: transparent transparent transparent #2f2f2f;
+    border-style: solid;
+    border-width: .25em 0 .25em .25em;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
 /**
@@ -252,5 +253,5 @@
 }
 
 ul.context-menu-list{
-      z-index:999 !important;
+      z-index:99999 !important;
 }

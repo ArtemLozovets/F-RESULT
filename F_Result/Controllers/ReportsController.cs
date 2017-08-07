@@ -151,12 +151,28 @@ namespace F_Result.Controllers
                 else _pdsum.Add(0);
             }
 
+            var _pcSum = _pcsum.Sum(x => x.Value);
+            var _pcAvg = _pcsum.Average(x => x.Value);
+            var _pcMin = _pcsum.Min(x => x.Value);
+            var _pcMax = _pcsum.Max(x => x.Value);
 
-            return Json(new { Result = true, ChartData = _pcsum, ChartDataA = _pdsum }, JsonRequestBehavior.AllowGet);
+            var _pdSum = _pdsum.Sum(x => x.Value);
+            var _pdAvg = _pdsum.Average(x => x.Value);
+            var _pdMin = _pdsum.Min(x => x.Value);
+            var _pdMax = _pdsum.Max(x => x.Value);
 
+            return Json(new { Result = true,
+                              pcsum = _pcSum,
+                              pcavg = _pcAvg,
+                              pcmin = _pcMin,
+                              pcmax = _pcMax,
+                              pdsum = _pdSum,
+                              pdavg = _pdAvg,
+                              pdmin = _pdMin,
+                              pdmax = _pdMax, 
+                              ChartData = _pcsum, 
+                              ChartDataA = _pdsum }, JsonRequestBehavior.AllowGet);
         }
-
-
 
         protected override void Dispose(bool disposing)
         {

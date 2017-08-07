@@ -47,9 +47,13 @@
 
     </div>
 
-    <div class="row">
-        <div style="width:810px; margin: 2px auto;" id="cnvdiv">
+    <div class="row chartRow">
+        <div class="chartContainer" id="cnvdiv">
             <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+        <div class="chartInfoes">
+            <span id="pcsum" class="inStat">ДОХОДЫ</span>
+            <span id="pdsum" class="outStat">РАСХОДЫ</span>
         </div>
     </div>
 
@@ -89,6 +93,17 @@
                         if (data.Result) {
                             $("#ModeLabel").html(data.Message);
                             $('#ModeElem').val(data.Mode);
+                            var pcsum = data.pcsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pcavg = data.pcavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pcmin = data.pcmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pcmax = data.pcmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            $('#pcsum').html('SUM:&nbsp;' + pcsum + '<br />AVG:&nbsp;' + pcavg + '<br />MIN:&nbsp;' + pcmin + '<br />MAX:&nbsp;' + pcmax);
+
+                            var pdsum = data.pdsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pdavg = data.pdavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pdmin = data.pdmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            var pdmax = data.pdmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                            $('#pdsum').html('SUM:&nbsp;' + pdsum + '<br />AVG:&nbsp;' + pdavg + '<br />MIN:&nbsp;' + pdmin + '<br />MAX:&nbsp;' + pdmax);
                             DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
                         }
                         else {

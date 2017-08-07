@@ -212,6 +212,95 @@ namespace F_Result.Controllers
         }
 
 
+        [HttpPost]
+        public ActionResult LoadProjectsPartial()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _shortname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _desc = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _projecttype = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _startdatefacttxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                DateTime? _startdatefact = string.IsNullOrEmpty(_startdatefacttxt) ? (DateTime?)null : DateTime.Parse(_startdatefacttxt);
+                string _enddatefacttxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                DateTime? _enddatefact = string.IsNullOrEmpty(_enddatefacttxt) ? (DateTime?)null : DateTime.Parse(_enddatefacttxt);
+                string _startdateplantxt = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                DateTime? _startdateplan = string.IsNullOrEmpty(_startdateplantxt) ? (DateTime?)null : DateTime.Parse(_startdateplantxt);
+                string _enddateplantxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                DateTime? _enddateplan = string.IsNullOrEmpty(_enddateplantxt) ? (DateTime?)null : DateTime.Parse(_enddateplantxt);
+
+                var _projects = (from project in db.Projects
+                                 where (project.ShortName.Contains(_shortname) || string.IsNullOrEmpty(_shortname))
+                                        && (project.Desc.Contains(_desc) || string.IsNullOrEmpty(_desc))
+                                        && (project.ProjectType.Contains(_projecttype) || string.IsNullOrEmpty(_projecttype))
+                                        && (project.StartDateFact == _startdatefact || _startdatefact == null)
+                                        && (project.EndDateFact == _enddatefact || _enddatefact == null)
+                                        && (project.StartDatePlan == _startdateplan || _startdateplan == null)
+                                        && (project.EndDatePlan == _enddateplan || _enddateplan == null)
+                                 select new
+                                 {
+                                     id = project.id,
+                                     Name = project.ShortName,
+                                     Desc = project.Desc,
+                                     ProjectType = project.ProjectType,
+                                     State = project.State,
+                                     StartDateFact = project.StartDateFact,
+                                     EndDateFact = project.EndDateFact,
+                                     StartDatePlan = project.StartDatePlan,
+                                     EndDatePlan = project.EndDatePlan
+
+                                 }).AsEnumerable().Select(x => new Projects
+                                 {
+                                     id = x.id,
+                                     ShortName = x.Name,
+                                     Desc = x.Desc,
+                                     ProjectType = x.ProjectType,
+                                     State = x.State,
+                                     StartDateFact = x.StartDateFact,
+                                     EndDateFact = x.EndDateFact,
+                                     StartDatePlan = x.StartDatePlan,
+                                     EndDatePlan = x.EndDatePlan
+                                 });
+
+
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir);
+                }
+                else
+                {
+                    _projects = _projects.OrderByDescending(x => x.id).ToList();
+                }
+
+                totalRecords = _projects.Count();
+
+                var data = _projects.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public ActionResult ShowOrganizations()
         {
             return View();
