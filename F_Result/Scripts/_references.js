@@ -56,3 +56,6 @@
 /// <reference path="jquery-ui-1.12.1.min.js" />
 /// <reference path="messageclear.js" />
 /// <reference path="chart.js" />
+/// <reference path="moment-with-locales.min.js" />
+/// <reference path="moment.min.js" />
+/// <reference path="daterangepicker/jquery.daterangepicker.min.js" />

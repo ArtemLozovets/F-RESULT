@@ -5,7 +5,7 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <style>
     #sumSpan {
         text-align: right;
@@ -19,6 +19,12 @@
     .sum-container:first-child {
         margin-right: 20px;
     }
+
+	.date-picker-wrapper.date-range-pickerM .day.first-date-selected { background-color:rgba(128, 200, 64, 1) !important; }
+	.date-picker-wrapper.date-range-pickerM .day.last-date-selected { background-color: rgba(255, 99, 132, 1) !important; }
+    .date-picker-wrapper .drp_top-bar .apply-btn{ background-color : #436C98 !important; color:white !important; padding:4px !important; }
+    .date-picker-wrapper .drp_top-bar .apply-btn:hover{ background-color : #678fba !important; }
+
 </style>
 
 <div id="loadingImg">
@@ -101,32 +107,77 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
-    @*Блок скриптов для работы с DateTimePicker*@
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript">
 
-        $.datetimepicker.setLocale('ru');
+    @*Блок скриптов для работы с DateTimePicker
+        <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
+        <script type="text/javascript">
 
-        // <![CDATA[
-        jQuery(function () {
-            jQuery('.dff').datetimepicker({
-                format: 'd/m/Y',
-                formatDate: 'd/m/Y',
-                timepicker: false
+            $.datetimepicker.setLocale('ru');
+
+            // <![CDATA[
+            jQuery(function () {
+                jQuery('.dff').datetimepicker({
+                    format: 'd/m/Y',
+                    formatDate: 'd/m/Y',
+                    timepicker: false
+                });
+            });
+            // ]]>
+
+            $.validator.methods.date = function (value, element) {
+                if (value) {
+                    try {
+                        $.datepicker.parseDate('dd/MM/yy', value);
+                    } catch (ex) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        </script>*@
+
+
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('.dff').each(function () {
+                $(this).dateRangePicker(
+                     {
+                         startOfWeek: 'monday',
+                         separator: ' - ',
+                         format: 'DD/MM/YYYY',
+                         autoClose: false,
+                         monthSelect: true,
+                         yearSelect: true,
+                         customOpenAnimation: function (cb) {
+                             $(this).fadeIn(300, cb);
+                         },
+                         customCloseAnimation: function (cb) {
+                             $(this).fadeOut(300, cb);
+                         },
+                         showShortcuts: true,
+                         shortcuts:
+                            {
+                                'next': ['week', 'month', 'year']
+                            },
+
+                         time: {
+                             enabled: false
+                         },
+                         extraClass: 'date-range-pickerM'
+                     })
+                .bind('datepicker-closed', function (event, obj) {
+                    $(this).attr('title', $(this).val()).trigger('change');
+                })
+                .bind('datepicker-open', function () {
+                    $(this).data('dateRangePicker').clear();
+                });
+               
             });
         });
-        // ]]>
-
-        $.validator.methods.date = function (value, element) {
-            if (value) {
-                try {
-                    $.datepicker.parseDate('dd/MM/yy', value);
-                } catch (ex) {
-                    return false;
-                }
-            }
-            return true;
-        };
     </script>
 
     <script type="text/javascript">
@@ -234,7 +285,7 @@
         });
 
     </script>
-    
+
     <script>
         //Скрипт фильтрации списка по проекту после клика по имени проекта
         $('body').on('click', '.prgLink', function (e) {
@@ -243,7 +294,7 @@
 
         });
     </script>
-    
+
     <script>
         $('body').on('click', '#filterBtn', function () {
             $('#search-row').toggle(300);
