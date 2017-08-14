@@ -131,7 +131,7 @@
                     "url": "/Directum/LoadOrganizations",
                     "type": "POST",
                     "datatype": "json",
-                    dataSrc: function (d) {
+                    "dataSrc": function (d) {
                         if (d.data.length === 0) {
                             if (d.errormessage != "") {
                                 alert(d.errormessage);
@@ -173,16 +173,20 @@
 
     <script>
         $('body').on('click', '#orgfilterBtn', function () {
+            ClearFilterPartial();
             $('#search-row').toggle(300);
         });
 
         $('body').on('click', '#orgfilterClear', function () {
+            ClearFilterPartial();
+        });
+
+        function ClearFilterPartial() {
             var table = $('#orggridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
             });
             table.draw();
-
-        });
+        }
     </script>

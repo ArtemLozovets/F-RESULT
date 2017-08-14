@@ -178,14 +178,7 @@
     <script type="text/javascript">
         $(function () {
             $('#loadingImg').hide();
-            var table = $('#gridtable')
-                .on('xhr.dt', function (e, settings, json, xhr) {
-                    var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                        + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
-                })
-                .DataTable({
+            var table = $('#gridtable').DataTable({
                     "processing": true,
                     "serverSide": true,
                     "filter": true,
@@ -213,12 +206,16 @@
                         "url": "/Directum/LoadPayments",
                         "type": "POST",
                         "datatype": "json",
-                        dataSrc: function (d) {
+                        "dataSrc": function (d) {
                             if (d.data.length === 0) {
                                 if (d.errormessage != "") {
                                     alert(d.errormessage);
                                 }
                             }
+                            var _pSum = d.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                            var _fSum = d.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                            $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
+                                + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
                             return d.data;
                         }
                     },
@@ -292,18 +289,22 @@
 
     <script>
         $('body').on('click', '#filterBtn', function () {
+            ClearFilter();
             $('#search-row').toggle(300);
         });
 
         $('body').on('click', '#filterClear', function () {
+            ClearFilter();
+        });
+
+        function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
             });
             table.draw();
-
-        });
-    </script>
+        }
+</script>
 
 }

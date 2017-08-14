@@ -157,12 +157,7 @@
 
 
             $('#loadingImg').hide();
-            var table = $('#gridtable')
-                .on('xhr.dt', function (e, settings, json, xhr) {
-                    var _cSum = json.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
-                })
-                .DataTable({
+            var table = $('#gridtable').DataTable({
                     "processing": true,
                     "serverSide": true,
                     "filter": true,
@@ -197,6 +192,8 @@
                                     alert(d.errormessage);
                                 }
                             }
+                            var _cSum = d.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                            $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
                             return d.data;
                         },
                     },
@@ -261,18 +258,22 @@
 
     <script>
         $('body').on('click', '#filterBtn', function () {
+            ClearFilter();
             $('#search-row').toggle(300);
         });
 
         $('body').on('click', '#filterClear', function () {
+            ClearFilter();
+        });
+
+        function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
             });
             table.draw();
-
-        });
+        }
     </script>
 
 }

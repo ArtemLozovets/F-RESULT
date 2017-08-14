@@ -141,7 +141,7 @@
                     "url": "/Directum/LoadProjects",
                     "type": "POST",
                     "datatype": "json",
-                    dataSrc: function (d) {
+                    "dataSrc": function (d) {
                         if (d.data.length === 0) {
                             if (d.errormessage != "") {
                                 alert(d.errormessage);
@@ -208,13 +208,13 @@
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    
+
                     { "data": "id", "name": "id", "autoWidth": false }
 
                 ],
                 "columnDefs": [{ "visible": false, "targets": [9] }],
                 "order": [[9, "desc"]]
-                });
+            });
 
 
 
@@ -234,18 +234,22 @@
 
     <script>
         $('body').on('click', '#filterBtn', function () {
+            ClearFilter();
             $('#search-row').toggle(300);
         });
 
         $('body').on('click', '#filterClear', function () {
+            ClearFilter();
+        });
+
+        function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
             });
             table.draw();
-
-        });
+        }
     </script>
 
 }
