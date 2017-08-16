@@ -150,14 +150,26 @@
                         position: 'top',
                         fontSize: 14,
                         fontColor: '#46709D',
-                        text: 'График плановых показателей за '+_Year+' год'
+                        text: 'Анализ плановых показателей за '+_Year+' год'
                     },
                     scales: {
                         yAxes: [{
                             ticks: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                //yAxes labels currency format 
+                                callback: function (label, index, labels) {
+                                    return label.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                }
                             }
                         }]
+                    },
+                    // Tooltips currency format
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                return data.datasets[tooltipItem.datasetIndex].label + ": " + tooltipItem.yLabel.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                            }
+                        }
                     }
                 }
             });

@@ -180,10 +180,18 @@ footer {
     border-bottom: 0 !important;
 }
 
-.sb, .dff {
+.sb {
     font-size: 10px;
     margin: 0;
     padding: 3px;
+}
+
+.dff {
+    font-size: 11px;
+    margin: 0;
+    padding: 4px;
+    padding-left:6px;
+    text-align:center;
 }
 
 #search-row > th {

@@ -60,7 +60,7 @@
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Клиент" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Договор" /></th>
-                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
@@ -147,6 +147,10 @@
                          autoClose: false,
                          monthSelect: true,
                          yearSelect: true,
+                         setValue: function(s)
+                         {
+                             $(this).val(s);
+                         },
                          customOpenAnimation: function (cb) {
                              $(this).fadeIn(300, cb);
                          },
@@ -202,6 +206,16 @@
                             "sPrevious": "<"
                         }
                     },
+                    "fnDrawCallback": function (settings) {
+                        //Используем эту функцию для обновления внешних елементов. 
+                        //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                        var api = this.api();
+                        var json = api.ajax.json();
+                        var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
+                            + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                    },
                     "ajax": {
                         "url": "/Directum/LoadPayments",
                         "type": "POST",
@@ -212,10 +226,6 @@
                                     alert(d.errormessage);
                                 }
                             }
-                            var _pSum = d.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            var _fSum = d.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                                + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
                             return d.data;
                         }
                     },

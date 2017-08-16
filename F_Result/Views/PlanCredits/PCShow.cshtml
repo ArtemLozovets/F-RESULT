@@ -178,6 +178,14 @@
                         "sPrevious": "<"
                     }
                 },
+                "fnDrawCallback": function (settings) {
+                    //Используем эту функцию для обновления внешних елементов. 
+                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                },
                 "ajax": {
                     "url": "/PlanCredits/LoadPC",
                     "type": "POST",
@@ -188,8 +196,6 @@
                                 alert(d.errormessage);
                             }
                         }
-                        var _cSum = d.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
                         return d.data;
                     }
                 },
