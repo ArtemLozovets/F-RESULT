@@ -247,6 +247,18 @@ footer {
     border-radius: .7em;
 }
 
+.chartDL{
+    margin-bottom:0 !important;
+}
+
+.chartDL dt{
+    width:3em !important ;
+}
+
+.chartDL dd{
+    margin-left:3em !important ;
+}
+
 /*Blocked Row*/
 .blocked-color {
     background-color: rgba(255, 99, 132, 0.2) !important;

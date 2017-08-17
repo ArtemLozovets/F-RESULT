@@ -97,13 +97,21 @@
                             var pcavg = data.pcavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var pcmin = data.pcmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var pcmax = data.pcmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                            $('#pcsum').html('SUM:&nbsp;' + pcsum + '<br />AVG:&nbsp;' + pcavg + '<br />MIN:&nbsp;' + pcmin + '<br />MAX:&nbsp;' + pcmax);
+                            $('#pcsum').html('<tt><dl class="dl-horizontal chartDL">'
+                                + '<dt>SUM:&nbsp;</dt><dd class="text-right">' + pcsum + '</dd>'
+                                + '<dt>AVG:&nbsp;</dt><dd class="text-right">' + pcavg + '</dd>'
+                                + '<dt>MIN:&nbsp;</dt><dd class="text-right">' + pcmin + '</dd>'
+                                + '<dt>MAX:&nbsp;</dt><dd class="text-right">' + pcmax + '</dd></dl></tt>');
 
                             var pdsum = data.pdsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var pdavg = data.pdavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var pdmin = data.pdmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var pdmax = data.pdmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                            $('#pdsum').html('SUM:&nbsp;' + pdsum + '<br />AVG:&nbsp;' + pdavg + '<br />MIN:&nbsp;' + pdmin + '<br />MAX:&nbsp;' + pdmax);
+                            $('#pdsum').html('<tt><dl class="dl-horizontal chartDL">'
+                                + '<dt>SUM:&nbsp;</dt><dd class="text-right">' + pdsum + '</dd>'
+                                + '<dt>AVG:&nbsp;</dt><dd class="text-right">' + pdavg + '</dd>'
+                                + '<dt>MIN:&nbsp;</dt><dd class="text-right">' + pdmin + '</dd>'
+                                + '<dt>MAX:&nbsp;</dt><dd class="text-right">' + pdmax + '</dd></dl></tt>');
                             DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
                         }
                         else {
@@ -156,9 +164,15 @@
                         yAxes: [{
                             ticks: {
                                 beginAtZero: true,
-                                //yAxes labels currency format 
+                                //yAxes labels currency format.
+                                //Для корректного формирования значения подписи оси используем функцию toFixed()с разными параметрами.
                                 callback: function (label, index, labels) {
-                                    return label.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    if (label <= 1) {
+                                        return label.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    }
+                                    else {
+                                        return label.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    }
                                 }
                             }
                         }]

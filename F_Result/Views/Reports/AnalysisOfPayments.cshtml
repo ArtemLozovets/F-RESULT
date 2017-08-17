@@ -98,13 +98,21 @@
                             var inavg = data.inavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var inmin = data.inmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var inmax = data.inmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                            $('#insum').html('SUM:&nbsp;' + insum + '<br />AVG:&nbsp;' + inavg + '<br />MIN:&nbsp;' + inmin + '<br />MAX:&nbsp;' + inmax);
+                            $('#insum').html('<tt><dl class="dl-horizontal chartDL">'
+                                + '<dt>SUM:&nbsp;</dt><dd class="text-right">' + insum + '</dd>'
+                                + '<dt>AVG:&nbsp;</dt><dd class="text-right">' + inavg + '</dd>'
+                                + '<dt>MIN:&nbsp;</dt><dd class="text-right">' + inmin + '</dd>'
+                                + '<dt>MAX:&nbsp;</dt><dd class="text-right">' + inmax + '</dd></dl></tt>');
 
                             var outsum = data.outsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var outavg = data.outavg.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var outmin = data.outmin.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                             var outmax = data.outmax.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                            $('#outsum').html('SUM:&nbsp;' + outsum + '<br />AVG:&nbsp;' + outavg + '<br />MIN:&nbsp;' + outmin + '<br />MAX:&nbsp;' + outmax);
+                            $('#outsum').html('<tt><dl class="dl-horizontal chartDL">'
+                                + '<dt>SUM:&nbsp;</dt><dd class="text-right">' + outsum + '</dd>'
+                                + '<dt>AVG:&nbsp;</dt><dd class="text-right">' + outavg + '</dd>'
+                                + '<dt>MIN:&nbsp;</dt><dd class="text-right">' + outmin + '</dd>'
+                                + '<dt>MAX:&nbsp;</dt><dd class="text-right">' + outmax + '</dd></dl></tt>');
                             DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
                         }
                         else {
@@ -155,9 +163,15 @@
                         yAxes: [{
                             ticks: {
                                 beginAtZero: true,
-                                //yAxes labels currency format 
+                                //yAxes labels currency format.
+                                //Для корректного формирования значения подписи оси используем функцию toFixed()с разными параметрами.
                                 callback: function (label, index, labels) {
-                                    return label.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    if (label <= 1) {
+                                        return label.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    }
+                                    else {
+                                        return label.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                                    }
                                 }
                             }
                         }]
