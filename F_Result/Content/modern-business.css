@@ -265,6 +265,10 @@ footer {
 }
 
 /*Date Range Picker Block*/
+.date-picker-wrapper.no-shortcuts {
+    z-index:99999 !important;    
+}
+
 .date-picker-wrapper.date-range-pickerM .day.first-date-selected {
     background-color: rgba(128, 200, 64, 1) !important;
 }

@@ -56,8 +56,22 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _bankname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _accnum = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _datetxt = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
+
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startagrdate = null;
+                DateTime? _endagrdate = null;
+                string _datetext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_datetext))
+                {
+                    _datetext = _datetext.Trim();
+                    int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
+                    string _startagrdatetext = _datetext.Substring(0, _datetext.IndexOf('-')).Trim();
+                    string _endagrdatetext = _datetext.Substring(_datetext.IndexOf('-') + 2, _length).Trim();
+                    _startagrdate = DateTime.Parse(_startagrdatetext);
+                    _endagrdate = DateTime.Parse(_endagrdatetext);
+                }
+                //--------------------------
+
                 string _balance = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 string _note = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
@@ -69,7 +83,7 @@ namespace F_Result.Controllers
                             join usr in db.IdentityUsers on accbalance.UserId equals usr.Id
                             where (account.AccountNumber.Contains(_accnum) || string.IsNullOrEmpty(_accnum))
                                     && (account.BankName.Contains(_bankname) || string.IsNullOrEmpty(_bankname))
-                                    && (accbalance.Date == _date || _date == null)
+                                    && (accbalance.Date >= _startagrdate && accbalance.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                     && (accbalance.Note.Contains(_note) || string.IsNullOrEmpty(_note))
                                     && (usr.LastName.Contains(_userfn)

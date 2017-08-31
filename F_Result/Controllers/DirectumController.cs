@@ -166,17 +166,65 @@ namespace F_Result.Controllers
                 string _projecttype = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 string _state = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
 
-                string _startdatefacttxt = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                DateTime? _startdatefact = string.IsNullOrEmpty(_startdatefacttxt) ? (DateTime?)null : DateTime.Parse(_startdatefacttxt);
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _fsstartdate = null;
+                DateTime? _fsenddate = null;
+                string _fstarttext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_fstarttext))
+                {
+                    _fstarttext = _fstarttext.Trim();
+                    int _length = (_fstarttext.Length) - (_fstarttext.IndexOf('-') + 2);
+                    string _fsstartdatetext = _fstarttext.Substring(0, _fstarttext.IndexOf('-')).Trim();
+                    string _fsenddatetext = _fstarttext.Substring(_fstarttext.IndexOf('-') + 2, _length).Trim();
+                    _fsstartdate = DateTime.Parse(_fsstartdatetext);
+                    _fsenddate = DateTime.Parse(_fsenddatetext);
+                }
+                //--------------------------
 
-                string _enddatefacttxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                DateTime? _enddatefact = string.IsNullOrEmpty(_enddatefacttxt) ? (DateTime?)null : DateTime.Parse(_enddatefacttxt);
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _festartdate = null;
+                DateTime? _feenddate = null;
+                string _fendtext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_fendtext))
+                {
+                    _fendtext = _fendtext.Trim();
+                    int _length = (_fendtext.Length) - (_fendtext.IndexOf('-') + 2);
+                    string _festartdatetext = _fendtext.Substring(0, _fendtext.IndexOf('-')).Trim();
+                    string _feenddatetext = _fendtext.Substring(_fendtext.IndexOf('-') + 2, _length).Trim();
+                    _festartdate = DateTime.Parse(_festartdatetext);
+                    _feenddate = DateTime.Parse(_feenddatetext);
+                }
+                //--------------------------
 
-                string _startdateplantxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                DateTime? _startdateplan = string.IsNullOrEmpty(_startdateplantxt) ? (DateTime?)null : DateTime.Parse(_startdateplantxt);
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _psstartdate = null;
+                DateTime? _psenddate = null;
+                string _pstarttext = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_pstarttext))
+                {
+                    _pstarttext = _pstarttext.Trim();
+                    int _length = (_pstarttext.Length) - (_pstarttext.IndexOf('-') + 2);
+                    string _psstartdatetext = _pstarttext.Substring(0, _pstarttext.IndexOf('-')).Trim();
+                    string _psenddatetext = _pstarttext.Substring(_pstarttext.IndexOf('-') + 2, _length).Trim();
+                    _psstartdate = DateTime.Parse(_psstartdatetext);
+                    _psenddate = DateTime.Parse(_psenddatetext);
+                }
+                //--------------------------
 
-                string _enddateplantxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
-                DateTime? _enddateplan = string.IsNullOrEmpty(_enddateplantxt) ? (DateTime?)null : DateTime.Parse(_enddateplantxt);
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _pestartdate = null;
+                DateTime? _peenddate = null;
+                string _pendtext = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_pendtext))
+                {
+                    _pendtext = _pendtext.Trim();
+                    int _length = (_pendtext.Length) - (_pendtext.IndexOf('-') + 2);
+                    string _pestartdatetext = _pendtext.Substring(0, _pendtext.IndexOf('-')).Trim();
+                    string _peenddatetext = _pendtext.Substring(_pendtext.IndexOf('-') + 2, _length).Trim();
+                    _pestartdate = DateTime.Parse(_pestartdatetext);
+                    _peenddate = DateTime.Parse(_peenddatetext);
+                }
+                //--------------------------
 
                 var _projects = (from project in db.Projects
                                  where (project.FullName.Contains(_fullname) || string.IsNullOrEmpty(_fullname))
@@ -184,10 +232,10 @@ namespace F_Result.Controllers
                                         && (project.Desc.Contains(_desc) || string.IsNullOrEmpty(_desc))
                                         && (project.ProjectType.Contains(_projecttype) || string.IsNullOrEmpty(_projecttype))
                                         && (project.State.Contains(_state) || string.IsNullOrEmpty(_state))
-                                        && (project.StartDateFact == _startdatefact || _startdatefact == null)
-                                        && (project.EndDateFact == _enddatefact || _enddatefact == null)
-                                        && (project.StartDatePlan == _startdateplan || _startdateplan == null)
-                                        && (project.EndDatePlan == _enddateplan || _enddateplan == null)
+                                        && (project.StartDateFact >= _fsstartdate && project.StartDateFact <= _fsenddate || string.IsNullOrEmpty(_fstarttext)) //Диапазон дат
+                                        && (project.EndDateFact >= _festartdate && project.EndDateFact <= _feenddate || string.IsNullOrEmpty(_fendtext)) //Диапазон дат
+                                        && (project.StartDatePlan >= _psstartdate && project.StartDatePlan <= _psenddate || string.IsNullOrEmpty(_pstarttext)) //Диапазон дат
+                                        && (project.EndDatePlan >= _pestartdate && project.EndDatePlan <= _peenddate || string.IsNullOrEmpty(_pendtext)) //Диапазон дат
                                  select new { 
                                     id = project.id,
                                     FullName = project.FullName,
@@ -214,8 +262,6 @@ namespace F_Result.Controllers
                                  
                                  });
 
-
-
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
                     _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir);
@@ -229,7 +275,6 @@ namespace F_Result.Controllers
 
                 var data = _projects.Skip(skip).Take(pageSize);
                 return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
-
 
             }
             catch (Exception ex)

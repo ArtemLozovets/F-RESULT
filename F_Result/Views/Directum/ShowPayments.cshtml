@@ -65,7 +65,7 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
             </tr>
 
@@ -103,38 +103,8 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
 
-    @*Блок скриптов для работы с DateTimePicker
-        <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-        <script type="text/javascript">
-
-            $.datetimepicker.setLocale('ru');
-
-            // <![CDATA[
-            jQuery(function () {
-                jQuery('.dff').datetimepicker({
-                    format: 'd/m/Y',
-                    formatDate: 'd/m/Y',
-                    timepicker: false
-                });
-            });
-            // ]]>
-
-            $.validator.methods.date = function (value, element) {
-                if (value) {
-                    try {
-                        $.datepicker.parseDate('dd/MM/yy', value);
-                    } catch (ex) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-        </script>*@
-
-
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
-
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {

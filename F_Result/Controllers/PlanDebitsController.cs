@@ -39,8 +39,21 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _datetxt = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startagrdate = null;
+                DateTime? _endagrdate = null;
+                string _datetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_datetext))
+                {
+                    _datetext = _datetext.Trim();
+                    int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
+                    string _startagrdatetext = _datetext.Substring(0, _datetext.IndexOf('-')).Trim();
+                    string _endagrdatetext = _datetext.Substring(_datetext.IndexOf('-') + 2, _length).Trim();
+                    _startagrdate = DateTime.Parse(_startagrdatetext);
+                    _endagrdate = DateTime.Parse(_endagrdatetext);
+                }
+                //--------------------------
+
                 string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
@@ -51,7 +64,7 @@ namespace F_Result.Controllers
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
                             join org in db.Organizations on plandebit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on plandebit.UserId equals usr.Id
-                            where (plandebit.Date == _date || _date == null)
+                            where (plandebit.Date >= _startagrdate && plandebit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plandebit.Appointment.Contains(_appointment) || string.IsNullOrEmpty(_appointment))

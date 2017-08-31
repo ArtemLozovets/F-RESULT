@@ -5,7 +5,7 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
     #sumSpan {
@@ -54,7 +54,7 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm dff" style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
@@ -87,32 +87,51 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
-    @*Блок скриптов для работы с DateTimePicker*@
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript">
 
-        $.datetimepicker.setLocale('ru');
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('.dff').each(function () {
+                $(this).dateRangePicker(
+                     {
+                         language: 'ru',
+                         startOfWeek: 'monday',
+                         separator: ' - ',
+                         format: 'DD/MM/YYYY',
+                         autoClose: false,
+                         monthSelect: true,
+                         yearSelect: true,
+                         setValue: function (s) {
+                             $(this).val(s);
+                         },
+                         customOpenAnimation: function (cb) {
+                             $(this).fadeIn(300, cb);
+                         },
+                         customCloseAnimation: function (cb) {
+                             $(this).fadeOut(300, cb);
+                         },
+                         showShortcuts: false,
+                         //shortcuts:
+                         //   {
+                         //       'next': ['week', 'month', 'year']
+                         //   },
 
-        // <![CDATA[
-        jQuery(function () {
-            jQuery('.dff').datetimepicker({
-                format: 'd/m/Y',
-                formatDate: 'd/m/Y',
-                timepicker: false
+                         time: {
+                             enabled: false
+                         },
+                         extraClass: 'date-range-pickerM'
+                     })
+                .bind('datepicker-closed', function (event, obj) {
+                    $(this).attr('title', $(this).val()).trigger('change');
+                })
+                .bind('datepicker-open', function () {
+                    $(this).data('dateRangePicker').clear();
+                });
+
             });
         });
-        // ]]>
-
-        $.validator.methods.date = function (value, element) {
-            if (value) {
-                try {
-                    $.datepicker.parseDate('dd/MM/yy', value);
-                } catch (ex) {
-                    return false;
-                }
-            }
-            return true;
-        };
     </script>
 
     <script type="text/javascript">
@@ -179,7 +198,7 @@
                     }
                 },
                 "fnDrawCallback": function (settings) {
-                    //Используем эту функцию для обновления внешних елементов. 
+                    //Используем эту функцию для обновления внешних елементов.
                     //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
                     var api = this.api();
                     var json = api.ajax.json();

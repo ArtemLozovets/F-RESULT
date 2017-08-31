@@ -39,10 +39,22 @@ namespace F_Result.Controllers
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
+               
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startagrdate = null;
+                DateTime? _endagrdate = null;
+                string _datetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                if (!String.IsNullOrEmpty(_datetext))
+                {
+                    _datetext = _datetext.Trim();
+                    int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
+                    string _startagrdatetext = _datetext.Substring(0, _datetext.IndexOf('-')).Trim();
+                    string _endagrdatetext = _datetext.Substring(_datetext.IndexOf('-') + 2, _length).Trim();
+                    _startagrdate = DateTime.Parse(_startagrdatetext);
+                    _endagrdate = DateTime.Parse(_endagrdatetext);
+                }
+                //--------------------------
 
-
-                string _datetxt = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                DateTime? _date = string.IsNullOrEmpty(_datetxt) ? (DateTime?)null : DateTime.Parse(_datetxt);
                 string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
@@ -50,13 +62,11 @@ namespace F_Result.Controllers
                 string _docnumber = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
-
-
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id
                             join org in db.Organizations on actualdebit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
-                            where (actualdebit.Date == _date || _date == null)
+                            where (actualdebit.Date >= _startagrdate && actualdebit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
