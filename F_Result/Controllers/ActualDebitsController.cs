@@ -40,10 +40,15 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
                
+                string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _appoinment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _docnumber = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -55,12 +60,7 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _appoinment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _docnumber = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id

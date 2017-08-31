@@ -39,10 +39,14 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
+                string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _appointment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -53,12 +57,7 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-
-                string _sum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _projectname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _appointment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from plandebit in db.PlanDebits
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
@@ -244,10 +243,10 @@ namespace F_Result.Controllers
             }
 
             TempData["MessageError"] = "Ошибка валидации модели";
-            
+
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-            
+
             return View(planDebit);
         }
 
@@ -259,7 +258,7 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-           PlanDebit planDebit = db.PlanDebits.Find(id);
+            PlanDebit planDebit = db.PlanDebits.Find(id);
             if (planDebit == null)
             {
                 return HttpNotFound();

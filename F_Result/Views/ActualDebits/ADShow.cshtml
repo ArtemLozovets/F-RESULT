@@ -56,23 +56,23 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер документа" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
-                <th>Дата</th>
-                <th>Сумма</th>
                 <th>Проект</th>
                 <th>Организация</th>
                 <th>Назначение</th>
                 <th>Номер документа</th>
                 <th>Пользователь</th>
+                <th>Дата</th>
+                <th>Сумма</th>
             </tr>
 
         </thead>
@@ -182,6 +182,7 @@
                 "filter": true,
                 "orderMulti": true,
                 "responsive": true,
+                "pageLength": 25, // Количество записей в таблице по умолчанию
                 "pagingType": "simple_numbers",
                 //"dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +    "<'row'<'col-sm-12'tr>>" +    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
@@ -207,7 +208,7 @@
                     var api = this.api();
                     var json = api.ajax.json();
                     var _cSum = json.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
                 },
                 "ajax": {
                     "url": "/ActualDebits/LoadAD",
@@ -225,6 +226,16 @@
                 "order": [[0, "desc"]],
                 "columns": [
                     {
+                        "data": "ProjectName", "name": "ProjectName", "autoWidth": true,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="#" class="prgLink">' + data + '</a>';
+                        }
+                    },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
+                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true },
+                    {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",
                         "render": function (value) {
@@ -238,16 +249,6 @@
                         }
                     },
                     { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
-                    {
-                        "data": "ProjectName", "name": "ProjectName", "autoWidth": true,
-                        "render": function (data, type, full, meta) {
-                            return '<a href="#" class="prgLink">' + data + '</a>';
-                        }
-                    },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
-                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
-                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
 
                 ],
                 "createdRow": function (row, data, rowIndex) {

@@ -57,20 +57,20 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Банк" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Счет" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
                 <th>Организация</th>
                 <th>Банк</th>
                 <th>Счет</th>
-                <th>Дата</th>
-                <th>Сумма</th>
                 <th>Примечание</th>
                 <th>Пользователь</th>
+                <th>Дата</th>
+                <th>Сумма</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -177,6 +177,7 @@
                 "stateSave": true,
                 "orderMulti": true,
                 "responsive": true,
+                "pageLength": 25, // Количество записей в таблице по умолчанию
                 "pagingType": "simple_numbers",
                 "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
                     "<'row'<'col-sm-12'tr>>" +
@@ -213,22 +214,22 @@
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "BankName", "name": "BankName", "autoWidth": true },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
-                    {
-                        "data": "Date", "name": "Date", "autoWidth": true,
-                        "type": "date ",
-                        "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
-                        }
-                    },
-                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     { "data": "Note", "name": "Note", "autoWidth": true },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true },
+                     {
+                         "data": "Date", "name": "Date", "autoWidth": true,
+                         "type": "date ",
+                         "render": function (value) {
+                             if (value === null) return "";
+                             var pattern = /Date\(([^)]+)\)/;
+                             var results = pattern.exec(value);
+                             var dt = new Date(parseFloat(results[1]));
+                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                             var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                             return _d + "/" + _m + "/" + dt.getFullYear();
+                         }
+                     },
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
 
                 ],
                 "createdRow": function (row, data, rowIndex) {

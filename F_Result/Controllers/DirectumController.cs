@@ -59,7 +59,7 @@ namespace F_Result.Controllers
                 string _summtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 string _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 string _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _paymentdesc = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
@@ -75,10 +75,9 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext);
                 }
                 //--------------------------
-                
-                
-                string _paymentdesc = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
 
+                string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+                
                 var _payments = (from payment in db.Payments
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))

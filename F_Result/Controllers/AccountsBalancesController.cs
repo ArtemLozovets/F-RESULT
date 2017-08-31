@@ -56,11 +56,12 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _bankname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _accnum = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-
+                string _note = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -72,10 +73,7 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _balance = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _note = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-
+                string _balance = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from accbalance in db.AccountsBalances
                             join account in db.Accounts on accbalance.AccountId equals account.AccountId

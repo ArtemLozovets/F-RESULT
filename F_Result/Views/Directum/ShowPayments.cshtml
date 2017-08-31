@@ -19,7 +19,6 @@
     .sum-container:first-child {
         margin-right: 20px;
     }
-
 </style>
 
 <div id="loadingImg">
@@ -64,9 +63,9 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
+                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
@@ -85,9 +84,9 @@
                 <th>Сумма</th>
                 <th>Тип</th>
                 @*<th>Менеджер</th>*@
-                <th>Сумма</th>
-                <th>Дата</th>
                 <th>Тип</th>
+                <th>Дата</th>
+                <th>Сумма</th>
             </tr>
         </thead>
     </table>
@@ -111,15 +110,14 @@
             $('.dff').each(function () {
                 $(this).dateRangePicker(
                      {
-                         language:'ru',
+                         language: 'ru',
                          startOfWeek: 'monday',
                          separator: ' - ',
                          format: 'DD/MM/YYYY',
                          autoClose: false,
                          monthSelect: true,
                          yearSelect: true,
-                         setValue: function(s)
-                         {
+                         setValue: function (s) {
                              $(this).val(s);
                          },
                          customOpenAnimation: function (cb) {
@@ -145,7 +143,7 @@
                 .bind('datepicker-open', function () {
                     $(this).data('dateRangePicker').clear();
                 });
-               
+
             });
         });
     </script>
@@ -154,94 +152,95 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
-                    "processing": true,
-                    "serverSide": true,
-                    "filter": true,
-                    "orderMulti": true,
-                    "responsive": true,
-                    "pagingType": "simple_numbers",
-                    "dom": "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
-                            "<'row'<'col-sm-12'tr>>" +
-                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    "language": {
-                        "lengthMenu": "Записей: _MENU_",
-                        "zeroRecords": "Записи отсутствуют",
-                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                        "infoEmpty": "Записи отсутствуют",
-                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                        "search": "Поиск",
-                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                        "sInfoThousands": " ",
-                        "oPaginate": {
-                            "sNext": ">",
-                            "sPrevious": "<"
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pageLength": 25, // Количество записей в таблице по умолчанию
+                "pagingType": "simple_numbers",
+                "dom": "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "fnDrawCallback": function (settings) {
+                    //Используем эту функцию для обновления внешних елементов.
+                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
+                        + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                },
+                "ajax": {
+                    "url": "/Directum/LoadPayments",
+                    "type": "POST",
+                    "datatype": "json",
+                    "dataSrc": function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    {
+                        "data": "Project", "name": "Project", "autoWidth": true,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="#" class="prgLink">' + data + '</a>';
                         }
                     },
-                    "fnDrawCallback": function (settings) {
-                        //Используем эту функцию для обновления внешних елементов. 
-                        //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
-                        var api = this.api();
-                        var json = api.ajax.json();
-                        var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                            + '<span class="sum-container">&sum;<sub>оплат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
-                    },
-                    "ajax": {
-                        "url": "/Directum/LoadPayments",
-                        "type": "POST",
-                        "datatype": "json",
-                        "dataSrc": function (d) {
-                            if (d.data.length === 0) {
-                                if (d.errormessage != "") {
-                                    alert(d.errormessage);
-                                }
-                            }
-                            return d.data;
+                    { "data": "Client", "name": "Client", "autoWidth": true },
+                    { "data": "Agreement", "name": "Agreement", "autoWidth": true },
+                    {
+                        "data": "AgrDate", "name": "AgrDate", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    "columns": [
-                        {
-                            "data": "Project", "name": "Project", "autoWidth": true,
-                            "render": function (data, type, full, meta) {
-                                return '<a href="#" class="prgLink">' + data + '</a>';
-                            }
-                        },
-                        { "data": "Client", "name": "Client", "autoWidth": true },
-                        { "data": "Agreement", "name": "Agreement", "autoWidth": true },
-                        {
-                            "data": "AgrDate", "name": "AgrDate", "autoWidth": true,
-                            "type": "date ",
-                            "render": function (value) {
-                                if (value === null) return "";
-                                var pattern = /Date\(([^)]+)\)/;
-                                var results = pattern.exec(value);
-                                var dt = new Date(parseFloat(results[1]));
-                                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                                return _d + "/" + _m + "/" + dt.getFullYear();
-                            }
-                        },
-                        { "data": "Summ", "name": "Summ", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
-                        { "data": "AgrType", "name": "AgrType", "autoWidth": true },
-                        { "data": "Manager", "name": "Manager", "autoWidth": true },
-                        { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
-                        {
-                            "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
-                            "render": function (value) {
-                                if (value === null) return "";
-                                var pattern = /Date\(([^)]+)\)/;
-                                var results = pattern.exec(value);
-                                var dt = new Date(parseFloat(results[1]));
-                                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                                return _d + "/" + _m + "/" + dt.getFullYear();
-                            }
-                        },
-                        { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true }
-                    ],
-                    "order": [[8, "desc"]]
-                });
+                    { "data": "Summ", "name": "Summ", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
+                    { "data": "AgrType", "name": "AgrType", "autoWidth": true },
+                    { "data": "Manager", "name": "Manager", "autoWidth": true },
+                    { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true },
+                    {
+                        "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        }
+                    },
+                    { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
+                ],
+                "order": [[8, "desc"]]
+            });
 
 
 
@@ -286,6 +285,6 @@
             });
             table.draw();
         }
-</script>
+    </script>
 
 }
