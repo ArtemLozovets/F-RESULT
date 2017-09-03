@@ -15,6 +15,9 @@ namespace F_Result.Models
         [Display(Name = "Проект")]
         public string Project { get; set; }
 
+        [Display(Name = "Руководитель проекта")]
+        public string Chief { get; set; }
+
         [Display(Name = "Клиент")]
         public string Client { get; set; }
 

@@ -38,33 +38,17 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _client = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _agreement = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                
-                // Парсинг диапазона дат из DateRangePicker
-                DateTime? _startagrdate = null;
-                DateTime? _endagrdate = null;
-                string _agrdatetext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                if(!String.IsNullOrEmpty(_agrdatetext))
-                {
-                    _agrdatetext = _agrdatetext.Trim();
-                    int _length = (_agrdatetext.Length) - (_agrdatetext.IndexOf('-') + 2);
-                    string _startagrdatetext = _agrdatetext.Substring(0, _agrdatetext.IndexOf('-')).Trim();
-                    string _endagrdatetext = _agrdatetext.Substring(_agrdatetext.IndexOf('-') + 2, _length).Trim();
-                    _startagrdate = DateTime.Parse(_startagrdatetext);
-                    _endagrdate =  DateTime.Parse(_endagrdatetext);
-                }
-                //--------------------------
-
-                string _summtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _agrtype = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _manager = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _paymentdesc = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _chief = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _client = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _agreement = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _agrtype = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _manager = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _paymentdesc = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
-                string _paymentdatetext = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetext = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
@@ -76,13 +60,13 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+                string _paymenttxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 
                 var _payments = (from payment in db.Payments
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
+                                        && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
                                         && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
-                                        && (payment.AgrDate >= _startagrdate && payment.AgrDate <= _endagrdate || string.IsNullOrEmpty(_agrdatetext)) //Диапазон дат
                                         && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
@@ -90,6 +74,7 @@ namespace F_Result.Controllers
                                  select payment).AsEnumerable().Select(x => new Payments
                                  {
                                      Project = x.Project,
+                                     Chief = x.Chief,
                                      Client = x.Client,
                                      Agreement = x.Agreement,
                                      AgrDate = x.AgrDate,
@@ -101,7 +86,6 @@ namespace F_Result.Controllers
                                      PaymentDesc = x.PaymentDesc
                                  }).ToList();
 
-                _payments = _payments.Where(x => (x.Summ.ToString().Contains(_summtxt) || string.IsNullOrEmpty(_summtxt)) && (x.Payment.ToString().Contains(_paymenttxt) || string.IsNullOrEmpty(_paymenttxt))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

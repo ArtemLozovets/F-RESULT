@@ -195,6 +195,10 @@
     <Compile Include="Migrations\201706241550073_prec.Designer.cs">
       <DependentUpon>201706241550073_prec.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709031901324_AddChief.cs" />
+    <Compile Include="Migrations\201709031901324_AddChief.Designer.cs">
+      <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -656,6 +660,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706241550073_prec.resx">
       <DependentUpon>201706241550073_prec.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709031901324_AddChief.resx">
+      <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -19,6 +19,7 @@
     .sum-container:first-child {
         margin-right: 20px;
     }
+
 </style>
 
 <div id="loadingImg">
@@ -57,33 +58,29 @@
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Клиент" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Руководитель проекта" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Заказчик" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Договор" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Менеджер" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Куратор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
-                <th rowspan="2">Проект</th>
-                <th rowspan="2">Клиент</th>
+                <th colspan="2">Проект</th>
                 <th colspan="4">Договор</th>
-                <th rowspan="2">Менеджер</th>
                 <th colspan="3">Оплата</th>
             </tr>
 
             <tr role="row">
-                @*<th>Проект</th>*@
-                @*<th>Клиент</th>*@
+                <th>Проект</th>
+                <th>Руководитель</th>
+                <th>Заказчик</th>
                 <th>Договор</th>
-                <th>Дата</th>
-                <th>Сумма</th>
                 <th>Тип</th>
-                @*<th>Менеджер</th>*@
+                <th>Куратор</th>
                 <th>Тип</th>
                 <th>Дата</th>
                 <th>Сумма</th>
@@ -206,24 +203,20 @@
                             return '<a href="#" class="prgLink">' + data + '</a>';
                         }
                     },
+                    { "data": "Chief", "name": "Chief", "autoWidth": true },
                     { "data": "Client", "name": "Client", "autoWidth": true },
-                    { "data": "Agreement", "name": "Agreement", "autoWidth": true },
                     {
-                        "data": "AgrDate", "name": "AgrDate", "autoWidth": true,
-                        "type": "date ",
-                        "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        "data": "Agreement",
+                        "name": "Agreement",
+                        "autoWidth": true,
+                        "render": function (data, type, row, meta) {
+                          //  var titleStr = 'Дата договора:' + data.AgrDate + '\r\nСумма договора: ' + data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                            return '<span title="'+titleStr+'>'+data+'</span>';
                         }
                     },
-                    { "data": "Summ", "name": "Summ", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
                     { "data": "AgrType", "name": "AgrType", "autoWidth": true },
                     { "data": "Manager", "name": "Manager", "autoWidth": true },
+                   
                     { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true },
                     {
                         "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
@@ -239,9 +232,8 @@
                     },
                     { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
                 ],
-                "order": [[8, "desc"]]
+                "order": [[7, "desc"]]
             });
-
 
 
             table.columns().eq(0).each(function (colIdx) {
