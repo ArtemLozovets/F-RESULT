@@ -208,11 +208,8 @@
                     {
                         "data": "Agreement",
                         "name": "Agreement",
+                        "class": "AgrName",
                         "autoWidth": true,
-                        "render": function (data, type, row, meta) {
-                          //  var titleStr = 'Дата договора:' + data.AgrDate + '\r\nСумма договора: ' + data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                            return '<span title="'+titleStr+'>'+data+'</span>';
-                        }
                     },
                     { "data": "AgrType", "name": "AgrType", "autoWidth": true },
                     { "data": "Manager", "name": "Manager", "autoWidth": true },
@@ -221,17 +218,20 @@
                     {
                         "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
                         "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
+                            return formatDate(value);
                         }
                     },
                     { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
                 ],
+                "createdRow": function (row, data, rowIndex) {
+                    var _summ = 0;
+                    var _date = formatDate(data.AgrDate);
+                    if (data.Summ > 0) {
+                       _summ = data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    }
+                    var titleStr = 'Дата договора: ' + _date + '\r\nСумма договора: ' + _summ;
+                    $('.AgrName', $(row)).attr('title', titleStr);
+                },
                 "order": [[7, "desc"]]
             });
 
@@ -247,6 +247,16 @@
             });
 
         });
+
+        function formatDate(value) {
+            if (value === null) return "";
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+            return _d + "/" + _m + "/" + dt.getFullYear();
+        };
 
     </script>
 
