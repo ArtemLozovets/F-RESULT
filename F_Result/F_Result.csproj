@@ -645,11 +645,9 @@
     <Content Include="Views\Reports\AnalysisOfPayments.cshtml" />
     <Content Include="Views\Reports\AnalysisOfPlanPayments.cshtml" />
     <Content Include="Views\Accounts\ACShowPartial.cshtml" />
-    <Content Include="Views\PlanningPeriods\Create.cshtml" />
-    <Content Include="Views\PlanningPeriods\Delete.cshtml" />
-    <Content Include="Views\PlanningPeriods\Details.cshtml" />
-    <Content Include="Views\PlanningPeriods\Edit.cshtml" />
-    <Content Include="Views\PlanningPeriods\Index.cshtml" />
+    <Content Include="Views\PlanningPeriods\PPCreate.cshtml" />
+    <Content Include="Views\PlanningPeriods\PPDelete.cshtml" />
+    <Content Include="Views\PlanningPeriods\PPEdit.cshtml" />
     <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
   </ItemGroup>
   <ItemGroup>

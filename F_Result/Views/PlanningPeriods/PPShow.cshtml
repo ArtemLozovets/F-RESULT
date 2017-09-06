@@ -43,19 +43,17 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Полное имя" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Имя" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="СТ" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название периода" /></th>
             </tr>
 
             <tr role="row">
-                <th>Полное имя</th>
-                <th>Имя</th>
                 <th>Код</th>
-                <th title="Состояние">СТ</th>
+                <th>Название периода</th>
+
             </tr>
         </thead>
+        <tbody></tbody>
     </table>
 
     <a href="#" class="scrollup1">Наверх</a>
@@ -69,36 +67,39 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
-    @*Блок скриптов для работы с DateTimePicker*@
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript">
-
-        $.datetimepicker.setLocale('ru');
-
-        // <![CDATA[
-        jQuery(function () {
-            jQuery('.dff').datetimepicker({
-                format: 'd/m/Y',
-                formatDate: 'd/m/Y',
-                timepicker: false
-            });
-        });
-        // ]]>
-
-        $.validator.methods.date = function (value, element) {
-            if (value) {
-                try {
-                    $.datepicker.parseDate('dd/MM/yy', value);
-                } catch (ex) {
-                    return false;
-                }
-            }
-            return true;
-        };
-    </script>
 
     <script type="text/javascript">
         $(function () {
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    switch (key) {
+                        case 'add':
+                            window.location.href = "/PlanningPeriods/PPCreate/";
+                            break;
+                        case 'edit':
+                            window.location.href = "/PlanningPeriods/PPEdit/" + $(this).data('periodid');
+                            break;
+                        case 'delete':
+                            window.location.href = "/PlanningPeriods/PPDelete/" + $(this).data('periodid');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "add": { name: "Создать", icon: "add" },
+                    "edit": { name: "Редактировать", icon: "edit" },
+                    "delete": { name: "Удалить", icon: "delete" },
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                window.location.href = "/PlanningPeriods/PPEdit/" + $(this).data('periodid');
+            });
+
+
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "processing": true,
@@ -124,7 +125,7 @@
                     }
                 },
                 "ajax": {
-                    "url": "/Directum/LoadDUsers",
+                    "url": "/PlanningPeriods/LoadPP",
                     "type": "POST",
                     "datatype": "json",
                     "dataSrc": function (d) {
@@ -137,22 +138,17 @@
                     }
                 },
                 "columns": [
-                    { "data": "FullName", "name": "FullName", "autoWidth": true },
-                    { "data": "Name", "name": "Name", "autoWidth": true },
-                    { "data": "Code", "name": "Code", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true },
-                    { "data": "id", "name": "id", "autoWidth": false }
+                    { "data": "PlanningPeriodId", "name": "PlanningPeriodId", "autoWidth": true },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true },
                 ],
-                "columnDefs": [{ "visible": false, "targets": [4] }],
-                "order": [[4, "desc"]],
+                //  "columnDefs": [{ "visible": false, "targets": [4] }],
+                "order": [[0, "asc"]],
                 "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-userid', data.id);
+                    $(row).attr('data-periodid', data.PlanningPeriodId);
                     $(row).attr('class', 'context-menu-one');
                 }
 
             });
-
-
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
