@@ -183,6 +183,7 @@
     <Compile Include="Controllers\DirectumController.cs" />
     <Compile Include="Controllers\PlanCreditsController.cs" />
     <Compile Include="Controllers\PlanDebitsController.cs" />
+    <Compile Include="Controllers\PlanningPeriodsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -208,6 +209,7 @@
     <Compile Include="Models\Payments.cs" />
     <Compile Include="Models\PlanCredit.cs" />
     <Compile Include="Models\PlanDebit.cs" />
+    <Compile Include="Models\PlanningPeriod.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\DUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -643,6 +645,12 @@
     <Content Include="Views\Reports\AnalysisOfPayments.cshtml" />
     <Content Include="Views\Reports\AnalysisOfPlanPayments.cshtml" />
     <Content Include="Views\Accounts\ACShowPartial.cshtml" />
+    <Content Include="Views\PlanningPeriods\Create.cshtml" />
+    <Content Include="Views\PlanningPeriods\Delete.cshtml" />
+    <Content Include="Views\PlanningPeriods\Details.cshtml" />
+    <Content Include="Views\PlanningPeriods\Edit.cshtml" />
+    <Content Include="Views\PlanningPeriods\Index.cshtml" />
+    <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -106,6 +106,16 @@ namespace F_Result.Models
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.AccountsBalance)
             .HasForeignKey(m => m.UserId);
+
+            modelBuilder.Entity<PlanDebit>()
+            .HasRequired(m => m.PlanningPeriod)
+            .WithMany(m => m.PlanDebit)
+            .HasForeignKey(m => m.PeriodId);
+
+            modelBuilder.Entity<PlanCredit>()
+            .HasRequired(m => m.PlanningPeriod)
+            .WithMany(m => m.PlanCredit)
+            .HasForeignKey(m => m.PeriodId);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
@@ -113,5 +123,6 @@ namespace F_Result.Models
         public System.Data.Entity.DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.Account> Accounts { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
     }
 }

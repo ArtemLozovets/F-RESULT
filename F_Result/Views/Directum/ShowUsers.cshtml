@@ -5,7 +5,6 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
@@ -70,33 +69,6 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
-    @*Блок скриптов для работы с DateTimePicker*@
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript">
-
-        $.datetimepicker.setLocale('ru');
-
-        // <![CDATA[
-        jQuery(function () {
-            jQuery('.dff').datetimepicker({
-                format: 'd/m/Y',
-                formatDate: 'd/m/Y',
-                timepicker: false
-            });
-        });
-        // ]]>
-
-        $.validator.methods.date = function (value, element) {
-            if (value) {
-                try {
-                    $.datepicker.parseDate('dd/MM/yy', value);
-                } catch (ex) {
-                    return false;
-                }
-            }
-            return true;
-        };
-    </script>
 
     <script type="text/javascript">
         $(function () {

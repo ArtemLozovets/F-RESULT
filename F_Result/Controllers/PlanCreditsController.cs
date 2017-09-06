@@ -162,7 +162,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId")] PlanCredit planCredit)
+        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanCredit planCredit)
         {
             if (ModelState.IsValid)
             {
@@ -174,7 +174,6 @@ namespace F_Result.Controllers
                         var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
                         planCredit.UserId = user;
                     }
-
                     db.PlanCredits.Add(planCredit);
                     db.SaveChanges();
                     TempData["MessageOK"] = "Информация добавлена";
@@ -220,7 +219,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment")] PlanCredit planCredit)
+        public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanCredit planCredit)
         {
 
             if (ModelState.IsValid)

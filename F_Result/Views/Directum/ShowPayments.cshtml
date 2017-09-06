@@ -235,7 +235,6 @@
                 "order": [[7, "desc"]]
             });
 
-
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
                     table.column(colIdx).search(this.value).draw();

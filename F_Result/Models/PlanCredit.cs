@@ -36,6 +36,9 @@ namespace F_Result.Models
         public string UserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
+        public int PeriodId { get; set; } 
+        public virtual PlanningPeriod PlanningPeriod { get; set; }
+
         [NotMapped]
         [Display(Name = "Пользователь")]
         public string UserFN { get; set; }

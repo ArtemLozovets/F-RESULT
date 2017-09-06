@@ -96,7 +96,7 @@ namespace F_Result.Controllers
                     _payments = _payments.OrderByDescending(x=>x.PaymentDate).ToList();
                 }
 
-                var pSum = _payments.Sum(x => x.Summ);
+                var pSum = _payments.GroupBy(x=>new { x.Agreement, x.AgrDate, x.Summ }).Sum(x=>x.Select(y=>y.Summ).FirstOrDefault());
                 var fSum = _payments.Sum(x => x.Payment);
 
                 totalRecords = _payments.Count();

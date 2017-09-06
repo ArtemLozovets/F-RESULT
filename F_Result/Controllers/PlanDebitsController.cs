@@ -158,7 +158,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId")] PlanDebit planDebit)
+        public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanDebit planDebit)
         {
             if (ModelState.IsValid)
             {
@@ -212,7 +212,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment")] PlanDebit planDebit)
+        public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanDebit planDebit)
         {
 
             if (ModelState.IsValid)

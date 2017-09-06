@@ -48,6 +48,7 @@
         @using (Html.BeginForm("PDCreate", "PlanDebits", FormMethod.Post, new { id = "PDForm" }))
         {
             @Html.AntiForgeryToken()
+            @Html.Hidden("PeriodId", 2)
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })

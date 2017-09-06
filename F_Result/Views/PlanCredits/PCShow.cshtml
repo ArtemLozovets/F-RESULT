@@ -204,7 +204,7 @@
                     var api = this.api();
                     var json = api.ajax.json();
                     var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html('&sum;<sub>фильтр. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
                 },
                 "ajax": {
                     "url": "/PlanCredits/LoadPC",
@@ -219,7 +219,7 @@
                         return d.data;
                     }
                 },
-                "order": [[0, "desc"]],
+                "order": [[4, "desc"]],
                 "columns": [
                     {
                         "data": "ProjectName", "name": "ProjectName", "autoWidth": true,
