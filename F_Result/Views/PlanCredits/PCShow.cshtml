@@ -51,6 +51,7 @@
             <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
@@ -60,6 +61,9 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
                 <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th>
+                    @Html.DropDownList("MyList", (SelectList)ViewData["periodItems"], "- Период -", new { @class= "form-control input-sm sb" })
+                </th>
             </tr>
 
             <tr role="row">
@@ -69,6 +73,7 @@
                 <th>Пользователь</th>
                 <th>Дата</th>
                 <th>Сумма</th>
+                <th>Период</th>
             </tr>
 
         </thead>
@@ -243,8 +248,8 @@
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         }
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
-
+                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true }
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.PlanCreditId);

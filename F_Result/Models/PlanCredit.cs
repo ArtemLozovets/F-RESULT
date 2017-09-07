@@ -50,5 +50,9 @@ namespace F_Result.Models
         [NotMapped]
         [Display(Name = "Организация")]
         public string OrganizationName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Период")]
+        public string PeriodName { get; set; }
     }
 }

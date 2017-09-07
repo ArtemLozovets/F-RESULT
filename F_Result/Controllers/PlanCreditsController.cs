@@ -18,6 +18,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PCShow()
         {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
@@ -59,15 +60,18 @@ namespace F_Result.Controllers
                 //--------------------------
 
                 string _sum = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                int? _period = Convert.ToInt16(Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString());
 
                 var _ads = (from plancredit in db.PlanCredits
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
                             join org in db.Organizations on plancredit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on plancredit.UserId equals usr.Id
+                            join pperiod in db.PlanningPeriods on plancredit.PeriodId equals pperiod.PlanningPeriodId
                             where (plancredit.Date >= _startagrdate && plancredit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
+                                        && (pperiod.PlanningPeriodId == Convert.ToInt16(_period) || _period == null)
                                         && (usr.LastName.Contains(_userfn)
                                             || usr.FirstName.Contains(_userfn)
                                             || usr.MiddleName.Contains(_userfn)
@@ -83,7 +87,8 @@ namespace F_Result.Controllers
                                 UserId = plancredit.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                                 ProjectName = prg.ShortName,
-                                OrgName = org.Title
+                                OrgName = org.Title,
+                                PeriodName = pperiod.PeriodName
                             }).AsEnumerable().Select(x => new PlanCredit
                             {
                                 PlanCreditId = x.PlanCreditId,
@@ -95,7 +100,8 @@ namespace F_Result.Controllers
                                 OrganizationName = x.OrgName,
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
-                                UserFN = x.UserFN
+                                UserFN = x.UserFN,
+                                PeriodName = x.PeriodName
                             }).ToList();
 
                 _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)).ToList();

@@ -93,9 +93,21 @@ namespace F_Result.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.PlanningPeriods.Add(planningPeriod);
-                db.SaveChanges();
-                return RedirectToAction("PPShow");
+                try
+                {
+                    db.PlanningPeriods.Add(planningPeriod);
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация добавлена";
+                    return RedirectToAction("PPShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
+
             }
 
             return View(planningPeriod);
@@ -125,9 +137,22 @@ namespace F_Result.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(planningPeriod).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("PPShow");
+                try
+                {
+
+                    db.Entry(planningPeriod).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация обновлена";
+                    return RedirectToAction("PPShow");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
+
             }
             return View(planningPeriod);
         }
@@ -154,10 +179,21 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            PlanningPeriod planningPeriod = db.PlanningPeriods.Find(id);
-            db.PlanningPeriods.Remove(planningPeriod);
-            db.SaveChanges();
-            return RedirectToAction("PPShow");
+            try
+            {
+                PlanningPeriod planningPeriod = db.PlanningPeriods.Find(id);
+                db.PlanningPeriods.Remove(planningPeriod);
+                db.SaveChanges();
+                TempData["MessageOK"] = "Информация удалена";
+                return RedirectToAction("PPShow");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)
