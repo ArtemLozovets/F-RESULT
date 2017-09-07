@@ -141,17 +141,34 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PlanCredit planCredit = db.PlanCredits.Find(id);
+            PlanCredit planCredit = (from _pc in db.PlanCredits
+                                   join _pname in db.Projects on _pc.ProjectId equals _pname.id
+                                   join _org in db.Organizations on _pc.OrganizationId equals _org.id
+                                   join _period in db.PlanningPeriods on _pc.PeriodId equals _period.PlanningPeriodId
+                                   where (_pc.PlanCreditId == id)
+                                   select new
+                                   {
+                                       PlanCreditId = _pc.PlanCreditId,
+                                       Sum = _pc.Sum,
+                                       Date = _pc.Date,
+                                       ProjectName = _pname.ShortName,
+                                       OrganizationName = _org.Title,
+                                       PeriodName = _period.PeriodName,
+                                       Appointment = _pc.Appointment
+                                   }).AsEnumerable().Select(x => new PlanCredit
+                                   {
+                                       PlanCreditId = x.PlanCreditId,
+                                       Sum = x.Sum,
+                                       Date = x.Date,
+                                       ProjectName = x.ProjectName,
+                                       OrganizationName = x.OrganizationName,
+                                       PeriodName = x.PeriodName,
+                                       Appointment = x.Appointment
+                                   }).FirstOrDefault();
             if (planCredit == null)
             {
                 return HttpNotFound();
             }
-
-            string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
-            planCredit.ProjectName = _prgName;
-
-            string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-            planCredit.OrganizationName = _orgName;
 
             return View(planCredit);
         }
@@ -162,6 +179,7 @@ namespace F_Result.Controllers
         {
             PlanCredit _model = new PlanCredit();
             _model.Date = DateTime.Today;
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View(_model);
         }
 
@@ -218,6 +236,8 @@ namespace F_Result.Controllers
 
             string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             ViewData["OrganizationName"] = _orgName;
+
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
             return View(planCredit);
         }

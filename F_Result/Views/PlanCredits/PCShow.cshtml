@@ -92,11 +92,11 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
-    
-@*Блок скриптов для работы с DateRangePicker*@
-<script src="~/Scripts/moment.min.js"></script>
-<script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
-<script>
+
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
         $(function () {
             $('.dff').each(function () {
                 $(this).dateRangePicker(
@@ -137,7 +137,7 @@
 
             });
         });
-</script>
+    </script>
 
     <script type="text/javascript">
         $(function () {
@@ -204,7 +204,7 @@
                     }
                 },
                 "fnDrawCallback": function (settings) {
-                    //Используем эту функцию для обновления внешних елементов. 
+                    //Используем эту функцию для обновления внешних елементов.
                     //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
                     var api = this.api();
                     var json = api.ajax.json();
@@ -235,7 +235,7 @@
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true },
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true },
-                     { "data": "PeriodName", "name": "PeriodName", "autoWidth": true },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",

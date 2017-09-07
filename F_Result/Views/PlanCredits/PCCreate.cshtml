@@ -48,7 +48,6 @@
         @using (Html.BeginForm("PCCreate", "PlanCredits", FormMethod.Post, new { id = "PCForm" }))
         {
             @Html.AntiForgeryToken()
-            @Html.Hidden("PeriodId", 2)
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -127,6 +126,14 @@
                             </span>
                         </div>
                         @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PeriodName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.DropDownList("PeriodId", (SelectList)ViewData["periodItems"], "- Период -", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.PeriodId, "", new { @class = "text-danger" })
                     </div>
                 </div>
 

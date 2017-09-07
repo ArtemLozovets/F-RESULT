@@ -20,6 +20,18 @@
         margin-right: 20px;
     }
 
+    td.prgCell, td.chiefCell, td.clientCell, td.agrCell {
+        cursor: pointer;
+    }
+
+        td.prgCell:before, td.chiefCell:before, td.clientCell:before, td.agrCell:before {
+            font-family: FontAwesome;
+            content: "\f0b0";
+            display: inline-block;
+            padding-right: 3px;
+            vertical-align: middle;
+            color: #ddd;
+        }
 </style>
 
 <div id="loadingImg">
@@ -58,9 +70,9 @@
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Руководитель проекта" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Заказчик" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Договор" /></th>
+                <th><input type="text" class="form-control input-sm sb" id="chiefFlt" style="width: 100%" placeholder="Руководитель проекта" /></th>
+                <th><input type="text" class="form-control input-sm sb" id="clientFlt" style="width: 100%" placeholder="Заказчик" /></th>
+                <th><input type="text" class="form-control input-sm sb" id="agrFlt" style="width: 100%" placeholder="Договор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Куратор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
@@ -198,22 +210,14 @@
                 },
                 "columns": [
                     {
-                        "data": "Project", "name": "Project", "autoWidth": true,
-                        "render": function (data, type, full, meta) {
-                            return '<a href="#" class="prgLink">' + data + '</a>';
-                        }
+                        "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCell"
                     },
-                    { "data": "Chief", "name": "Chief", "autoWidth": true },
-                    { "data": "Client", "name": "Client", "autoWidth": true },
-                    {
-                        "data": "Agreement",
-                        "name": "Agreement",
-                        "class": "AgrName",
-                        "autoWidth": true,
-                    },
+                    { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCell" },
+                    { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCell" },
+                    { "data": "Agreement", "name": "Agreement", "class": "agrCell", "autoWidth": true},
                     { "data": "AgrType", "name": "AgrType", "autoWidth": true },
                     { "data": "Manager", "name": "Manager", "autoWidth": true },
-                   
+
                     { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true },
                     {
                         "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
@@ -227,10 +231,10 @@
                     var _summ = 0;
                     var _date = formatDate(data.AgrDate);
                     if (data.Summ > 0) {
-                       _summ = data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        _summ = data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                     }
                     var titleStr = 'Дата договора: ' + _date + '\r\nСумма договора: ' + _summ;
-                    $('.AgrName', $(row)).attr('title', titleStr);
+                    $('.agrCell', $(row)).attr('title', titleStr);
                 },
                 "order": [[7, "desc"]]
             });
@@ -260,12 +264,27 @@
     </script>
 
     <script>
-        //Скрипт фильтрации списка по проекту после клика по имени проекта
-        $('body').on('click', '.prgLink', function (e) {
+        //Скрипт фильтрации списка после двойного щелчка по ячейке
+        $('body').on('dblclick', 'td.prgCell', function (e) {
             e.preventDefault();
             $('#prgFlt').val($(this).text()).trigger('change');
-
         });
+
+        $('body').on('dblclick', 'td.chiefCell', function (e) {
+            e.preventDefault();
+            $('#chiefFlt').val($(this).text()).trigger('change');
+        });
+
+        $('body').on('dblclick', 'td.clientCell', function (e) {
+            e.preventDefault();
+            $('#clientFlt').val($(this).text()).trigger('change');
+        });
+
+        $('body').on('dblclick', 'td.agrCell', function (e) {
+            e.preventDefault();
+            $('#agrFlt').val($(this).text()).trigger('change');
+        });
+
     </script>
 
     <script>

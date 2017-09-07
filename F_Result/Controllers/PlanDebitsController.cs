@@ -18,6 +18,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
         public ActionResult PDShow()
         {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
@@ -43,10 +44,13 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _appointment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _periodtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                int _period;
+                Int32.TryParse(_periodtxt, out _period);
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -57,16 +61,18 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-                string _sum = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from plandebit in db.PlanDebits
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
                             join org in db.Organizations on plandebit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on plandebit.UserId equals usr.Id
+                            join pperiod in db.PlanningPeriods on plandebit.PeriodId equals pperiod.PlanningPeriodId
                             where (plandebit.Date >= _startagrdate && plandebit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plandebit.Appointment.Contains(_appointment) || string.IsNullOrEmpty(_appointment))
+                                        && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
                                         && (usr.LastName.Contains(_userfn)
                                             || usr.FirstName.Contains(_userfn)
                                             || usr.MiddleName.Contains(_userfn)
@@ -82,7 +88,8 @@ namespace F_Result.Controllers
                                 UserId = plandebit.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                                 ProjectName = prg.ShortName,
-                                OrgName = org.Title
+                                OrgName = org.Title,
+                                PeriodName = pperiod.PeriodName
                             }).AsEnumerable().Select(x => new PlanDebit
                             {
                                 PlanDebitId = x.PlanDebitId,
@@ -94,7 +101,8 @@ namespace F_Result.Controllers
                                 OrganizationName = x.OrgName,
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
-                                UserFN = x.UserFN
+                                UserFN = x.UserFN,
+                                PeriodName = x.PeriodName
                             }).ToList();
 
                 _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)).ToList();
@@ -133,15 +141,34 @@ namespace F_Result.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PlanDebit planDebit = db.PlanDebits.Find(id);
+
+            PlanDebit planDebit = (from _pd in db.PlanDebits
+                                   join _pname in db.Projects on _pd.ProjectId equals _pname.id
+                                   join _org in db.Organizations on _pd.OrganizationId equals _org.id
+                                   join _period in db.PlanningPeriods on _pd.PeriodId equals _period.PlanningPeriodId
+                                   where (_pd.PlanDebitId == id)
+                                   select new
+                                   {
+                                       PlanDebitId = _pd.PlanDebitId,
+                                       Sum = _pd.Sum,
+                                       Date = _pd.Date,
+                                       ProjectName = _pname.ShortName,
+                                       OrganizationName = _org.Title,
+                                       PeriodName = _period.PeriodName,
+                                       Appointment = _pd.Appointment
+                                   }).AsEnumerable().Select(x => new PlanDebit { 
+                                        PlanDebitId = x.PlanDebitId,
+                                        Sum = x.Sum,
+                                        Date = x.Date,
+                                        ProjectName = x.ProjectName,
+                                        OrganizationName = x.OrganizationName,
+                                        PeriodName = x.PeriodName,
+                                        Appointment = x.Appointment
+                                   }).FirstOrDefault();
             if (planDebit == null)
             {
                 return HttpNotFound();
             }
-
-            planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
-            planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-
             return View(planDebit);
         }
 
@@ -150,6 +177,7 @@ namespace F_Result.Controllers
         public ActionResult PDCreate()
         {
             PlanDebit _model = new PlanDebit();
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             _model.Date = DateTime.Today;
             return View(_model);
         }
@@ -204,6 +232,8 @@ namespace F_Result.Controllers
 
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
             return View(planDebit);
         }
