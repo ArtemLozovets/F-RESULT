@@ -1,50 +1,55 @@
 ﻿@model F_Result.Models.PlanningPeriod
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Редактирование";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <div class="container">
-	 <div class="row">
-		<div class="col-lg-12">
-			<h1 class="page-header">
-				@ViewBag.Title
-				<small>Подробное название</small>
-			</h1>
-			<ol class="breadcrumb">
-	            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
-		        <li class="active">!!!!!!</li>
-	        </ol>
-		</div>
-	</div>
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>PlanningPeriod</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.PlanningPeriodId)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.PeriodName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PeriodName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PeriodName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            @ViewBag.Title
+            <small>Редактирование планового периода</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+            <li>Справочники</li>
+            <li>@Html.ActionLink("Плановые периоды", "PPShow", "PlanningPeriods")</li>
+            <li class="active">Редактирование</li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="cursor:pointer">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
-}
+    <div class="col-md-7" style="margin-top:10px;">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-	<div>
-		@Html.ActionLink("Back to List", "Index")
-	</div>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.PlanningPeriodId)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PeriodName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.PeriodName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PeriodName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <button type="submit" title="Сохранить информацию" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div>
+            <a class="btn btn-default" href='@Url.Action("PPShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+        </div>
+    </div>
 </div>
-
