@@ -59,11 +59,11 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
+                <th>
+                    @Html.DropDownList("Period", (SelectList)ViewData["periodItems"], "- Период -", new { @class = "form-control input-sm sb" })
+                </th>
                 <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th>
-                    @Html.DropDownList("MyList", (SelectList)ViewData["periodItems"], "- Период -", new { @class= "form-control input-sm sb" })
-                </th>
             </tr>
 
             <tr role="row">
@@ -71,9 +71,9 @@
                 <th>Организация</th>
                 <th>Назначение</th>
                 <th>Пользователь</th>
+                <th>Период</th>
                 <th>Дата</th>
                 <th>Сумма</th>
-                <th>Период</th>
             </tr>
 
         </thead>
@@ -224,7 +224,7 @@
                         return d.data;
                     }
                 },
-                "order": [[4, "desc"]],
+                "order": [[5, "desc"]],
                 "columns": [
                     {
                         "data": "ProjectName", "name": "ProjectName", "autoWidth": true,
@@ -235,6 +235,7 @@
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true },
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true },
+                     { "data": "PeriodName", "name": "PeriodName", "autoWidth": true },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",
@@ -249,7 +250,6 @@
                         }
                     },
                     { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
-                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true }
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.PlanCreditId);

@@ -44,10 +44,13 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _appoinment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _periodtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                int _period;
+                Int32.TryParse(_periodtxt, out _period);
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -58,9 +61,7 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-
-                string _sum = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                int? _period = Convert.ToInt16(Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString());
+                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from plancredit in db.PlanCredits
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
@@ -71,7 +72,7 @@ namespace F_Result.Controllers
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
-                                        && (pperiod.PlanningPeriodId == Convert.ToInt16(_period) || _period == null)
+                                        && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
                                         && (usr.LastName.Contains(_userfn)
                                             || usr.FirstName.Contains(_userfn)
                                             || usr.MiddleName.Contains(_userfn)
