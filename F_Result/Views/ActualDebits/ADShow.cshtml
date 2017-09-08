@@ -57,7 +57,7 @@
         <thead>
             <tr role="row" id="search-row" hidden style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" id="orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер документа" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
@@ -117,11 +117,6 @@
                              $(this).fadeOut(300, cb);
                          },
                          showShortcuts: false,
-                         //shortcuts:
-                         //   {
-                         //       'next': ['week', 'month', 'year']
-                         //   },
-
                          time: {
                              enabled: false
                          },
@@ -139,23 +134,34 @@
     </script>
 
     <script type="text/javascript">
+        //Скрипт для работы с контекстным меню
         $(function () {
             $.contextMenu({
                 selector: '.context-menu-one',
                 callback: function (key, options) {
+                    var fClass = $(this).attr('class');
                     switch (key) {
                         case 'add':
                             window.location.href = "/ActualDebits/ADCreate/";
                             break;
                         case 'details':
-                            window.location.href = "/ActualDebits/ADDetails/" + $(this).data('objid');
+                            window.location.href = "/ActualDebits/ADDetails/" + $(this).closest('tr').data('objid');
                             break;
                         case 'edit':
-                            window.location.href = "/ActualDebits/ADEdit/" + $(this).data('objid');
+                            window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid');
                             break;
                         case 'delete':
-                            window.location.href = "/ActualDebits/ADDelete/" + $(this).data('objid');
+                            window.location.href = "/ActualDebits/ADDelete/" + $(this).closest('tr').data('objid');
                             break;
+                            //-----------------------------
+                        case 'filter':
+                            if (fClass.indexOf("prgCell") >= 0) {
+                                $('#prgFlt').val($(this).text()).trigger('change');
+                            };
+                            if (fClass.indexOf("orgCell") >= 0) {
+                                $('#orgFlt').val($(this).text()).trigger('change');
+                            };
+                            //-----------------------
                         default:
                             return;
                     }
@@ -165,12 +171,22 @@
                     "details": { name: "Подробно", icon: "details" },
                     "edit": { name: "Редактировать", icon: "edit" },
                     "delete": { name: "Удалить", icon: "delete" },
+                    "sep": "---------",
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cell") >= 0) { return false };
+                            return true;
+                        }
+                    }
                 }
             });
 
             //Двойной щелчек по строке таблицы.
             $('#gridtable tbody').on('dblclick', 'tr', function () {
-                window.location.href = "/ActualDebits/ADEdit/" + $(this).data('objid');
+                window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid');
             });
 
 
@@ -225,16 +241,11 @@
                 },
                 "order": [[5, "desc"]],
                 "columns": [
-                    {
-                        "data": "ProjectName", "name": "ProjectName", "autoWidth": true,
-                        "render": function (data, type, full, meta) {
-                            return '<a href="#" class="prgLink">' + data + '</a>';
-                        }
-                    },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
-                    { "data": "Appointment", "name": "Appointment", "autoWidth": true },
-                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCell context-menu-one" },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCell context-menu-one" },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",
@@ -246,14 +257,14 @@
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                             var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
-                        }
+                        },
+                        "class": "context-menu-one"
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
 
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.ActualDebitId);
-                    $(row).attr('class', 'context-menu-one');
                 }
             });
 

@@ -63,6 +63,10 @@
   content: "\F0D6";
 }
 
+.context-menu-icon-filter:before {
+  content: "\F0B0";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;

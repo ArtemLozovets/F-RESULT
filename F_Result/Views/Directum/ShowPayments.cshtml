@@ -6,6 +6,7 @@
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
     #sumSpan {
         text-align: right;
@@ -20,18 +21,6 @@
         margin-right: 20px;
     }
 
-    td.prgCell, td.chiefCell, td.clientCell, td.agrCell {
-        cursor: pointer;
-    }
-
-        td.prgCell:before, td.chiefCell:before, td.clientCell:before, td.agrCell:before {
-            font-family: FontAwesome;
-            content: "\f0b0";
-            display: inline-block;
-            padding-right: 3px;
-            vertical-align: middle;
-            color: #ddd;
-        }
 </style>
 
 <div id="loadingImg">
@@ -110,12 +99,49 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {
+            $.contextMenu({
+                selector: '.context-menu-one',
+                callback: function (key, options) {
+                    switch (key) {
+                        case 'filter':
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('#prgFlt').val($(this).text()).trigger('change');
+                            };
+                            if (fClass.indexOf("chiefCellf") >= 0) {
+                                $('#chiefFlt').val($(this).text()).trigger('change');
+                            };
+                            if (fClass.indexOf("clientCellf") >= 0) {
+                                $('#clientFlt').val($(this).text()).trigger('change');
+                            };
+                            if (fClass.indexOf("agrCellf") >= 0) {
+                                $('#agrFlt').val($(this).text()).trigger('change');
+                            };
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cell") >= 0) { return false };
+                            return true;
+                        }
+                    }
+                }
+            });
+
             $('.dff').each(function () {
                 $(this).dateRangePicker(
                      {
@@ -210,22 +236,23 @@
                 },
                 "columns": [
                     {
-                        "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCell"
+                        "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one"
                     },
-                    { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCell" },
-                    { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCell" },
-                    { "data": "Agreement", "name": "Agreement", "class": "agrCell", "autoWidth": true},
-                    { "data": "AgrType", "name": "AgrType", "autoWidth": true },
-                    { "data": "Manager", "name": "Manager", "autoWidth": true },
+                    { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
+                    { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
+                    { "data": "Agreement", "name": "Agreement", "class": "agrCellf context-menu-one", "autoWidth": true },
+                    { "data": "AgrType", "name": "AgrType", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Manager", "name": "Manager", "autoWidth": true, "class": "context-menu-one" },
 
-                    { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true },
+                    { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true, "class": "context-menu-one" },
                     {
                         "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
                         "render": function (value) {
                             return formatDate(value);
-                        }
-                    },
-                    { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
+                        },
+                        "class": "context-menu-one"
+                    }, 
+                    { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     var _summ = 0;
