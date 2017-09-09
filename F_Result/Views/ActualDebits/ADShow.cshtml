@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
@@ -38,13 +40,6 @@
             </ol>
         </div>
     </div>
-    <div class="row">
-        <p class="pull-right">
-            <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ADCreate")'><i class="fa fa-plus-circle"></i></a>
-            <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-            <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-        </p>
-    </div>
 
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
@@ -55,13 +50,13 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
-                <th><input type="text" class="form-control input-sm sb" id="orgFlt" style="width: 100%" placeholder="Организация" /></th>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер документа" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
@@ -90,6 +85,7 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -137,7 +133,7 @@
         //Скрипт для работы с контекстным меню
         $(function () {
             $.contextMenu({
-                selector: '.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
                     switch (key) {
@@ -155,32 +151,63 @@
                             break;
                             //-----------------------------
                         case 'filter':
-                            if (fClass.indexOf("prgCell") >= 0) {
-                                $('#prgFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('.prgFlt').val($(this).text()).trigger('change');
                             };
-                            if (fClass.indexOf("orgCell") >= 0) {
-                                $('#orgFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("orgCellf") >= 0) {
+                                $('.orgFlt').val($(this).text()).trigger('change');
+                            };
+
+                            if (fClass.indexOf("usrCellf") >= 0) {
+                                $('.usrFlt').val($(this).text()).trigger('change');
+                            };
+
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
                             };
                             //-----------------------
+                        case 'refresh':
+                            ClearFilter();
+                            break;
                         default:
                             return;
                     }
                 },
                 items: {
                     "add": { name: "Создать", icon: "add" },
-                    "details": { name: "Подробно", icon: "details" },
-                    "edit": { name: "Редактировать", icon: "edit" },
-                    "delete": { name: "Удалить", icon: "delete" },
+                    "details": {
+                        name: "Подробно", icon: "details", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "edit": {
+                        name: "Редактировать", icon: "edit", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "delete": {
+                        name: "Удалить", icon: "delete", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
                     "sep": "---------",
                     "filter": {
                         name: "Фильтр по значению",
                         icon: "filter",
                         disabled: function () {
                             var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cell") >= 0) { return false };
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
                             return true;
                         }
-                    }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
 
@@ -193,6 +220,10 @@
 
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -241,11 +272,11 @@
                 },
                 "order": [[5, "desc"]],
                 "columns": [
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCell context-menu-one" },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCell context-menu-one" },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "DocNumber", "name": "DocNumber", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",
@@ -258,7 +289,7 @@
                             var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
                         },
-                        "class": "context-menu-one"
+                        "class": "dateCellf context-menu-one"
                     },
                     { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
 
@@ -267,8 +298,6 @@
                     $(row).attr('data-objid', data.ActualDebitId);
                 }
             });
-
-
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -285,24 +314,6 @@
     </script>
 
     <script>
-        //Скрипт фильтрации списка по проекту после клика по имени проекта
-        $('body').on('click', '.prgLink', function (e) {
-            e.preventDefault();
-            $('#prgFlt').val($(this).text()).trigger('change');
-
-        });
-    </script>
-
-    <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {

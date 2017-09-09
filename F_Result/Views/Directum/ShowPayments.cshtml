@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
@@ -20,7 +22,6 @@
     .sum-container:first-child {
         margin-right: 20px;
     }
-
 </style>
 
 <div id="loadingImg">
@@ -44,10 +45,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -57,15 +54,15 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb" id="prgFlt" style="width: 100%" placeholder="Проект" /></th>
-                <th><input type="text" class="form-control input-sm sb" id="chiefFlt" style="width: 100%" placeholder="Руководитель проекта" /></th>
-                <th><input type="text" class="form-control input-sm sb" id="clientFlt" style="width: 100%" placeholder="Заказчик" /></th>
-                <th><input type="text" class="form-control input-sm sb" id="agrFlt" style="width: 100%" placeholder="Договор" /></th>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb chiefFlt" style="width: 100%" placeholder="Руководитель проекта" /></th>
+                <th><input type="text" class="form-control input-sm sb clientFlt" style="width: 100%" placeholder="Заказчик" /></th>
+                <th><input type="text" class="form-control input-sm sb agrFlt" style="width: 100%" placeholder="Договор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Куратор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
@@ -99,7 +96,8 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
-<script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -107,23 +105,30 @@
     <script>
         $(function () {
             $.contextMenu({
-                selector: '.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
+                    var fClass = $(this).attr('class');
                     switch (key) {
                         case 'filter':
-                            var fClass = $(this).attr('class');
                             if (fClass.indexOf("prgCellf") >= 0) {
-                                $('#prgFlt').val($(this).text()).trigger('change');
+                                $('.prgFlt').val($(this).text()).trigger('change');
                             };
                             if (fClass.indexOf("chiefCellf") >= 0) {
-                                $('#chiefFlt').val($(this).text()).trigger('change');
+                                $('.chiefFlt').val($(this).text()).trigger('change');
                             };
                             if (fClass.indexOf("clientCellf") >= 0) {
-                                $('#clientFlt').val($(this).text()).trigger('change');
+                                $('.clientFlt').val($(this).text()).trigger('change');
                             };
                             if (fClass.indexOf("agrCellf") >= 0) {
-                                $('#agrFlt').val($(this).text()).trigger('change');
+                                $('.agrFlt').val($(this).text()).trigger('change');
                             };
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                            };
+                            break;
+                        case 'refresh':
+                            ClearFilter();
                             break;
                         default:
                             return;
@@ -135,10 +140,11 @@
                         icon: "filter",
                         disabled: function () {
                             var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cell") >= 0) { return false };
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
                             return true;
                         }
-                    }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
 
@@ -162,11 +168,6 @@
                              $(this).fadeOut(300, cb);
                          },
                          showShortcuts: false,
-                         //shortcuts:
-                         //   {
-                         //       'next': ['week', 'month', 'year']
-                         //   },
-
                          time: {
                              enabled: false
                          },
@@ -187,6 +188,10 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -235,9 +240,7 @@
                     }
                 },
                 "columns": [
-                    {
-                        "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one"
-                    },
+                    {"data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one"},
                     { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
                     { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
                     { "data": "Agreement", "name": "Agreement", "class": "agrCellf context-menu-one", "autoWidth": true },
@@ -250,8 +253,8 @@
                         "render": function (value) {
                             return formatDate(value);
                         },
-                        "class": "context-menu-one"
-                    }, 
+                        "class": "dateCellf context-menu-one"
+                    },
                     { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                 ],
                 "createdRow": function (row, data, rowIndex) {
@@ -291,39 +294,6 @@
     </script>
 
     <script>
-        //Скрипт фильтрации списка после двойного щелчка по ячейке
-        $('body').on('dblclick', 'td.prgCell', function (e) {
-            e.preventDefault();
-            $('#prgFlt').val($(this).text()).trigger('change');
-        });
-
-        $('body').on('dblclick', 'td.chiefCell', function (e) {
-            e.preventDefault();
-            $('#chiefFlt').val($(this).text()).trigger('change');
-        });
-
-        $('body').on('dblclick', 'td.clientCell', function (e) {
-            e.preventDefault();
-            $('#clientFlt').val($(this).text()).trigger('change');
-        });
-
-        $('body').on('dblclick', 'td.agrCell', function (e) {
-            e.preventDefault();
-            $('#agrFlt').val($(this).text()).trigger('change');
-        });
-
-    </script>
-
-    <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {

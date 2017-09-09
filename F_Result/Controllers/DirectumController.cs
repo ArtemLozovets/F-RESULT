@@ -86,6 +86,7 @@ namespace F_Result.Controllers
                                      PaymentDesc = x.PaymentDesc
                                  }).ToList();
 
+                _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

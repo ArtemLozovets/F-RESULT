@@ -292,16 +292,17 @@ footer {
 }
 
 /* ------------------- Auto Filter block ------------------ */
-td.prgCell, td.chiefCell, td.clientCell, td.agrCell {
-    cursor: pointer;
-}
 
-    td.prgCell:before, td.chiefCell:before, td.clientCell:before, td.agrCell:before {
+    td.prgCellf:before, 
+    td.chiefCellf:before, 
+    td.clientCellf:before, 
+    td.agrCellf:before, 
+    td.orgCellf:before,
+    td.dateCellf:before,
+    td.usrCellf:before {
         font-family: FontAwesome;
-        content: "\f0b0";
-        display: inline-block;
-        padding-right: 3px;
-        vertical-align: middle;
+        white-space: nowrap;
+        content: "\F0B0\00A0";
         color: #ddd;
     }
 
