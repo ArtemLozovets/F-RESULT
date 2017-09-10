@@ -59,7 +59,6 @@
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
-
             <tr role="row">
                 <th>Проект</th>
                 <th>Организация</th>
@@ -69,7 +68,6 @@
                 <th>Дата</th>
                 <th>Сумма</th>
             </tr>
-
         </thead>
         <tbody></tbody>
     </table>
@@ -153,18 +151,22 @@
                         case 'filter':
                             if (fClass.indexOf("prgCellf") >= 0) {
                                 $('.prgFlt').val($(this).text()).trigger('change');
+                                break;
                             };
                             if (fClass.indexOf("orgCellf") >= 0) {
                                 $('.orgFlt').val($(this).text()).trigger('change');
+                                break;
                             };
 
                             if (fClass.indexOf("usrCellf") >= 0) {
                                 $('.usrFlt').val($(this).text()).trigger('change');
+                                break;
                             };
 
                             if (fClass.indexOf("dateCellf") >= 0) {
                                 var dateStr = $(this).text() + ' - ' + $(this).text();
                                 $('.dateFlt').val(dateStr).trigger('change');
+                                break;
                             };
                             //-----------------------
                         case 'refresh':
@@ -215,9 +217,12 @@
             $('#gridtable tbody').on('dblclick', 'tr', function () {
                 window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid');
             });
+        });
+    </script>
 
-
-
+    <script>
+        //Скрипт создания таблицы
+        $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "fixedHeader": {
@@ -233,8 +238,8 @@
                 "pagingType": "simple_numbers",
                 //"dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +    "<'row'<'col-sm-12'tr>>" +    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",
@@ -272,26 +277,26 @@
                 },
                 "order": [[5, "desc"]],
                 "columns": [
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one" },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                    { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "DocNumber", "name": "DocNumber", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
-                    {
-                        "data": "Date", "name": "Date", "autoWidth": true,
-                        "type": "date ",
-                        "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
-                        },
-                        "class": "dateCellf context-menu-one"
+                { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
+                { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                { "data": "DocNumber", "name": "DocNumber", "autoWidth": true, "class": "context-menu-one" },
+                { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                {
+                    "data": "Date", "name": "Date", "autoWidth": true,
+                    "type": "date ",
+                    "render": function (value) {
+                        if (value === null) return "";
+                        var pattern = /Date\(([^)]+)\)/;
+                        var results = pattern.exec(value);
+                        var dt = new Date(parseFloat(results[1]));
+                        var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                        var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                        return _d + "/" + _m + "/" + dt.getFullYear();
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                    "class": "dateCellf context-menu-one"
+                },
+                { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
 
                 ],
                 "createdRow": function (row, data, rowIndex) {
@@ -308,9 +313,7 @@
                     table.column(colIdx).search(this.value).draw();
                 });
             });
-
         });
-
     </script>
 
     <script>

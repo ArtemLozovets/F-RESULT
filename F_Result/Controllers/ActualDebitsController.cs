@@ -71,10 +71,6 @@ namespace F_Result.Controllers
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (actualdebit.DocNumber.Contains(_docnumber) || string.IsNullOrEmpty(_docnumber))
-                                        && (usr.LastName.Contains(_userfn)
-                                            || usr.FirstName.Contains(_userfn)
-                                            || usr.MiddleName.Contains(_userfn) 
-                                            || string.IsNullOrEmpty(_userfn))
                             select new
                          {
                              ActualDebitId = actualdebit.ActualDebitId,
@@ -103,7 +99,7 @@ namespace F_Result.Controllers
                                 UserFN = x.UserFN
                             }).ToList();
 
-                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)).ToList();
+                _ads = _ads.Where(x => ((x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

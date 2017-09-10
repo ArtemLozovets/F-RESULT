@@ -104,50 +104,6 @@
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {
-            $.contextMenu({
-                selector: '.dataTables_empty, td.context-menu-one',
-                callback: function (key, options) {
-                    var fClass = $(this).attr('class');
-                    switch (key) {
-                        case 'filter':
-                            if (fClass.indexOf("prgCellf") >= 0) {
-                                $('.prgFlt').val($(this).text()).trigger('change');
-                            };
-                            if (fClass.indexOf("chiefCellf") >= 0) {
-                                $('.chiefFlt').val($(this).text()).trigger('change');
-                            };
-                            if (fClass.indexOf("clientCellf") >= 0) {
-                                $('.clientFlt').val($(this).text()).trigger('change');
-                            };
-                            if (fClass.indexOf("agrCellf") >= 0) {
-                                $('.agrFlt').val($(this).text()).trigger('change');
-                            };
-                            if (fClass.indexOf("dateCellf") >= 0) {
-                                var dateStr = $(this).text() + ' - ' + $(this).text();
-                                $('.dateFlt').val(dateStr).trigger('change');
-                            };
-                            break;
-                        case 'refresh':
-                            ClearFilter();
-                            break;
-                        default:
-                            return;
-                    }
-                },
-                items: {
-                    "filter": {
-                        name: "Фильтр по значению",
-                        icon: "filter",
-                        disabled: function () {
-                            var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cellf") >= 0) { return false };
-                            return true;
-                        }
-                    },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
-                }
-            });
-
             $('.dff').each(function () {
                 $(this).dateRangePicker(
                      {
@@ -184,7 +140,62 @@
         });
     </script>
 
+    <script>
+        //Скрипт для работы с контекстным меню
+        $(function () {
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'filter':
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('.prgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("chiefCellf") >= 0) {
+                                $('.chiefFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("clientCellf") >= 0) {
+                                $('.clientFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("agrCellf") >= 0) {
+                                $('.agrFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            break;
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                }
+            });
+        });
+    </script>
+
     <script type="text/javascript">
+        //Скрипт создания таблицы
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
@@ -240,7 +251,7 @@
                     }
                 },
                 "columns": [
-                    {"data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one"},
+                    { "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one" },
                     { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
                     { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
                     { "data": "Agreement", "name": "Agreement", "class": "agrCellf context-menu-one", "autoWidth": true },

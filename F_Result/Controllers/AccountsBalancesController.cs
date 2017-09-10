@@ -84,11 +84,6 @@ namespace F_Result.Controllers
                                     && (accbalance.Date >= _startagrdate && accbalance.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                     && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                     && (accbalance.Note.Contains(_note) || string.IsNullOrEmpty(_note))
-                                    && (usr.LastName.Contains(_userfn)
-                                            || usr.FirstName.Contains(_userfn)
-                                            || usr.MiddleName.Contains(_userfn)
-                                            || string.IsNullOrEmpty(_userfn))
-
                             select new
                             {
                                 AccountBalanceId = accbalance.AccountsBalanceId,
@@ -117,7 +112,7 @@ namespace F_Result.Controllers
                                 UserFN = x.UserFN
                             }).ToList();
 
-                _ads = _ads.Where(x => (x.Balance.ToString().Contains(_balance)) || string.IsNullOrEmpty(_balance)).ToList();
+                _ads = _ads.Where(x => ((x.Balance.ToString().Contains(_balance)) || string.IsNullOrEmpty(_balance) ) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

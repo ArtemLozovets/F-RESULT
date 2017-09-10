@@ -73,10 +73,6 @@ namespace F_Result.Controllers
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
-                                        && (usr.LastName.Contains(_userfn)
-                                            || usr.FirstName.Contains(_userfn)
-                                            || usr.MiddleName.Contains(_userfn)
-                                            || string.IsNullOrEmpty(_userfn))
                             select new
                             {
                                 PlanCreditId = plancredit.PlanCreditId,
@@ -105,7 +101,7 @@ namespace F_Result.Controllers
                                 PeriodName = x.PeriodName
                             }).ToList();
 
-                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)).ToList();
+                _ads = _ads.Where(x => ((x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

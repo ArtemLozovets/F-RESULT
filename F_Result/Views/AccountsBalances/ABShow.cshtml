@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
@@ -39,12 +41,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ABBatchCreate")'><i class="fa fa-plus-circle"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
-
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -53,13 +49,13 @@
     </div>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Банк" /></th>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb bankFlt" style="width: 100%" placeholder="Банк" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Счет" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Пользователь" /></th>
-                <th><input type="text" class="form-control input-sm dff" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
@@ -86,6 +82,7 @@
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
@@ -137,20 +134,47 @@
 
     <script type="text/javascript">
         $(function () {
-
+            //Скрипт для работы с контекстным меню
             $.contextMenu({
-                selector: '.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
+                    var fClass = $(this).attr('class');
                     switch (key) {
                         case 'add':
                             localStorage.setItem('ABCreateReturnURL', '/AccountsBalances/ABShow')
                             window.location.href = "/AccountsBalances/ABBatchCreate";
                             break;
                         case 'edit':
-                            window.location.href = "/AccountsBalances/ABEdit/" + $(this).data('objid');
+                            window.location.href = "/AccountsBalances/ABEdit/" + $(this).closest('tr').data('objid');
                             break;
                         case 'delete':
-                            window.location.href = "/AccountsBalances/ABDelete/" + $(this).data('objid');
+                            window.location.href = "/AccountsBalances/ABDelete/" + $(this).closest('tr').data('objid');
+                            break;
+                            //-----------------------------
+                        case 'filter':
+                            if (fClass.indexOf("orgCellf") >= 0) {
+                                $('.orgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("bankCellf") >= 0) {
+                                $('.bankFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("usrCellf") >= 0) {
+                                $('.usrFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
                             break;
                         default:
                             return;
@@ -158,8 +182,24 @@
                 },
                 items: {
                     "add": { name: "Внести остатки по счетам", icon: "addBalance" },
-                    "edit": { name: "Редактировать", icon: "edit" },
-                    //"delete": { name: "Удалить", icon: "delete" },
+                    "edit": {
+                        name: "Редактировать", icon: "edit", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "sep": "---------",
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
 
@@ -171,6 +211,10 @@
 
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -211,11 +255,11 @@
                 },
                 //"order": [[4, "desc"]],
                 "columns": [
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
-                    { "data": "BankName", "name": "BankName", "autoWidth": true },
-                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
-                    { "data": "Note", "name": "Note", "autoWidth": true },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                    { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "bankCellf context-menu-one" },
+                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Note", "name": "Note", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
                      {
                          "data": "Date", "name": "Date", "autoWidth": true,
                          "type": "date ",
@@ -227,15 +271,15 @@
                              var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                              var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                              return _d + "/" + _m + "/" + dt.getFullYear();
-                         }
+                         },
+                         "class": "dateCellf context-menu-one"
                      },
-                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" }
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
 
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.AccountsBalanceId);
                     $(row).attr('data-accid', data.AccountId);
-                    $(row).attr('class', 'context-menu-one');
                 }
             }).order([[5, "desc"]]);
 
@@ -254,15 +298,6 @@
     </script>
 
     <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable().draw();
             $(".sb, .dff").each(function (colIdx) {
