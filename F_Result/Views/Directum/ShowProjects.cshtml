@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
@@ -29,7 +31,6 @@
     </div>
 
     <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
         <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
     </p>
 
@@ -42,7 +43,7 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Короткое имя" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Описание" /></th>
@@ -83,6 +84,7 @@
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -110,11 +112,6 @@
                              $(this).fadeOut(300, cb);
                          },
                          showShortcuts: false,
-                         //shortcuts:
-                         //   {
-                         //       'next': ['week', 'month', 'year']
-                         //   },
-
                          time: {
                              enabled: false
                          },
@@ -135,6 +132,10 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -236,8 +237,6 @@
                 "order": [[9, "desc"]]
             });
 
-
-
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
                     table.column(colIdx).search(this.value).draw();
@@ -253,11 +252,6 @@
     </script>
 
     <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
         $('body').on('click', '#filterClear', function () {
             ClearFilter();
         });

@@ -41,14 +41,13 @@ namespace F_Result.Controllers
                 string _chief = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _client = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _agreement = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _agrtype = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _manager = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _paymentdesc = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _manager = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _paymentdesc = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
 
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
-                string _paymentdatetext = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
@@ -60,14 +59,13 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _paymenttxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 
                 var _payments = (from payment in db.Payments
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
                                         && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
                                         && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
-                                        && (payment.AgrType.Contains(_agrtype) || string.IsNullOrEmpty(_agrtype))
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
@@ -78,6 +76,7 @@ namespace F_Result.Controllers
                                      Client = x.Client,
                                      Agreement = x.Agreement,
                                      AgrDate = x.AgrDate,
+                                     Soder = x.Soder,
                                      Summ = x.Summ,
                                      AgrType = x.AgrType,
                                      Manager = x.Manager,

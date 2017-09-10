@@ -291,21 +291,28 @@ footer {
     color: white !important;
 }
 
+td.haveTitle::after {
+    font-family: FontAwesome;
+    white-space: nowrap;
+    content: "\00A0\00A0\F129";
+    color: #ddd;
+}
+
 /* ------------------- Auto Filter block ------------------ */
 
-    td.prgCellf:before, 
-    td.chiefCellf:before, 
-    td.clientCellf:before, 
-    td.agrCellf:before, 
-    td.orgCellf:before,
-    td.dateCellf:before,
-    td.usrCellf:before,
-    td.bankCellf:before {
-        font-family: FontAwesome;
-        white-space: nowrap;
-        content: "\F0B0\00A0";
-        color: #ddd;
-    }
+td.prgCellf:before,
+td.chiefCellf:before,
+td.clientCellf:before,
+td.agrCellf:before,
+td.orgCellf:before,
+td.dateCellf:before,
+td.usrCellf:before,
+td.bankCellf:before {
+    font-family: FontAwesome;
+    white-space: nowrap;
+    content: "\F0B0\00A0";
+    color: #ddd;
+}
 
 /* ----------------RESPONSIVE---------------*/
 

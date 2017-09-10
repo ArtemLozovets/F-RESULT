@@ -200,6 +200,10 @@
     <Compile Include="Migrations\201709031901324_AddChief.Designer.cs">
       <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709101928333_Soder.cs" />
+    <Compile Include="Migrations\201709101928333_Soder.Designer.cs">
+      <DependentUpon>201709101928333_Soder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -669,6 +673,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709031901324_AddChief.resx">
       <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709101928333_Soder.resx">
+      <DependentUpon>201709101928333_Soder.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -29,6 +29,9 @@ namespace F_Result.Models
         [DataType(DataType.Date)]
         public DateTime? AgrDate { get; set; }
 
+        [Display(Name = "Предмет договора")]
+        public string Soder { get; set; }
+
         [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
         [Display(Name = "Сумма договора")]
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
