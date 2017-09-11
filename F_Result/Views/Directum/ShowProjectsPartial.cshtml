@@ -251,7 +251,7 @@
     });
 
     function ClearFilter() {
-        var table = $('#gridtable').DataTable().draw();
+        var table = $('#gridtable').DataTable();
         $(".sb, .dff").each(function (colIdx) {
             $(this).val('');
             table.column(colIdx).search('');

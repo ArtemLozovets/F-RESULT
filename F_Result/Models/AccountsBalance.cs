@@ -22,7 +22,7 @@ namespace F_Result.Models
         public decimal Balance { get; set; }
 
         [StringLength(160, ErrorMessage = "Примечание должно содержать не более 160 символов")]
-        [Display(Name = "Прмечание")]
+        [Display(Name = "Примечание")]
         public string Note { get; set; }
 
         public int AccountId { get; set; }

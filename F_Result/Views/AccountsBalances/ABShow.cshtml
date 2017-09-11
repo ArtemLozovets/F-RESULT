@@ -111,11 +111,6 @@
                              $(this).fadeOut(300, cb);
                          },
                          showShortcuts: false,
-                         //shortcuts:
-                         //   {
-                         //       'next': ['week', 'month', 'year']
-                         //   },
-
                          time: {
                              enabled: false
                          },
@@ -181,15 +176,6 @@
                     }
                 },
                 items: {
-                    "add": { name: "Внести остатки по счетам", icon: "addBalance" },
-                    "edit": {
-                        name: "Редактировать", icon: "edit", disabled: function () {
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    },
-                    "sep": "---------",
                     "filter": {
                         name: "Фильтр по значению",
                         icon: "filter",
@@ -199,7 +185,16 @@
                             return true;
                         }
                     },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep": "---------",
+                    "add": { name: "Внести остатки по счетам", icon: "addBalance" },
+                    "edit": {
+                        name: "Редактировать", icon: "edit", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    }
                 }
             });
 
@@ -218,8 +213,8 @@
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
-                "stateSave": true,
-                "orderMulti": true,
+                "stateSave": false,
+                "orderMulti": false,
                 "responsive": true,
                 "pageLength": 25, // Количество записей в таблице по умолчанию
                 "pagingType": "simple_numbers",
@@ -253,7 +248,7 @@
                         return d.data;
                     }
                 },
-                //"order": [[4, "desc"]],
+                "order":[[5, "desc"]],
                 "columns": [
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "prgCellf context-menu-one" },
                     { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "bankCellf context-menu-one" },
@@ -281,7 +276,7 @@
                     $(row).attr('data-objid', data.AccountsBalanceId);
                     $(row).attr('data-accid', data.AccountId);
                 }
-            }).order([[5, "desc"]]);
+            });
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -299,7 +294,7 @@
 
     <script>
         function ClearFilter() {
-            var table = $('#gridtable').DataTable().draw();
+            var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
                 table.column(colIdx).search('');
