@@ -103,11 +103,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", ActualDebitId desc").ToList();
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.ActualDebitId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Sum);

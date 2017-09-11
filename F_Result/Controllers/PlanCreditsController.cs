@@ -105,11 +105,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", PlanCreditId desc").ToList();
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.PlanCreditId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Sum);

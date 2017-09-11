@@ -180,6 +180,17 @@
                     }
                 },
                 items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep": "---------",
                     "add": { name: "Создать", icon: "add" },
                     "details": {
                         name: "Подробно", icon: "details", disabled: function () {
@@ -201,18 +212,7 @@
                             if (rClass.indexOf("dataTables_empty") >= 0) { return true };
                             return false;
                         }
-                    },
-                    "sep": "---------",
-                    "filter": {
-                        name: "Фильтр по значению",
-                        icon: "filter",
-                        disabled: function () {
-                            var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cellf") >= 0) { return false };
-                            return true;
-                        }
-                    },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                    }
                 }
             });
 

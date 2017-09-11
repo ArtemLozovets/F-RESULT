@@ -71,6 +71,7 @@ namespace F_Result.Controllers
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
                                  select payment).AsEnumerable().Select(x => new Payments
                                  {
+                                     id = x.id,
                                      Project = x.Project,
                                      Chief = x.Chief,
                                      Client = x.Client,
@@ -89,11 +90,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
                 }
                 else
                 {
-                    _payments = _payments.OrderByDescending(x=>x.PaymentDate).ToList();
+                    _payments = _payments.OrderByDescending(x=>x.PaymentDate).ThenByDescending(x=>x.id).ToList();
                 }
 
                 var pSum = _payments.GroupBy(x=>new { x.Agreement, x.AgrDate, x.Summ }).Sum(x=>x.Select(y=>y.Summ).FirstOrDefault());
