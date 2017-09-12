@@ -57,11 +57,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _pperiod = _pperiod.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _pperiod = _pperiod.OrderBy(sortColumn + " " + sortColumnDir + ", PlanningPeriodId desc").ToList();
                 }
                 else
                 {
-                    _pperiod = _pperiod.OrderBy(x => x.PlanningPeriodId).ToList();
+                    _pperiod = _pperiod.OrderBy(x => x.PlanningPeriodId).ThenByDescending(x=>x.PlanningPeriodId).ToList();
                 }
 
                 totalRecords = _pperiod.Count();

@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
@@ -28,11 +30,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
-
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -42,7 +39,7 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Полное имя" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Имя" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
@@ -57,7 +54,6 @@
             </tr>
         </thead>
     </table>
-
     <a href="#" class="scrollup1">Наверх</a>
 </div>
 
@@ -67,13 +63,35 @@
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+
+    <script>
+        $.contextMenu({
+            selector: '.dataTables_empty, td.context-menu-one',
+            callback: function (key, options) {
+                var fClass = $(this).attr('class');
+                switch (key) {
+                    case 'refresh':
+                        ClearFilter();
+                        break;
+                    default:
+                        return;
+                }
+            },
+            items: {"refresh": { name: "Сброс фильтра", icon: "refresh" }}
+        });
+    </script>
 
     <script type="text/javascript">
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -110,22 +128,19 @@
                     }
                 },
                 "columns": [
-                    { "data": "FullName", "name": "FullName", "autoWidth": true },
-                    { "data": "Name", "name": "Name", "autoWidth": true },
-                    { "data": "Code", "name": "Code", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true },
+                    { "data": "FullName", "name": "FullName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Name", "name": "Name", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Code", "name": "Code", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "State", "name": "State", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "id", "name": "id", "autoWidth": false }
                 ],
                 "columnDefs": [{ "visible": false, "targets": [4] }],
                 "order": [[4, "desc"]],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-userid', data.id);
-                    $(row).attr('class', 'context-menu-one');
                 }
 
             });
-
-
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {

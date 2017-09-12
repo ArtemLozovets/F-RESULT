@@ -248,11 +248,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir);
+                    _projects = _projects.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
                 }
                 else
                 {
-                    _projects = _projects.OrderByDescending(x => x.id).ToList();
+                    _projects = _projects.OrderByDescending(x => x.id).ThenByDescending(x=>x.id).ToList();
                 }
 
                 totalRecords = _projects.Count();
@@ -403,11 +403,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _organizations = _organizations.OrderBy(sortColumn + " " + sortColumnDir);
+                    _organizations = _organizations.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
                 }
                 else
                 {
-                    _organizations = _organizations.OrderByDescending(x=>x.id);
+                    _organizations = _organizations.OrderByDescending(x=>x.id).ThenByDescending(x=>x.id);
                 }
 
 
@@ -462,11 +462,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _dusers = _dusers.OrderBy(sortColumn + " " + sortColumnDir);
+                    _dusers = _dusers.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
                 }
                 else
                 {
-                    _dusers = _dusers.OrderByDescending(x=>x.id);
+                    _dusers = _dusers.OrderByDescending(x=>x.id).ThenByDescending(x=>x.id);
                 }
 
                 totalRecords = _dusers.Count();

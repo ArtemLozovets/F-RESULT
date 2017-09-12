@@ -202,8 +202,10 @@
             $('#gridtable tbody').on('dblclick', 'tr', function () {
                 window.location.href = "/AccountsBalances/ABEdit/" + $(this).data('objid');
             });
-
-
+        });
+    </script>
+    <script>
+        $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 "fixedHeader": {
@@ -248,7 +250,7 @@
                         return d.data;
                     }
                 },
-                "order":[[5, "desc"]],
+                "order": [[5, "desc"]],
                 "columns": [
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "prgCellf context-menu-one" },
                     { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "bankCellf context-menu-one" },

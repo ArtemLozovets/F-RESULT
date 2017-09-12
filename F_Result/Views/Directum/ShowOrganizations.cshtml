@@ -6,6 +6,9 @@
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -28,10 +31,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -41,7 +40,7 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ИНН" /></th>
@@ -68,7 +67,9 @@
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     @*Блок скриптов для работы с DateTimePicker*@
     <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript">
@@ -97,10 +98,35 @@
         };
     </script>
 
+    <script>
+        $(function () {
+            //Скрипт для работы с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: { "refresh": { name: "Сброс фильтра", icon: "refresh" } }
+            });
+        });
+    </script>
+
+
     <script type="text/javascript">
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -137,18 +163,16 @@
                     }
                 },
                 "columns": [
-                    { "data": "Title", "name": "Title", "autoWidth": true },
-                    { "data": "Code", "name": "Code", "autoWidth": true },
-                    { "data": "INN", "name": "INN", "autoWidth": true },
-                    { "data": "EDRPOU", "name": "EDRPOU", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true },
-                    { "data": "id", "name": "id", "autoWidth": false }
+                    { "data": "Title", "name": "Title", "autoWidth": true, "class": "context-menu-one"  },
+                    { "data": "Code", "name": "Code", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "INN", "name": "INN", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "EDRPOU", "name": "EDRPOU", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "State", "name": "State", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "id", "name": "id", "autoWidth": false, "class": "context-menu-one" }
                 ],
                 "columnDefs": [{ "visible": false, "targets": [5] }],
-                "order": [[5, "desc"]]
+                "order": [[0, "asc"]]
             });
-
-
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -165,15 +189,6 @@
     </script>
 
     <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {

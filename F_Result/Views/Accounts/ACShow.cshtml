@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
@@ -28,12 +30,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("ACCreate")'><i class="fa fa-plus-circle"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
-
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -42,7 +38,7 @@
     </div>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Банк" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="МФО" /></th>
@@ -85,51 +81,79 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script type="text/javascript">
         $(function () {
 
             $.contextMenu({
-                selector: '.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     switch (key) {
                         case 'add':
                             window.location.href = "/Accounts/ACCreate/";
                             break;
                         case 'details':
-                            window.location.href = "/Accounts/ACDetails/" + $(this).data('objid');
+                            window.location.href = "/Accounts/ACDetails/" + $(this).closest('tr').data('objid');
                             break;
                         case 'edit':
-                            window.location.href = "/Accounts/ACEdit/" + $(this).data('objid');
+                            window.location.href = "/Accounts/ACEdit/" + $(this).closest('tr').data('objid');
                             break;
                         case 'delete':
-                            window.location.href = "/Accounts/ACDelete/" + $(this).data('objid');
+                            window.location.href = "/Accounts/ACDelete/" + $(this).closest('tr').data('objid');
                             break;
                         case 'addBalance':
                             localStorage.setItem('ABCreateReturnURL', '/Accounts/ACShow')
                             window.location.href = "/AccountsBalances/ABBatchCreate";
+                            break;
+                        case 'refresh':
+                            ClearFilter();
                             break;
                         default:
                             return;
                     }
                 },
                 items: {
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "addBalance": { name: "Внести остатки по счетам", icon: "addBalance" },
+                    "separator1": "-----",
                     "add": { name: "Создать", icon: "add" },
-                    "details": { name: "Подробно", icon: "details" },
-                    "edit": { name: "Редактировать", icon: "edit" },
-                    "delete": { name: "Удалить", icon: "delete" },
-                    separator: "-----",
-                    "addBalance": { name: "Внести остатки по счетам", icon: "addBalance" }
+                    "details": {
+                        name: "Подробно", icon: "details", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "edit": {
+                        name: "Редактировать", icon: "edit", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "delete": {
+                        name: "Удалить", icon: "delete", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
                 }
             });
 
             //Двойной щелчек по строке таблицы.
             $('#gridtable tbody').on('dblclick', 'tr', function () {
-                window.location.href = "/Accounts/ACEdit/" + $(this).data('objid');
+                window.location.href = "/Accounts/ACEdit/" + $(this).closest('tr').data('objid');
             });
 
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -167,27 +191,24 @@
                 },
                 "order": [[0, "desc"]],
                 "columns": [
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true },
-                    { "data": "BankName", "name": "BankName", "autoWidth": true },
-                    { "data": "MFO", "name": "MFO", "autoWidth": true },
-                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true },
-                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right" },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "MFO", "name": "MFO", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
                     {
-                        "data": "Status", "name": "Status", "autoWidth": true, "type": "boolean", "class" : "text-center",
+                        "data": "Status", "name": "Status", "autoWidth": true, "type": "boolean", "class": "text-center context-menu-one",
                         "render": function (value) {
                             return (value === true) ? '<span class="glyphicon glyphicon-ok text-success"></span>' : '<span class="glyphicon glyphicon-remove text-danger"></span>';
                         }
                     },
-                    { "data": "Note", "name": "Note", "autoWidth": true },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true }
+                    { "data": "Note", "name": "Note", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" }
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.AccountId);
-                    $(row).attr('class', 'context-menu-one');
                 }
             });
-
-
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -204,15 +225,6 @@
     </script>
 
     <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {

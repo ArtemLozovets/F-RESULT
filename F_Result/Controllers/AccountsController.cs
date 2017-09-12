@@ -100,11 +100,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", AccountId desc").ToList();
                 }
                 else
                 {
-                    _ads = _ads.OrderBy(x => x.OrganizationName).ThenBy(x => x.AccountNumber).ToList();
+                    _ads = _ads.OrderBy(x => x.OrganizationName).ThenBy(x => x.AccountNumber).ThenByDescending(x=>x.AccountId).ToList();
                 }
 
                 totalRecords = _ads.Count();

@@ -8,6 +8,7 @@
 <link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -29,10 +30,6 @@
             </ol>
         </div>
     </div>
-
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
 
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
@@ -86,6 +83,7 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -128,7 +126,27 @@
         });
     </script>
 
-    <script type="text/javascript">
+    <script>
+        $(function () {
+            //Скрипт для работы с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {"refresh": { name: "Сброс фильтра", icon: "refresh" }}
+            });
+        });
+    </script>
+
+    <script>
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
@@ -172,11 +190,11 @@
                     }
                 },
                 "columns": [
-                    { "data": "FullName", "name": "FullName", "autoWidth": true },
-                    { "data": "ShortName", "name": "ShortName", "autoWidth": true },
-                    { "data": "Desc", "name": "Desc", "autoWidth": true },
-                    { "data": "ProjectType", "name": "ProjectType", "autoWidth": true },
-                    { "data": "State", "name": "State", "autoWidth": true },
+                    { "data": "FullName", "name": "FullName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "ShortName", "name": "ShortName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Desc", "name": "Desc", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "ProjectType", "name": "ProjectType", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "State", "name": "State", "autoWidth": true, "class": "context-menu-one" },
                      {
                          "data": "StartDateFact", "name": "StartDateFact", "autoWidth": true,
                          "type": "date ",
@@ -188,7 +206,8 @@
                              var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                              var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                              return _d + "/" + _m + "/" + dt.getFullYear();
-                         }
+                         },
+                         "class": "context-menu-one"
                      },
                     {
                         "data": "EndDateFact", "name": "EndDateFact", "autoWidth": true,
@@ -201,7 +220,8 @@
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                             var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
-                        }
+                        },
+                        "class": "context-menu-one"
                     },
                     {
                         "data": "StartDatePlan", "name": "StartDatePlan", "autoWidth": true,
@@ -214,7 +234,8 @@
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                             var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
-                        }
+                        },
+                        "class": "context-menu-one"
                     },
                     {
                         "data": "EndDatePlan", "name": "EndDatePlan", "autoWidth": true,
@@ -227,11 +248,11 @@
                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
                             var _m = dt.getMonth() < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                             return _d + "/" + _m + "/" + dt.getFullYear();
-                        }
+                        },
+                        "class": "context-menu-one"
                     },
 
-                    { "data": "id", "name": "id", "autoWidth": false }
-
+                    { "data": "id", "name": "id", "autoWidth": false, "class": "context-menu-one" }
                 ],
                 "columnDefs": [{ "visible": false, "targets": [9] }],
                 "order": [[9, "desc"]]
@@ -248,14 +269,9 @@
             });
 
         });
-
     </script>
 
     <script>
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {

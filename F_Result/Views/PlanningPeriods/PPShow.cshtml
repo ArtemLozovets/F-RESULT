@@ -5,6 +5,8 @@
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
@@ -28,12 +30,6 @@
         </div>
     </div>
 
-    <p class="pull-right">
-        <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("PPCreate")'><i class="fa fa-plus-circle"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterBtn" title="Панель фильтра" href='#'><i class="glyphicon glyphicon-filter"></i></a>
-        <a class="btn btn-default" style="margin:2px 2px;" id="filterClear" title="Сброс фильтра" href='#'><i class="glyphicon glyphicon-refresh"></i></a>
-    </p>
-
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -43,7 +39,7 @@
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            <tr role="row" id="search-row" hidden style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название периода" /></th>
             </tr>
@@ -66,31 +62,48 @@
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     <script type="text/javascript">
         $(function () {
             $.contextMenu({
-                selector: '.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     switch (key) {
                         case 'add':
                             window.location.href = "/PlanningPeriods/PPCreate/";
                             break;
                         case 'edit':
-                            window.location.href = "/PlanningPeriods/PPEdit/" + $(this).data('periodid');
+                            window.location.href = "/PlanningPeriods/PPEdit/" + $(this).closest('tr').data('periodid');
                             break;
                         case 'delete':
-                            window.location.href = "/PlanningPeriods/PPDelete/" + $(this).data('periodid');
+                            window.location.href = "/PlanningPeriods/PPDelete/" + $(this).closest('tr').data('periodid');
+                            break;
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
                             break;
                         default:
                             return;
                     }
                 },
                 items: {
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep": "---------",
                     "add": { name: "Создать", icon: "add" },
-                    "edit": { name: "Редактировать", icon: "edit" },
-                    "delete": { name: "Удалить", icon: "delete" },
+                    "edit": { name: "Редактировать", icon: "edit", disabled: function () {
+                        var rClass = $(this).attr('class');
+                        if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                        return false;
+                    } },
+                    "delete": {
+                        name: "Удалить", icon: "delete", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
                 }
             });
 
@@ -102,6 +115,10 @@
 
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
@@ -138,16 +155,14 @@
                     }
                 },
                 "columns": [
-                    { "data": "PlanningPeriodId", "name": "PlanningPeriodId", "autoWidth": true },
-                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true },
+                    { "data": "PlanningPeriodId", "name": "PlanningPeriodId", "autoWidth": true, "class" : "context-menu-one" },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true, "class": "context-menu-one" },
                 ],
                 //  "columnDefs": [{ "visible": false, "targets": [4] }],
                 "order": [[0, "asc"]],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-periodid', data.PlanningPeriodId);
-                    $(row).attr('class', 'context-menu-one');
                 }
-
             });
 
             table.columns().eq(0).each(function (colIdx) {
@@ -165,15 +180,6 @@
     </script>
 
     <script>
-        $('body').on('click', '#filterBtn', function () {
-            ClearFilter();
-            $('#search-row').toggle(300);
-        });
-
-        $('body').on('click', '#filterClear', function () {
-            ClearFilter();
-        });
-
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
