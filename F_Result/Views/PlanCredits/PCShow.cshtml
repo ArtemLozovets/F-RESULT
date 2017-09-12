@@ -18,6 +18,11 @@
         padding: 10px;
         background-color: #436C98;
     }
+
+    .periodDDL {
+        margin-left: 1em;
+        margin-top: 1px;
+    }
 </style>
 
 <div id="loadingImg">
@@ -48,6 +53,10 @@
         </div>
     </div>
 
+    <div id="hiddenDDL" hidden>
+        @Html.DropDownList("Period", (SelectList)ViewData["periodItems"], null, new { @class = "form-control input-sm pull-right periodDDL" })
+    </div>
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
@@ -55,11 +64,9 @@
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
-                <th>
-                    @Html.DropDownList("Period", (SelectList)ViewData["periodItems"], "- Период -", new { @class = "form-control input-sm sb" })
-                </th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb periodFlt" style="width: 100%" placeholder="Период" /></th>
             </tr>
 
             <tr role="row">
@@ -67,9 +74,9 @@
                 <th>Организация</th>
                 <th>Назначение</th>
                 <th>Пользователь</th>
-                <th>Период</th>
                 <th>Дата</th>
                 <th>Сумма</th>
+                <th>Период</th>
             </tr>
 
         </thead>
@@ -239,9 +246,6 @@
                 "responsive": true,
                 "pageLength": 25, // Количество записей в таблице по умолчанию
                 "pagingType": "simple_numbers",
-                "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
                     "lengthMenu": "Записей: _MENU_",
                     "zeroRecords": "Записи отсутствуют",
@@ -256,13 +260,20 @@
                         "sPrevious": "<"
                     }
                 },
+                "dom": "<'row'<'col-sm-3'l><'col-sm-3'B><'#sumSpan.col-sm-6'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "fnDrawCallback": function (settings) {
                     //Используем эту функцию для обновления внешних елементов.
                     //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
                     var api = this.api();
                     var json = api.ajax.json();
                     var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                    $("#sumSpan").html($("#hiddenDDL").html() + '&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+
+                    //Читаем значение фильтра планового периода
+                    var DDLVal = localStorage.getItem('PCPlanningPeriod');
+                    $('.periodDDL').val(DDLVal);
                 },
                 "ajax": {
                     "url": "/PlanCredits/LoadPC",
@@ -277,13 +288,12 @@
                         return d.data;
                     }
                 },
-                "order": [[5, "desc"]],
+                "order": [[4, "desc"]],
                 "columns": [
-                    {"data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one"},
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one" },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
-                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": true, "class": "context-menu-one" },
                     {
                         "data": "Date", "name": "Date", "autoWidth": true,
                         "type": "date ",
@@ -299,10 +309,18 @@
                         "class": "dateCellf context-menu-one"
                     },
                     { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": false },
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.PlanCreditId);
-                }
+                },
+                "columnDefs": [
+                    {
+                        "targets": [6],
+                        "visible": true,
+                        "searchable": true
+                    }
+                ]
             });
 
             table.columns().eq(0).each(function (colIdx) {
@@ -314,9 +332,19 @@
                     table.column(colIdx).search(this.value).draw();
                 });
             });
-
         });
 
+    </script>
+
+    <script>
+        //Скрипт для работы с фильтром выбора планового периода
+        $(function () {
+            $('body').on('change', '.periodDDL', function () {
+                localStorage.setItem('PCPlanningPeriod', $(this).val());
+                var table = $('#gridtable').DataTable();
+                table.column(6).search(this.value).draw();
+            });
+        });
     </script>
 
     <script>
