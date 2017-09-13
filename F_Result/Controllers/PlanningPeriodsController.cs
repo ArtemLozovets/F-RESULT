@@ -182,6 +182,18 @@ namespace F_Result.Controllers
             try
             {
                 PlanningPeriod planningPeriod = db.PlanningPeriods.Find(id);
+                if (planningPeriod.PlanCredit.Any())
+                {
+                    TempData["MessageError"] = "Удаление невозможно! В таблице \"План доходов\" есть связанные записи.";
+                    return RedirectToAction("PPShow");
+                }
+
+                if (planningPeriod.PlanDebit.Any())
+                {
+                    TempData["MessageError"] = "Удаление невозможно! В таблице \"План расходов\" есть связанные записи.";
+                    return RedirectToAction("PPShow");
+                }
+
                 db.PlanningPeriods.Remove(planningPeriod);
                 db.SaveChanges();
                 TempData["MessageOK"] = "Информация удалена";

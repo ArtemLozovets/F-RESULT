@@ -79,17 +79,20 @@ namespace F_Result.Models
             modelBuilder.Entity<ActualDebit>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.ActualDebit)
-            .HasForeignKey(m => m.UserId);
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlanCredit>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.PlanCredit)
-            .HasForeignKey(m => m.UserId);
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlanDebit>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.PlanDebit)
-            .HasForeignKey(m => m.UserId);
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Account>()
                 .HasMany(e => e.AccountsBalance)
@@ -100,22 +103,26 @@ namespace F_Result.Models
             modelBuilder.Entity<Account>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.Account)
-            .HasForeignKey(m => m.UserId);
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false); 
 
             modelBuilder.Entity<AccountsBalance>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.AccountsBalance)
-            .HasForeignKey(m => m.UserId);
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false); 
 
             modelBuilder.Entity<PlanDebit>()
             .HasRequired(m => m.PlanningPeriod)
             .WithMany(m => m.PlanDebit)
-            .HasForeignKey(m => m.PeriodId);
+            .HasForeignKey(m => m.PeriodId)
+            .WillCascadeOnDelete(false); 
 
             modelBuilder.Entity<PlanCredit>()
             .HasRequired(m => m.PlanningPeriod)
             .WithMany(m => m.PlanCredit)
-            .HasForeignKey(m => m.PeriodId);
+            .HasForeignKey(m => m.PeriodId)
+            .WillCascadeOnDelete(false); 
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }

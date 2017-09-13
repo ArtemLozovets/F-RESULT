@@ -98,6 +98,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult AnalysisOfPlanPayments()
         {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 

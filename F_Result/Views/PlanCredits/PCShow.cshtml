@@ -9,21 +9,6 @@
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
-<style>
-    #sumSpan {
-        text-align: right;
-    }
-
-    .sum-block {
-        padding: 10px;
-        background-color: #436C98;
-    }
-
-    .periodDDL {
-        margin-left: 1em;
-        margin-top: 1px;
-    }
-</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -53,8 +38,8 @@
         </div>
     </div>
 
-    <div id="hiddenDDL" hidden>
-        @Html.DropDownList("Period", (SelectList)ViewData["periodItems"], null, new { @class = "form-control input-sm pull-right periodDDL" })
+    <div class="row" style="width:100%">
+        @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new { @class = "form-control input-sm", name = "PeriodDDL", title = "Плановый период" })
     </div>
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
@@ -66,7 +51,7 @@
                 <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb periodFlt" style="width: 100%" placeholder="Период" /></th>
+                <th></th>
             </tr>
 
             <tr role="row">
@@ -146,7 +131,7 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'add':
-                            window.location.href = "/PlanCredits/PCCreate/";
+                            window.location.href = "/PlanCredits/PCCreate";
                             break;
                         case 'details':
                             window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
@@ -260,7 +245,7 @@
                         "sPrevious": "<"
                     }
                 },
-                "dom": "<'row'<'col-sm-3'l><'col-sm-3'B><'#sumSpan.col-sm-6'B>>" +
+                "dom": "<'row'<'col-sm-3'l><'col-sm-6'B><'#sumSpan.col-sm-3'B>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "fnDrawCallback": function (settings) {
@@ -269,11 +254,7 @@
                     var api = this.api();
                     var json = api.ajax.json();
                     var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html($("#hiddenDDL").html() + '&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
-
-                    //Читаем значение фильтра планового периода
-                    var DDLVal = localStorage.getItem('PCPlanningPeriod');
-                    $('.periodDDL').val(DDLVal);
+                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
                 },
                 "ajax": {
                     "url": "/PlanCredits/LoadPC",
@@ -317,8 +298,8 @@
                 "columnDefs": [
                     {
                         "targets": [6],
-                        "visible": true,
-                        "searchable": true
+                        "visible": false,
+                        "searchable": false
                     }
                 ]
             });
@@ -339,8 +320,18 @@
     <script>
         //Скрипт для работы с фильтром выбора планового периода
         $(function () {
-            $('body').on('change', '.periodDDL', function () {
-                localStorage.setItem('PCPlanningPeriod', $(this).val());
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+                var table = $('#gridtable').DataTable();
+                table.column(6).search(DDLVal).draw();
+            }
+            var table = $('#gridtable').DataTable();
+            table.column(6).search($('#PeriodDDL').val()).draw();
+
+            $('body').on('change', '#PeriodDDL', function () {
+                localStorage.setItem('PlanningPeriod', $(this).val());
                 var table = $('#gridtable').DataTable();
                 table.column(6).search(this.value).draw();
             });
@@ -354,7 +345,6 @@
                 $(this).val('');
                 table.column(colIdx).search('');
             });
-            table.draw();
         }
     </script>
 }

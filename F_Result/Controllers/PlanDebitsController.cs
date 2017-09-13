@@ -44,13 +44,10 @@ namespace F_Result.Controllers
                 string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _appointment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _periodtxt = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                int _period;
-                Int32.TryParse(_periodtxt, out _period);
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -61,7 +58,10 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _periodtxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                int _period;
+                Int32.TryParse(_periodtxt, out _period);
 
                 var _ads = (from plandebit in db.PlanDebits
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
@@ -127,7 +127,6 @@ namespace F_Result.Controllers
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
-
 
         // GET: PlanCredits/Details/5
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]

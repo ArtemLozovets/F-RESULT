@@ -256,4 +256,11 @@
         })
     </script>
 
+    <script>
+        //Читаем из localStorage значение планового периода
+        if (localStorage.getItem('PlanningPeriod') !== null) {
+            var DDLVal = localStorage.getItem('PlanningPeriod');
+            $('#PeriodId').val(DDLVal);}
+    </script>
+
 }

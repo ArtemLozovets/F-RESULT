@@ -32,31 +32,49 @@
         </div>
     </div>
 
-    <div class="row form-inline">
-        @Html.DropDownList("year", years, new
-   {
-       @class = "form-control form-inline",
-       style = "margin:2px; width:100px; display:inline-block;",
-       id = "YDDL",
-   })
+    <div id="chartReport">
+        <div class="row form-inline">
+            @Html.DropDownList("year", years, new
+       {
+           @class = "form-control form-inline input-sm",
+           style = "margin:2px; width:100px; display:inline-block;",
+           id = "YDDL",
+       })
 
-        <select id="chartType" class="form-control" style="width:140px;">
-            <option value="bar">Графбар</option>
-            <option value="line">Линейная</option>
-        </select>
+            <select id="chartType" class="form-control input-sm" style="width:140px;">
+                <option value="bar">Графбар</option>
+                <option value="line">Линейная</option>
+            </select>
 
+            <input type="button" class="btn-default btn-sm modeBtn" style="width:140px;" value="Табличный отчет">
+        </div>
+
+        <div class="row chartRow">
+            <div class="chartContainer" id="cnvdiv">
+                <canvas id="myChart" width="800" height="400"></canvas>
+            </div>
+            <div class="chartInfoes">
+                <span id="pcsum" class="inStat">ДОХОДЫ</span>
+                <span id="pdsum" class="outStat">РАСХОДЫ</span>
+            </div>
+        </div>
     </div>
 
-    <div class="row chartRow">
-        <div class="chartContainer" id="cnvdiv">
-            <canvas id="myChart" width="800" height="400"></canvas>
+    <div id="tblReport" hidden>
+        <div class="row">
+            @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new
+       {
+           @class = "form-control input-sm",
+           name = "PeriodDDL",
+           title = "Плановый период",
+           style = "float:left !important; margin-right:4px;"
+       })
+            <input type="button" class="btn-default btn-sm modeBtn" style="width:140px;" value="Диаграмма">
         </div>
-        <div class="chartInfoes">
-            <span id="pcsum" class="inStat">ДОХОДЫ</span>
-            <span id="pdsum" class="outStat">РАСХОДЫ</span>
+        <div class="row">
+            <h2 class="text-danger text-center">В РАЗРАБОТКЕ</h2>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
@@ -79,7 +97,7 @@
 
         $('body').on('change', '#chartType', function (e) {
             var _Year = $('#YDDL').val();
-            var chartType =$("#chartType").val();
+            var chartType = $("#chartType").val();
             GetChart(_Year, chartType);
         });
 
@@ -158,7 +176,7 @@
                         position: 'top',
                         fontSize: 14,
                         fontColor: '#46709D',
-                        text: 'Анализ плановых показателей за '+_Year+' год'
+                        text: 'Анализ плановых показателей за ' + _Year + ' год'
                     },
                     scales: {
                         yAxes: [{
@@ -189,5 +207,35 @@
             });
         };
 
+    </script>
+    <script>
+        //Скрипт переключения режимов отображения отчета (Диаграмма/Табличный)
+        $('body').on('click', '.modeBtn', function () {
+            if ($(this).val() === 'Табличный отчет') {
+                $('#chartReport').fadeOut(500, function () {
+                    $('#tblReport').fadeIn(500);
+                });
+            }
+            if ($(this).val() === 'Диаграмма') {
+                $('#tblReport').fadeOut(500, function () {
+                    $('#chartReport').fadeIn(500);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        //Скрипт для работы с фильтром выбора планового периода
+        $(function () {
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+            }
+
+            $('body').on('change', '#PeriodDDL', function () {
+                localStorage.setItem('PlanningPeriod', $(this).val());
+            });
+        });
     </script>
 }

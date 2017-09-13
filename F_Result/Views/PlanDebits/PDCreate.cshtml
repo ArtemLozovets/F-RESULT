@@ -63,14 +63,14 @@
                     @Html.LabelFor(model => model.Sum, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         @Html.EditorFor(model => model.Sum, new
-               {
-                   htmlAttributes = new
                    {
-                       @class = "form-control",
-                       @onkeyup = "reppoint(this)",
-                       @onchange = "reppoint(this)"
-                   }
-               })
+                       htmlAttributes = new
+                       {
+                           @class = "form-control",
+                           @onkeyup = "reppoint(this)",
+                           @onchange = "reppoint(this)"
+                       }
+                   })
                         @Html.ValidationMessageFor(model => model.Sum, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -81,19 +81,19 @@
                         @Html.HiddenFor(model => model.ProjectId, new { id = "ProjectId" })
                         <div class="input-group">
                             @Html.Editor("prgSelect", new
-                   {
-                       htmlAttributes = new
                        {
-                           @class = "form-control",
-                           type = "text",
-                           id = "prgSelect",
-                           @readonly = "readonly",
-                           placeholder = "Щелкните для выбора",
-                           aria_describedby = "prgbasic-addon2",
-                           data_url = "/Directum/ShowProjectsPartial",
-                           style = "cursor:pointer;"
-                       }
-                   })
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "prgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "prgbasic-addon2",
+                               data_url = "/Directum/ShowProjectsPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
                             <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -108,19 +108,19 @@
                         @Html.HiddenFor(model => model.OrganizationId, new { id = "OrganizationId" })
                         <div class="input-group">
                             @Html.Editor("orgSelect", new
-                   {
-                       htmlAttributes = new
                        {
-                           @class = "form-control",
-                           type = "text",
-                           id = "orgSelect",
-                           @readonly = "readonly",
-                           placeholder = "Щелкните для выбора",
-                           aria_describedby = "orgbasic-addon2",
-                           data_url = "/Directum/ShowOrganizationsPartial",
-                           style = "cursor:pointer;"
-                       }
-                   })
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "orgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "orgbasic-addon2",
+                               data_url = "/Directum/ShowOrganizationsPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
                             <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -250,10 +250,16 @@
                     $("#OrganizationValidator").html("Необходимо выбрать организацию");
                     flag = true;
                 }
-
                 if (flag) { return false; }
             });
         })
+    </script>
+    <script>
+        //Читаем из localStorage значение планового периода
+        if (localStorage.getItem('PlanningPeriod') !== null) {
+            var DDLVal = localStorage.getItem('PlanningPeriod');
+            $('#PeriodId').val(DDLVal);
+        }
     </script>
 
 }
