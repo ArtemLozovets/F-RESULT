@@ -11,6 +11,12 @@
     });
 }
 
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedColumns.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -32,7 +38,8 @@
         </div>
     </div>
 
-    <div id="chartReport">
+    @*Блок диаграммы*@
+    <div id="chartReport" hidden>
         <div class="row form-inline">
             @Html.DropDownList("year", years, new
        {
@@ -60,6 +67,7 @@
         </div>
     </div>
 
+    @* Блок табличного отчета *@
     <div id="tblReport" hidden>
         <div class="row">
             @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new
@@ -73,12 +81,70 @@
         </div>
         <div class="row">
             <h2 class="text-danger text-center">В РАЗРАБОТКЕ</h2>
+            <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+                <thead>
+                    <tr role="row">
+                        <th rowspan="2" style="min-width:160px !important;">Проект</th>
+                        <th colspan="2">Период 1</th>
+                        <th colspan="2">Период 2</th>
+                        <th colspan="2">Период 3</th>
+                        <th colspan="2">Период 4</th>
+                        <th colspan="2">Период 5</th>
+                        <th colspan="2">Период 6</th>
+                        <th colspan="2">Период 7</th>
+                        <th colspan="2">Период 8</th>
+                        <th colspan="2">Период 9</th>
+                        <th colspan="2">Период 10</th>
+                        <th colspan="2">Период 11</th>
+                        <th colspan="2">Период 12</th>
+                        <th colspan="2">Итого</th>
+                    </tr>
+                    <tr role="row">
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                        <th class="smallTH">Доход</th>
+                        <th class="smallTH">Расход</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
+
+    <a href="#" class="scrollup1">Наверх</a>
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedColumns.min.js"></script>
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/Chart.js"></script>
     <script>
         $(function () {
@@ -208,17 +274,83 @@
         };
 
     </script>
+
+    <script type="text/javascript">
+        //Скрипт для работы с контекстным меню
+        $(function () {
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'filter':
+                            break;
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                }
+            });
+        });
+    </script>
+
     <script>
         //Скрипт переключения режимов отображения отчета (Диаграмма/Табличный)
+        $(function () {
+            var planReportMode = localStorage.getItem('PlanReportType');
+            switch (planReportMode) {
+                case "Table":
+                    $('#chartReport').fadeOut(500, function () {
+                        $('#loadingImg').hide();
+                        $('#tblReport').fadeIn(500, function () {
+                            createGrid();
+                        });
+                    });
+                    return;
+                case "Chart":
+                    $('#tblReport').fadeOut(500, function () {
+                        $('#chartReport').fadeIn(500, function () {
+                            var table = $('#gridtable').DataTable();
+                            table.destroy();
+                        });
+                    });
+                    return;
+                default:
+                    return;
+            }
+        });
+
         $('body').on('click', '.modeBtn', function () {
             if ($(this).val() === 'Табличный отчет') {
                 $('#chartReport').fadeOut(500, function () {
-                    $('#tblReport').fadeIn(500);
+                    localStorage.setItem('PlanReportType', "Table");
+                    $('#loadingImg').hide();
+                    $('#tblReport').fadeIn(500, function () {
+                        createGrid();
+                    });
                 });
             }
             if ($(this).val() === 'Диаграмма') {
                 $('#tblReport').fadeOut(500, function () {
-                    $('#chartReport').fadeIn(500);
+                    localStorage.setItem('PlanReportType', "Chart");
+                    $('#chartReport').fadeIn(500, function () {
+                        var table = $('#gridtable').DataTable();
+                        table.destroy();
+                    });
                 });
             }
         });
@@ -237,5 +369,96 @@
                 localStorage.setItem('PlanningPeriod', $(this).val());
             });
         });
+    </script>
+
+    <script>
+        //Скрипт создания таблицы
+        function createGrid() {
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                scrollY: "400px",
+                scrollX: true,
+                scrollCollapse: true,
+                paging: true,
+                fixedColumns: true,
+                processing: true,
+                serverSide: true,
+                filter: true,
+                orderMulti: false,
+                responsive: false,
+                pageLength: 25, // Количество записей в таблице по умолчанию
+                pagingType: "simple_numbers",
+                //"dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +    "<'row'<'col-sm-12'tr>>" +    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                dom: "<'row'<'col-sm-3'l><'col-sm-9'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    lengthMenu: "Записей: _MENU_",
+                    zeroRecords: "Записи отсутствуют",
+                    info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    infoEmpty: "Записи отсутствуют",
+                    infoFiltered: "(Отфильтровано из _MAX_ записей)",
+                    search: "Проект",
+                    processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    sInfoThousands: " ",
+                    oPaginate: {
+                        sNext: ">",
+                        sPrevious: "<"
+                    }
+                },
+                ajax: {
+                    url: "/Reports/LoadTabRep",
+                    type: "POST",
+                    datatype: "json",
+                    dataSrc: function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    },
+                },
+                order: [[0, "asc"]],
+                columns: [
+                    { data: "ProjectName", name: "ProjectName", "class": "context-menu-one" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" },
+                    { data: null, defaultContent: "544,2" }
+                ],
+                createdRow: function (row, data, rowIndex) {
+                    $(row).attr('data-objid', data.id);
+                }
+            });
+        };
+    </script>
+
+    <script>
+        function ClearFilter() {
+            $('#gridtable_filter').find('input').val('').trigger('keyup');
+        }
     </script>
 }

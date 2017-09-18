@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -174,6 +175,67 @@ namespace F_Result.Controllers
                               ChartData = _pcsum, 
                               ChartDataA = _pdsum }, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        public ActionResult LoadTabRep()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
+                var _ads = (from actualdebit in db.ActualDebit
+                            join prg in db.Projects on actualdebit.ProjectId equals prg.id
+                            join org in db.Organizations on actualdebit.OrganizationId equals org.id
+                            join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
+                            where prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname)
+                            select new
+                            {
+                                ProjectId = actualdebit.ProjectId,
+                                ProjectName = prg.ShortName,
+                                OrgName = org.Title
+                            }).AsEnumerable().Select(x => new ActualDebit
+                            {
+                                ProjectId = x.ProjectId,
+                                ProjectName = x.ProjectName,
+                            }).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+                else
+                {
+                    _ads = _ads.OrderByDescending(x => x.ProjectName).ToList();
+                }
+
+                totalRecords = _ads.Count();
+
+                var data = _ads.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         protected override void Dispose(bool disposing)
         {

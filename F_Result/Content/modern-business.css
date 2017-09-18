@@ -127,14 +127,6 @@ footer {
 }
 
 
-.gridtable tr th {
-    text-align: center;
-}
-
-.gridtable {
-    font-size: 13px !important;
-}
-
 /*Блок стилей для кнопки "НАВЕРХ"*/
 .scrollup1 {
     width: 40px;
@@ -174,9 +166,15 @@ footer {
         display: block;
     }
 
-/* Блок стилей для фильтра таблицы */
-#gridtable > thead > tr > th {
-    border-bottom: 0 !important;
+/* Блок стилей таблицы */
+.gridtable > thead > tr > th {
+    border-bottom:0 !important;
+    text-align:center !important;
+    vertical-align:middle !important;
+}
+
+.gridtable {
+    font-size: 13px !important;
 }
 
 .sb {
@@ -196,6 +194,11 @@ footer {
 #search-row > th {
     padding: 3px;
 }
+
+.smallTH{
+    font-size:10px;
+}
+
 
 /* ----------------CHART BLOCK---------------*/
 
