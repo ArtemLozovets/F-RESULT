@@ -77,7 +77,7 @@
            title = "Плановый период",
            style = "float:left !important; margin-right:4px;"
        })
-            <input type="button" class="btn-default btn-sm modeBtn" style="width:140px;" value="Диаграмма">
+            <input type="button" class="btn btn-default btn-sm modeBtn" style="width:140px;" value="Диаграмма">
         </div>
         <div class="row">
             <h2 class="text-danger text-center">В РАЗРАБОТКЕ</h2>
@@ -284,6 +284,9 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'filter':
+                            if (fClass.indexOf("prgCellf") >= 0) {  
+                                $('#gridtable_filter').find('input').val($(this).text()).trigger('keyup');
+                            }
                             break;
                         case 'refresh':
                             ClearFilter();
@@ -330,6 +333,12 @@
                     });
                     return;
                 default:
+                    $('#tblReport').fadeOut(500, function () {
+                        $('#chartReport').fadeIn(500, function () {
+                            var table = $('#gridtable').DataTable();
+                            table.destroy();
+                        });
+                    });
                     return;
             }
         });
@@ -380,7 +389,10 @@
                 scrollX: true,
                 scrollCollapse: true,
                 paging: true,
-                fixedColumns: true,
+                fixedColumns:   {
+                    leftColumns: 1,
+                    rightColumns: 0
+                },
                 processing: true,
                 serverSide: true,
                 filter: true,
@@ -388,7 +400,6 @@
                 responsive: false,
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
-                //"dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +    "<'row'<'col-sm-12'tr>>" +    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 dom: "<'row'<'col-sm-3'l><'col-sm-9'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -421,38 +432,37 @@
                 },
                 order: [[0, "asc"]],
                 columns: [
-                    { data: "ProjectName", name: "ProjectName", "class": "context-menu-one" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" },
-                    { data: null, defaultContent: "544,2" }
+                    { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
+                    { data: "d1c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d1d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d2c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d2d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d3c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d3d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d4c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d4d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d5c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d5d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d6c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d6d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d7c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d7d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d8c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d8d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d9c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d9d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d10c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d10d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d11c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d11d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d12c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "d12d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "dresc", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
+                    { data: "dresd", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" }
                 ],
-                createdRow: function (row, data, rowIndex) {
-                    $(row).attr('data-objid', data.id);
-                }
+             
             });
+
         };
     </script>
 

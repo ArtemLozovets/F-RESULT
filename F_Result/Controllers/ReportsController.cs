@@ -31,13 +31,13 @@ namespace F_Result.Controllers
 
             // График входящих платежей -------------------------------------------
             var _inpaylist = (from t in db.Payments
-                            group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
-                            where g.Key.Year == Year
-                            select new
-                            {
-                                Month = g.Key.Month,
-                                Total = g.Sum(t => t.Payment)
-                            }).ToList();
+                              group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
+                              where g.Key.Year == Year
+                              select new
+                              {
+                                  Month = g.Key.Month,
+                                  Total = g.Sum(t => t.Payment)
+                              }).ToList();
 
             List<decimal?> _insum = new List<decimal?>();
             for (int i = 1; i < 13; i++)
@@ -51,13 +51,13 @@ namespace F_Result.Controllers
 
             // График исходящих платежей -------------------------------------------
             var _outpaylist = (from t in db.ActualDebit
-                              group t by new { t.Date.Year, t.Date.Month } into g
-                              where g.Key.Year == Year
-                              select new
-                              {
-                                  Month = g.Key.Month,
-                                  Total = g.Sum(t => t.Sum)
-                              }).ToList();
+                               group t by new { t.Date.Year, t.Date.Month } into g
+                               where g.Key.Year == Year
+                               select new
+                               {
+                                   Month = g.Key.Month,
+                                   Total = g.Sum(t => t.Sum)
+                               }).ToList();
 
             List<decimal?> _outsum = new List<decimal?>();
             for (int i = 1; i < 13; i++)
@@ -80,7 +80,8 @@ namespace F_Result.Controllers
             var _outMax = _outsum.Max(x => x.Value);
 
 
-            return Json(new { 
+            return Json(new
+            {
                 Result = true,
                 insum = _inSum,
                 inavg = _inAvg,
@@ -89,9 +90,9 @@ namespace F_Result.Controllers
                 outsum = _outSum,
                 outavg = _outAvg,
                 outmin = _outMin,
-                outmax = _outMax, 
-                ChartData = _insum, 
-                ChartDataA = _outsum 
+                outmax = _outMax,
+                ChartData = _insum,
+                ChartDataA = _outsum
             }, JsonRequestBehavior.AllowGet);
 
         }
@@ -115,13 +116,13 @@ namespace F_Result.Controllers
 
             // График плановых доходов -------------------------------------------
             var _pclist = (from t in db.PlanCredits
-                              group t by new { t.Date.Year, t.Date.Month } into g
-                              where g.Key.Year == Year
-                              select new
-                              {
-                                  Month = g.Key.Month,
-                                  Total = g.Sum(t => t.Sum)
-                              }).ToList();
+                           group t by new { t.Date.Year, t.Date.Month } into g
+                           where g.Key.Year == Year
+                           select new
+                           {
+                               Month = g.Key.Month,
+                               Total = g.Sum(t => t.Sum)
+                           }).ToList();
 
             List<decimal?> _pcsum = new List<decimal?>();
             for (int i = 1; i < 13; i++)
@@ -135,13 +136,13 @@ namespace F_Result.Controllers
 
             // График плановых расходов -------------------------------------------
             var _pdlist = (from t in db.PlanDebits
-                               group t by new { t.Date.Year, t.Date.Month } into g
-                               where g.Key.Year == Year
-                               select new
-                               {
-                                   Month = g.Key.Month,
-                                   Total = g.Sum(t => t.Sum)
-                               }).ToList();
+                           group t by new { t.Date.Year, t.Date.Month } into g
+                           where g.Key.Year == Year
+                           select new
+                           {
+                               Month = g.Key.Month,
+                               Total = g.Sum(t => t.Sum)
+                           }).ToList();
 
             List<decimal?> _pdsum = new List<decimal?>();
             for (int i = 1; i < 13; i++)
@@ -163,17 +164,20 @@ namespace F_Result.Controllers
             var _pdMin = _pdsum.Min(x => x.Value);
             var _pdMax = _pdsum.Max(x => x.Value);
 
-            return Json(new { Result = true,
-                              pcsum = _pcSum,
-                              pcavg = _pcAvg,
-                              pcmin = _pcMin,
-                              pcmax = _pcMax,
-                              pdsum = _pdSum,
-                              pdavg = _pdAvg,
-                              pdmin = _pdMin,
-                              pdmax = _pdMax, 
-                              ChartData = _pcsum, 
-                              ChartDataA = _pdsum }, JsonRequestBehavior.AllowGet);
+            return Json(new
+            {
+                Result = true,
+                pcsum = _pcSum,
+                pcavg = _pcAvg,
+                pcmin = _pcMin,
+                pcmax = _pcMax,
+                pdsum = _pdSum,
+                pdavg = _pdAvg,
+                pdmin = _pdMin,
+                pdmax = _pdMax,
+                ChartData = _pcsum,
+                ChartDataA = _pdsum
+            }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -196,20 +200,64 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
-                var _ads = (from actualdebit in db.ActualDebit
-                            join prg in db.Projects on actualdebit.ProjectId equals prg.id
-                            join org in db.Organizations on actualdebit.OrganizationId equals org.id
-                            join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
+                var _ads = (from prg in db.Projects
                             where prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname)
                             select new
                             {
-                                ProjectId = actualdebit.ProjectId,
                                 ProjectName = prg.ShortName,
-                                OrgName = org.Title
-                            }).AsEnumerable().Select(x => new ActualDebit
+                                d1c = 544.2,
+                                d1d = 544.2,
+                                d2c = 544.2,
+                                d2d = 544.2,
+                                d3c = 544.2,
+                                d3d = 544.2,
+                                d4c = 544.2,
+                                d4d = 544.2,
+                                d5c = 544.2,
+                                d5d = 544.2,
+                                d6c = 544.2,
+                                d6d = 544.2,
+                                d7c = 544.2,
+                                d7d = 544.2,
+                                d8c = 544.2,
+                                d8d = 544.2,
+                                d9c = 544.2,
+                                d9d = 544.2,
+                                d10c = 544.2,
+                                d10d = 544.2,
+                                d11c = 544.2,
+                                d11d = 544.2,
+                                d12c = 544.2,
+                                d12d = 544.2
+                            }).AsEnumerable().Select(x => new
                             {
-                                ProjectId = x.ProjectId,
                                 ProjectName = x.ProjectName,
+                                d1c = x.d1c,
+                                d1d = x.d1d,
+                                d2c = x.d2c,
+                                d2d = x.d2d,
+                                d3c = x.d3c,
+                                d3d = x.d3d,
+                                d4c = x.d4c,
+                                d4d = x.d4d,
+                                d5c = x.d5c,
+                                d5d = x.d5d,
+                                d6c = x.d6c,
+                                d6d = x.d6d,
+                                d7c = x.d7c,
+                                d7d = x.d7d,
+                                d8c = x.d8c,
+                                d8d = x.d8d,
+                                d9c = x.d9c,
+                                d9d = x.d9d,
+                                d10c = x.d10c,
+                                d10d = x.d10d,
+                                d11c = x.d11c,
+                                d11d = x.d11d,
+                                d12c = x.d12c,
+                                d12d = x.d12d,
+                                dresc = x.d1c + x.d2c + x.d3c + x.d4c + x.d5c + x.d6c + x.d7c + x.d8c + x.d9c + x.d10c + x.d11c + x.d12c,
+                                dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
                             }).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -220,6 +268,7 @@ namespace F_Result.Controllers
                 {
                     _ads = _ads.OrderByDescending(x => x.ProjectName).ToList();
                 }
+
 
                 totalRecords = _ads.Count();
 
