@@ -216,6 +216,7 @@
     <Compile Include="Models\PlanningPeriod.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\DUsers.cs" />
+    <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

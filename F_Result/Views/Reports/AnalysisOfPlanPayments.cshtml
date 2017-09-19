@@ -11,6 +11,17 @@
     });
 }
 
+<style>
+    .text-bold {
+        font-weight: bold;
+    }
+
+    .DTFC_Blocker{
+        background-color:white !important;
+        border: 1px solid #ddd;
+        border-bottom:none;
+    }
+</style>
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
@@ -97,7 +108,7 @@
                         <th colspan="2">Период 10</th>
                         <th colspan="2">Период 11</th>
                         <th colspan="2">Период 12</th>
-                        <th colspan="2">Итого</th>
+                        <th colspan="2" style="min-width:160px !important;">Итого</th>
                     </tr>
                     <tr role="row">
                         <th class="smallTH">Доход</th>
@@ -284,7 +295,7 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'filter':
-                            if (fClass.indexOf("prgCellf") >= 0) {  
+                            if (fClass.indexOf("prgCellf") >= 0) {
                                 $('#gridtable_filter').find('input').val($(this).text()).trigger('keyup');
                             }
                             break;
@@ -314,7 +325,10 @@
     <script>
         //Скрипт переключения режимов отображения отчета (Диаграмма/Табличный)
         $(function () {
-            var planReportMode = localStorage.getItem('PlanReportType');
+            var planReportMode = "Chart";
+            if (localStorage.getItem('PlanReportType')) {
+                planReportMode = localStorage.getItem('PlanReportType');
+            }
             switch (planReportMode) {
                 case "Table":
                     $('#chartReport').fadeOut(500, function () {
@@ -333,12 +347,6 @@
                     });
                     return;
                 default:
-                    $('#tblReport').fadeOut(500, function () {
-                        $('#chartReport').fadeIn(500, function () {
-                            var table = $('#gridtable').DataTable();
-                            table.destroy();
-                        });
-                    });
                     return;
             }
         });
@@ -389,9 +397,9 @@
                 scrollX: true,
                 scrollCollapse: true,
                 paging: true,
-                fixedColumns:   {
+                fixedColumns: {
                     leftColumns: 1,
-                    rightColumns: 0
+                    rightColumns: 2
                 },
                 processing: true,
                 serverSide: true,
@@ -433,35 +441,71 @@
                 order: [[0, "asc"]],
                 columns: [
                     { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
-                    { data: "d1c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d1d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d2c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d2d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d3c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d3d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d4c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d4d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d5c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d5d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d6c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d6d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d7c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d7d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d8c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d8d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d9c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d9d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d10c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d10d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d11c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d11d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d12c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "d12d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "dresc", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "dresd", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" }
+                    { data: "d1c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d1d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d2c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d2d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d3c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d3d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d4c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d4d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d5c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d5d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d6c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d6d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d7c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d7d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d8c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d8d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d9c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d9d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d10c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d10d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d11c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d11d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d12c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "d12d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "dresc", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one " },
+                    { data: "dresd", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one " }
                 ],
-             
+                "createdRow": function (row, data, index) {
+                    if (data.ProjectName === "Всего") {
+                        $(row).addClass('text-bold text-right');
+                        $('td', row).eq(0).removeClass('prgCellf').addClass('text-right');
+                    }
+                }
             });
+
+            var tbl = $('#gridtable').DataTable();
+            tbl.row.add({
+                "ProjectName": "Отклонение",
+                "d1c":"111", 
+                "d1d":"111", 
+                "d2c":"111", 
+                "d2d":"111", 
+                "d3c":"111", 
+                "d3d":"111", 
+                "d4c":"111", 
+                "d4d":"111", 
+                "d5c":"111", 
+                "d5d":"111", 
+                "d6c":"111", 
+                "d6d":"111", 
+                "d7c":"111", 
+                "d7d":"111", 
+                "d8c":"111", 
+                "d8d":"111", 
+                "d9c":"111", 
+                "d9d":"111", 
+                "d10c":"111",
+                "d10d":"111",
+                "d11c":"111",
+                "d11d":"111",
+                "d12c":"111",
+                "d12d":"111",
+                "dresc" : "456",
+                "dresd" : "456"
+            }).draw().node();
 
         };
     </script>

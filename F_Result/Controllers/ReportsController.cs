@@ -200,36 +200,39 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
+
+                List<TableReport> RepList = new List<TableReport>();
+
                 var _ads = (from prg in db.Projects
                             where prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname)
                             select new
                             {
                                 ProjectName = prg.ShortName,
-                                d1c = 544.2,
-                                d1d = 544.2,
-                                d2c = 544.2,
-                                d2d = 544.2,
-                                d3c = 544.2,
-                                d3d = 544.2,
-                                d4c = 544.2,
-                                d4d = 544.2,
-                                d5c = 544.2,
-                                d5d = 544.2,
-                                d6c = 544.2,
-                                d6d = 544.2,
-                                d7c = 544.2,
-                                d7d = 544.2,
-                                d8c = 544.2,
-                                d8d = 544.2,
-                                d9c = 544.2,
-                                d9d = 544.2,
-                                d10c = 544.2,
-                                d10d = 544.2,
-                                d11c = 544.2,
-                                d11d = 544.2,
-                                d12c = 544.2,
-                                d12d = 544.2
-                            }).AsEnumerable().Select(x => new
+                                d1c = (decimal)544.2,
+                                d1d = (decimal)544.2,
+                                d2c = (decimal)544.2,
+                                d2d = (decimal)544.2,
+                                d3c = (decimal)544.2,
+                                d3d = (decimal)544.2,
+                                d4c = (decimal)544.2,
+                                d4d = (decimal)544.2,
+                                d5c = (decimal)544.2,
+                                d5d = (decimal)544.2,
+                                d6c = (decimal)544.2,
+                                d6d = (decimal)544.2,
+                                d7c = (decimal)544.2,
+                                d7d = (decimal)544.2,
+                                d8c = (decimal)544.2,
+                                d8d = (decimal)544.2,
+                                d9c = (decimal)544.2,
+                                d9d = (decimal)544.2,
+                                d10c = (decimal)544.2,
+                                d10d = (decimal)544.2,
+                                d11c = (decimal)544.2,
+                                d11d = (decimal)544.2,
+                                d12c = (decimal)544.2,
+                                d12d = (decimal)544.2
+                            }).AsEnumerable().Select(x => new TableReport
                             {
                                 ProjectName = x.ProjectName,
                                 d1c = x.d1c,
@@ -260,19 +263,52 @@ namespace F_Result.Controllers
                                 dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
                             }).ToList();
 
+
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
-                else
-                {
-                    _ads = _ads.OrderByDescending(x => x.ProjectName).ToList();
-                }
-
 
                 totalRecords = _ads.Count();
 
-                var data = _ads.Skip(skip).Take(pageSize);
+                TableReport SummaryRow = new TableReport
+                {
+                    ProjectName = "Всего",
+                    d1c = _ads.Sum(x => x.d1c),
+                    d1d = _ads.Sum(x=>x.d1d),
+                    d2c = _ads.Sum(x => x.d2c),
+                    d2d = _ads.Sum(x => x.d2d),
+                    d3c = _ads.Sum(x => x.d3c),
+                    d3d = _ads.Sum(x => x.d3d),
+                    d4c = _ads.Sum(x => x.d4c),
+                    d4d = _ads.Sum(x => x.d4d),
+                    d5c = _ads.Sum(x => x.d5c),
+                    d5d = _ads.Sum(x => x.d5d),
+                    d6c = _ads.Sum(x => x.d6c),
+                    d6d = _ads.Sum(x => x.d6d),
+                    d7c = _ads.Sum(x => x.d7c),
+                    d7d = _ads.Sum(x => x.d7d),
+                    d8c = _ads.Sum(x => x.d8c),
+                    d8d = _ads.Sum(x => x.d8d),
+                    d9c = _ads.Sum(x => x.d9c),
+                    d9d = _ads.Sum(x => x.d9d),
+                    d10c = _ads.Sum(x => x.d10c),
+                    d10d = _ads.Sum(x => x.d10d),
+                    d11c = _ads.Sum(x => x.d11c),
+                    d11d = _ads.Sum(x => x.d11d),
+                    d12c = _ads.Sum(x => x.d12c),
+                    d12d = _ads.Sum(x => x.d12d),
+                    dresc = _ads.Sum(x=>x.dresc),
+                    dresd = _ads.Sum(x=>x.dresd)
+                };
+
+                var _pagedlist = _ads.Skip(skip).Take(pageSize);
+
+                RepList.AddRange(_pagedlist);
+                RepList.Add(SummaryRow);
+
+                var data = RepList;
+
                 return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
