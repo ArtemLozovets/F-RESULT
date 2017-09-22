@@ -208,12 +208,12 @@ namespace F_Result.Controllers
                             select new
                             {
                                 ProjectName = prg.ShortName,
-                                d1c = (decimal)544.2,
+                                d1c = (decimal)835.6,
                                 d1d = (decimal)544.2,
                                 d2c = (decimal)544.2,
-                                d2d = (decimal)544.2,
+                                d2d = (decimal)725.8,
                                 d3c = (decimal)544.2,
-                                d3d = (decimal)544.2,
+                                d3d = (decimal)1253.4,
                                 d4c = (decimal)544.2,
                                 d4d = (decimal)544.2,
                                 d5c = (decimal)544.2,
@@ -271,9 +271,8 @@ namespace F_Result.Controllers
 
                 totalRecords = _ads.Count();
 
-                TableReport SummaryRow = new TableReport
-                {
-                    ProjectName = "Всего",
+                Summary SummaryRow = new Summary {
+                    RowName = "Всего",
                     d1c = _ads.Sum(x => x.d1c),
                     d1d = _ads.Sum(x => x.d1d),
                     d2c = _ads.Sum(x => x.d2c),
@@ -302,12 +301,29 @@ namespace F_Result.Controllers
                     dresd = _ads.Sum(x => x.dresd)
                 };
 
+                Deviation DeviationRow = new Deviation
+                {
+                    DevRowName = "Отклонение",
+                    dev1 = SummaryRow.d1c - SummaryRow.d1d,
+                    dev2 = SummaryRow.d2c - SummaryRow.d2d,
+                    dev3 = SummaryRow.d3c - SummaryRow.d3d,
+                    dev4 = SummaryRow.d4c - SummaryRow.d4d,
+                    dev5 = SummaryRow.d5c - SummaryRow.d5d,
+                    dev6 = SummaryRow.d6c - SummaryRow.d6d,
+                    dev7 = SummaryRow.d7c - SummaryRow.d7d,
+                    dev8 = SummaryRow.d8c - SummaryRow.d8d,
+                    dev9 = SummaryRow.d9c - SummaryRow.d9d,
+                    dev10 = SummaryRow.d10c - SummaryRow.d10d,
+                    dev11 = SummaryRow.d11c - SummaryRow.d11d,
+                    dev12 = SummaryRow.d12c - SummaryRow.d12d,
+                    devres = SummaryRow.dresc - SummaryRow.dresd
+                };
+
                 var data = _ads.Skip(skip).Take(pageSize);
                 var summary = SummaryRow;
+                var deviation = DeviationRow;
 
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, summary = summary, errormessage = "" }, JsonRequestBehavior.AllowGet);
-
-
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, summary = summary, deviation = deviation, errormessage = "" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

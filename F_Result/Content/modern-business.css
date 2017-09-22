@@ -121,9 +121,9 @@ body {
     font-style: italic;
 }
 
- .text-bold {
-        font-weight: bold;
-    }
+.text-bold {
+    font-weight: bold;
+}
 
 /* Footer Styles */
 footer {
@@ -172,14 +172,18 @@ footer {
 
 /* Блок стилей таблицы */
 .gridtable > thead > tr > th {
-    border-bottom:0 !important;
-    text-align:center !important;
-    vertical-align:middle !important;
+    border-bottom: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 .gridtable > tfoot > tr > th {
-    text-align:right !important;
-    vertical-align:middle !important;
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.gridtable > tfoot > tr.tright > th {
+    text-align: right !important;
 }
 
 .gridtable {
@@ -204,8 +208,8 @@ footer {
     padding: 3px;
 }
 
-.smallTH{
-    font-size:10px;
+.smallTH {
+    font-size: 10px;
 }
 
 
@@ -311,22 +315,22 @@ td.haveTitle::after {
 }
 
 /*------Filter sum panel------*/
- #sumSpan {
-        text-align: right;
-    }
+#sumSpan {
+    text-align: right;
+}
 
-    .sum-block {
-        padding: 10px;
-        background-color: #436C98;
-    }
+.sum-block {
+    padding: 10px;
+    background-color: #436C98;
+}
 
 
 /*------Global Planning period filter------*/
-    #PeriodDDL {
-        width: 160px;
-        margin: 0 -14px 10px 0;
-        float: right;
-    }
+#PeriodDDL {
+    width: 160px;
+    margin: 0 -14px 10px 0;
+    float: right;
+}
 
 /* ------------------- Auto Filter block ------------------ */
 
