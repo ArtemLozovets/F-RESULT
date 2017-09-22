@@ -121,6 +121,10 @@ body {
     font-style: italic;
 }
 
+ .text-bold {
+        font-weight: bold;
+    }
+
 /* Footer Styles */
 footer {
     margin: 50px 0;
@@ -170,6 +174,11 @@ footer {
 .gridtable > thead > tr > th {
     border-bottom:0 !important;
     text-align:center !important;
+    vertical-align:middle !important;
+}
+
+.gridtable > tfoot > tr > th {
+    text-align:right !important;
     vertical-align:middle !important;
 }
 

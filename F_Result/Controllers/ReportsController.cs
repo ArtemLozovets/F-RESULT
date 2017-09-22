@@ -275,7 +275,7 @@ namespace F_Result.Controllers
                 {
                     ProjectName = "Всего",
                     d1c = _ads.Sum(x => x.d1c),
-                    d1d = _ads.Sum(x=>x.d1d),
+                    d1d = _ads.Sum(x => x.d1d),
                     d2c = _ads.Sum(x => x.d2c),
                     d2d = _ads.Sum(x => x.d2d),
                     d3c = _ads.Sum(x => x.d3c),
@@ -298,18 +298,14 @@ namespace F_Result.Controllers
                     d11d = _ads.Sum(x => x.d11d),
                     d12c = _ads.Sum(x => x.d12c),
                     d12d = _ads.Sum(x => x.d12d),
-                    dresc = _ads.Sum(x=>x.dresc),
-                    dresd = _ads.Sum(x=>x.dresd)
+                    dresc = _ads.Sum(x => x.dresc),
+                    dresd = _ads.Sum(x => x.dresd)
                 };
 
-                var _pagedlist = _ads.Skip(skip).Take(pageSize);
+                var data = _ads.Skip(skip).Take(pageSize);
+                var summary = SummaryRow;
 
-                RepList.AddRange(_pagedlist);
-                RepList.Add(SummaryRow);
-
-                var data = RepList;
-
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, summary = summary, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }

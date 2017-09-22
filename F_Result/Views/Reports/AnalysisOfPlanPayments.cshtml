@@ -11,22 +11,21 @@
     });
 }
 
-<style>
-    .text-bold {
-        font-weight: bold;
-    }
-
-    .DTFC_Blocker{
-        background-color:white !important;
-        border: 1px solid #ddd;
-        border-bottom:none;
-    }
-</style>
-
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedColumns.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<style>
+    .DTFC_LeftFootWrapper, .DTFC_RightFootWrapper{
+        top:24px !important;
+    }
+
+    .dataTables_scrollFootInner{
+        box-sizing: content-box; 
+    }
+
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -86,16 +85,16 @@
            @class = "form-control input-sm",
            name = "PeriodDDL",
            title = "Плановый период",
-           style = "float:left !important; margin-right:4px;"
+           style = "float:right !important; margin-right:0; width:158px;"
        })
             <input type="button" class="btn btn-default btn-sm modeBtn" style="width:140px;" value="Диаграмма">
         </div>
         <div class="row">
-            <h2 class="text-danger text-center">В РАЗРАБОТКЕ</h2>
             <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
                 <thead>
                     <tr role="row">
-                        <th rowspan="2" style="min-width:160px !important;">Проект</th>
+                        <th rowspan="2">Проект</th>
+                        <th colspan="2">Итого</th>
                         <th colspan="2">Период 1</th>
                         <th colspan="2">Период 2</th>
                         <th colspan="2">Период 3</th>
@@ -108,7 +107,6 @@
                         <th colspan="2">Период 10</th>
                         <th colspan="2">Период 11</th>
                         <th colspan="2">Период 12</th>
-                        <th colspan="2" style="min-width:160px !important;">Итого</th>
                     </tr>
                     <tr role="row">
                         <th class="smallTH">Доход</th>
@@ -139,6 +137,37 @@
                         <th class="smallTH">Расход</th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr>
+                        <th style="min-width:16em !important;"></th>
+                        <th class="smallTH" style="min-width:6em !important;"></th>
+                        <th class="smallTH" style="min-width:6em !important;"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                        <th class="smallTH"></th>
+                    </tr>
+                </tfoot>
                 <tbody></tbody>
             </table>
         </div>
@@ -394,12 +423,12 @@
             $('#loadingImg').hide();
             var table = $('#gridtable').DataTable({
                 scrollY: "400px",
-                scrollX: true,
+                scrollX: '100%',
                 scrollCollapse: true,
                 paging: true,
                 fixedColumns: {
-                    leftColumns: 1,
-                    rightColumns: 2
+                    leftColumns: 3,
+                    rightColumns: 0
                 },
                 processing: true,
                 serverSide: true,
@@ -408,16 +437,20 @@
                 responsive: false,
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'col-sm-9'f>>" +
+                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'B><'col-sm-3'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "fnDrawCallback": function (settings) {
+                    $("#alrt").html('<h2 class="text-danger">В РАЗРАБОТКЕ</h2>');
+                },
                 language: {
                     lengthMenu: "Записей: _MENU_",
                     zeroRecords: "Записи отсутствуют",
                     info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
                     infoEmpty: "Записи отсутствуют",
                     infoFiltered: "(Отфильтровано из _MAX_ записей)",
-                    search: "Проект",
+                    search: "",
+                    searchPlaceholder: "Проект...",
                     processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
                     sInfoThousands: " ",
                     oPaginate: {
@@ -441,6 +474,8 @@
                 order: [[0, "asc"]],
                 columns: [
                     { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
+                    { data: "dresc", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" },
+                    { data: "dresd", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" },
                     { data: "d1c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "d1d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "d2c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
@@ -464,49 +499,42 @@
                     { data: "d11c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "d11d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "d12c", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "d12d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "dresc", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one " },
-                    { data: "dresd", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one " }
+                    { data: "d12d", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" }
                 ],
-                "createdRow": function (row, data, index) {
-                    if (data.ProjectName === "Всего") {
-                        $(row).addClass('text-bold text-right');
-                        $('td', row).eq(0).removeClass('prgCellf').addClass('text-right');
-                    }
+                fnDrawCallback: function (settings) {
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    $(api.column(0).footer()).html('Всего');
+                    $(api.column(1).footer()).html(json.summary.dresc.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(2).footer()).html(json.summary.dresd.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(3).footer()).html(json.summary.d1c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(4).footer()).html(json.summary.d1d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(5).footer()).html(json.summary.d2c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(6).footer()).html(json.summary.d2d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(7).footer()).html(json.summary.d3c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(8).footer()).html(json.summary.d3d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(9).footer()).html(json.summary.d4c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(10).footer()).html(json.summary.d4d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(11).footer()).html(json.summary.d5c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(12).footer()).html(json.summary.d5d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(13).footer()).html(json.summary.d6c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(14).footer()).html(json.summary.d6d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(15).footer()).html(json.summary.d7c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(16).footer()).html(json.summary.d7d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(17).footer()).html(json.summary.d8c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(18).footer()).html(json.summary.d8d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(19).footer()).html(json.summary.d9c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(20).footer()).html(json.summary.d9d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(21).footer()).html(json.summary.d10c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(22).footer()).html(json.summary.d10d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(23).footer()).html(json.summary.d11c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(24).footer()).html(json.summary.d11d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(25).footer()).html(json.summary.d12c.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+                    $(api.column(26).footer()).html(json.summary.d12d.toFixed(1).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;")).addClass('smallTH');
+
+                    table.fixedColumns().update();
                 }
             });
-
-            var tbl = $('#gridtable').DataTable();
-            tbl.row.add({
-                "ProjectName": "Отклонение",
-                "d1c":"111", 
-                "d1d":"111", 
-                "d2c":"111", 
-                "d2d":"111", 
-                "d3c":"111", 
-                "d3d":"111", 
-                "d4c":"111", 
-                "d4d":"111", 
-                "d5c":"111", 
-                "d5d":"111", 
-                "d6c":"111", 
-                "d6d":"111", 
-                "d7c":"111", 
-                "d7d":"111", 
-                "d8c":"111", 
-                "d8d":"111", 
-                "d9c":"111", 
-                "d9d":"111", 
-                "d10c":"111",
-                "d10d":"111",
-                "d11c":"111",
-                "d11d":"111",
-                "d12c":"111",
-                "d12d":"111",
-                "dresc" : "456",
-                "dresd" : "456"
-            }).draw().node();
-
         };
     </script>
 
