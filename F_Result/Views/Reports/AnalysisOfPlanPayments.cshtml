@@ -446,6 +446,8 @@
 
             $('body').on('change', '#PeriodDDL', function () {
                 localStorage.setItem('PlanningPeriod', $(this).val());
+                var table = $("#gridtable").DataTable();
+                table.draw();
             });
         });
     </script>
@@ -495,6 +497,11 @@
                     url: "/Reports/LoadTabRep",
                     type: "POST",
                     datatype: "json",
+                    //Получаем Id планового периода.
+                    // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
+                    data: function (d) {
+                        d.PeriodId = $("#PeriodDDL").val() ;
+                    },
                     dataSrc: function (d) {
                         if (d.data.length === 0) {
                             if (d.errormessage != "") {

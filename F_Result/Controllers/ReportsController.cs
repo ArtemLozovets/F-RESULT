@@ -183,8 +183,15 @@ namespace F_Result.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator, Chief, Accountant")]
-        public ActionResult LoadTabRep()
+        public ActionResult LoadTabRep(int? PeriodId)
         {
+            if (PeriodId == null)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r Не указан плановый период.";
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
@@ -203,65 +210,83 @@ namespace F_Result.Controllers
 
                 List<TableReport> RepList = new List<TableReport>();
 
-                var _ads = (from prg in db.Projects
-                            where prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname)
-                            select new
-                            {
-                                ProjectName = prg.ShortName,
-                                d1c = (decimal)835.6,
-                                d1d = (decimal)544.2,
-                                d2c = (decimal)544.2,
-                                d2d = (decimal)725.8,
-                                d3c = (decimal)544.2,
-                                d3d = (decimal)1253.4,
-                                d4c = (decimal)544.2,
-                                d4d = (decimal)544.2,
-                                d5c = (decimal)544.2,
-                                d5d = (decimal)544.2,
-                                d6c = (decimal)544.2,
-                                d6d = (decimal)544.2,
-                                d7c = (decimal)544.2,
-                                d7d = (decimal)544.2,
-                                d8c = (decimal)544.2,
-                                d8d = (decimal)544.2,
-                                d9c = (decimal)544.2,
-                                d9d = (decimal)544.2,
-                                d10c = (decimal)544.2,
-                                d10d = (decimal)544.2,
-                                d11c = (decimal)544.2,
-                                d11d = (decimal)544.2,
-                                d12c = (decimal)544.2,
-                                d12d = (decimal)544.2
-                            }).AsEnumerable().Select(x => new TableReport
-                            {
-                                ProjectName = x.ProjectName,
-                                d1c = x.d1c,
-                                d1d = x.d1d,
-                                d2c = x.d2c,
-                                d2d = x.d2d,
-                                d3c = x.d3c,
-                                d3d = x.d3d,
-                                d4c = x.d4c,
-                                d4d = x.d4d,
-                                d5c = x.d5c,
-                                d5d = x.d5d,
-                                d6c = x.d6c,
-                                d6d = x.d6d,
-                                d7c = x.d7c,
-                                d7d = x.d7d,
-                                d8c = x.d8c,
-                                d8d = x.d8d,
-                                d9c = x.d9c,
-                                d9d = x.d9d,
-                                d10c = x.d10c,
-                                d10d = x.d10d,
-                                d11c = x.d11c,
-                                d11d = x.d11d,
-                                d12c = x.d12c,
-                                d12d = x.d12d,
-                                dresc = x.d1c + x.d2c + x.d3c + x.d4c + x.d5c + x.d6c + x.d7c + x.d8c + x.d9c + x.d10c + x.d11c + x.d12c,
-                                dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
-                            }).ToList();
+                var _ads_all = (from prg in db.Projects
+                                join pc in db.PlanCredits on prg.id equals pc.ProjectId into pctmp
+                                from pc in pctmp.DefaultIfEmpty()
+                                join pd in db.PlanDebits on prg.id equals pd.ProjectId into pdtmp
+                                from pd in pdtmp.DefaultIfEmpty()
+                                where (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
+                                      && (pd.PeriodId == PeriodId && pc.PeriodId == PeriodId)
+                                select new
+                                {
+                                    ProjectName = prg.ShortName,
+                                    ProjectId = prg.id,
+                                    PlanCreditId = pc.PlanCreditId,
+                                    PlanCreditDate = pc.Date,
+                                    PlanCreditSum = pc.Sum,
+                                    PlanDebitId = pd.PlanDebitId,
+                                    PlanDebitDate = pd.Date,
+                                    PlanDebitSum = pd.Sum,
+                                }).Distinct();
+
+                var _ads = (from prg in _ads_all
+                           select new
+                           {
+                               ProjectName = prg.ProjectName,
+                               d1c = (decimal)835.6,
+                               d1d = (decimal)544.2,
+                               d2c = (decimal)544.2,
+                               d2d = (decimal)725.8,
+                               d3c = (decimal)544.2,
+                               d3d = (decimal)1253.4,
+                               d4c = (decimal)544.2,
+                               d4d = (decimal)544.2,
+                               d5c = (decimal)544.2,
+                               d5d = (decimal)544.2,
+                               d6c = (decimal)544.2,
+                               d6d = (decimal)544.2,
+                               d7c = (decimal)544.2,
+                               d7d = (decimal)544.2,
+                               d8c = (decimal)544.2,
+                               d8d = (decimal)544.2,
+                               d9c = (decimal)544.2,
+                               d9d = (decimal)544.2,
+                               d10c = (decimal)544.2,
+                               d10d = (decimal)544.2,
+                               d11c = (decimal)544.2,
+                               d11d = (decimal)544.2,
+                               d12c = (decimal)544.2,
+                               d12d = (decimal)544.2
+                           }).AsEnumerable().Select(x => new TableReport
+                           {
+                               ProjectName = x.ProjectName,
+                               d1c = x.d1c,
+                               d1d = x.d1d,
+                               d2c = x.d2c,
+                               d2d = x.d2d,
+                               d3c = x.d3c,
+                               d3d = x.d3d,
+                               d4c = x.d4c,
+                               d4d = x.d4d,
+                               d5c = x.d5c,
+                               d5d = x.d5d,
+                               d6c = x.d6c,
+                               d6d = x.d6d,
+                               d7c = x.d7c,
+                               d7d = x.d7d,
+                               d8c = x.d8c,
+                               d8d = x.d8d,
+                               d9c = x.d9c,
+                               d9d = x.d9d,
+                               d10c = x.d10c,
+                               d10d = x.d10d,
+                               d11c = x.d11c,
+                               d11d = x.d11d,
+                               d12c = x.d12c,
+                               d12d = x.d12d,
+                               dresc = x.d1c + x.d2c + x.d3c + x.d4c + x.d5c + x.d6c + x.d7c + x.d8c + x.d9c + x.d10c + x.d11c + x.d12c,
+                               dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
+                           }).Distinct().ToList();
 
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -271,7 +296,8 @@ namespace F_Result.Controllers
 
                 totalRecords = _ads.Count();
 
-                Summary SummaryRow = new Summary {
+                Summary SummaryRow = new Summary
+                {
                     RowName = "Всего",
                     d1c = _ads.Sum(x => x.d1c),
                     d1d = _ads.Sum(x => x.d1d),
