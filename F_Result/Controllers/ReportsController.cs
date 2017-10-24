@@ -359,6 +359,29 @@ namespace F_Result.Controllers
             }
         }
 
+        // GET: Reports
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        public ActionResult AnalysisOfTheProjectBudget()
+        {
+            return View();
+        }
+
+
+        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        public JsonResult GetAPB(int? Year)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try {
+                return Json(new { data = "", errormessage = "" }, JsonRequestBehavior.AllowGet);
+            } 
+
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {

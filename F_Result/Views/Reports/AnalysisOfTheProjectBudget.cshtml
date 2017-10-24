@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Анализ бюджета проектов";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                ОТЧЕТЫ
+                <small>Анализ бюджета проектов</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Отчеты</li>
+                <li class="active">Анализ бюджета проектов</li>
+            </ol>
+        </div>
+    </div>
+        <img src="~/Content/Images/construction.jpg" style="width:300px; margin:0 auto; display:block;"/>
+
+
+    <div class="row chartRow">
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            $('#loadingImg').hide();
+        })
+    </script>
+}
+

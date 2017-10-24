@@ -654,6 +654,7 @@
     <Content Include="Views\PlanningPeriods\PPDelete.cshtml" />
     <Content Include="Views\PlanningPeriods\PPEdit.cshtml" />
     <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectBudget.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
