@@ -363,6 +363,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult AnalysisOfTheProjectBudget()
         {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 

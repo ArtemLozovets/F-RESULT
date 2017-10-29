@@ -1,7 +1,20 @@
 ﻿@{
-    ViewBag.Title = "Анализ бюджета проектов";
+    ViewBag.Title = "Бюджетирование";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<style>
+    input[type=checkbox] {
+        border: none;
+        box-shadow: 0 0 0 0;
+    }
+
+        input[type=checkbox]:focus {
+            outline: none;
+            box-shadow: 0 0 0 0;
+        }
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -13,8 +26,8 @@
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
-                ОТЧЕТЫ
-                <small>Анализ бюджета проектов</small>
+                Бюджетирование
+                <small>Контроль выполнения бюджетов</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
@@ -23,20 +36,109 @@
             </ol>
         </div>
     </div>
-        <img src="~/Content/Images/construction.jpg" style="width:300px; margin:0 auto; display:block;"/>
+    <div class="row">
+        
+    </div>
+    <div class="row">
+        <div class="row form-inline">
+            @Html.DropDownList("BudgetPeriodDDL", (SelectList)ViewData["periodItems"], null, new
+               {
+                   @class = "form-control input-sm",
+                   name = "BudgetPeriodDDL",
+                   title = "Плановый период",
+                   style = "display:inline-block; margin-left:1.3em; width:16em;"
+               })
 
+            <input type="text" id="startDate" placeholder="Начало отчета" title="Значение начала отчета" class="form-control input-sm" value="" />
 
-    <div class="row chartRow">
+            @Html.CheckBox("isAllPeriod", false, new { @class = "form-control", style = "width:16px;" })
+            <label for="isAllPeriod" class="control-label">За весь период</label>
+            <h3 class="text-danger text-center pull-right">В РАЗРАБОТКЕ</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8" style="border:1px dotted #aaa">
+            Таблица
+        </div>
+        <div class="col-md-4" style="border:1px dotted #aaa; text-align:center;">
+            Проекты
+        </div>
     </div>
 
 </div>
+<a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
     <script>
         $(function () {
             $('#loadingImg').hide();
         })
+    </script>
+
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('#startDate').dateRangePicker(
+                 {
+                     customTopBar: 'Начало периода',
+                     showWeekNumbers: true,
+                     startOfWeek: 'monday',
+                     singleDate : true,
+                     singleMonth: true,
+                     language: 'ru',
+                     startOfWeek: 'monday',
+                     separator: ' - ',
+                     format: 'DD/MM/YYYY',
+                     autoClose: false,
+                     monthSelect: true,
+                     yearSelect: true,
+                     setValue: function (s) {
+                         $(this).val(s);
+                     },
+                     customOpenAnimation: function (cb) {
+                         $(this).fadeIn(300, cb);
+                     },
+                     customCloseAnimation: function (cb) {
+                         $(this).fadeOut(300, cb);
+                     },
+                     showShortcuts: false,
+                     time: {
+                         enabled: false
+                     },
+                     extraClass: 'date-range-pickerM'
+                 })
+            .bind('datepicker-closed', function (event, obj) {
+
+            })
+            .bind('datepicker-open', function () {
+                $(this).data('dateRangePicker').clear();
+            });
+
+        });
+
+    </script>
+
+
+
+    <script>
+        //Скрипт для работы с фильтром выбора планового периода
+        $(function () {
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#BudgetPeriodDDL').val(DDLVal);
+            }
+
+            $('body').on('change', '#BudgetPeriodDDL', function () {
+                localStorage.setItem('PlanningPeriod', $(this).val());
+                var table = $("#gridtable").DataTable();
+                table.draw();
+            });
+        });
     </script>
 }
 

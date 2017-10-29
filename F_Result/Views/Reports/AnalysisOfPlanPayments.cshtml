@@ -65,7 +65,8 @@
         </div>
     </div>
 
-    @*Блок диаграммы*@
+    <!-- #region Блок диаграммы -->
+
     <div id="chartReport" hidden>
         <div class="row form-inline">
             @Html.DropDownList("year", years, new
@@ -93,8 +94,9 @@
             </div>
         </div>
     </div>
+    <!-- #endregion -->
 
-    @* Блок табличного отчета *@
+    <!-- #region Блок табличного отчета -->
     <div id="tblReport" hidden>
         <div class="row">
             @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new
@@ -205,6 +207,7 @@
             </table>
         </div>
     </div>
+    <!-- #endregion -->
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
@@ -500,7 +503,7 @@
                     //Получаем Id планового периода.
                     // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
                     data: function (d) {
-                        d.PeriodId = $("#PeriodDDL").val() ;
+                        d.PeriodId = $("#PeriodDDL").val();
                     },
                     dataSrc: function (d) {
                         if (d.data.length === 0) {
