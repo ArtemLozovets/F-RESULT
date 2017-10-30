@@ -63,10 +63,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/17/2017 19:53:50</publishTime>
     </File>
     <File Include="bin/F_Result.dll">
-      <publishTime>09/19/2017 10:30:11</publishTime>
+      <publishTime>10/30/2017 16:38:52</publishTime>
     </File>
     <File Include="bin/F_Result.pdb">
-      <publishTime>09/19/2017 10:30:11</publishTime>
+      <publishTime>10/30/2017 16:38:52</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>03/17/2017 19:53:58</publishTime>
@@ -674,29 +674,41 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Content/DataTables/swf/flashExport.swf">
       <publishTime>06/02/2017 08:31:56</publishTime>
     </File>
+    <File Include="Content/font/context-menu-icons.eot">
+      <publishTime>06/02/2017 08:31:56</publishTime>
+    </File>
+    <File Include="Content/font/context-menu-icons.ttf">
+      <publishTime>06/02/2017 08:31:56</publishTime>
+    </File>
+    <File Include="Content/font/context-menu-icons.woff">
+      <publishTime>06/02/2017 08:31:56</publishTime>
+    </File>
+    <File Include="Content/font/context-menu-icons.woff2">
+      <publishTime>06/02/2017 08:31:56</publishTime>
+    </File>
     <File Include="Content/fontawesome/font-awesome.css">
-      <publishTime>06/06/2017 08:11:33</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fontawesome/font-awesome.min.css">
-      <publishTime>06/06/2017 08:11:33</publishTime>
+      <publishTime>10/02/2017 00:49:42</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.eot">
-      <publishTime>06/02/2017 08:31:56</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.svg">
-      <publishTime>06/06/2017 08:11:33</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.ttf">
-      <publishTime>06/02/2017 08:31:56</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.woff">
-      <publishTime>06/02/2017 08:31:56</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.woff2">
-      <publishTime>06/02/2017 08:31:56</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/FontAwesome.otf">
-      <publishTime>06/02/2017 08:31:56</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/glyphicons-halflings-regular.eot">
       <publishTime>06/02/2017 08:31:56</publishTime>
@@ -747,7 +759,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:56</publishTime>
     </File>
     <File Include="Content/modern-business.css">
-      <publishTime>09/18/2017 15:02:35</publishTime>
+      <publishTime>10/30/2017 16:35:01</publishTime>
     </File>
     <File Include="Content/Site.css">
       <publishTime>06/02/2017 08:31:56</publishTime>
@@ -890,11 +902,29 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="favicon.ico">
       <publishTime>06/02/2017 08:32:00</publishTime>
     </File>
+    <File Include="fonts/fontawesome-webfont.eot">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
+    <File Include="fonts/fontawesome-webfont.svg">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
+    <File Include="fonts/fontawesome-webfont.ttf">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
+    <File Include="fonts/fontawesome-webfont.woff">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
+    <File Include="fonts/fontawesome-webfont.woff2">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
+    <File Include="fonts/FontAwesome.otf">
+      <publishTime>10/30/2017 15:23:52</publishTime>
+    </File>
     <File Include="Global.asax">
       <publishTime>06/02/2017 08:31:57</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>08/17/2017 08:42:24</publishTime>
+      <publishTime>10/30/2017 16:29:28</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
       <publishTime>01/01/0001 00:00:00</publishTime>
@@ -1398,10 +1428,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/12/2017 11:36:07</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfPayments.cshtml">
-      <publishTime>08/18/2017 08:38:24</publishTime>
+      <publishTime>10/04/2017 16:27:54</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfPlanPayments.cshtml">
-      <publishTime>09/19/2017 10:30:02</publishTime>
+      <publishTime>10/30/2017 08:27:57</publishTime>
+    </File>
+    <File Include="Views/Reports/AnalysisOfTheProjectBudget.cshtml">
+      <publishTime>10/30/2017 16:15:50</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>06/06/2017 15:04:49</publishTime>
@@ -1413,7 +1446,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:58</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>09/11/2017 09:11:15</publishTime>
+      <publishTime>10/30/2017 15:39:28</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>06/02/2017 08:31:58</publishTime>
@@ -1425,7 +1458,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:58</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/19/2017 10:30:24</publishTime>
+      <publishTime>10/30/2017 16:39:13</publishTime>
     </File>
   </ItemGroup>
 </Project>
