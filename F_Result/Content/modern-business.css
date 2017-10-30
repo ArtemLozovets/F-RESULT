@@ -348,6 +348,67 @@ td.bankCellf:before {
     color: #ddd;
 }
 
+/*#region AnalysisOfTheProjectBudget.chtml */
+input[type=checkbox]#isAllPeriod {
+    border: none;
+    box-shadow: 0 0 0 0;
+}
+
+    input[type=checkbox]#isAllPeriod:focus {
+        outline: none;
+        box-shadow: 0 0 0 0;
+    }
+
+/*---------------Flow Panel block--------------*/
+#flowPanel {
+    z-index: 9999;
+    padding: 0;
+    position: fixed;
+    width: 400px;
+    border-radius: 0;
+    /*border: 1px dashed #faa;*/
+    height: calc(100% - 2px);
+    background-color: #57A;
+    top: 80px;
+    right: -400px;
+    box-shadow: -5px 0 10px rgba(0,0,0,0.3);
+}
+
+#showButton {
+    cursor: pointer;
+    display: block;
+    margin-left: -36px;
+    width: 36px;
+    height: 120px;
+    margin-top: 0;
+    background-color: #57A;
+    border-radius: 6px 0 0 6px;
+    color: #ddd;
+    padding: 10px;
+    box-shadow: -5px 0 8px rgba(0,0,0,0.3);
+    /*clip-path: inset(-5px -1px -5px -5px);*/
+}
+
+    #showButton:hover {
+        color: #fff;
+    }
+
+#revText {
+    margin-top: 8px;
+    margin-left: -4px;
+    display: block;
+    font-weight: bold;
+    letter-spacing: .1em;
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+
+/*#endregion */
+
 /* ----------------RESPONSIVE---------------*/
 
 @media (max-width: 767px) {

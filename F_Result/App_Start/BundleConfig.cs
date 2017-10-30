@@ -37,6 +37,10 @@ namespace F_Result
             bundles.Add(new StyleBundle("~/Content/Spacelab/css").Include(
                     "~/Content/Spacelab/bootstrap.css",
                     "~/Content/modern-business.css"));
+
+            bundles.Add(new StyleBundle("~/Content/fontawesome").Include(
+                "~/Content/fontawesome/font-awesome*"));
         }
+
     }
 }
