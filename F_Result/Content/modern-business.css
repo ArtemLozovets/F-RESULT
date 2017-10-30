@@ -350,12 +350,12 @@ td.bankCellf:before {
 
 /*#region AnalysisOfTheProjectBudget.chtml */
 
-input[type=checkbox]#isAllPeriod {
+input[type=checkbox]#isAllTimes {
     border: none;
     box-shadow: 0 0 0 0;
 }
 
-    input[type=checkbox]#isAllPeriod:focus {
+    input[type=checkbox]#isAllTimes:focus {
         outline: none;
         box-shadow: 0 0 0 0;
     }

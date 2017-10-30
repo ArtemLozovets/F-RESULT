@@ -369,18 +369,56 @@ namespace F_Result.Controllers
 
 
         [Authorize(Roles = "Administrator, Chief, Accountant")]
-        public JsonResult GetAPB(int? Year)
+        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try {
-                return Json(new { data = "", errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+                if (Period == null || BaseDate == null)
+                {
+                    return Json(new { Result = false, data = "", errormessage = "Неверные параметры запроса" }, JsonRequestBehavior.AllowGet);
+                }
+
+                string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
+              
+                int Year = BaseDate.Value.Year;
+                int Month = BaseDate.Value.Month;
+                var DWeekNumber = BaseDate.Value.DayOfWeek;
+                DateTime StartPeriod = DateTime.Today;
+                DateTime EndPeriod = DateTime.Today;
+
+                switch (PeriodName)
+                {
+                    case "Год":
+                        StartPeriod = new DateTime(Year, 1, 1);
+                        EndPeriod = new DateTime(Year, 12, 31);
+                        break;
+                   
+                    case "Месяц":
+                        StartPeriod = new DateTime(Year, Month, 1);
+                        EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+                        break;
+
+                    case "Неделя":
+                        StartPeriod = new DateTime(Year,1, 1);
+                        EndPeriod = new DateTime(Year, 12, 31);
+                        break;
+                    case "Квартал":
+                        StartPeriod = new DateTime(Year, 1, 1);
+                        EndPeriod = new DateTime(Year, 12, 31);
+                        break;
+                    default:
+                        break;
+                }
+
+                return Json(new {Result = true, StartPeriod = StartPeriod, EndPeriod = EndPeriod, errormessage = "" }, JsonRequestBehavior.AllowGet);
             } 
 
             catch (Exception ex)
             {
                 var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
                 var data = "";
-                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
 

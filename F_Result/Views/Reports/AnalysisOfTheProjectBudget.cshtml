@@ -42,7 +42,7 @@
 
             <input type="text" style="width:10em;text-align:center;" id="startDate" placeholder="Начало отчета" title="Значение начала отчета" class="form-control input-sm" value="" />
 
-            @Html.CheckBox("isAllPeriod", false, new { @class = "form-control", style = "width:16px;" })
+            @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
             <label for="isAllPeriod" class="control-label">За весь период</label>
         </div>
     </div>
@@ -108,11 +108,21 @@
                      extraClass: 'date-range-pickerM'
                  })
             .bind('datepicker-closed', function (event, obj) {
-
+                formAjax();
             })
             .bind('datepicker-open', function () {
-                $(this).data('dateRangePicker').clear();
+               // $(this).data('dateRangePicker').clear();
             });
+            
+            $('#startDate').on('focusout', function () {
+                if ($(this).val() === '') {
+                    var nowDT = new Date;
+                    var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                    $(this).val(nowDate);
+                };
+                formAjax();
+            });
+
         });
     </script>
 
@@ -127,17 +137,20 @@
 
             $('body').on('change', '#BudgetPeriodDDL', function () {
                 localStorage.setItem('PlanningPeriod', $(this).val());
+                formAjax();
             });
         });
     </script>
 
     <script>
         //Скрипт обработчика изменения состояния элемента "За весь период"
-        $('#isAllPeriod').on('change', function () {
+        $('#isAllTimes').on('change', function () {
             if ($(this).is(':checked')) {
                 $('#startDate').attr('disabled', 'disabled');
+                formAjax();
             } else {
                 $('#startDate').removeAttr('disabled');
+                formAjax();
             }
         });
     </script>
@@ -153,6 +166,43 @@
                 $('#showButton').removeClass('fa-arrow-left').addClass('fa-arrow-right');
             }
         });
+    </script>
+
+    <script>
+        function formAjax() {
+            var _period = $('#BudgetPeriodDDL').val();
+            var _startDate = $('#startDate').val();
+            var _isAllTimes = false;
+            if ($('#isAllTimes').is(':checked')) { isAllTimes = true };
+
+            $('#loadingImg').show();
+            $.ajax({
+                type: 'POST',
+                url: '/Reports/GetAPB/',
+                data: {
+                    Period: _period,
+                    BaseDate: _startDate,
+                    IsAllTimes:_isAllTimes
+                },
+                success: function (data) {
+                    $('#loadingImg').hide();
+                    if (data.Result) {
+                        var startDate = moment(data.StartPeriod).format('DD/MM/YYYY');
+                        var endDate = moment(data.EndPeriod).format('DD/MM/YYYY');
+                        alert(startDate+'===>'+endDate);
+                    }
+                    else {
+                        alert('FAIL');
+                    }
+
+                },
+                fail: function (data) {
+                    $('#loadingImg').hide();
+                    alert('FAIL');
+                }
+            });
+
+        };
     </script>
 
     <script>
