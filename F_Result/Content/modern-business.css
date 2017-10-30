@@ -349,6 +349,7 @@ td.bankCellf:before {
 }
 
 /*#region AnalysisOfTheProjectBudget.chtml */
+
 input[type=checkbox]#isAllPeriod {
     border: none;
     box-shadow: 0 0 0 0;
@@ -386,7 +387,6 @@ input[type=checkbox]#isAllPeriod {
     color: #ddd;
     padding: 10px;
     box-shadow: -5px 0 8px rgba(0,0,0,0.3);
-    /*clip-path: inset(-5px -1px -5px -5px);*/
 }
 
     #showButton:hover {
@@ -405,7 +405,6 @@ input[type=checkbox]#isAllPeriod {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
 }
-
 
 /*#endregion */
 
