@@ -37,7 +37,7 @@
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-left:1.3em; width:16em;"
+           style = "display:inline-block; margin-left:1.3em; margin-bottom:-1px; width:16em;"
        })
 
             <input type="text" style="width:10em;text-align:center;" id="startDate" placeholder="Начало отчета" title="Значение начала отчета" class="form-control input-sm" value="" />
@@ -107,14 +107,11 @@
                      },
                      extraClass: 'date-range-pickerM'
                  })
-            .bind('datepicker-closed', function (event, obj) {
+            .bind('datepicker-apply', function (event, obj) {
                 formAjax();
             })
-            .bind('datepicker-open', function () {
-               // $(this).data('dateRangePicker').clear();
-            });
             
-            $('#startDate').on('focusout', function () {
+            $('#startDate').on('change', function () {
                 if ($(this).val() === '') {
                     var nowDT = new Date;
                     var nowDate = moment(nowDT).format('DD/MM/YYYY');
@@ -173,7 +170,7 @@
             var _period = $('#BudgetPeriodDDL').val();
             var _startDate = $('#startDate').val();
             var _isAllTimes = false;
-            if ($('#isAllTimes').is(':checked')) { isAllTimes = true };
+            if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
 
             $('#loadingImg').show();
             $.ajax({
@@ -182,17 +179,21 @@
                 data: {
                     Period: _period,
                     BaseDate: _startDate,
-                    IsAllTimes:_isAllTimes
+                    IsAllTimes: _isAllTimes
                 },
                 success: function (data) {
                     $('#loadingImg').hide();
                     if (data.Result) {
-                        var startDate = moment(data.StartPeriod).format('DD/MM/YYYY');
-                        var endDate = moment(data.EndPeriod).format('DD/MM/YYYY');
-                        alert(startDate+'===>'+endDate);
+                        if (!data.isAllTimes) {
+                            var startDate = moment(data.StartPeriod).format('DD/MM/YYYY');
+                            var endDate = moment(data.EndPeriod).format('DD/MM/YYYY');
+                            alert(startDate + '< ... >' + endDate);
+                        } else {
+                            alert('За весь период');
+                        }
                     }
                     else {
-                        alert('isFail');
+                        alert('Fail');
                     }
 
                 },

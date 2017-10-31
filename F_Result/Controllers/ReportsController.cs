@@ -381,37 +381,68 @@ namespace F_Result.Controllers
 
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
               
-                int Year = BaseDate.Value.Year;
-                int Month = BaseDate.Value.Month;
-                var DWeekNumber = BaseDate.Value.DayOfWeek;
-                DateTime StartPeriod = DateTime.Today;
-                DateTime EndPeriod = DateTime.Today;
+                DateTime? StartPeriod = null;
+                DateTime? EndPeriod = null;
 
-                switch (PeriodName)
-                {
-                    case "Год":
-                        StartPeriod = new DateTime(Year, 1, 1);
-                        EndPeriod = new DateTime(Year, 12, 31);
-                        break;
-                   
-                    case "Месяц":
-                        StartPeriod = new DateTime(Year, Month, 1);
-                        EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
-                        break;
+                if (!IsAllTimes) {
 
-                    case "Неделя":
-                        StartPeriod = new DateTime(Year,1, 1);
-                        EndPeriod = new DateTime(Year, 12, 31);
-                        break;
-                    case "Квартал":
-                        StartPeriod = new DateTime(Year, 1, 1);
-                        EndPeriod = new DateTime(Year, 12, 31);
-                        break;
-                    default:
-                        break;
+                    int Year = BaseDate.Value.Year;
+                    int Month = BaseDate.Value.Month;
+                    int WeekDay = (Convert.ToInt32(BaseDate.Value.DayOfWeek) == 0) ? 7 : Convert.ToInt32(BaseDate.Value.DayOfWeek);
+
+                    switch (PeriodName)
+                    {
+                        case "Год":
+                            StartPeriod = new DateTime(Year, 1, 1);
+                            EndPeriod = new DateTime(Year, 12, 31);
+                            break;
+
+                        case "Месяц":
+                            StartPeriod = new DateTime(Year, Month, 1);
+                            EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+                            break;
+
+                        case "Неделя":
+                            StartPeriod = BaseDate.Value.AddDays(1 - WeekDay);
+                            EndPeriod = BaseDate.Value.AddDays(7 - WeekDay);
+                            break;
+
+                        case "Квартал":
+                            int qNum = (BaseDate.Value.Month + 2) / 3;
+                            switch (qNum)
+                            {
+                                case 1:
+                                    StartPeriod = new DateTime(Year, 1, 1);
+                                    EndPeriod = new DateTime(Year, 3, 31);
+                                    break;
+
+                                case 2:
+                                    StartPeriod = new DateTime(Year, 4, 1);
+                                    EndPeriod = new DateTime(Year, 6, 30);
+                                    break;
+
+                                case 3:
+                                    StartPeriod = new DateTime(Year, 7, 1);
+                                    EndPeriod = new DateTime(Year, 9, 30);
+                                    break;
+
+                                default:
+                                    StartPeriod = new DateTime(Year, 10, 1);
+                                    EndPeriod = new DateTime(Year, 12, 31);
+                                    break;
+                            }
+                            break;
+
+                        default:
+                            StartPeriod = new DateTime(Year, Month, 1);
+                            EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+                            break;
+                    }
                 }
 
-                return Json(new {Result = true, StartPeriod = StartPeriod, EndPeriod = EndPeriod, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                //Linq query place here---------------------
+
+                return Json(new {Result = true, StartPeriod = StartPeriod, EndPeriod = EndPeriod, isAllTimes = IsAllTimes, errormessage = "" }, JsonRequestBehavior.AllowGet);
             } 
 
             catch (Exception ex)
