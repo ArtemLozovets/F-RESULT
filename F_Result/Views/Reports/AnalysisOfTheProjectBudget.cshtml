@@ -4,6 +4,9 @@
 }
 
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedColumns.bootstrap.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -37,7 +40,7 @@
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-left:1.3em; margin-bottom:-1px; width:16em;"
+           style = "display:inline-block; margin-left:1.3em; width:16em;"
        })
 
             <input type="text" style="width:10em;text-align:center;" id="startDate" placeholder="Начало отчета" title="Значение начала отчета" class="form-control input-sm" value="" />
@@ -48,11 +51,38 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12 text-center" style="border:1px dotted #aaa; padding:20px;">
-            <h3 class="text-danger">В РАЗРАБОТКЕ</h3>
-        </div>
+        <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+            <thead>
+                <tr>
+                    <th rowspan="2">Проект</th>
+                    <th colspan="2">Доходы</th>
+                    <th rowspan="2">Дельта</th>
+                    <th colspan="2">Расходы</th>
+                    <th rowspan="2">Дельта</th>
+                </tr>
+                <tr>
+                    <th class="smallTH">План</th>
+                    <th class="smallTH">Факт</th>
+                    <th class="smallTH">План</th>
+                    <th class="smallTH">Факт</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr class="tright">
+                    <th>Итого</th>
+                    <th class="smallTH">1</th>
+                    <th class="smallTH">2</th>
+                    <th class="smallTH">3</th>
+                    <th class="smallTH">4</th>
+                    <th class="smallTH">5</th>
+                    <th class="smallTH">6</th>
+                </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
+
 
 <div id="flowPanel">
     <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
@@ -62,6 +92,11 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedColumns.min.js"></script>
     <script src="~/Scripts/toparrow.js"></script>
     <script>
         //Скрипт инициализации страницы
@@ -70,8 +105,103 @@
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
             $("#startDate").val(nowDate);
             $('#loadingImg').hide();
+            createGrid();
         })
     </script>
+
+
+    <script>
+        //Скрипт создания таблицы
+        function createGrid() {
+            $('#loadingImg').hide();
+            if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
+            var table = $('#gridtable').DataTable({
+               
+                paging: true,
+                
+                processing: true,
+                serverSide: true,
+                filter: true,
+                orderMulti: false,
+                responsive: false,
+                pageLength: 25, // Количество записей в таблице по умолчанию
+                pagingType: "simple_numbers",
+                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'B><'col-sm-3'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    lengthMenu: "Записей: _MENU_",
+                    zeroRecords: "Записи отсутствуют",
+                    info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    infoEmpty: "Записи отсутствуют",
+                    infoFiltered: "(Отфильтровано из _MAX_ записей)",
+                    search: "",
+                    searchPlaceholder: "Проект...",
+                    processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    sInfoThousands: " ",
+                    oPaginate: {
+                        sNext: ">",
+                        sPrevious: "<"
+                    }
+                },
+                ajax: {
+                    type: 'POST',
+                    url: '/Reports/GetAPB/',
+                    datatype: "json",
+                    //Получаем Id планового периода.
+                    // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
+                    data: function (d) {
+                        var _isAllTimes = false;
+                        if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
+
+                        d.Period = $('#BudgetPeriodDDL').val();
+                        d.BaseDate = $('#startDate').val();
+                        d.IsAllTimes = _isAllTimes;
+                    },
+                    dataSrc: function (d) {
+                        $('#loadingImg').hide();
+                        if (d.Result) {
+                            if (!d.isAllTimes) {
+                                var startDate = moment(d.StartPeriod).format('DD/MM/YYYY');
+                                var endDate = moment(d.EndPeriod).format('DD/MM/YYYY');
+                                alert(startDate + '< ... >' + endDate);
+                            } else {
+                                alert('За весь период');
+                            }
+                        }
+
+                        return d.data;
+                    },
+                },
+                order: [[0, "asc"]],
+                columns: [
+                    { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
+                    { data: "debitplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "debitfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "ddelta", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" },
+                    { data: "creditplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "creditfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "cdelta", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" }
+                ],
+                //fnDrawCallback: function (settings) {
+                //    var api = this.api();
+                //    var json = api.ajax.json();
+                //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 1).display;
+                //    $(api.column(1).footer()).html(numFormat(json.summary.debitplan));
+                //    $(api.column(2).footer()).html(numFormat(json.summary.debitfact));
+                //    $(api.column(3).footer()).html(numFormat(json.summary.ddelta));
+                //    $(api.column(4).footer()).html(numFormat(json.summary.creditplan));
+                //    $(api.column(5).footer()).html(numFormat(json.summary.creditfact));
+                //    $(api.column(6).footer()).html(numFormat(json.summary.cdelta));
+
+                //    table.fixedColumns().update();
+
+                //    $('#alrt').html('<span class="text-danger text-bold">В РАЗРАБОТКЕ</span>');
+                //}
+            });
+        };
+    </script>
+
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -108,16 +238,18 @@
                      extraClass: 'date-range-pickerM'
                  })
             .bind('datepicker-apply', function (event, obj) {
-                formAjax();
+                var table = $("#gridtable").DataTable();
+                table.draw();
             })
-            
+
             $('#startDate').on('change', function () {
                 if ($(this).val() === '') {
                     var nowDT = new Date;
                     var nowDate = moment(nowDT).format('DD/MM/YYYY');
                     $(this).val(nowDate);
                 };
-                formAjax();
+                var table = $("#gridtable").DataTable();
+                table.draw();
             });
 
         });
@@ -134,7 +266,8 @@
 
             $('body').on('change', '#BudgetPeriodDDL', function () {
                 localStorage.setItem('PlanningPeriod', $(this).val());
-                formAjax();
+                var table = $("#gridtable").DataTable();
+                table.draw();
             });
         });
     </script>
@@ -144,10 +277,12 @@
         $('#isAllTimes').on('change', function () {
             if ($(this).is(':checked')) {
                 $('#startDate').attr('disabled', 'disabled');
-                formAjax();
+                var table = $("#gridtable").DataTable();
+                table.draw();
             } else {
                 $('#startDate').removeAttr('disabled');
-                formAjax();
+                var table = $("#gridtable").DataTable();
+                table.draw();
             }
         });
     </script>
@@ -165,7 +300,7 @@
         });
     </script>
 
-    <script>
+    @*<script>
         function formAjax() {
             var _period = $('#BudgetPeriodDDL').val();
             var _startDate = $('#startDate').val();
@@ -204,7 +339,7 @@
             });
 
         };
-    </script>
+    </script>*@
 
     <script>
         function underShow() {

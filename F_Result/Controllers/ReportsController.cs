@@ -230,34 +230,34 @@ namespace F_Result.Controllers
                                 }).Distinct();
 
                 var _ads = (from prg in _ads_all
-                           select new
-                           {
-                               ProjectName = prg.ProjectName,
-                               d1c = (decimal)835.6,
-                               d1d = (decimal)544.2,
-                               d2c = (decimal)544.2,
-                               d2d = (decimal)725.8,
-                               d3c = (decimal)544.2,
-                               d3d = (decimal)1253.4,
-                               d4c = (decimal)544.2,
-                               d4d = (decimal)544.2,
-                               d5c = (decimal)544.2,
-                               d5d = (decimal)544.2,
-                               d6c = (decimal)544.2,
-                               d6d = (decimal)544.2,
-                               d7c = (decimal)544.2,
-                               d7d = (decimal)544.2,
-                               d8c = (decimal)544.2,
-                               d8d = (decimal)544.2,
-                               d9c = (decimal)544.2,
-                               d9d = (decimal)544.2,
-                               d10c = (decimal)544.2,
-                               d10d = (decimal)544.2,
-                               d11c = (decimal)544.2,
-                               d11d = (decimal)544.2,
-                               d12c = (decimal)544.2,
-                               d12d = (decimal)544.2
-                           }).AsEnumerable().Select(x => new TableReport
+                            select new
+                            {
+                                ProjectName = prg.ProjectName,
+                                d1c = (decimal)835.6,
+                                d1d = (decimal)544.2,
+                                d2c = (decimal)544.2,
+                                d2d = (decimal)725.8,
+                                d3c = (decimal)544.2,
+                                d3d = (decimal)1253.4,
+                                d4c = (decimal)544.2,
+                                d4d = (decimal)544.2,
+                                d5c = (decimal)544.2,
+                                d5d = (decimal)544.2,
+                                d6c = (decimal)544.2,
+                                d6d = (decimal)544.2,
+                                d7c = (decimal)544.2,
+                                d7d = (decimal)544.2,
+                                d8c = (decimal)544.2,
+                                d8d = (decimal)544.2,
+                                d9c = (decimal)544.2,
+                                d9d = (decimal)544.2,
+                                d10c = (decimal)544.2,
+                                d10d = (decimal)544.2,
+                                d11c = (decimal)544.2,
+                                d11d = (decimal)544.2,
+                                d12c = (decimal)544.2,
+                                d12d = (decimal)544.2
+                            }).AsEnumerable().Select(x => new TableReport
                            {
                                ProjectName = x.ProjectName,
                                d1c = x.d1c,
@@ -372,7 +372,8 @@ namespace F_Result.Controllers
         public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
-            try {
+            try
+            {
 
                 if (Period == null || BaseDate == null)
                 {
@@ -380,11 +381,12 @@ namespace F_Result.Controllers
                 }
 
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
-              
+
                 DateTime? StartPeriod = null;
                 DateTime? EndPeriod = null;
 
-                if (!IsAllTimes) {
+                if (!IsAllTimes)
+                {
 
                     int Year = BaseDate.Value.Year;
                     int Month = BaseDate.Value.Month;
@@ -441,9 +443,82 @@ namespace F_Result.Controllers
                 }
 
                 //Linq query place here---------------------
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
 
-                return Json(new {Result = true, StartPeriod = StartPeriod, EndPeriod = EndPeriod, isAllTimes = IsAllTimes, errormessage = "" }, JsonRequestBehavior.AllowGet);
-            } 
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
+
+                List<TableReport> RepList = new List<TableReport>();
+
+                var _ads_all = (from prg in db.Projects
+                                join pc in db.PlanCredits on prg.id equals pc.ProjectId into pctmp
+                                from pc in pctmp.DefaultIfEmpty()
+                                join pd in db.PlanDebits on prg.id equals pd.ProjectId into pdtmp
+                                from pd in pdtmp.DefaultIfEmpty()
+                                where (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
+                                      && (pd.PeriodId == Period && pc.PeriodId == Period)
+                                select new
+                                {
+                                    ProjectName = prg.ShortName,
+                                    ProjectId = prg.id,
+                                    PlanCreditId = pc.PlanCreditId,
+                                    PlanCreditDate = pc.Date,
+                                    PlanCreditSum = pc.Sum,
+                                    PlanDebitId = pd.PlanDebitId,
+                                    PlanDebitDate = pd.Date,
+                                    PlanDebitSum = pd.Sum,
+                                }).Distinct();
+
+
+                var _ads = (from prg in _ads_all
+                            select new
+                            {
+                                ProjectName = prg.ProjectName,
+                                debitplan = (decimal)835.6,
+                                debitfact = (decimal)835.6,
+                                creditplan = (decimal)835.6,
+                                creditfact = (decimal)835.6
+
+                            }).AsEnumerable().Select(x => new APBTableReport
+                            {
+                                ProjectName = x.ProjectName,
+                                debitplan = x.debitplan,
+                                debitfact = x.debitfact,
+                                ddelta = x.debitfact - x.debitplan,
+                                creditplan = x.creditplan,
+                                creditfact = x.creditfact,
+                                cdelta = x.creditfact - x.creditplan
+                            }).Distinct().ToList();
+
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+
+                totalRecords = _ads.Count();
+                var data = _ads.Skip(skip).Take(pageSize);
+
+                return Json(new
+                {
+                    Result = true,
+                    StartPeriod = StartPeriod,
+                    EndPeriod = EndPeriod,
+                    isAllTimes = IsAllTimes,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
+            }
 
             catch (Exception ex)
             {

@@ -5,6 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace F_Result.Models
 {
+
+    [NotMapped]
+    public class APBTableReport
+    {
+        public string ProjectName { get; set; }
+        public decimal debitplan { get; set; }
+        public decimal debitfact { get; set; }
+        public decimal ddelta { get; set; }
+        public decimal creditplan { get; set; }
+        public decimal creditfact { get; set; }
+        public decimal cdelta { get; set; }
+    }
+
     [NotMapped]
     public class TableReport
     {
