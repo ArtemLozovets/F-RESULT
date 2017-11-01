@@ -14,15 +14,16 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        // GET: ActualDebits
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        // Исходящие платежи
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ADShow()
         {
             return View();
         }
 
+        //Список исходящих платежей
         [HttpPost]
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult LoadAD()
         {
             try
@@ -128,8 +129,8 @@ namespace F_Result.Controllers
         }
 
 
-        // GET: PlanCredits/Details/5
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        // Подробная информация об исходящем платеже
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ADDetails(int? id)
         {
             if (id == null)
@@ -151,8 +152,8 @@ namespace F_Result.Controllers
             return View(actualDebit);
         }
 
-
-        [Authorize(Roles = "Administrator, Accountant")]
+        //Добавление исходящего платежа GET
+        [Authorize(Roles = "Administrator, Accountant, Financier")]
         public ActionResult ADCreate()
         {
             ActualDebit _model = new ActualDebit();
@@ -161,7 +162,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
+        //Добавление исходящего платежа POST
+        [Authorize(Roles = "Administrator, Accountant, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
@@ -196,7 +198,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
+        //Редактирование исходящего платежа GET
+        [Authorize(Roles = "Administrator, Accountant, Financier")]
         public ActionResult ADEdit(int? id)
         {
             if (id == null)
@@ -219,7 +222,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Accountant")]
+        //Редактирование исходящего платежа POST
+        [Authorize(Roles = "Administrator, Accountant, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber")] ActualDebit actualDebit)
@@ -260,6 +264,7 @@ namespace F_Result.Controllers
         }
 
 
+        //Удаление исходящего платежа GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ADDelete(int? id)
         {
@@ -283,7 +288,7 @@ namespace F_Result.Controllers
         }
 
 
-        // POST: ActualDebits/Delete/5
+        //Удаление исходящего платежа POST
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ADDelete")]
         [ValidateAntiForgeryToken]

@@ -15,13 +15,15 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Счета организаций
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ACShow()
         {
             return View();
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Таблица счетов организаций
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         [HttpPost]
         public ActionResult LoadAC()
         {
@@ -123,7 +125,7 @@ namespace F_Result.Controllers
         }
 
 
-        // GET: Accounts/Details/5
+        //Счета организаций, подробная информация
         [Authorize(Roles = "Administrator, Chief, Accountant")]
         public ActionResult ACDetails(int? id)
         {
@@ -140,13 +142,14 @@ namespace F_Result.Controllers
             return View(account);
         }
 
-        // GET: Accounts/Create
+        //Добавление счетов организаций GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACCreate()
         {
             return View();
         }
 
+        //Добавление счетов организаций POST
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -180,7 +183,7 @@ namespace F_Result.Controllers
             return View(account);
         }
 
-        // GET: Accounts/Edit/5
+        //Редактирование счетов организаций GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACEdit(int? id)
         {
@@ -201,6 +204,7 @@ namespace F_Result.Controllers
             return View(account);
         }
 
+        //Редактирование счетов организаций POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator, Accountant")]
@@ -238,7 +242,7 @@ namespace F_Result.Controllers
             return View(account);
         }
 
-        // GET: Accounts/Delete/5
+        //Удаление счетов организаций GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ACDelete(int? id)
         {
@@ -257,7 +261,7 @@ namespace F_Result.Controllers
             return View(account);
         }
 
-        // POST: Accounts/Delete/5
+        //Удаление счетов организаций POST
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ACDelete")]
         [ValidateAntiForgeryToken]
@@ -292,7 +296,9 @@ namespace F_Result.Controllers
             }
         }
 
-        [Authorize(Roles = "Administrator, Accountant")]
+
+        //Список счетов организаций
+        [Authorize(Roles = "Administrator, Accountant, Financier, Chief")]
         public ActionResult ACShowPartial()
         {
             return PartialView();
@@ -373,6 +379,7 @@ namespace F_Result.Controllers
             }
         }
 
+        [Authorize]
         public ActionResult AutocompleteBankName(string Term)
         {
             var result = db.Accounts.Where(c => c.BankName.Contains(Term)).Select(c => c.BankName).Distinct();

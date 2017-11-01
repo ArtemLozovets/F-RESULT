@@ -23,7 +23,8 @@ namespace F_Result.Controllers
             public string Note { get; set; }
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Остатки на счетах
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABShow(string result)
         {
             if (result == "BatchSuccess")
@@ -34,7 +35,8 @@ namespace F_Result.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Таблица остатков на счетах
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         [HttpPost]
         public ActionResult LoadAB()
         {
@@ -140,7 +142,7 @@ namespace F_Result.Controllers
             }
         }
 
-        // GET: AccountsBalances/Create
+        //Добавление остатков на счетах GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABCreate(int? AccountId)
         {
@@ -160,7 +162,7 @@ namespace F_Result.Controllers
             return View(_acb);
         }
 
-
+        //Добавление остатков на счетах POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator, Accountant")]
@@ -194,7 +196,7 @@ namespace F_Result.Controllers
             return View(accountsBalance);
         }
 
-        // GET: AccountsBalances/Edit/5
+        //Редактирование остатков на счетах GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABEdit(int? id)
         {
@@ -213,6 +215,7 @@ namespace F_Result.Controllers
         }
 
 
+        //Редактирование остатков на счетах POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator, Accountant")]
@@ -249,7 +252,7 @@ namespace F_Result.Controllers
             return View(accountsBalance);
         }
 
-        // GET: AccountsBalances/Delete/5
+        //Удаление остатков на счетах GET
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABDelete(int? id)
         {
@@ -266,7 +269,7 @@ namespace F_Result.Controllers
             return View(accountsBalance);
         }
 
-        // POST: AccountsBalances/Delete/5
+        //Удаление остатков на счетах POST
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost, ActionName("ABDelete")]
         [ValidateAntiForgeryToken]
@@ -295,6 +298,8 @@ namespace F_Result.Controllers
             }
         }
 
+        //Пакетное добавление остатков на счетах 
+        //Генерация представления
         [Authorize(Roles = "Administrator, Accountant")]
         public ActionResult ABBatchCreate()
         {
@@ -320,6 +325,9 @@ namespace F_Result.Controllers
             return View(_acc.ToList());
         }
 
+
+        //Пакетное добавление остатков на счетах 
+        //Запись в БД
         [Authorize(Roles = "Administrator, Accountant")]
         [HttpPost]
         public JsonResult SaveBatch(DateTime? Date, String dataJSON)

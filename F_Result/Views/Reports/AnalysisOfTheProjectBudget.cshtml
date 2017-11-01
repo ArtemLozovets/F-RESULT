@@ -14,11 +14,7 @@
     </div>
 </div>
 
-<div id="under" class="row text-center" style="padding:50px;">
-    <img onclick="underShow();" style="width:300px;" class="text-center" src="~/Content/Images/construction.jpg" />
-</div>
-
-<div class="container" id="APBPanel" hidden>
+<div class="container">
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
@@ -56,9 +52,9 @@
                 <tr>
                     <th rowspan="2">Проект</th>
                     <th colspan="2">Доходы</th>
-                    <th rowspan="2">Дельта</th>
+                    <th rowspan="2">&#916;&nbsp;<sub>дох.</sub></th>
                     <th colspan="2">Расходы</th>
-                    <th rowspan="2">Дельта</th>
+                    <th rowspan="2">&#916;&nbsp;<sub>расх.</sub></th>
                 </tr>
                 <tr>
                     <th class="smallTH">План</th>
@@ -101,6 +97,11 @@
     <script>
         //Скрипт инициализации страницы
         $(function () {
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#BudgetPeriodDDL').val(DDLVal);
+            }
             var nowDT = new Date;
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
             $("#startDate").val(nowDate);
@@ -116,9 +117,9 @@
             $('#loadingImg').hide();
             if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
             var table = $('#gridtable').DataTable({
-               
+
                 paging: true,
-                
+
                 processing: true,
                 serverSide: true,
                 filter: true,
@@ -178,10 +179,10 @@
                     { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
                     { data: "debitplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "debitfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "ddelta", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" },
+                    { data: "ddelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
                     { data: "creditplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "creditfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "cdelta", "autoWidth": true, bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one text-info" }
+                    { data: "cdelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" }
                 ],
                 //fnDrawCallback: function (settings) {
                 //    var api = this.api();
@@ -257,18 +258,11 @@
 
     <script>
         //Скрипт для работы с фильтром выбора планового периода
-        $(function () {
-            //Читаем значение фильтра планового периода
-            if (localStorage.getItem('PlanningPeriod') !== null) {
-                var DDLVal = localStorage.getItem('PlanningPeriod');
-                $('#BudgetPeriodDDL').val(DDLVal);
-            }
 
-            $('body').on('change', '#BudgetPeriodDDL', function () {
-                localStorage.setItem('PlanningPeriod', $(this).val());
-                var table = $("#gridtable").DataTable();
-                table.draw();
-            });
+        $('body').on('change', '#BudgetPeriodDDL', function () {
+            localStorage.setItem('PlanningPeriod', $(this).val());
+            var table = $("#gridtable").DataTable();
+            table.draw();
         });
     </script>
 
@@ -301,53 +295,45 @@
     </script>
 
     @*<script>
-        function formAjax() {
-            var _period = $('#BudgetPeriodDDL').val();
-            var _startDate = $('#startDate').val();
-            var _isAllTimes = false;
-            if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
+            function formAjax() {
+                var _period = $('#BudgetPeriodDDL').val();
+                var _startDate = $('#startDate').val();
+                var _isAllTimes = false;
+                if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
 
-            $('#loadingImg').show();
-            $.ajax({
-                type: 'POST',
-                url: '/Reports/GetAPB/',
-                data: {
-                    Period: _period,
-                    BaseDate: _startDate,
-                    IsAllTimes: _isAllTimes
-                },
-                success: function (data) {
-                    $('#loadingImg').hide();
-                    if (data.Result) {
-                        if (!data.isAllTimes) {
-                            var startDate = moment(data.StartPeriod).format('DD/MM/YYYY');
-                            var endDate = moment(data.EndPeriod).format('DD/MM/YYYY');
-                            alert(startDate + '< ... >' + endDate);
-                        } else {
-                            alert('За весь период');
+                $('#loadingImg').show();
+                $.ajax({
+                    type: 'POST',
+                    url: '/Reports/GetAPB/',
+                    data: {
+                        Period: _period,
+                        BaseDate: _startDate,
+                        IsAllTimes: _isAllTimes
+                    },
+                    success: function (data) {
+                        $('#loadingImg').hide();
+                        if (data.Result) {
+                            if (!data.isAllTimes) {
+                                var startDate = moment(data.StartPeriod).format('DD/MM/YYYY');
+                                var endDate = moment(data.EndPeriod).format('DD/MM/YYYY');
+                                alert(startDate + '< ... >' + endDate);
+                            } else {
+                                alert('За весь период');
+                            }
                         }
+                        else {
+                            alert('Fail');
+                        }
+
+                    },
+                    fail: function (data) {
+                        $('#loadingImg').hide();
+                        alert('FAIL');
                     }
-                    else {
-                        alert('Fail');
-                    }
+                });
 
-                },
-                fail: function (data) {
-                    $('#loadingImg').hide();
-                    alert('FAIL');
-                }
-            });
+            };
+        </script>*@
 
-        };
-    </script>*@
-
-    <script>
-        function underShow() {
-            $('#under').fadeOut(500, function () {
-                $('#APBPanel').fadeIn(500);
-            });
-
-        }
-    </script>
 }
 

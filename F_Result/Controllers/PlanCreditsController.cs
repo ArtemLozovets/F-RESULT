@@ -14,16 +14,17 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        // GET: ActualDebits
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        //План доходов
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         public ActionResult PCShow()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
+        //Таблица плана доходов
         [HttpPost]
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         public ActionResult LoadPC()
         {
             try
@@ -129,8 +130,8 @@ namespace F_Result.Controllers
         }
 
 
-        // GET: PlanCredits/Details/5
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        //План доходов, подробная информация
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         public ActionResult PCDetails(int? id)
         {
             if (id == null)
@@ -169,8 +170,8 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
-        // GET: PlanCredits/Create
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        //Добавление плана доходов GET
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         public ActionResult PCCreate()
         {
             PlanCredit _model = new PlanCredit();
@@ -179,14 +180,24 @@ namespace F_Result.Controllers
             return View(_model);
         }
 
-        // POST: PlanCredits/Create
+        //Добавление плана доходов POST
         [HttpPost]
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
         public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanCredit planCredit)
         {
             if (ModelState.IsValid)
             {
+                int NextMonth = DateTime.Today.Month+1;
+                int PlanMonth = planCredit.Date.Month;
+                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
+                if (isPrgManager && (PlanMonth < NextMonth))
+                {
+                    TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
+                    ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+                    return View(planCredit);
+                }
+
                 try
                 {
                     //Получаем идентификатор текущего пользователя
@@ -210,11 +221,13 @@ namespace F_Result.Controllers
             }
 
             TempData["MessageError"] = "Ошибка валидации модели";
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View(planCredit);
         }
 
 
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        //Редактирование плана доходов GET
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         public ActionResult PCEdit(int? id)
         {
             if (id == null)
@@ -238,9 +251,9 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
-
+        //Редактирование плана доходов POST
         [HttpPost]
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
         public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanCredit planCredit)
         {
@@ -277,6 +290,7 @@ namespace F_Result.Controllers
             return View(planCredit);
         }
 
+        //Удаление плана доходов GET
         [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PCDelete(int? id)
         {
@@ -300,7 +314,7 @@ namespace F_Result.Controllers
         }
 
 
-        // POST: ActualDebits/Delete/5
+        //Удаление плана доходов POST
         [Authorize(Roles = "Administrator, ProjectManager")]
         [HttpPost, ActionName("PCDelete")]
         [ValidateAntiForgeryToken]

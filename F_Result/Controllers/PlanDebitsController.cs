@@ -14,15 +14,16 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        // GET: ActualDebits
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        // План расходов
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         public ActionResult PDShow()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        // Таблица плана расходов
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         [HttpPost]
         public ActionResult LoadPD()
         {
@@ -128,8 +129,8 @@ namespace F_Result.Controllers
             }
         }
 
-        // GET: PlanCredits/Details/5
-        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+        // План расходов, подробная информация
+        [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         public ActionResult PDDetails(int? id)
         {
             if (id == null)
@@ -167,8 +168,8 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
-        // GET: PlanCredits/Create
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        // Добавление плана расходов GET
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         public ActionResult PDCreate()
         {
             PlanDebit _model = new PlanDebit();
@@ -177,8 +178,8 @@ namespace F_Result.Controllers
             return View(_model);
         }
 
-        // POST: PlanCredits/Create
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        // Добавление плана расходов POST
+        [Authorize(Roles = "Administrator, ProjectManage, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanDebit planDebit)
@@ -212,7 +213,8 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        // Редактирование плана расходов GET
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         public ActionResult PDEdit(int? id)
         {
             if (id == null)
@@ -234,7 +236,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, ProjectManager")]
+        // Редактирование плана расходов POST
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanDebit planDebit)
@@ -275,7 +278,8 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
-
+        
+        // Удаление плана расходов GET
         [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PDDelete(int? id)
         {
@@ -296,8 +300,8 @@ namespace F_Result.Controllers
         }
 
 
+        // Удаление плана расходов POST
         [Authorize(Roles = "Administrator, ProjectManager")]
-        // POST: ActualDebits/Delete/5
         [HttpPost, ActionName("PDDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

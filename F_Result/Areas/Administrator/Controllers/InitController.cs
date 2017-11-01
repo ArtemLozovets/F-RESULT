@@ -63,6 +63,7 @@ namespace F_Result.Areas.Administrator.Controllers
             var role3 = new ApplicationRole { Name = "Chief", Description = "Руководитель" };
             var role4 = new ApplicationRole { Name = "ProjectManager", Description = "Руководитель проекта" };
             var role5 = new ApplicationRole { Name = "Accountant", Description = "Бухгалтер" };
+            var role6 = new ApplicationRole { Name = "Financier", Description = "Финансист" };
 
             // добавляем роль в бд
             roleManager.Create(role1);
@@ -131,10 +132,21 @@ namespace F_Result.Areas.Administrator.Controllers
             UserManager.Create(accountant, "Qwe!123");
             UserManager.AddToRole(accountant.Id, accountant.UserRole);
 
-          
-
             return "Учетные записи созданы";
 
+        }
+
+        public String CreateFinancier ()
+        {
+            if (!StopFlag)
+            {
+                return "Выполнение запрещено администратором";
+            }
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
+            var fnc = new ApplicationRole { Name = "Financier", Description = "Финансист" };
+            roleManager.Create(fnc);
+            db.SaveChanges();
+            return "Роль \"Финансист\" успешно добавлена";
         }
 
         protected override void Dispose(bool disposing)

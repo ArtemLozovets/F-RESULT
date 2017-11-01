@@ -9,16 +9,18 @@ using F_Result.Models;
 
 namespace F_Result.Controllers
 {
-    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant")]
+    [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
     public class DirectumController : Controller
     {
         private FRModel db = new FRModel();
 
+        //Входящие платежи
         public ActionResult ShowPayments()
         {
             return View();
         }
 
+        //Список входящих платежей 
         [HttpPost]
         public ActionResult LoadPayments()
         {
@@ -127,6 +129,7 @@ namespace F_Result.Controllers
         }
 
         [HttpPost]
+        //Проекты
         public ActionResult LoadProjects()
         {
             try
