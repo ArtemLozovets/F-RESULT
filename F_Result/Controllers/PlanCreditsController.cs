@@ -188,6 +188,7 @@ namespace F_Result.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
                 int NextMonth = DateTime.Today.Month+1;
                 int PlanMonth = planCredit.Date.Month;
                 bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
@@ -195,6 +196,9 @@ namespace F_Result.Controllers
                 {
                     TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+                    ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
+                    ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
+
                     return View(planCredit);
                 }
 
@@ -260,6 +264,21 @@ namespace F_Result.Controllers
 
             if (ModelState.IsValid)
             {
+
+                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
+                int NextMonth = DateTime.Today.Month + 1;
+                int PlanMonth = planCredit.Date.Month;
+                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
+                if (isPrgManager && (PlanMonth < NextMonth))
+                {
+                    TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
+                    ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+                    ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
+                    ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
+
+                    return View(planCredit);
+                }
+
                 try
                 {
                     //Получаем идентификатор текущего пользователя

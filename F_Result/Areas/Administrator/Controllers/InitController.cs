@@ -138,7 +138,7 @@ namespace F_Result.Areas.Administrator.Controllers
 
         public String CreateFinancier ()
         {
-            if (!StopFlag)
+            if (StopFlag)
             {
                 return "Выполнение запрещено администратором";
             }

@@ -110,7 +110,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.PlanDebitId).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.PlanDebitId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Sum);
@@ -152,14 +152,15 @@ namespace F_Result.Controllers
                                        OrganizationName = _org.Title,
                                        PeriodName = _period.PeriodName,
                                        Appointment = _pd.Appointment
-                                   }).AsEnumerable().Select(x => new PlanDebit { 
-                                        PlanDebitId = x.PlanDebitId,
-                                        Sum = x.Sum,
-                                        Date = x.Date,
-                                        ProjectName = x.ProjectName,
-                                        OrganizationName = x.OrganizationName,
-                                        PeriodName = x.PeriodName,
-                                        Appointment = x.Appointment
+                                   }).AsEnumerable().Select(x => new PlanDebit
+                                   {
+                                       PlanDebitId = x.PlanDebitId,
+                                       Sum = x.Sum,
+                                       Date = x.Date,
+                                       ProjectName = x.ProjectName,
+                                       OrganizationName = x.OrganizationName,
+                                       PeriodName = x.PeriodName,
+                                       Appointment = x.Appointment
                                    }).FirstOrDefault();
             if (planDebit == null)
             {
@@ -179,13 +180,28 @@ namespace F_Result.Controllers
         }
 
         // Добавление плана расходов POST
-        [Authorize(Roles = "Administrator, ProjectManage, Financier")]
+        [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanDebit planDebit)
         {
             if (ModelState.IsValid)
             {
+
+                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
+                int NextMonth = DateTime.Today.Month + 1;
+                int PlanMonth = planDebit.Date.Month;
+                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
+                if (isPrgManager && (PlanMonth < NextMonth))
+                {
+                    TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
+                    ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+                    ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planDebit.ProjectId).ShortName;
+                    ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planDebit.OrganizationId).Title;
+
+                    return View(planDebit);
+                }
+
                 try
                 {
                     //Получаем идентификатор текущего пользователя
@@ -245,6 +261,21 @@ namespace F_Result.Controllers
 
             if (ModelState.IsValid)
             {
+
+                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
+                int NextMonth = DateTime.Today.Month + 1;
+                int PlanMonth = planDebit.Date.Month;
+                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
+                if (isPrgManager && (PlanMonth < NextMonth))
+                {
+                    TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
+                    ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+                    ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planDebit.ProjectId).ShortName;
+                    ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planDebit.OrganizationId).Title;
+
+                    return View(planDebit);
+                }
+
                 try
                 {
                     //Получаем идентификатор текущего пользователя
@@ -278,7 +309,7 @@ namespace F_Result.Controllers
             return View(planDebit);
         }
 
-        
+
         // Удаление плана расходов GET
         [Authorize(Roles = "Administrator, ProjectManager")]
         public ActionResult PDDelete(int? id)
