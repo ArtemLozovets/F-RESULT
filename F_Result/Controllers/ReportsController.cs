@@ -481,10 +481,10 @@ namespace F_Result.Controllers
                             select new
                             {
                                 ProjectName = prg.ProjectName,
-                                debitplan = (decimal)452.16,
+                                debitplan = (decimal)942.20,
                                 debitfact = (decimal)835.65,
                                 creditplan = (decimal)638.64,
-                                creditfact = (decimal)1274.41
+                                creditfact = (decimal)302.11
 
                             }).AsEnumerable().Select(x => new APBTableReport
                             {
