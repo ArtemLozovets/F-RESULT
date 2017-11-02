@@ -63,10 +63,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/17/2017 19:53:50</publishTime>
     </File>
     <File Include="bin/F_Result.dll">
-      <publishTime>10/30/2017 16:38:52</publishTime>
+      <publishTime>11/02/2017 10:30:48</publishTime>
     </File>
     <File Include="bin/F_Result.pdb">
-      <publishTime>10/30/2017 16:38:52</publishTime>
+      <publishTime>11/02/2017 10:30:48</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>03/17/2017 19:53:58</publishTime>
@@ -687,16 +687,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:56</publishTime>
     </File>
     <File Include="Content/fontawesome/font-awesome.css">
-      <publishTime>10/02/2017 00:49:40</publishTime>
+      <publishTime>10/31/2017 08:20:36</publishTime>
     </File>
     <File Include="Content/fontawesome/font-awesome.min.css">
-      <publishTime>10/02/2017 00:49:42</publishTime>
+      <publishTime>10/31/2017 08:20:36</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.eot">
       <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.svg">
-      <publishTime>10/02/2017 00:49:40</publishTime>
+      <publishTime>10/31/2017 08:20:36</publishTime>
     </File>
     <File Include="Content/fonts/fontawesome-webfont.ttf">
       <publishTime>10/02/2017 00:49:40</publishTime>
@@ -759,7 +759,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:56</publishTime>
     </File>
     <File Include="Content/modern-business.css">
-      <publishTime>10/30/2017 16:35:01</publishTime>
+      <publishTime>10/31/2017 08:20:36</publishTime>
     </File>
     <File Include="Content/Site.css">
       <publishTime>06/02/2017 08:31:56</publishTime>
@@ -909,10 +909,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/30/2017 15:23:52</publishTime>
     </File>
     <File Include="fonts/fontawesome-webfont.ttf">
-      <publishTime>10/30/2017 15:23:52</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="fonts/fontawesome-webfont.woff">
-      <publishTime>10/30/2017 15:23:52</publishTime>
+      <publishTime>10/02/2017 00:49:40</publishTime>
     </File>
     <File Include="fonts/fontawesome-webfont.woff2">
       <publishTime>10/30/2017 15:23:52</publishTime>
@@ -1434,7 +1434,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/30/2017 08:27:57</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectBudget.cshtml">
-      <publishTime>10/30/2017 16:15:50</publishTime>
+      <publishTime>11/01/2017 09:35:37</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>06/06/2017 15:04:49</publishTime>
@@ -1446,7 +1446,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:58</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>10/30/2017 15:39:28</publishTime>
+      <publishTime>11/01/2017 15:38:34</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>06/02/2017 08:31:58</publishTime>
@@ -1458,7 +1458,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:58</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>10/30/2017 16:39:13</publishTime>
+      <publishTime>11/02/2017 10:32:56</publishTime>
     </File>
   </ItemGroup>
 </Project>

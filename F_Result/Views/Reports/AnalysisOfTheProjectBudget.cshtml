@@ -36,7 +36,7 @@
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-left:1.3em; width:16em;"
+           style = "display:inline-block; margin-bottom:-1px; margin-left:1.3em; width:16em;"
        })
 
             <input type="text" style="width:10em;text-align:center;" id="startDate" placeholder="Начало отчета" title="Значение начала отчета" class="form-control input-sm" value="" />
@@ -60,18 +60,18 @@
                     <th class="smallTH">План</th>
                     <th class="smallTH">Факт</th>
                     <th class="smallTH">План</th>
-                    <th class="smallTH">Факт</th>
+                    <th class="smallTH" style="border-right:1px solid #ddd !important">Факт</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr class="tright">
                     <th>Итого</th>
-                    <th class="smallTH">1</th>
-                    <th class="smallTH">2</th>
-                    <th class="smallTH">3</th>
-                    <th class="smallTH">4</th>
-                    <th class="smallTH">5</th>
-                    <th class="smallTH">6</th>
+                    <th class="smallTH"></th>
+                    <th class="smallTH"></th>
+                    <th class="smallTH"></th>
+                    <th class="smallTH"></th>
+                    <th class="smallTH"></th>
+                    <th class="smallTH"></th>
                 </tr>
             </tfoot>
             <tbody></tbody>
@@ -177,28 +177,26 @@
                 order: [[0, "asc"]],
                 columns: [
                     { data: "ProjectName", name: "ProjectName", "class": "context-menu-one prgCellf" },
-                    { data: "debitplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "debitfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "ddelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" },
-                    { data: "creditplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 1), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "cdelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 1), "class": "text-right context-menu-one" }
+                    { data: "debitplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "debitfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "ddelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                    { data: "creditplan", render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "creditfact", render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "cdelta", bSortable: false, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                 ],
-                //fnDrawCallback: function (settings) {
-                //    var api = this.api();
-                //    var json = api.ajax.json();
-                //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 1).display;
-                //    $(api.column(1).footer()).html(numFormat(json.summary.debitplan));
-                //    $(api.column(2).footer()).html(numFormat(json.summary.debitfact));
-                //    $(api.column(3).footer()).html(numFormat(json.summary.ddelta));
-                //    $(api.column(4).footer()).html(numFormat(json.summary.creditplan));
-                //    $(api.column(5).footer()).html(numFormat(json.summary.creditfact));
-                //    $(api.column(6).footer()).html(numFormat(json.summary.cdelta));
+                fnDrawCallback: function (settings) {
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+                    $(api.column(1).footer()).html(numFormat(json.total.DebitPlanTotal));
+                    $(api.column(2).footer()).html(numFormat(json.total.DebitFactTotal));
+                    $(api.column(3).footer()).html(numFormat(json.total.dDeltaTotal));
+                    $(api.column(4).footer()).html(numFormat(json.total.CreditPlanTotal));
+                    $(api.column(5).footer()).html(numFormat(json.total.CreditFactTotal));
+                    $(api.column(6).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                //    table.fixedColumns().update();
-
-                //    $('#alrt').html('<span class="text-danger text-bold">В РАЗРАБОТКЕ</span>');
-                //}
+                    $('#alrt').html('<span class="text-danger text-bold">В РАЗРАБОТКЕ</span>');
+                }
             });
         };
     </script>

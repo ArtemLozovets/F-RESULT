@@ -477,14 +477,14 @@ namespace F_Result.Controllers
                                 }).Distinct();
 
 
-                var _ads = (from prg in _ads_all
+               List<APBTableReport> _ads = (from prg in _ads_all
                             select new
                             {
                                 ProjectName = prg.ProjectName,
-                                debitplan = (decimal)835.6,
-                                debitfact = (decimal)835.6,
-                                creditplan = (decimal)835.6,
-                                creditfact = (decimal)835.6
+                                debitplan = (decimal)452.16,
+                                debitfact = (decimal)835.65,
+                                creditplan = (decimal)638.64,
+                                creditfact = (decimal)1274.41
 
                             }).AsEnumerable().Select(x => new APBTableReport
                             {
@@ -497,6 +497,17 @@ namespace F_Result.Controllers
                                 cdelta = x.creditfact - x.creditplan
                             }).Distinct().ToList();
 
+
+                APBTableReportTotal total = new APBTableReportTotal
+                {
+                    DebitPlanTotal = _ads.Sum(x => x.debitplan),
+                    DebitFactTotal = _ads.Sum(x => x.debitfact),
+                    dDeltaTotal = _ads.Sum(x=>x.ddelta),
+                    CreditPlanTotal = _ads.Sum(x=>x.creditplan),
+                    CreditFactTotal = _ads.Sum(x => x.creditfact),
+                    cDeltaTotal = _ads.Sum(x=>x.cdelta)
+
+                };
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -516,6 +527,7 @@ namespace F_Result.Controllers
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     data = data,
+                    total = total,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace F_Result.Models
 {
+
+    #region "Analysis of the project budget" table report
 
     [NotMapped]
     public class APBTableReport
@@ -17,6 +16,21 @@ namespace F_Result.Models
         public decimal creditfact { get; set; }
         public decimal cdelta { get; set; }
     }
+
+    [NotMapped]
+    public class APBTableReportTotal
+    {
+        public decimal DebitPlanTotal { get; set; }
+        public decimal DebitFactTotal { get; set; }
+        public decimal dDeltaTotal { get; set; }
+        public decimal CreditPlanTotal { get; set; }
+        public decimal CreditFactTotal { get; set; }
+        public decimal cDeltaTotal { get; set; }
+    }
+
+    #endregion
+
+    #region Table report --------------------------
 
     [NotMapped]
     public class TableReport
@@ -104,4 +118,5 @@ namespace F_Result.Models
         public decimal devres { get; set; }
 
     }
+    #endregion
 }
