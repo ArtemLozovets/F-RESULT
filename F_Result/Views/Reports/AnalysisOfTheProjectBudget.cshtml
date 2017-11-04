@@ -204,8 +204,13 @@
                     },
                     dataSrc: function (d) {
                         $('#loadingImg').hide();
-
-                        return d.data;
+                        if (!d.Result) {
+                            alert(d.errormessage);
+                            return false;
+                        }
+                        else {
+                            return d.data;
+                        }
                     },
                 },
                 order: [[0, "asc"]],

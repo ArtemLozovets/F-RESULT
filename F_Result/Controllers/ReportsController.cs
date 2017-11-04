@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Linq.Dynamic; //!=====!
+using System.Linq.Dynamic;
+using System.Globalization; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -457,46 +458,12 @@ namespace F_Result.Controllers
 
                 List<TableReport> RepList = new List<TableReport>();
 
-                var _ads_all = (from prg in db.Projects
-                                join pc in db.PlanCredits on prg.id equals pc.ProjectId into pctmp
-                                from pc in pctmp.DefaultIfEmpty()
-                                join pd in db.PlanDebits on prg.id equals pd.ProjectId into pdtmp
-                                from pd in pdtmp.DefaultIfEmpty()
-                                where (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
-                                      && (pd.PeriodId == Period && pc.PeriodId == Period)
-                                select new
-                                {
-                                    ProjectName = prg.ShortName,
-                                    ProjectId = prg.id,
-                                    PlanCreditId = pc.PlanCreditId,
-                                    PlanCreditDate = pc.Date,
-                                    PlanCreditSum = pc.Sum,
-                                    PlanDebitId = pd.PlanDebitId,
-                                    PlanDebitDate = pd.Date,
-                                    PlanDebitSum = pd.Sum,
-                                }).Distinct();
+                DateTime _stmp = Convert.ToDateTime(StartPeriod.ToString());
+                string _startPeriod = _stmp.ToString("yyyyMMdd");
+                DateTime _etmp = Convert.ToDateTime(EndPeriod.ToString());
+                string _endPeriod = _etmp.ToString("yyyyMMdd");
 
-
-               List<APBTableReport> _ads = (from prg in _ads_all
-                            select new
-                            {
-                                ProjectName = prg.ProjectName,
-                                debitplan = (decimal)942.20,
-                                debitfact = (decimal)835.65,
-                                creditplan = (decimal)638.64,
-                                creditfact = (decimal)302.11
-
-                            }).AsEnumerable().Select(x => new APBTableReport
-                            {
-                                ProjectName = x.ProjectName,
-                                debitplan = x.debitplan,
-                                debitfact = x.debitfact,
-                                ddelta = x.debitfact - x.debitplan,
-                                creditplan = x.creditplan,
-                                creditfact = x.creditfact,
-                                cdelta = x.creditfact - x.creditplan
-                            }).Distinct().ToList();
-
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2})", _startPeriod, _endPeriod, Period)).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {
