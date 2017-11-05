@@ -461,7 +461,6 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
-                int ProjectId = String.IsNullOrEmpty(_projectname) ? 0 : db.Projects.FirstOrDefault(x => x.ShortName == _projectname).id;
 
                 List<TableReport> RepList = new List<TableReport>();
 
@@ -471,7 +470,7 @@ namespace F_Result.Controllers
                 string _endPeriod = _etmp.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, {3})", _startPeriod, _endPeriod, Period, ProjectId)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {
