@@ -83,6 +83,15 @@
 
 <div id="flowPanel">
     <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
+    <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+        <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ <span style="color:#f66;">(В РАЗРАБОТКЕ)</span></span>
+        <span style="display:block; margin-top:10px;">
+            <input type="radio" name="group1" class="prjRb" id="allrb" value="All"><label for="allrb">Все</label>&nbsp;
+            <input type="radio" name="group1" class="prjRb" id="currentrb" value="Current" checked><label for="currentrb">Действующие</label>&nbsp;
+            <input type="radio" name="group1" class="prjRb" id="selectrb" value="Select"><label for="selectrb">По выбору</label>
+        </span>
+    </div>
+
 </div>
 
 <a href="#" class="scrollup1">Наверх</a>
@@ -226,17 +235,17 @@
 
                 fnCreatedRow: function (row, data, rowIndex) {
                     if (data.ddelta > 0) {
-                        $('td:eq(3)', row).css('background-color', 'rgba(128, 200, 64, 0.5)');
+                        $('td:eq(3)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
                     else if (data.ddelta < 0) {
-                        $('td:eq(3)', row).css('background-color', 'rgba(255, 99, 132, 0.5)');
+                        $('td:eq(3)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
 
                     if (data.cdelta > 0) {
-                        $('td:eq(6)', row).css('background-color', 'rgba(255, 99, 132, 0.5)');
+                        $('td:eq(6)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
                     else if (data.cdelta < 0) {
-                        $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.5)');
+                        $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
                 },
 
@@ -251,11 +260,11 @@
                     $(api.column(5).footer()).html(numFormat(json.total.CreditFactTotal));
                     $(api.column(6).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.5)'); }
-                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.5)'); }
+                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.5)'); }
-                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.5)'); }
+                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
 
 
                     if (json.Result) {

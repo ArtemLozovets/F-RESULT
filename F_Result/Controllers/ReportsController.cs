@@ -360,8 +360,8 @@ namespace F_Result.Controllers
             }
         }
 
-        // GET: Reports
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Отчет "Бюджетирование" GET
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult AnalysisOfTheProjectBudget()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
@@ -369,7 +369,8 @@ namespace F_Result.Controllers
         }
 
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        //Получение данных для построения отчета "Бюджетирование" POST
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
@@ -442,8 +443,13 @@ namespace F_Result.Controllers
                             break;
                     }
                 }
+                else
+                {
+                    StartPeriod = new DateTime(1900, 1, 1);
+                    EndPeriod = new DateTime(2100, 12, 31);
+                }
 
-                //Linq query place here---------------------
+
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
                 var length = Request.Form.GetValues("length").FirstOrDefault();
@@ -455,6 +461,7 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
+                int ProjectId = String.IsNullOrEmpty(_projectname) ? 0 : db.Projects.FirstOrDefault(x => x.ShortName == _projectname).id;
 
                 List<TableReport> RepList = new List<TableReport>();
 
@@ -463,16 +470,17 @@ namespace F_Result.Controllers
                 DateTime _etmp = Convert.ToDateTime(EndPeriod.ToString());
                 string _endPeriod = _etmp.ToString("yyyyMMdd");
 
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2})", _startPeriod, _endPeriod, Period)).ToList();
+                //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, {3})", _startPeriod, _endPeriod, Period, ProjectId)).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {
                     DebitPlanTotal = _ads.Sum(x => x.debitplan),
                     DebitFactTotal = _ads.Sum(x => x.debitfact),
-                    dDeltaTotal = _ads.Sum(x=>x.ddelta),
-                    CreditPlanTotal = _ads.Sum(x=>x.creditplan),
+                    dDeltaTotal = _ads.Sum(x => x.ddelta),
+                    CreditPlanTotal = _ads.Sum(x => x.creditplan),
                     CreditFactTotal = _ads.Sum(x => x.creditfact),
-                    cDeltaTotal = _ads.Sum(x=>x.cdelta)
+                    cDeltaTotal = _ads.Sum(x => x.cdelta)
 
                 };
 

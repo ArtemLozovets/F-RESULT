@@ -350,6 +350,11 @@ td.bankCellf:before {
 
 /*#region AnalysisOfTheProjectBudget.chtml */
 
+ input[type="radio"].prjRb {
+    margin-top: -1px;
+    vertical-align: middle;
+}
+
 input[type=checkbox]#isAllTimes {
     border: none;
     box-shadow: 0 0 0 0;
@@ -376,6 +381,7 @@ input[type=checkbox]#isAllTimes {
 }
 
 #showButton {
+    float: left;
     cursor: pointer;
     display: block;
     margin-left: -36px;
