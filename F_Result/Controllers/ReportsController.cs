@@ -491,7 +491,7 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
                 var data = _ads.Skip(skip).Take(pageSize);
 
-                if(IsAllTimes)
+                if(IsAllTimes && _ads.Count>0)
                 {
                     StartPeriod = _ads.Min(x=>x.MinDate);
                     EndPeriod = _ads.Max(x=>x.MaxDate);

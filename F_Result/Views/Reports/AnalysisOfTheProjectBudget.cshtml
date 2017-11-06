@@ -289,11 +289,17 @@
 
 
                     if (json.Result) {
-                       
+                        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
+                            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
+                        }
+                        else {
                             var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
                             var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
                             $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
-                       
+                        }
+
+
+
                     }
                 }
             });
