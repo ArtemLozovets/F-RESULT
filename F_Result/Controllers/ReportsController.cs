@@ -491,6 +491,12 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
                 var data = _ads.Skip(skip).Take(pageSize);
 
+                if(IsAllTimes)
+                {
+                    StartPeriod = _ads.Min(x=>x.MinDate);
+                    EndPeriod = _ads.Max(x=>x.MaxDate);
+                }
+
                 return Json(new
                 {
                     Result = true,

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace F_Result.Models
 {
@@ -15,6 +16,8 @@ namespace F_Result.Models
         public decimal creditplan { get; set; }
         public decimal creditfact { get; set; }
         public decimal cdelta { get; set; }
+        public DateTime MinDate { get; set; }
+        public DateTime MaxDate { get; set; }
     }
 
     [NotMapped]

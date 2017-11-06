@@ -67,6 +67,10 @@
   content: "\F0B0";
 }
 
+.context-menu-icon-alltimesfilter:before {
+  content: "\F252";
+}
+
 .context-menu-icon-refresh:before {
   content: "\F021";
 }
