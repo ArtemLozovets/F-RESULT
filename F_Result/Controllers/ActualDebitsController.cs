@@ -66,7 +66,8 @@ namespace F_Result.Controllers
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id
                             join org in db.Organizations on actualdebit.OrganizationId equals org.id
-                            join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id
+                            join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id into usrtmp
+                            from usr in usrtmp.DefaultIfEmpty()
                             where (actualdebit.Date >= _startagrdate && actualdebit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))

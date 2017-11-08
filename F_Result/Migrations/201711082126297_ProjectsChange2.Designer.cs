@@ -7,18 +7,18 @@ namespace F_Result.Models
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class ProjectsChange : IMigrationMetadata
+    public sealed partial class ProjectsChange2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ProjectsChange));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ProjectsChange2));
         
         string IMigrationMetadata.Id
         {
-            get { return "201711080918286_ProjectsChange"; }
+            get { return "201711082126297_ProjectsChange2"; }
         }
         
         string IMigrationMetadata.Source
         {
-            get { return Resources.GetString("Source"); }
+            get { return null; }
         }
         
         string IMigrationMetadata.Target

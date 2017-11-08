@@ -67,7 +67,8 @@ namespace F_Result.Controllers
                 var _ads = (from plancredit in db.PlanCredits
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
                             join org in db.Organizations on plancredit.OrganizationId equals org.id
-                            join usr in db.IdentityUsers on plancredit.UserId equals usr.Id
+                            join usr in db.IdentityUsers on plancredit.UserId equals usr.Id into usrtmp
+                            from usr in usrtmp.DefaultIfEmpty()
                             join pperiod in db.PlanningPeriods on plancredit.PeriodId equals pperiod.PlanningPeriodId
                             where (plancredit.Date >= _startagrdate && plancredit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
