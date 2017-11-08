@@ -85,15 +85,25 @@ namespace F_Result.Controllers
                                 UserId = plandebit.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                                 ProjectName = prg.ShortName,
+                                ProjectType = prg.ProjectType,
+                                Chief = prg.ChiefName,
+                                Manager = prg.ProjectManagerName,
+                                StartDatePlan = prg.StartDatePlan,
+                                StartDateFact = prg.StartDateFact,
                                 OrgName = org.Title,
                                 PeriodName = pperiod.PeriodName
-                            }).AsEnumerable().Select(x => new PlanDebit
+                            }).AsEnumerable().Select(x => new PlanDebitView
                             {
                                 PlanDebitId = x.PlanDebitId,
                                 Date = x.Date,
                                 Sum = x.Sum,
                                 ProjectId = x.ProjectId,
                                 ProjectName = x.ProjectName,
+                                ProjectType = x.ProjectType,
+                                Chief = x.Chief,
+                                Manager = x.Manager,
+                                StartDatePlan = x.StartDatePlan,
+                                StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
                                 Appointment = x.Appointment,

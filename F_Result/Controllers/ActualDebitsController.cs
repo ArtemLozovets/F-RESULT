@@ -40,7 +40,7 @@ namespace F_Result.Controllers
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
-               
+
                 string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _appoinment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
@@ -73,25 +73,35 @@ namespace F_Result.Controllers
                                         && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (actualdebit.DocNumber.Contains(_docnumber) || string.IsNullOrEmpty(_docnumber))
                             select new
-                         {
-                             ActualDebitId = actualdebit.ActualDebitId,
-                             Date = actualdebit.Date,
-                             Sum = actualdebit.Sum,
-                             ProjectId = actualdebit.ProjectId,
-                             OrgId = org.id,
-                             Appointment = actualdebit.Appointment,
-                             DocNumber = actualdebit.DocNumber,
-                             UserId = actualdebit.UserId,
-                             UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
-                             ProjectName = prg.ShortName,
-                             OrgName = org.Title
-                         }).AsEnumerable().Select(x => new ActualDebit
+                            {
+                                ActualDebitId = actualdebit.ActualDebitId,
+                                Date = actualdebit.Date,
+                                Sum = actualdebit.Sum,
+                                ProjectId = actualdebit.ProjectId,
+                                OrgId = org.id,
+                                Appointment = actualdebit.Appointment,
+                                DocNumber = actualdebit.DocNumber,
+                                UserId = actualdebit.UserId,
+                                UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
+                                ProjectName = prg.ShortName,
+                                ProjectType = prg.ProjectType,
+                                Chief = prg.ChiefName,
+                                Manager = prg.ProjectManagerName,
+                                StartDatePlan = prg.StartDatePlan,
+                                StartDateFact = prg.StartDateFact,
+                                OrgName = org.Title
+                            }).AsEnumerable().Select(x => new ActualDebitView
                             {
                                 ActualDebitId = x.ActualDebitId,
                                 Date = x.Date,
                                 Sum = x.Sum,
                                 ProjectId = x.ProjectId,
                                 ProjectName = x.ProjectName,
+                                ProjectType = x.ProjectType,
+                                Chief = x.Chief,
+                                Manager = x.Manager,
+                                StartDatePlan = x.StartDatePlan,
+                                StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
                                 Appointment = x.Appointment,
@@ -108,7 +118,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.ActualDebitId).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.ActualDebitId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Sum);

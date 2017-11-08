@@ -240,7 +240,7 @@
                     }
                 },
                 "columns": [
-                    { "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                    { "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
                     { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
                     { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
                     { "data": "Agreement", "name": "Agreement", "class": "agrCellf haveTitle context-menu-one", "autoWidth": true },
@@ -265,6 +265,11 @@
                     }
                     var titleStr = 'Дата договора: ' + _date + '\r\nСумма договора: ' + _summ + '\r\nТип договора: ' + _type + '\r\nПредмет договора: ' + data.Soder;
                     $('.agrCellf', $(row)).attr('title', titleStr);
+
+                    var _datePlan = formatDate(data.StartDatePlan);
+                    var _dateFact = formatDate(data.StartDateFact);
+                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nМенеджер: ' + data.Chief + '\r\nРуководитель: ' + data.Manager + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
                 },
                 "order": [[6, "desc"]]
             });

@@ -203,6 +203,14 @@
     <Compile Include="Migrations\201709101928333_Soder.Designer.cs">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711080918286_ProjectsChange.cs" />
+    <Compile Include="Migrations\201711080918286_ProjectsChange.Designer.cs">
+      <DependentUpon>201711080918286_ProjectsChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711081131420_ProjectsChange1.cs" />
+    <Compile Include="Migrations\201711081131420_ProjectsChange1.Designer.cs">
+      <DependentUpon>201711081131420_ProjectsChange1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -683,6 +691,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709101928333_Soder.resx">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711080918286_ProjectsChange.resx">
+      <DependentUpon>201711080918286_ProjectsChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711081131420_ProjectsChange1.resx">
+      <DependentUpon>201711081131420_ProjectsChange1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

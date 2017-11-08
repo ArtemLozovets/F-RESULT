@@ -58,4 +58,25 @@ namespace F_Result.Models
         [Display(Name = "Период")]
         public string PeriodName { get; set; }
     }
+
+    //Модель представления для сущности "План доходов"
+    [NotMapped]
+    public class PlanCreditView : PlanCredit
+    {
+        [Display(Name = "Тип проекта")]
+        public string ProjectType { get; set; }
+
+        [Display(Name = "Менеджер")]
+        public string Manager { get; set; }
+
+        [Display(Name = "Руководитель проекта")]
+        public string Chief { get; set; }
+
+        [Display(Name = "Дата начала (План)")]
+        public DateTime? StartDateFact { get; set; }
+
+        [Display(Name = "Дата начала (Факт)")]
+        public DateTime? StartDatePlan { get; set; }
+
+    }
 }

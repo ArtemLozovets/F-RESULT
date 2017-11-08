@@ -273,7 +273,7 @@
                 },
                 "order": [[5, "desc"]],
                 "columns": [
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
@@ -297,6 +297,10 @@
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.PlanDebitId);
+                    var _datePlan = formatDate(data.StartDatePlan);
+                    var _dateFact = formatDate(data.StartDateFact);
+                    var titleStr = 'Тип проекта: ' + data.ProjectType + '\r\nМенеджер: ' + data.Chief + '\r\nРуководитель: ' + data.Manager + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    $('.prgCellf', $(row)).attr('title', titleStr);
                 },
                 "columnDefs": [
                     {
@@ -317,6 +321,16 @@
                 });
             });
         });
+
+        function formatDate(value) {
+            if (value === null) return "";
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+            return _d + "/" + _m + "/" + dt.getFullYear();
+        };
 
     </script>
 

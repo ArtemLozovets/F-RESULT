@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Spatial;
 
 namespace F_Result.Models
 {
@@ -11,6 +9,9 @@ namespace F_Result.Models
     {
         [Key]
         public int id { get; set; }
+
+        [Display(Name = "ID проекта")]
+        public int ProjectId { get; set; }
 
         [Display(Name = "Проект")]
         public string Project { get; set; }
@@ -54,5 +55,20 @@ namespace F_Result.Models
 
         [Display(Name = "Тип оплаты")]
         public string PaymentDesc { get; set; }
+    }
+
+    //Модель представления для сущности "Входящие платежи"
+    [NotMapped]
+    public class PaymentsView : Payments
+    {
+        [Display(Name = "Тип проекта")]
+        public string ProjectType { get; set; }
+
+        [Display(Name = "Дата начала (План)")]
+        public DateTime? StartDateFact { get; set; }
+
+        [Display(Name = "Дата начала (Факт)")]
+        public DateTime? StartDatePlan { get; set; }
+
     }
 }

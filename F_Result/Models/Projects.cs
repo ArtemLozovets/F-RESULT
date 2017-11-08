@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Spatial;
 
 namespace F_Result.Models
 {
@@ -15,13 +12,21 @@ namespace F_Result.Models
         [Display(Name = "Название")]
         public string FullName {get; set;}
  
-
         [MaxLength(512)]
         [Display(Name = "Короткое название")]
         public string ShortName {get; set;}
         
         public int? Chief {get; set;}
- 
+
+        [MaxLength(512)]
+        [Display(Name = "Руководитель проекта")]
+        public string ChiefName { get; set; }
+
+        [MaxLength(512)]
+        [Display(Name = "Менеджер проекта")]
+        public string ProjectManagerName { get; set; }
+
+        [Display(Name = "Инженер проекта")]
         public int? GIP {get; set;}
 
         public int? ProjectManager{get; set;}

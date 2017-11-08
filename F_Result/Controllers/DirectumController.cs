@@ -64,6 +64,7 @@ namespace F_Result.Controllers
                 string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 
                 var _payments = (from payment in db.Payments
+                                 join prg in db.Projects on payment.ProjectId equals prg.id
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
                                         && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
@@ -71,7 +72,24 @@ namespace F_Result.Controllers
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                                 select payment).AsEnumerable().Select(x => new Payments
+                                 select new {
+                                     id = payment.id,
+                                     Project = payment.Project,
+                                     Chief = payment.Chief,
+                                     Client = payment.Client,
+                                     Agreement = payment.Agreement,
+                                     AgrDate = payment.AgrDate,
+                                     Soder = payment.Soder,
+                                     Summ = payment.Summ,
+                                     AgrType = payment.AgrType,
+                                     Manager = payment.Manager,
+                                     ProjectType = prg.ProjectType,
+                                     StartDatePlan = prg.StartDatePlan,
+                                     StartDateFact = prg.StartDateFact,
+                                     Payment = payment.Payment,
+                                     PaymentDate = payment.PaymentDate,
+                                     PaymentDesc = payment.PaymentDesc
+                                 }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
                                      Project = x.Project,
@@ -83,6 +101,9 @@ namespace F_Result.Controllers
                                      Summ = x.Summ,
                                      AgrType = x.AgrType,
                                      Manager = x.Manager,
+                                     ProjectType = x.ProjectType,
+                                     StartDatePlan = x.StartDatePlan,
+                                     StartDateFact = x.StartDateFact,
                                      Payment = x.Payment,
                                      PaymentDate = x.PaymentDate,
                                      PaymentDesc = x.PaymentDesc
