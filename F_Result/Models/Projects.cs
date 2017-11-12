@@ -22,14 +22,16 @@ namespace F_Result.Models
         [Display(Name = "Руководитель проекта")]
         public string ChiefName { get; set; }
 
+        public int? ProjectManager{get; set;}
+        
         [MaxLength(512)]
         [Display(Name = "Менеджер проекта")]
         public string ProjectManagerName { get; set; }
+        
 
         [Display(Name = "Инженер проекта")]
         public int? GIP {get; set;}
 
-        public int? ProjectManager{get; set;}
 
         public DateTime? StartDateFact{get; set;}
         public DateTime? EndDateFact{get; set;}

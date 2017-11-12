@@ -42,14 +42,15 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _organizationname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _appoinment = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _docnumber = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _chname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _organizationname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _appoinment = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _docnumber = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -61,7 +62,7 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id
@@ -70,6 +71,7 @@ namespace F_Result.Controllers
                             from usr in usrtmp.DefaultIfEmpty()
                             where (actualdebit.Date >= _startagrdate && actualdebit.Date <= _endagrdate || string.IsNullOrEmpty(_datetext)) //Диапазон дат
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
+                                        && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (actualdebit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (actualdebit.DocNumber.Contains(_docnumber) || string.IsNullOrEmpty(_docnumber))
@@ -86,8 +88,8 @@ namespace F_Result.Controllers
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
                                 ProjectName = prg.ShortName,
                                 ProjectType = prg.ProjectType,
-                                Chief = prg.ChiefName,
-                                Manager = prg.ProjectManagerName,
+                                ChiefName = prg.ChiefName,
+                                ProjectManagerName = prg.ProjectManagerName,
                                 StartDatePlan = prg.StartDatePlan,
                                 StartDateFact = prg.StartDateFact,
                                 OrgName = org.Title
@@ -99,8 +101,8 @@ namespace F_Result.Controllers
                                 ProjectId = x.ProjectId,
                                 ProjectName = x.ProjectName,
                                 ProjectType = x.ProjectType,
-                                Chief = x.Chief,
-                                Manager = x.Manager,
+                                ChiefName = x.ChiefName,
+                                ProjectManagerName = x.ProjectManagerName,
                                 StartDatePlan = x.StartDatePlan,
                                 StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,

@@ -61,10 +61,10 @@ namespace F_Result.Models
         public string ProjectType { get; set; }
 
         [Display(Name = "Менеджер")]
-        public string Manager { get; set; }
+        public string ProjectManagerName { get; set; }
 
         [Display(Name = "Руководитель проекта")]
-        public string Chief { get; set; }
+        public string ChiefName { get; set; }
 
         [Display(Name = "Дата начала (План)")]
         public DateTime? StartDateFact { get; set; }

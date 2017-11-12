@@ -42,6 +42,7 @@
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Номер документа" /></th>
@@ -51,6 +52,7 @@
             </tr>
             <tr role="row">
                 <th>Проект</th>
+                <th>Руководитель</th>
                 <th>Организация</th>
                 <th>Назначение</th>
                 <th>Номер документа</th>
@@ -143,6 +145,12 @@
                                 $('.prgFlt').val($(this).text()).trigger('change');
                                 break;
                             };
+
+                            if (fClass.indexOf("chCellf") >= 0) {
+                                $('.chFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
                             if (fClass.indexOf("orgCellf") >= 0) {
                                 $('.orgFlt').val($(this).text()).trigger('change');
                                 break;
@@ -265,9 +273,10 @@
                         return d.data;
                     },
                 },
-                "order": [[5, "desc"]],
+                "order": [[6, "desc"]],
                 "columns": [
                 { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
+                { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
                 { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
                 { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
                 { "data": "DocNumber", "name": "DocNumber", "autoWidth": true, "class": "context-menu-one" },
@@ -293,8 +302,8 @@
                     $(row).attr('data-objid', data.ActualDebitId);
                     var _datePlan = formatDate(data.StartDatePlan);
                     var _dateFact = formatDate(data.StartDateFact);
-                    var titleStr = 'Тип проекта: ' + data.ProjectType + '\r\nМенеджер: ' + data.Chief + '\r\nРуководитель: ' + data.Manager + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                    $('.prgCellf', $(row)).attr('title', titleStr);
+                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
                 }
             });
 

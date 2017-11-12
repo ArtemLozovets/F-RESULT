@@ -64,6 +64,14 @@ namespace F_Result.Models
         [Display(Name = "Тип проекта")]
         public string ProjectType { get; set; }
 
+        [MaxLength(512)]
+        [Display(Name = "Руководитель проекта")]
+        public string ChiefName { get; set; }
+
+        [MaxLength(512)]
+        [Display(Name = "Менеджер проекта")]
+        public string ProjectManagerName { get; set; }
+
         [Display(Name = "Дата начала (План)")]
         public DateTime? StartDateFact { get; set; }
 

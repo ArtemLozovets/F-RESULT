@@ -268,7 +268,7 @@
 
                     var _datePlan = formatDate(data.StartDatePlan);
                     var _dateFact = formatDate(data.StartDateFact);
-                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nМенеджер: ' + data.Chief + '\r\nРуководитель: ' + data.Manager + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName  + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
                     $('.prgCellf', $(row)).attr('title', prgTitleStr);
                 },
                 "order": [[6, "desc"]]
