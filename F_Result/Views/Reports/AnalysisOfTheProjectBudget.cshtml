@@ -93,13 +93,14 @@
         </span>
     </div>
 
-    <div class="row">
-        <table style="background-color:white; width:80%; margin: 10px auto;"
-               class="table table table-bordered table-striped table-responsive table-hover gridtable" id="prgtable">
+    <div style="width:80%; background-color:white; margin: 10px auto; padding:0;">
+        <table style="background-color:white; width:100%; margin-top:0 !important;"
+               class="table table-bordered table-striped table-responsive table-hover gridtable" 
+               id="prgtable">
             <thead>
                 <tr>
                     <th>Проект</th>
-                    <th></th>
+                    <th><input id="allPrgCHB" checked type="checkbox"></th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -192,9 +193,9 @@
         });
     </script>
 
-
-
     <script>
+        var prgIds = [];
+
         //Скрипт создания таблицы
         function createGrid() {
             $('#loadingImg').hide();
@@ -282,6 +283,8 @@
                     else if (data.cdelta < 0) {
                         $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
+
+                    prgIds.push(data.ProjectName);
                 },
 
                 fnDrawCallback: function (settings) {
@@ -311,15 +314,16 @@
                             var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
                             $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
                         }
+                    };
 
-
-
-                    }
+                    var pTable = $('#prgtable').DataTable();
+                    pTable.destroy();
+                    prgTableCrate();
                 }
             });
-        };
-    </script>
 
+         };
+    </script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -399,7 +403,7 @@
     </script>
 
     <script>
-        //Скрипт работы с панелью проектов
+        //Блок скриптов для работы с панелью проектов
         $('#showButton').on('click', function () {
             if ($('#flowPanel').hasClass('open')) {
                 $('#flowPanel').animate({ right: -400 }, 500).removeClass('open');
@@ -409,6 +413,34 @@
                 $('#showButton').removeClass('fa-arrow-left').addClass('fa-arrow-right');
             }
         });
+
+        $('#allPrgCHB').on('change', function () {
+            $('.prgSelectCHB').prop('checked', $(this).prop('checked'));
+        });
+        
+        function prgTableCrate() {
+            var prgTable = $('#prgtable').DataTable({
+                autoWidth: true,
+                "scrollY": "400px",
+                "scrollCollapse": true,
+                scrollX: '100%',
+                dom: "<'row'<'col-sm-12'tr>>",
+                language: {
+                    zeroRecords: "Записи отсутствуют",
+                    infoEmpty: "Записи отсутствуют",
+                },
+                autoWidth: true,
+                paging: false,
+                processing: false,
+                serverSide: false,
+                data: prgIds,
+                columns: [
+                    { data: null, bSortable: true, sWidth: '80%' },
+                    { data: "sD", sWidth: '20%', bSortable: false, "defaultContent": '<div style="width:100%; text-align:center;"><input id="checkBox" class="prgSelectCHB" checked type="checkbox"></div>' }
+                ]
+            });
+        };
+
     </script>
 
     <script>
@@ -416,5 +448,6 @@
             $('#gridtable_filter').find('input').val('').trigger('keyup');
         }
     </script>
+
 }
 
