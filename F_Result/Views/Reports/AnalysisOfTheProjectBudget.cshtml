@@ -10,6 +10,22 @@
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
+<style>
+    .dataTables_scrollHeadInner {
+        background-color: #eee;
+    }
+
+    #flowPanel div.dataTables_wrapper div.dataTables_filter {
+        text-align: center !important;
+        margin-top: 6px;
+    }
+
+    #flowPanel #prgtable_filter input {
+        width: 300px !important;
+        margin-right: 8px;
+    }
+</style>
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -68,12 +84,12 @@
             <tfoot>
                 <tr class="tright">
                     <th>Итого</th>
-                    <th class="smallTH"></th>
-                    <th class="smallTH"></th>
-                    <th class="smallTH"></th>
-                    <th class="smallTH"></th>
-                    <th class="smallTH"></th>
-                    <th class="smallTH"></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </tfoot>
             <tbody></tbody>
@@ -95,7 +111,7 @@
 
     <div style="width:80%; background-color:white; margin: 10px auto; padding:0;">
         <table style="background-color:white; width:100%; margin-top:0 !important;"
-               class="table table-bordered table-striped table-responsive table-hover gridtable" 
+               class="table table-bordered table-striped table-responsive table-hover gridtable"
                id="prgtable">
             <thead>
                 <tr>
@@ -196,7 +212,7 @@
     <script>
         var prgIds = [];
 
-        //Скрипт создания таблицы
+        //Скрипт создания таблицы отчета
         function createGrid() {
             $('#loadingImg').hide();
             if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
@@ -268,7 +284,7 @@
                     { data: "creditfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
-
+                // Выделение цветом дельта-ячеек
                 fnCreatedRow: function (row, data, rowIndex) {
                     if (data.ddelta > 0) {
                         $('td:eq(3)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
@@ -284,10 +300,11 @@
                         $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
 
-                    prgIds.push(data.ProjectName);
+                    prgIds.push(data.ProjectName); //Создание массива с именами проектов для таблицы в плавающей панели
                 },
 
                 fnDrawCallback: function (settings) {
+                    //Заполнение футера
                     var api = this.api();
                     var json = api.ajax.json();
                     var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
@@ -316,13 +333,14 @@
                         }
                     };
 
+                    //Реинициализация таблицы проектов в плавающей панели
                     var pTable = $('#prgtable').DataTable();
                     pTable.destroy();
                     prgTableCrate();
                 }
             });
 
-         };
+        };
     </script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -379,7 +397,6 @@
 
     <script>
         //Скрипт для работы с фильтром выбора планового периода
-
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             var table = $("#gridtable").DataTable();
@@ -404,7 +421,8 @@
 
     <script>
         //Блок скриптов для работы с панелью проектов
-        $('#showButton').on('click', function () {
+        $('#showButton').on('click', function (e) {
+            e.stopImmediatePropagation();
             if ($('#flowPanel').hasClass('open')) {
                 $('#flowPanel').animate({ right: -400 }, 500).removeClass('open');
                 $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
@@ -414,20 +432,48 @@
             }
         });
 
+        $('body').on('click', function (e) {
+            $('#flowPanel').animate({ right: -400 }, 500).removeClass('open');
+            $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
+        }).on('click', '#flowPanel', function (e) {
+            e.stopPropagation();
+        });
+
         $('#allPrgCHB').on('change', function () {
             $('.prgSelectCHB').prop('checked', $(this).prop('checked'));
         });
-        
+
+        //Проверка состояния всех чекбоксов таблицы
+        $('body').on('change', 'input:checkbox.prgSelectCHB', function () {
+            if (!$(this).is(":checked")) {
+                $('#allPrgCHB').removeAttr('checked');
+            }
+            else {
+                var allChecked = true;
+                $('input:checkbox.prgSelectCHB').each(function () {
+                    if (!$(this).is(":checked")) {
+                        allChecked = false;
+                    }
+                });
+                if (allChecked === true) {
+                    $('#allPrgCHB').attr('checked', 'checked');
+                }
+            }
+        });
+
+        //Функция создания таблицы со списком проектов
         function prgTableCrate() {
             var prgTable = $('#prgtable').DataTable({
                 autoWidth: true,
-                "scrollY": "400px",
+                "scrollY": "360px",
                 "scrollCollapse": true,
                 scrollX: '100%',
-                dom: "<'row'<'col-sm-12'tr>>",
+                dom: "<'row'<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
                 language: {
                     zeroRecords: "Записи отсутствуют",
                     infoEmpty: "Записи отсутствуют",
+                    search: "",
+                    searchPlaceholder: "Проект...",
                 },
                 autoWidth: true,
                 paging: false,
@@ -436,7 +482,7 @@
                 data: prgIds,
                 columns: [
                     { data: null, bSortable: true, sWidth: '80%' },
-                    { data: "sD", sWidth: '20%', bSortable: false, "defaultContent": '<div style="width:100%; text-align:center;"><input id="checkBox" class="prgSelectCHB" checked type="checkbox"></div>' }
+                    { data: "sD", sWidth: '20%', bSortable: false, "defaultContent": '<div style="width:100%; text-align:center;"><input class="prgSelectCHB" checked type="checkbox"></div>' }
                 ]
             });
         };
