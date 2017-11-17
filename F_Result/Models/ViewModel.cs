@@ -9,6 +9,7 @@ namespace F_Result.Models
     [NotMapped]
     public class APBTableReport
     {
+        public int prj { get; set; }
         public string ProjectName { get; set; }
         public decimal debitplan { get; set; }
         public decimal debitfact { get; set; }

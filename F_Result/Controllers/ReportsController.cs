@@ -480,7 +480,6 @@ namespace F_Result.Controllers
                     CreditPlanTotal = _ads.Sum(x => x.creditplan),
                     CreditFactTotal = _ads.Sum(x => x.creditfact),
                     cDeltaTotal = _ads.Sum(x => x.cdelta)
-
                 };
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
