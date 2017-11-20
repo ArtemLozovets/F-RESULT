@@ -472,7 +472,7 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
 
-                _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Contains(x.prj)).ToList();
+                _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.prj)).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {

@@ -146,7 +146,8 @@
                 $('#BudgetPeriodDDL').val(DDLVal);
             }
 
-            var aa = []; //Массив проектов таблицы отчета
+            window._flag = true;
+            window._prjIDs = []; //Массив проектов таблицы отчета
             var filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
             var nowDT = new Date;
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
@@ -303,11 +304,11 @@
                         $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
 
-                    var prgRec = {};
-                    prgRec.prgName = data.ProjectName;
-                    prgRec.prgId = data.prj;
-                    //console.log(window.aa);
-                   // window.aa.push(prgRec); //Создание массива с именами проектов для таблицы в плавающей панели
+                    //Заполнение массива проектов для таблицы в плавающей панели
+                        var prgRec = {};
+                        prgRec.prgName = data.ProjectName;
+                        prgRec.prgId = data.prj;
+                        _prjIDs.push(prgRec);
                 },
 
                 fnDrawCallback: function (settings) {
@@ -341,9 +342,12 @@
                     };
 
                     //Инициализация таблицы проектов в плавающей панели
-                    var pTable = $('#prgtable').DataTable();
-                    pTable.destroy();
-                    prgTableCrate();
+                    if (window._flag) {
+                        var pTable = $('#prgtable').DataTable();
+                        pTable.destroy();
+                        prgTableCrate();
+                        window._flag = false;
+                    }
                 }
             });
 
@@ -385,6 +389,9 @@
                      extraClass: 'date-range-pickerM'
                  })
             .bind('datepicker-apply', function (event, obj) {
+                window._prjIDs = [];
+                window.filterPrjIDs = [];
+                window._flag = true;
                 var table = $("#gridtable").DataTable();
                 table.draw();
             })
@@ -395,6 +402,9 @@
                     var nowDate = moment(nowDT).format('DD/MM/YYYY');
                     $(this).val(nowDate);
                 };
+                window._prjIDs = [];
+                window.filterPrjIDs = [];
+                window._flag = true;
                 var table = $("#gridtable").DataTable();
                 table.draw();
             });
@@ -406,6 +416,9 @@
         //Скрипт для работы с фильтром выбора планового периода
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             var table = $("#gridtable").DataTable();
             table.draw();
         });
@@ -414,6 +427,9 @@
     <script>
         //Скрипт обработчика изменения состояния элемента "За весь период"
         $('#isAllTimes').on('change', function () {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             if ($(this).is(':checked')) {
                 $('#startDate').attr('disabled', 'disabled');
                 var table = $("#gridtable").DataTable();
@@ -456,9 +472,6 @@
                 };
             });
             if (filterPrjIDs.length > 0) {
-                console.clear();
-                console.log(filterPrjIDs);
-                prgIds = [];
                 var table = $("#gridtable").DataTable();
                 table.draw();
             };
@@ -476,15 +489,12 @@
                 };
             });
             if (allChecked) {
-                $('#allPrgCHB').prop('checked','checked');
+                $('#allPrgCHB').prop('checked', 'checked');
             }
             else if (!allChecked) {
                 $('#allPrgCHB').prop('checked', false);
             }
             if (filterPrjIDs.length > 0) {
-                console.clear();
-                console.log(filterPrjIDs);
-                prgIds = [];
                 var table = $("#gridtable").DataTable();
                 table.draw();
             };
@@ -508,14 +518,14 @@
                 paging: false,
                 processing: false,
                 serverSide: false,
-                data: prgIds,
+                data: _prjIDs,
                 columns: [
                     { data: 'prgId', bSortable: true, sWidth: '10%' },
                     { data: 'prgName', bSortable: true, sWidth: '70%' },
                     {
                         data: null, sWidth: '20%',
                         bSortable: false,
-                        render: function (data, type, row, meta ) {
+                        render: function (data, type, row, meta) {
                             var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['prgId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
                             return chkStr;
                         }
