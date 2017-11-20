@@ -145,6 +145,9 @@
                 var DDLVal = localStorage.getItem('PlanningPeriod');
                 $('#BudgetPeriodDDL').val(DDLVal);
             }
+
+            var aa = []; //Массив проектов таблицы отчета
+            var filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
             var nowDT = new Date;
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
             $("#startDate").val(nowDate);
@@ -211,8 +214,6 @@
     </script>
 
     <script>
-        var prgIds = [];
-
         //Скрипт создания таблицы отчета
         function createGrid() {
             $('#loadingImg').hide();
@@ -263,6 +264,7 @@
                         d.Period = $('#BudgetPeriodDDL').val();
                         d.BaseDate = $('#startDate').val();
                         d.IsAllTimes = _isAllTimes;
+                        d.filterPrjIDs = window.filterPrjIDs;
                     },
                     dataSrc: function (d) {
                         $('#loadingImg').hide();
@@ -304,7 +306,8 @@
                     var prgRec = {};
                     prgRec.prgName = data.ProjectName;
                     prgRec.prgId = data.prj;
-                    prgIds.push(prgRec); //Создание массива с именами проектов для таблицы в плавающей панели
+                    //console.log(window.aa);
+                   // window.aa.push(prgRec); //Создание массива с именами проектов для таблицы в плавающей панели
                 },
 
                 fnDrawCallback: function (settings) {
@@ -337,7 +340,7 @@
                         }
                     };
 
-                    //Реинициализация таблицы проектов в плавающей панели
+                    //Инициализация таблицы проектов в плавающей панели
                     var pTable = $('#prgtable').DataTable();
                     pTable.destroy();
                     prgTableCrate();
@@ -445,18 +448,32 @@
 
         //Сброс/Установка всех чекбоксов выбора проекта
         $('#allPrgCHB').on('change', function () {
+            filterPrjIDs = [];
             $('input:checkbox.prgSelectCHB').each(function () {
                 $(this).prop('checked', $('#allPrgCHB').prop('checked'));
+                if ($(this).is(":checked")) {
+                    filterPrjIDs.push($(this).data('prjid'));
+                };
             });
+            if (filterPrjIDs.length > 0) {
+                console.clear();
+                console.log(filterPrjIDs);
+                prgIds = [];
+                var table = $("#gridtable").DataTable();
+                table.draw();
+            };
         });
 
         //Проверка состояния всех чекбоксов таблицы
         $('body').on('change', 'input:checkbox.prgSelectCHB', function () {
             var allChecked = true;
+            filterPrjIDs = [];
             $('input:checkbox.prgSelectCHB').each(function () {
                 if (!$(this).is(":checked")) {
                     allChecked = false;
-                }
+                } else if ($(this).is(":checked")) {
+                    filterPrjIDs.push($(this).data('prjid'));
+                };
             });
             if (allChecked) {
                 $('#allPrgCHB').prop('checked','checked');
@@ -464,6 +481,13 @@
             else if (!allChecked) {
                 $('#allPrgCHB').prop('checked', false);
             }
+            if (filterPrjIDs.length > 0) {
+                console.clear();
+                console.log(filterPrjIDs);
+                prgIds = [];
+                var table = $("#gridtable").DataTable();
+                table.draw();
+            };
         });
 
         //Функция создания таблицы со списком проектов
@@ -488,7 +512,14 @@
                 columns: [
                     { data: 'prgId', bSortable: true, sWidth: '10%' },
                     { data: 'prgName', bSortable: true, sWidth: '70%' },
-                    { data: "sD", sWidth: '20%', bSortable: false, "defaultContent": '<div style="width:100%; text-align:center;"><input class="prgSelectCHB" checked type="checkbox"></div>' }
+                    {
+                        data: null, sWidth: '20%',
+                        bSortable: false,
+                        render: function (data, type, row, meta ) {
+                            var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['prgId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                            return chkStr;
+                        }
+                    }
                 ]
             });
         };

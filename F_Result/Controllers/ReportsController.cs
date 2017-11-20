@@ -259,35 +259,35 @@ namespace F_Result.Controllers
                                 d12c = (decimal)544.2,
                                 d12d = (decimal)544.2
                             }).AsEnumerable().Select(x => new TableReport
-                           {
-                               ProjectName = x.ProjectName,
-                               d1c = x.d1c,
-                               d1d = x.d1d,
-                               d2c = x.d2c,
-                               d2d = x.d2d,
-                               d3c = x.d3c,
-                               d3d = x.d3d,
-                               d4c = x.d4c,
-                               d4d = x.d4d,
-                               d5c = x.d5c,
-                               d5d = x.d5d,
-                               d6c = x.d6c,
-                               d6d = x.d6d,
-                               d7c = x.d7c,
-                               d7d = x.d7d,
-                               d8c = x.d8c,
-                               d8d = x.d8d,
-                               d9c = x.d9c,
-                               d9d = x.d9d,
-                               d10c = x.d10c,
-                               d10d = x.d10d,
-                               d11c = x.d11c,
-                               d11d = x.d11d,
-                               d12c = x.d12c,
-                               d12d = x.d12d,
-                               dresc = x.d1c + x.d2c + x.d3c + x.d4c + x.d5c + x.d6c + x.d7c + x.d8c + x.d9c + x.d10c + x.d11c + x.d12c,
-                               dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
-                           }).Distinct().ToList();
+                            {
+                                ProjectName = x.ProjectName,
+                                d1c = x.d1c,
+                                d1d = x.d1d,
+                                d2c = x.d2c,
+                                d2d = x.d2d,
+                                d3c = x.d3c,
+                                d3d = x.d3d,
+                                d4c = x.d4c,
+                                d4d = x.d4d,
+                                d5c = x.d5c,
+                                d5d = x.d5d,
+                                d6c = x.d6c,
+                                d6d = x.d6d,
+                                d7c = x.d7c,
+                                d7d = x.d7d,
+                                d8c = x.d8c,
+                                d8d = x.d8d,
+                                d9c = x.d9c,
+                                d9d = x.d9d,
+                                d10c = x.d10c,
+                                d10d = x.d10d,
+                                d11c = x.d11c,
+                                d11d = x.d11d,
+                                d12c = x.d12c,
+                                d12d = x.d12d,
+                                dresc = x.d1c + x.d2c + x.d3c + x.d4c + x.d5c + x.d6c + x.d7c + x.d8c + x.d9c + x.d10c + x.d11c + x.d12c,
+                                dresd = x.d1d + x.d2d + x.d3d + x.d4d + x.d5d + x.d6d + x.d7d + x.d8d + x.d9d + x.d10d + x.d11d + x.d12d
+                            }).Distinct().ToList();
 
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -371,7 +371,7 @@ namespace F_Result.Controllers
 
         //Получение данных для построения отчета "Бюджетирование" POST
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes)
+        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
@@ -472,6 +472,8 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
 
+                _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Contains(x.prj)).ToList();
+
                 APBTableReportTotal total = new APBTableReportTotal
                 {
                     DebitPlanTotal = _ads.Sum(x => x.debitplan),
@@ -490,10 +492,10 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
                 var data = _ads.Skip(skip).Take(pageSize);
 
-                if(IsAllTimes && _ads.Count>0)
+                if (IsAllTimes && _ads.Count > 0)
                 {
-                    StartPeriod = _ads.Min(x=>x.MinDate);
-                    EndPeriod = _ads.Max(x=>x.MaxDate);
+                    StartPeriod = _ads.Min(x => x.MinDate);
+                    EndPeriod = _ads.Max(x => x.MaxDate);
                 }
 
                 return Json(new
