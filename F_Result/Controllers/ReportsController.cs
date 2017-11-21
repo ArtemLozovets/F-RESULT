@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Linq.Dynamic;
-using System.Globalization; //!=====!
+using System.Globalization;
+using System.Web.Script.Serialization; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -449,7 +450,6 @@ namespace F_Result.Controllers
                     EndPeriod = new DateTime(2100, 12, 31);
                 }
 
-
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
                 var length = Request.Form.GetValues("length").FirstOrDefault();
@@ -472,7 +472,11 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).ToList();
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).OrderBy(x=>x.ProjectName).ToList();
+                
+                
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.prj)).ToList();
 
@@ -511,7 +515,7 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     data = data,
                     total = total,
-                    prjlist = _prjList,
+                    prjlist = _prjListJson,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }

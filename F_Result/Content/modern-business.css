@@ -370,13 +370,13 @@ input[type=checkbox]#isAllTimes {
     z-index: 9999;
     padding: 0;
     position: fixed;
-    width: 400px;
-    border-radius: 0;
+    width: 360px;
+    border-radius: 0 0 0 6px;
     /*border: 1px dashed #faa;*/
     height: calc(100% - 2px);
     background-color: #57A;
     top: 80px;
-    right: -400px;
+    right: -360px;
     box-shadow: -5px 0 10px rgba(0,0,0,0.3);
 }
 

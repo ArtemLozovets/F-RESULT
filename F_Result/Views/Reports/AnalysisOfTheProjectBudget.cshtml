@@ -17,7 +17,7 @@
 
     #flowPanel div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
-        margin-top: 6px;
+        margin-top: 10px;
     }
 
     #flowPanel #prgtable_filter input {
@@ -104,7 +104,7 @@
         <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
     </div>
 
-    <div style="width:80%; background-color:white; margin: 10px auto; padding:0;">
+    <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
         <table style="background-color:white; width:100%; margin-top:0 !important;"
                class="table table-bordered table-striped table-responsive table-hover gridtable"
                id="prgtable">
@@ -144,7 +144,7 @@
             //Объявление глобальных переменных
             window._flag = true;
             window._prjIDs = []; //Массив проектов таблицы отчета
-            var filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
+            window.filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
             var nowDT = new Date;
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
             $("#startDate").val(nowDate);
@@ -214,6 +214,7 @@
             window._prjIDs = [];
             window.filterPrjIDs = [];
             window._flag = true;
+            $('#allPrgCHB').prop('checked', 'checked');
             var table = $("#gridtable").DataTable();
             table.draw();
         }
@@ -368,20 +369,12 @@
                     if (window._flag) {
 
                         //Заполнение массива проектов для таблицы в плавающей панели
-                        //var prgRec = json.prjlist;
-                        ////_prjIDs.push(prgRec);
-
-                       // _prjIDs1 = JSON.parse(json.prjlist)
-                        (json.prjlist).toArray();   
-                        console.log(json.prjlist);
-
-                        ////prgRec.prgName = data.ProjectName;
-                        ////prgRec.prgId = data.prj;
-                        ////_prjIDs.push(prgRec);
+                        _prjIDs = JSON.parse(json.prjlist)
 
                         var pTable = $('#prgtable').DataTable();
                         pTable.destroy();
                         prgTableCrate();
+                        $('#flowPanel').height($('#prgtable_wrapper').height()+80);
                         window._flag = false;
                     }
                 }
@@ -426,7 +419,7 @@
                      extraClass: 'date-range-pickerM'
                  })
             .bind('datepicker-apply', function (event, obj) {
-                   globalVarsClear();
+                globalVarsClear();
             })
 
             $('#startDate').on('change', function () {
@@ -446,7 +439,7 @@
         $('#showButton').on('click', function (e) {
             e.stopImmediatePropagation();
             if ($('#flowPanel').hasClass('open')) {
-                $('#flowPanel').animate({ right: -400 }, 500).removeClass('open');
+                $('#flowPanel').animate({ right: -360 }, 500).removeClass('open');
                 $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
             } else {
                 $('#flowPanel').animate({ right: 0 }, 500).addClass('open');
@@ -455,22 +448,23 @@
         });
 
         $('body').on('click', function (e) {
-            $('#flowPanel').animate({ right: -400 }, 500).removeClass('open');
+            $('#flowPanel').animate({ right: -360 }, 500).removeClass('open');
             $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
         }).on('click', '#flowPanel', function (e) {
             e.stopPropagation();
+
         });
 
         //Сброс/Установка всех чекбоксов выбора проекта
         $('#allPrgCHB').on('change', function () {
-            filterPrjIDs = [];
+            window.filterPrjIDs = [];
             $('input:checkbox.prgSelectCHB').each(function () {
                 $(this).prop('checked', $('#allPrgCHB').prop('checked'));
                 if ($(this).is(":checked")) {
-                    filterPrjIDs.push($(this).data('prjid'));
+                    window.filterPrjIDs.push($(this).data('prjid'));
                 };
             });
-            if (filterPrjIDs.length > 0) {
+            if (window.filterPrjIDs.length > 0) {
                 var table = $("#gridtable").DataTable();
                 table.draw();
             };
@@ -479,12 +473,12 @@
         //Проверка состояния всех чекбоксов таблицы
         $('body').on('change', 'input:checkbox.prgSelectCHB', function () {
             var allChecked = true;
-            filterPrjIDs = [];
+            window.filterPrjIDs = [];
             $('input:checkbox.prgSelectCHB').each(function () {
                 if (!$(this).is(":checked")) {
                     allChecked = false;
                 } else if ($(this).is(":checked")) {
-                    filterPrjIDs.push($(this).data('prjid'));
+                    window.filterPrjIDs.push($(this).data('prjid'));
                 };
             });
             if (allChecked) {
@@ -493,7 +487,7 @@
             else if (!allChecked) {
                 $('#allPrgCHB').prop('checked', false);
             }
-            if (filterPrjIDs.length > 0) {
+            if (window.filterPrjIDs.length > 0) {
                 var table = $("#gridtable").DataTable();
                 table.draw();
             };
@@ -507,7 +501,7 @@
                 "scrollY": "360px",
                 "scrollCollapse": true,
                 scrollX: '100%',
-                dom: "<'row'<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
+                dom: "<<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
                 language: {
                     zeroRecords: "Записи отсутствуют",
                     infoEmpty: "Записи отсутствуют",
@@ -519,15 +513,15 @@
                 processing: false,
                 serverSide: false,
                 data: _prjIDs,
-                order: [[0, "asc"]],
+                order: [[1, "asc"]],
                 columns: [
-                    { data: 'prgId', bSortable: true, sWidth: '10%', visible: false, searchable: false },
-                    { data: 'prgName', bSortable: true, sWidth: '70%' },
+                    { data: 'PrjId', bSortable: true, visible: false, searchable: false },
+                    { data: 'ProjectName', bSortable: true, sWidth: '80%' },
                     {
                         data: null, sWidth: '20%',
                         bSortable: false,
                         render: function (data, type, row, meta) {
-                            var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['prgId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                            var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
                             return chkStr;
                         }
                     }
