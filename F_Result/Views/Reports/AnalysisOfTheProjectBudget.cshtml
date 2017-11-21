@@ -137,8 +137,8 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/toparrow.js"></script>
+
     <script>
-        //Скрипт инициализации страницы
         $(function () {
             //Читаем значение фильтра планового периода
             if (localStorage.getItem('PlanningPeriod') !== null) {
@@ -146,6 +146,7 @@
                 $('#BudgetPeriodDDL').val(DDLVal);
             }
 
+            //Объявление глобальных переменных
             window._flag = true;
             window._prjIDs = []; //Массив проектов таблицы отчета
             var filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
@@ -153,13 +154,8 @@
             var nowDate = moment(nowDT).format('DD/MM/YYYY');
             $("#startDate").val(nowDate);
             $('#loadingImg').hide();
-            createGrid();
-        })
-    </script>
 
-    <script type="text/javascript">
-        //Скрипт для работы с контекстным меню
-        $(function () {
+            //Скрипт для работы с контекстным меню
             $.contextMenu({
                 selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
@@ -211,11 +207,49 @@
                     "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
-        });
-    </script>
 
-    <script>
-        //Скрипт создания таблицы отчета
+            //Создание таблицы отчета
+            createGrid();
+        });
+
+        //--------------------------------------F U N C T I O N S----------------------------------
+
+        //Функция очистки массивов, сброса глобальных переменных и реинициализации таблицы отчета
+        function globalVarsClear() {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
+            var table = $("#gridtable").DataTable();
+            table.draw();
+        }
+
+        //Функция сброса фильтра проектов
+        function ClearFilter() {
+            $('#gridtable_filter').find('input').val('').trigger('keyup');
+        }
+
+        //Обработчик выбора планового периода
+        $('body').on('change', '#BudgetPeriodDDL', function () {
+            localStorage.setItem('PlanningPeriod', $(this).val());
+            globalVarsClear();
+        });
+
+        //Обработчик изменения состояния элемента "За весь период"
+        $('#isAllTimes').on('change', function () {
+            globalVarsClear();
+            if ($(this).is(':checked')) {
+                $('#startDate').attr('disabled', 'disabled');
+                var table = $("#gridtable").DataTable();
+                table.draw();
+            } else {
+                $('#startDate').removeAttr('disabled');
+                var table = $("#gridtable").DataTable();
+                table.draw();
+            }
+        });
+
+        //-------------------------------------------------------------
+        //Функция создания таблицы отчета
         function createGrid() {
             $('#loadingImg').hide();
             if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
@@ -305,10 +339,10 @@
                     }
 
                     //Заполнение массива проектов для таблицы в плавающей панели
-                        var prgRec = {};
-                        prgRec.prgName = data.ProjectName;
-                        prgRec.prgId = data.prj;
-                        _prjIDs.push(prgRec);
+                    var prgRec = {};
+                    prgRec.prgName = data.ProjectName;
+                    prgRec.prgId = data.prj;
+                    _prjIDs.push(prgRec);
                 },
 
                 fnDrawCallback: function (settings) {
@@ -352,6 +386,7 @@
             });
 
         };
+
     </script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -389,11 +424,7 @@
                      extraClass: 'date-range-pickerM'
                  })
             .bind('datepicker-apply', function (event, obj) {
-                window._prjIDs = [];
-                window.filterPrjIDs = [];
-                window._flag = true;
-                var table = $("#gridtable").DataTable();
-                table.draw();
+                   globalVarsClear();
             })
 
             $('#startDate').on('change', function () {
@@ -402,43 +433,9 @@
                     var nowDate = moment(nowDT).format('DD/MM/YYYY');
                     $(this).val(nowDate);
                 };
-                window._prjIDs = [];
-                window.filterPrjIDs = [];
-                window._flag = true;
-                var table = $("#gridtable").DataTable();
-                table.draw();
+                globalVarsClear();
             });
 
-        });
-    </script>
-
-    <script>
-        //Скрипт для работы с фильтром выбора планового периода
-        $('body').on('change', '#BudgetPeriodDDL', function () {
-            localStorage.setItem('PlanningPeriod', $(this).val());
-            window._prjIDs = [];
-            window.filterPrjIDs = [];
-            window._flag = true;
-            var table = $("#gridtable").DataTable();
-            table.draw();
-        });
-    </script>
-
-    <script>
-        //Скрипт обработчика изменения состояния элемента "За весь период"
-        $('#isAllTimes').on('change', function () {
-            window._prjIDs = [];
-            window.filterPrjIDs = [];
-            window._flag = true;
-            if ($(this).is(':checked')) {
-                $('#startDate').attr('disabled', 'disabled');
-                var table = $("#gridtable").DataTable();
-                table.draw();
-            } else {
-                $('#startDate').removeAttr('disabled');
-                var table = $("#gridtable").DataTable();
-                table.draw();
-            }
         });
     </script>
 
@@ -535,12 +532,4 @@
         };
 
     </script>
-
-    <script>
-        function ClearFilter() {
-            $('#gridtable_filter').find('input').val('').trigger('keyup');
-        }
-    </script>
-
 }
-
