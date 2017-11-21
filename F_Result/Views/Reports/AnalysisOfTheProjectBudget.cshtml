@@ -101,12 +101,7 @@
 <div id="flowPanel">
     <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
     <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
-        <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ <span style="color:#f66;">(В РАЗРАБОТКЕ)</span></span>
-        <span style="display:block; margin-top:10px;">
-            <input type="radio" name="group1" class="prjRb" id="allrb" value="All"><label for="allrb">Все</label>&nbsp;
-            <input type="radio" name="group1" class="prjRb" id="currentrb" value="Current" checked><label for="currentrb">Действующие</label>&nbsp;
-            <input type="radio" name="group1" class="prjRb" id="selectrb" value="Select"><label for="selectrb">По выбору</label>
-        </span>
+        <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
     </div>
 
     <div style="width:80%; background-color:white; margin: 10px auto; padding:0;">
@@ -337,12 +332,6 @@
                     else if (data.cdelta < 0) {
                         $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
-
-                    //Заполнение массива проектов для таблицы в плавающей панели
-                    var prgRec = {};
-                    prgRec.prgName = data.ProjectName;
-                    prgRec.prgId = data.prj;
-                    _prjIDs.push(prgRec);
                 },
 
                 fnDrawCallback: function (settings) {
@@ -377,6 +366,19 @@
 
                     //Инициализация таблицы проектов в плавающей панели
                     if (window._flag) {
+
+                        //Заполнение массива проектов для таблицы в плавающей панели
+                        //var prgRec = json.prjlist;
+                        ////_prjIDs.push(prgRec);
+
+                       // _prjIDs1 = JSON.parse(json.prjlist)
+                        (json.prjlist).toArray();   
+                        console.log(json.prjlist);
+
+                        ////prgRec.prgName = data.ProjectName;
+                        ////prgRec.prgId = data.prj;
+                        ////_prjIDs.push(prgRec);
+
                         var pTable = $('#prgtable').DataTable();
                         pTable.destroy();
                         prgTableCrate();
@@ -497,6 +499,7 @@
             };
         });
 
+        //-----------------------------------------------------------------
         //Функция создания таблицы со списком проектов
         function prgTableCrate() {
             var prgTable = $('#prgtable').DataTable({
@@ -516,8 +519,9 @@
                 processing: false,
                 serverSide: false,
                 data: _prjIDs,
+                order: [[0, "asc"]],
                 columns: [
-                    { data: 'prgId', bSortable: true, sWidth: '10%' },
+                    { data: 'prgId', bSortable: true, sWidth: '10%', visible: false, searchable: false },
                     { data: 'prgName', bSortable: true, sWidth: '70%' },
                     {
                         data: null, sWidth: '20%',

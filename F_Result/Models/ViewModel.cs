@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace F_Result.Models
 {
 
-    #region "Analysis of the project budget" table report
+    #region "Analysis of the project budget" table report ----------------------------------
 
     [NotMapped]
     public class APBTableReport
@@ -32,7 +32,14 @@ namespace F_Result.Models
         public decimal cDeltaTotal { get; set; }
     }
 
-    #endregion
+    [NotMapped]
+    public class APBFilterIDs
+    {
+        public int PrjId { get; set; }
+        public string ProjectName { get; set; }
+    }
+
+    #endregion ----------------------------------------------------------
 
     #region Table report --------------------------
 

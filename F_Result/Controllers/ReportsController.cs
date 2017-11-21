@@ -472,6 +472,8 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
 
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).ToList();
+
                 _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.prj)).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
@@ -509,6 +511,7 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     data = data,
                     total = total,
+                    prjlist = _prjList,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }
