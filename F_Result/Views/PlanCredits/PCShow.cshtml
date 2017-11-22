@@ -348,15 +348,15 @@
                 var DDLVal = localStorage.getItem('PlanningPeriod');
                 $('#PeriodDDL').val(DDLVal);
                 var table = $('#gridtable').DataTable();
-                table.column(6).search(DDLVal).draw();
+                table.column(7).search(DDLVal).draw();
             }
             var table = $('#gridtable').DataTable();
-            table.column(6).search($('#PeriodDDL').val()).draw();
+            table.column(7).search($('#PeriodDDL').val()).draw();
 
             $('body').on('change', '#PeriodDDL', function () {
                 localStorage.setItem('PlanningPeriod', $(this).val());
                 var table = $('#gridtable').DataTable();
-                table.column(6).search(this.value).draw();
+                table.column(7).search(this.value).draw();
             });
         });
     </script>
