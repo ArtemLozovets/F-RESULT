@@ -15,13 +15,13 @@ namespace F_Result.Controllers
         private FRModel db = new FRModel();
 
         // GET: Reports
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult AnalysisOfPayments()
         {
             return View();
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public JsonResult GetAOP(int? Year)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
@@ -99,14 +99,14 @@ namespace F_Result.Controllers
 
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult AnalysisOfPlanPayments()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public JsonResult GetPlanData(int? Year)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
@@ -184,7 +184,7 @@ namespace F_Result.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Administrator, Chief, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult LoadTabRep(int? PeriodId)
         {
             if (PeriodId == null)
