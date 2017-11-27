@@ -123,7 +123,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.PlanCreditId).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.PlanCreditId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Sum);
@@ -152,20 +152,20 @@ namespace F_Result.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             PlanCredit planCredit = (from _pc in db.PlanCredits
-                                   join _pname in db.Projects on _pc.ProjectId equals _pname.id
-                                   join _org in db.Organizations on _pc.OrganizationId equals _org.id
-                                   join _period in db.PlanningPeriods on _pc.PeriodId equals _period.PlanningPeriodId
-                                   where (_pc.PlanCreditId == id)
-                                   select new
-                                   {
-                                       PlanCreditId = _pc.PlanCreditId,
-                                       Sum = _pc.Sum,
-                                       Date = _pc.Date,
-                                       ProjectName = _pname.ShortName,
-                                       OrganizationName = _org.Title,
-                                       PeriodName = _period.PeriodName,
-                                       Appointment = _pc.Appointment
-                                   }).AsEnumerable().Select(x => new PlanCredit
+                                     join _pname in db.Projects on _pc.ProjectId equals _pname.id
+                                     join _org in db.Organizations on _pc.OrganizationId equals _org.id
+                                     join _period in db.PlanningPeriods on _pc.PeriodId equals _period.PlanningPeriodId
+                                     where (_pc.PlanCreditId == id)
+                                     select new
+                                     {
+                                         PlanCreditId = _pc.PlanCreditId,
+                                         Sum = _pc.Sum,
+                                         Date = _pc.Date,
+                                         ProjectName = _pname.ShortName,
+                                         OrganizationName = _org.Title,
+                                         PeriodName = _period.PeriodName,
+                                         Appointment = _pc.Appointment
+                                     }).AsEnumerable().Select(x => new PlanCredit
                                    {
                                        PlanCreditId = x.PlanCreditId,
                                        Sum = x.Sum,
@@ -202,10 +202,13 @@ namespace F_Result.Controllers
             if (ModelState.IsValid)
             {
                 //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
-                int NextMonth = DateTime.Today.Month+1;
+
+                int NextMonth = DateTime.Today.Month + 1;
                 int PlanMonth = planCredit.Date.Month;
+                int PlanYear = planCredit.Date.Year;
+
                 bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
-                if (isPrgManager && (PlanMonth < NextMonth))
+                if (isPrgManager && (PlanMonth < NextMonth && PlanYear <= DateTime.Today.Year))
                 {
                     TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
