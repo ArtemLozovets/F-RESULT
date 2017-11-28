@@ -200,12 +200,18 @@ namespace F_Result.Controllers
         {
             if (ModelState.IsValid)
             {
-
-                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
+                //Запрещаем руководителям проектов добавление/редактирование планов текущего и предыдущих месяцев
                 int NextMonth = DateTime.Today.Month + 1;
+                int WYear = DateTime.Today.Year;
+                if (NextMonth > 12)
+                {
+                    NextMonth = 1;
+                    WYear += 1;
+                }
                 int PlanMonth = planDebit.Date.Month;
+                int PlanYear = planDebit.Date.Year;
                 bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
-                if (isPrgManager && (PlanMonth < NextMonth))
+                if (isPrgManager && ((PlanMonth < NextMonth && PlanYear <= DateTime.Today.Year)))
                 {
                     TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
@@ -274,12 +280,18 @@ namespace F_Result.Controllers
 
             if (ModelState.IsValid)
             {
-
-                //Запрещаем руководителям проектов добавление/редактирование планов планов текущего и предыдущих месяцев
+                //Запрещаем руководителям проектов добавление/редактирование планов текущего и предыдущих месяцев
                 int NextMonth = DateTime.Today.Month + 1;
+                int WYear = DateTime.Today.Year;
+                if (NextMonth > 12)
+                {
+                    NextMonth = 1;
+                    WYear += 1;
+                }
                 int PlanMonth = planDebit.Date.Month;
+                int PlanYear = planDebit.Date.Year;
                 bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
-                if (isPrgManager && (PlanMonth < NextMonth))
+                if (isPrgManager && ((PlanMonth < NextMonth && PlanYear <= DateTime.Today.Year)))
                 {
                     TempData["MessageError"] = "Руководителям проектов запрещено добавление/редактирование планов текущего и предыдущих месяцев";
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");

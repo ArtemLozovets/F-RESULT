@@ -362,7 +362,7 @@ namespace F_Result.Controllers
         }
 
         //Отчет "Бюджетирование" GET
-        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public ActionResult AnalysisOfTheProjectBudget()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
@@ -371,7 +371,7 @@ namespace F_Result.Controllers
 
 
         //Получение данных для построения отчета "Бюджетирование" POST
-        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
