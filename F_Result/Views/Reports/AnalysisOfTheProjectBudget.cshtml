@@ -27,13 +27,13 @@
         margin-right: 8px;
     }
 
-    .dt-buttons.btn-group{
-        float:none;
+    .dt-buttons.btn-group {
+        float: none;
     }
 
     .expButton {
-        padding:5px 12px;
-        margin-top:-2px;
+        padding: 5px 12px;
+        margin-top: -2px;
     }
 </style>
 
@@ -286,6 +286,10 @@
                 filter: false,
                 orderMulti: false,
                 responsive: false,
+                lengthMenu: [
+                                [10, 25, 50, 100, -1],
+                                ['10', '25', '50', '100', 'Все']
+                ],
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
                 dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#alrt.col-sm-6 text-right'>>" +
@@ -310,7 +314,7 @@
                     {
                         extend: 'copy',
                         text: '<i class="fa fa-copy"></i>&nbsp;Copy',
-                        className:'expButton',
+                        className: 'expButton',
                     },
                        {
                            extend: 'excel',
@@ -321,7 +325,7 @@
                            customize: function (xlsx) {
                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
                                $('row:first c', sheet).attr('s', '51');
-                           
+
                            },
 
                            exportOptions: {
