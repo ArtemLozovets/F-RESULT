@@ -460,8 +460,6 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _projectname = Request.Form.GetValues("search[value]")[0].ToString();
-
                 List<TableReport> RepList = new List<TableReport>();
 
                 DateTime _stmp = Convert.ToDateTime(StartPeriod.ToString());
@@ -470,7 +468,7 @@ namespace F_Result.Controllers
                 string _endPeriod = _etmp.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, _projectname)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2})", _startPeriod, _endPeriod, Period)).ToList();
 
                 List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).OrderBy(x=>x.ProjectName).ToList();
                 

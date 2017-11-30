@@ -279,7 +279,7 @@
                         return d.data;
                     }
                 },
-                "order": [[6, "desc"]],
+                "order": [[5, "desc"]],
                 "columns": [
                     { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
                     { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
@@ -306,6 +306,7 @@
                 ],
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.PlanDebitId);
+                    //Выводим всплывающую подсказку с подробной информацией о проекте
                     var _datePlan = formatDate(data.StartDatePlan);
                     var _dateFact = formatDate(data.StartDateFact);
                     var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;

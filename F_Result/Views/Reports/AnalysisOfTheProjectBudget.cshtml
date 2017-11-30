@@ -8,6 +8,8 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/buttons.bootstrap.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <style>
@@ -23,6 +25,15 @@
     #flowPanel #prgtable_filter input {
         width: 300px !important;
         margin-right: 8px;
+    }
+
+    .dt-buttons.btn-group{
+        float:none;
+    }
+
+    .expButton {
+        padding:5px 12px;
+        margin-top:-2px;
     }
 </style>
 
@@ -48,19 +59,23 @@
     </div>
 
     <div class="row">
-        <div class="row form-inline">
+        <div class="row form-inline pull-right">
+            <label for="isAllPeriod" class="control-label">За весь период</label>
+            @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
+
+            <input type="text" style="width:10em;text-align:center; margin:0 0.4em;"
+                   id="startDate" placeholder="Базовая дата"
+                   title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+
             @Html.DropDownList("BudgetPeriodDDL", (SelectList)ViewData["periodItems"], null, new
        {
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-bottom:-1px; margin-left:1.3em; width:16em;"
+           style = "display:inline-block; margin-bottom:-1px; margin-right:1.3em; width:16em;"
        })
 
-            <input type="text" style="width:10em;text-align:center;" id="startDate" placeholder="Базовая дата" title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
 
-            @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
-            <label for="isAllPeriod" class="control-label">За весь период</label>
         </div>
     </div>
 
@@ -125,11 +140,20 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/DataTables/jszip.min.js"></script>
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    @* ---- *@
+    <script src="~/Scripts/DataTables/dataTables.buttons.js"></script>
+    <script src="~/Scripts/DataTables/buttons.bootstrap.js"></script>
+
+    <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+    <script src="~/Scripts/DataTables/buttons.flash.min.js"></script>
+    @* ---- *@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/toparrow.js"></script>
 
@@ -259,12 +283,12 @@
                 paging: true,
                 processing: true,
                 serverSide: true,
-                filter: true,
+                filter: false,
                 orderMulti: false,
                 responsive: false,
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'B><'col-sm-3'f>>" +
+                dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#alrt.col-sm-6 text-right'>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 language: {
@@ -282,6 +306,31 @@
                         sPrevious: "<"
                     }
                 },
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-copy"></i>&nbsp;Copy',
+                        className:'expButton',
+                    },
+                       {
+                           extend: 'excel',
+                           text: '<i class="fa fa-file-excel-o"></i>&nbsp;Excel',
+                           className: 'expButton',
+                           filename: 'AOPBReport',
+
+                           customize: function (xlsx) {
+                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                               $('row:first c', sheet).attr('s', '51');
+                           
+                           },
+
+                           exportOptions: {
+                               modifier: {
+                                   page: 'current'
+                               }
+                           }
+                       }
+                ],
                 ajax: {
                     type: 'POST',
                     url: '/Reports/GetAPB/',
@@ -310,7 +359,7 @@
                 },
                 order: [[0, "asc"]],
                 columns: [
-                    { data: "ProjectName", sWidth: '32%', name: "ProjectName", "class": "context-menu-one prgCellf" },
+                    { data: "ProjectName", sWidth: '32%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
                     { data: "debitplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "debitfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
@@ -320,6 +369,12 @@
                 ],
                 // Выделение цветом дельта-ячеек
                 fnCreatedRow: function (row, data, rowIndex) {
+                    //Выводим всплывающую подсказку с подробной информацией о проекте
+                    var _datePlan = formatDate(data.StartDatePlan);
+                    var _dateFact = formatDate(data.StartDateFact);
+                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
+
                     if (data.ddelta > 0) {
                         $('td:eq(3)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
@@ -374,11 +429,21 @@
                         var pTable = $('#prgtable').DataTable();
                         pTable.destroy();
                         prgTableCrate();
-                        $('#flowPanel').height($('#prgtable_wrapper').height()+80);
+                        $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                         window._flag = false;
                     }
                 }
             });
+
+            function formatDate(value) {
+                if (value === null) return "";
+                var pattern = /Date\(([^)]+)\)/;
+                var results = pattern.exec(value);
+                var dt = new Date(parseFloat(results[1]));
+                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                return _d + "/" + _m + "/" + dt.getFullYear();
+            };
 
         };
 

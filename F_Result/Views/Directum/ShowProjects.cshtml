@@ -190,8 +190,8 @@
                     }
                 },
                 "columns": [
-                    { "data": "FullName", "name": "FullName", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "ShortName", "name": "ShortName", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "FullName", "name": "FullName", "autoWidth": true, "class": "context-menu-one haveTitle ttlF" },
+                    { "data": "ShortName", "name": "ShortName", "autoWidth": true, "class": "context-menu-one haveTitle ttlF" },
                     { "data": "Desc", "name": "Desc", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "ProjectType", "name": "ProjectType", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "State", "name": "State", "autoWidth": true, "class": "context-menu-one" },
@@ -255,7 +255,12 @@
                     { "data": "id", "name": "id", "autoWidth": false, "class": "context-menu-one" }
                 ],
                 "columnDefs": [{ "visible": false, "targets": [9] }],
-                "order": [[9, "desc"]]
+                "order": [[9, "desc"]],
+                "createdRow": function (row, data, rowIndex) {
+                    //Выводим всплывающую подсказку с подробной информацией о проекте
+                    var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                    $('.ttlF', $(row)).attr('title', prgTitleStr);
+                },
             });
 
             table.columns().eq(0).each(function (colIdx) {
@@ -267,6 +272,16 @@
                     table.column(colIdx).search(this.value).draw();
                 });
             });
+
+            function formatDate(value) {
+                if (value === null) return "";
+                var pattern = /Date\(([^)]+)\)/;
+                var results = pattern.exec(value);
+                var dt = new Date(parseFloat(results[1]));
+                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                return _d + "/" + _m + "/" + dt.getFullYear();
+            };
 
         });
     </script>

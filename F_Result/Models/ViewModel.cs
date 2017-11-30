@@ -11,6 +11,11 @@ namespace F_Result.Models
     {
         public int prj { get; set; }
         public string ProjectName { get; set; }
+        public string ProjectType { get; set; }
+        public string ProjectManagerName { get; set; }
+        public string ChiefName { get; set; }
+        public DateTime? StartDateFact { get; set; }
+        public DateTime? StartDatePlan { get; set; }
         public decimal debitplan { get; set; }
         public decimal debitfact { get; set; }
         public decimal ddelta { get; set; }

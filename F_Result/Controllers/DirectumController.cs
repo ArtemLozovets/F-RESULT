@@ -62,7 +62,7 @@ namespace F_Result.Controllers
                 //--------------------------
 
                 string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                
+
                 var _payments = (from payment in db.Payments
                                  join prg in db.Projects on payment.ProjectId equals prg.id
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
@@ -72,7 +72,8 @@ namespace F_Result.Controllers
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                                 select new {
+                                 select new
+                                 {
                                      id = payment.id,
                                      Project = payment.Project,
                                      Chief = payment.Chief,
@@ -104,7 +105,7 @@ namespace F_Result.Controllers
                                      Summ = x.Summ,
                                      AgrType = x.AgrType,
                                      ProjectType = x.ProjectType,
-                                     ChiefName =x.ChiefName,
+                                     ChiefName = x.ChiefName,
                                      ProjectManagerName = x.ProjectManagerName,
                                      StartDatePlan = x.StartDatePlan,
                                      StartDateFact = x.StartDateFact,
@@ -121,10 +122,10 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _payments = _payments.OrderByDescending(x=>x.PaymentDate).ThenByDescending(x=>x.id).ToList();
+                    _payments = _payments.OrderByDescending(x => x.PaymentDate).ThenByDescending(x => x.id).ToList();
                 }
 
-                var pSum = _payments.GroupBy(x=>new { x.Agreement, x.AgrDate, x.Summ }).Sum(x=>x.Select(y=>y.Summ).FirstOrDefault());
+                var pSum = _payments.GroupBy(x => new { x.Agreement, x.AgrDate, x.Summ }).Sum(x => x.Select(y => y.Summ).FirstOrDefault());
                 var fSum = _payments.Sum(x => x.Payment);
 
                 totalRecords = _payments.Count();
@@ -248,30 +249,36 @@ namespace F_Result.Controllers
                                         && (project.EndDateFact >= _festartdate && project.EndDateFact <= _feenddate || string.IsNullOrEmpty(_fendtext)) //Диапазон дат
                                         && (project.StartDatePlan >= _psstartdate && project.StartDatePlan <= _psenddate || string.IsNullOrEmpty(_pstarttext)) //Диапазон дат
                                         && (project.EndDatePlan >= _pestartdate && project.EndDatePlan <= _peenddate || string.IsNullOrEmpty(_pendtext)) //Диапазон дат
-                                 select new { 
-                                    id = project.id,
-                                    FullName = project.FullName,
-                                    Name = project.ShortName,
-                                    Desc = project.Desc,
-                                    ProjectType = project.ProjectType,
-                                    State = project.State,
-                                    StartDateFact = project.StartDateFact,
-                                    EndDateFact = project.EndDateFact,
-                                    StartDatePlan = project.StartDatePlan,
-                                    EndDatePlan = project.EndDatePlan
+                                 select new
+                                 {
+                                     id = project.id,
+                                     FullName = project.FullName,
+                                     Name = project.ShortName,
+                                     ChiefName = project.ChiefName,
+                                     ProjectManagerName = project.ProjectManagerName,
+                                     Desc = project.Desc,
+                                     ProjectType = project.ProjectType,
+                                     State = project.State,
+                                     StartDateFact = project.StartDateFact,
+                                     EndDateFact = project.EndDateFact,
+                                     StartDatePlan = project.StartDatePlan,
+                                     EndDatePlan = project.EndDatePlan
 
-                                 }).AsEnumerable().Select(x => new Projects { 
+                                 }).AsEnumerable().Select(x => new Projects
+                                 {
                                      id = x.id,
                                      FullName = x.FullName,
                                      ShortName = x.Name,
+                                     ChiefName = x.ChiefName,
+                                     ProjectManagerName = x.ProjectManagerName,
                                      Desc = x.Desc,
                                      ProjectType = x.ProjectType,
                                      State = x.State,
-                                     StartDateFact =x.StartDateFact,
+                                     StartDateFact = x.StartDateFact,
                                      EndDateFact = x.EndDateFact,
                                      StartDatePlan = x.StartDatePlan,
                                      EndDatePlan = x.EndDatePlan
-                                 
+
                                  });
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -280,7 +287,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _projects = _projects.OrderByDescending(x => x.id).ThenByDescending(x=>x.id).ToList();
+                    _projects = _projects.OrderByDescending(x => x.id).ThenByDescending(x => x.id).ToList();
                 }
 
                 totalRecords = _projects.Count();
@@ -435,22 +442,22 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _organizations = _organizations.OrderByDescending(x=>x.id).ThenByDescending(x=>x.id);
+                    _organizations = _organizations.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
                 }
 
 
                 totalRecords = _organizations.Count();
 
                 var data = _organizations.Skip(skip).Take(pageSize);
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = ""}, JsonRequestBehavior.AllowGet);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }
             catch (Exception ex)
             {
-                var errormessage = "Ошибка выполнения запроса!\n\r"+ex.Message+"\n\r"+ex.StackTrace;
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
                 var data = "";
-                return Json(new {data = data, errormessage = errormessage}, JsonRequestBehavior.AllowGet);
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -494,7 +501,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _dusers = _dusers.OrderByDescending(x=>x.id).ThenByDescending(x=>x.id);
+                    _dusers = _dusers.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
                 }
 
                 totalRecords = _dusers.Count();
