@@ -372,7 +372,7 @@ namespace F_Result.Controllers
 
         //Получение данных для построения отчета "Бюджетирование" POST
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
-        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs)
+        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs, string ProjectName)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
@@ -469,7 +469,7 @@ namespace F_Result.Controllers
                 string _endPeriod = _etmp.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2})", _startPeriod, _endPeriod, Period)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, ProjectName)).ToList();
 
                 List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).OrderBy(x=>x.ProjectName).ToList();
                 

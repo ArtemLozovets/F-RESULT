@@ -43,6 +43,8 @@
     </div>
 </div>
 
+<input type="text" value="" id="gridtable_filter" hidden/>
+
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -147,13 +149,10 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
-    @* ---- *@
     <script src="~/Scripts/DataTables/dataTables.buttons.js"></script>
     <script src="~/Scripts/DataTables/buttons.bootstrap.js"></script>
-
     <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
     <script src="~/Scripts/DataTables/buttons.flash.min.js"></script>
-    @* ---- *@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/toparrow.js"></script>
 
@@ -182,7 +181,9 @@
                     switch (key) {
                         case 'filter':
                             if (fClass.indexOf("prgCellf") >= 0) {
-                                $('#gridtable_filter').find('input').val($(this).text()).trigger('keyup');
+                                $('#gridtable_filter').val($(this).text());
+                                var table = $("#gridtable").DataTable();
+                                table.draw();
                             }
                             break;
 
@@ -190,7 +191,9 @@
                             if (fClass.indexOf("prgCellf") >= 0) {
                                 $('#isAllTimes').prop('checked', true);
                                 $('#startDate').prop('disabled', true);
-                                $('#gridtable_filter').find('input').val($(this).text()).trigger('keyup');
+                                $('#gridtable_filter').val($(this).text());
+                                var table = $("#gridtable").DataTable();
+                                table.draw();
                             }
                             break;
 
@@ -245,7 +248,9 @@
 
         //Функция сброса фильтра проектов
         function ClearFilter() {
-            $('#gridtable_filter').find('input').val('').trigger('keyup');
+            $('#gridtable_filter').val('');
+            var table = $("#gridtable").DataTable();
+            table.draw();
         }
 
         //Обработчик выбора планового периода
@@ -348,6 +353,7 @@
                         d.Period = $('#BudgetPeriodDDL').val();
                         d.BaseDate = $('#startDate').val();
                         d.IsAllTimes = _isAllTimes;
+                        d.ProjectName = $('#gridtable_filter').val();
                         d.filterPrjIDs = window.filterPrjIDs;
                     },
                     dataSrc: function (d) {
@@ -364,11 +370,11 @@
                 order: [[0, "asc"]],
                 columns: [
                     { data: "ProjectName", sWidth: '32%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "debitplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "debitfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "debitplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpDetails" },
+                    { data: "debitfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfDetails" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "creditplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpDetails" },
+                    { data: "creditfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfDetails" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
                 // Выделение цветом дельта-ячеек
