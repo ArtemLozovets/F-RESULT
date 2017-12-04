@@ -86,6 +86,7 @@
             <thead>
                 <tr>
                     <th rowspan="2">Проект</th>
+                    <th rowspan="2">Финансовый результат</th>
                     <th colspan="2">Доходы</th>
                     <th rowspan="2">&#916;&nbsp;<sub>дох.</sub></th>
                     <th colspan="2">Расходы</th>
@@ -100,7 +101,7 @@
             </thead>
             <tfoot>
                 <tr class="tright">
-                    <th>Итого</th>
+                    <th colspan="2">Итого</th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -336,6 +337,14 @@
                            exportOptions: {
                                modifier: {
                                    page: 'current'
+                               },
+                               format: {
+                                   body: function (data, row, column, node) {
+                                       console.log(data);
+                                       var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g,'.') : data;
+                                       console.log(res);
+                                       return res;
+                                   }
                                }
                            }
                        }
@@ -369,15 +378,16 @@
                 },
                 order: [[0, "asc"]],
                 columns: [
-                    { data: "ProjectName", sWidth: '32%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "debitplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpDetails" },
-                    { data: "debitfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfDetails" },
+                    { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
+                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpDetails" },
+                    { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfDetails" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditplan", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpDetails" },
-                    { data: "creditfact", sWidth: '12%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfDetails" },
+                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpDetails" },
+                    { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfDetails" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
-                // Выделение цветом дельта-ячеек
+
                 fnCreatedRow: function (row, data, rowIndex) {
                     //Выводим всплывающую подсказку с подробной информацией о проекте
                     var _datePlan = formatDate(data.StartDatePlan);
@@ -385,18 +395,26 @@
                     var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
                     $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
+                    // Выделение цветом дельта-ячеек
+                    if (data.prjres > 0) {
+                        $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    }
+                    else if (data.prjres < 0) {
+                        $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    }
+
                     if (data.ddelta > 0) {
-                        $('td:eq(3)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
                     else if (data.ddelta < 0) {
-                        $('td:eq(3)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
 
                     if (data.cdelta > 0) {
-                        $('td:eq(6)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
                     else if (data.cdelta < 0) {
-                        $('td:eq(6)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
                 },
 
@@ -405,12 +423,12 @@
                     var api = this.api();
                     var json = api.ajax.json();
                     var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
-                    $(api.column(1).footer()).html(numFormat(json.total.DebitPlanTotal));
-                    $(api.column(2).footer()).html(numFormat(json.total.DebitFactTotal));
-                    $(api.column(3).footer()).html(numFormat(json.total.dDeltaTotal));
-                    $(api.column(4).footer()).html(numFormat(json.total.CreditPlanTotal));
-                    $(api.column(5).footer()).html(numFormat(json.total.CreditFactTotal));
-                    $(api.column(6).footer()).html(numFormat(json.total.cDeltaTotal));
+                    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
+                    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
+                    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
+                    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
+                    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
+                    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
 
                     if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
                     else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }

@@ -457,7 +457,7 @@ namespace F_Result.Controllers
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
 
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                if (pageSize == -1) { pageSize =  2147483647;}
+                if (pageSize == -1) { pageSize = 2147483647; }
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
@@ -471,9 +471,32 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, ProjectName)).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs {PrjId = x.prj, ProjectName = x.ProjectName}).OrderBy(x=>x.ProjectName).ToList();
-                
-                
+                if (IsAllTimes)
+                {
+                    _ads = _ads.AsEnumerable().Select(x => new APBTableReport
+                    {
+                        prj = x.prj,
+                        ProjectName = x.ProjectName,
+                        prjres = x.prjres,
+                        ProjectType = x.ProjectType,
+                        ProjectManagerName = x.ProjectManagerName,
+                        ChiefName = x.ChiefName,
+                        StartDateFact = x.StartDateFact,
+                        StartDatePlan = x.StartDatePlan,
+                        debitplan = x.plben ?? 0,
+                        debitfact = x.debitfact,
+                        ddelta = x.ddelta,
+                        creditplan = x.plexp ?? 0,
+                        creditfact = x.creditfact,
+                        cdelta = x.cdelta,
+                        MinDate = x.MinDate,
+                        MaxDate = x.MaxDate
+                    }).ToList();
+                }
+
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
+
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
