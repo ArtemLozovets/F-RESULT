@@ -19,14 +19,16 @@ namespace F_Result.Controllers
         public ActionResult PCShow()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+
             return View();
         }
 
         //Таблица плана доходов
         [HttpPost]
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
-        public ActionResult LoadPC()
+        public ActionResult LoadPC(string tss)
         {
+            var ts = tss;
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================

@@ -71,6 +71,10 @@
   content: "\F252";
 }
 
+.context-menu-icon-expand:before {
+  content: "\F064";
+}
+
 .context-menu-icon-refresh:before {
   content: "\F021";
 }

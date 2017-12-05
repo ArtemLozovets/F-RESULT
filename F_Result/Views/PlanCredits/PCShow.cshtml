@@ -268,6 +268,9 @@
                     "url": "/PlanCredits/LoadPC",
                     "type": "POST",
                     "datatype": "json",
+                    "data": function (d) {
+                        d.tss = "Test";
+                    },
                     "dataSrc": function (d) {
                         if (d.data.length === 0) {
                             if (d.errormessage != "") {

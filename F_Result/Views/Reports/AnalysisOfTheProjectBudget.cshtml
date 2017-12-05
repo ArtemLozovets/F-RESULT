@@ -33,7 +33,6 @@
 
     .expButton {
         padding: 5px 12px;
-        margin-top: -2px;
     }
 </style>
 
@@ -43,7 +42,7 @@
     </div>
 </div>
 
-<input type="text" value="" id="gridtable_filter" hidden/>
+<input type="text" value="" id="gridtable_filter" hidden />
 
 <div class="container">
     <div class="row">
@@ -76,7 +75,6 @@
            title = "Плановый период",
            style = "display:inline-block; margin-bottom:-1px; margin-right:1.3em; width:16em;"
        })
-
 
         </div>
     </div>
@@ -198,6 +196,35 @@
                             }
                             break;
 
+                        case 'expand':
+                            var table = $("#gridtable").DataTable();
+                            var json = table.ajax.json();
+                            var prj = table.row(this).data().prj;
+                            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
+                            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
+
+                            if (fClass.indexOf("cpExp") >= 0) {
+                                var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                window.open(url, '_blank');
+                            }
+                            if (fClass.indexOf("cfExp") >= 0) {
+                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                window.open(url, '_blank');
+                            }
+                            if (fClass.indexOf("dpExp") >= 0) {
+                                var url = '@Url.Action("PDShow", "PlanDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                window.open(url, '_blank');
+                            }
+                            if (fClass.indexOf("dfExp") >= 0) {
+                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                window.open(url, '_blank');
+                            }
+                            break;
+
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -227,6 +254,20 @@
                     },
 
                     "sep1": "---------",
+                    "expand": {
+                        name: "Расшифровка",
+                        icon: "expand",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if ((fClass.indexOf("dpExp") >= 0
+                                    || fClass.indexOf("dfExp") >= 0
+                                    || fClass.indexOf("cpExp") >= 0
+                                    || fClass.indexOf("cfExp") >= 0)
+                                    && $(this).text() != '0,00') { return false };
+                            return true;
+                        }
+                    },
+                    "sep2": "---------",
                     "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
@@ -298,7 +339,7 @@
                 ],
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#alrt.col-sm-6 text-right'>>" +
+                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'col-sm-3 text-right'B>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 language: {
@@ -320,12 +361,12 @@
                     {
                         extend: 'copy',
                         text: '<i class="fa fa-copy"></i>&nbsp;Copy',
-                        className: 'expButton',
+                        className: 'btn-primary expButton',
                     },
                        {
                            extend: 'excel',
                            text: '<i class="fa fa-file-excel-o"></i>&nbsp;Excel',
-                           className: 'expButton',
+                           className: 'btn-primary expButton',
                            filename: 'AOPBReport',
 
                            customize: function (xlsx) {
@@ -341,7 +382,7 @@
                                format: {
                                    body: function (data, row, column, node) {
                                        console.log(data);
-                                       var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g,'.') : data;
+                                       var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g, '.') : data;
                                        console.log(res);
                                        return res;
                                    }
@@ -380,11 +421,11 @@
                 columns: [
                     { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
                     { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpDetails" },
-                    { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfDetails" },
+                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpExp" },
+                    { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfExp" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpDetails" },
-                    { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfDetails" },
+                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
+                    { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
 

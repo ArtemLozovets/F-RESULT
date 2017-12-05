@@ -25,8 +25,6 @@ namespace F_Result.Models
         public decimal cdelta { get; set; }
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }
-        public decimal? plben { get; set; }
-        public decimal? plexp { get; set; }
     }
 
     [NotMapped]
