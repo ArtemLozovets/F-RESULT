@@ -205,7 +205,7 @@
 
                             if (fClass.indexOf("cpExp") >= 0) {
                                 var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
                             }
                             if (fClass.indexOf("cfExp") >= 0) {

@@ -45,12 +45,12 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" /></th>
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" /></th>
                 <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
-                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th></th>
             </tr>
