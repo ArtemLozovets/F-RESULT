@@ -16,20 +16,9 @@ namespace F_Result.Controllers
 
         //План доходов
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
-        public ActionResult PCShow(int? ProjectId, string startDate, string endDate)
+        public ActionResult PCShow()
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
-
-            if (ProjectId != null)
-            {
-                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
-                ViewData["ProjectName"] = ProjectName;
-            }
-
-            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
-            {
-                ViewData["Period"] = startDate+" - "+endDate;
-            }
 
             return View();
         }
@@ -37,9 +26,8 @@ namespace F_Result.Controllers
         //Таблица плана доходов
         [HttpPost]
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
-        public ActionResult LoadPC(string tss)
+        public ActionResult LoadPC()
         {
-            var ts = tss;
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================

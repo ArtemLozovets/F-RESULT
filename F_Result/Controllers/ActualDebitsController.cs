@@ -16,8 +16,19 @@ namespace F_Result.Controllers
 
         // Исходящие платежи
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public ActionResult ADShow()
+        public ActionResult ADShow(int? ProjectId, string startDate, string endDate)
         {
+            if (ProjectId != null)
+            {
+                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
+                ViewData["ProjectName"] = ProjectName;
+            }
+
+            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+
             return View();
         }
 

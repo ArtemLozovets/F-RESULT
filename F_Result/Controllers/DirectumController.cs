@@ -15,8 +15,19 @@ namespace F_Result.Controllers
         private FRModel db = new FRModel();
 
         //Входящие платежи
-        public ActionResult ShowPayments()
+        public ActionResult ShowPayments(int? ProjectId, string startDate, string endDate)
         {
+            if (ProjectId != null)
+            {
+                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
+                ViewData["ProjectName"] = ProjectName;
+            }
+
+            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+
             return View();
         }
 

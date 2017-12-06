@@ -203,24 +203,15 @@
                             var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
                             var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
 
-                            if (fClass.indexOf("cpExp") >= 0) {
-                                var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                            if (fClass.indexOf("cfExp") >= 0) {
+                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
                                 url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
                             }
-                            if (fClass.indexOf("cfExp") >= 0) {
-                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
-                                window.open(url, '_blank');
-                            }
-                            if (fClass.indexOf("dpExp") >= 0) {
-                                var url = '@Url.Action("PDShow", "PlanDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
-                                window.open(url, '_blank');
-                            }
+
                             if (fClass.indexOf("dfExp") >= 0) {
                                 var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate);
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
                             }
                             break;
@@ -259,11 +250,7 @@
                         icon: "expand",
                         disabled: function () {
                             var fClass = $(this).attr('class');
-                            if ((fClass.indexOf("dpExp") >= 0
-                                    || fClass.indexOf("dfExp") >= 0
-                                    || fClass.indexOf("cpExp") >= 0
-                                    || fClass.indexOf("cfExp") >= 0)
-                                    && $(this).text() != '0,00') { return false };
+                            if ((fClass.indexOf("dfExp") >= 0 || fClass.indexOf("cfExp") >= 0) && $(this).text() != '0,00') { return false };
                             return true;
                         }
                     },
@@ -369,10 +356,28 @@
                            className: 'btn-primary expButton',
                            filename: 'AOPBReport',
 
-                           customize: function (xlsx) {
-                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                               $('row:first c', sheet).attr('s', '51');
+                           //customize: function (xlsx) {
+                           //    var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                           //    $('row:first c', sheet).attr('s', '51');
+                           //},
 
+                           customize: function( xlsx ) {
+                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                               var lastCol = sheet.getElementsByTagName('col').length - 1;
+                               var colRange = createCellPos( lastCol ) + '1';
+                               //Has to be done this way to avoid creation of unwanted namespace atributes.
+                               var afSerializer = new XMLSerializer();
+                               var xmlString = afSerializer.serializeToString(sheet);
+                               var parser = new DOMParser();
+                               var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+
+                               console.log(xmlDoc);
+
+                               var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main','autoFilter');
+                               var filterAttr = xmlDoc.createAttribute('ref');
+                               filterAttr.value = 'A1:' + colRange;
+                               xlsxFilter.setAttributeNode(filterAttr);
+                               sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
                            },
 
                            exportOptions: {
@@ -381,9 +386,7 @@
                                },
                                format: {
                                    body: function (data, row, column, node) {
-                                       console.log(data);
                                        var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g, '.') : data;
-                                       console.log(res);
                                        return res;
                                    }
                                }
@@ -399,7 +402,6 @@
                     data: function (d) {
                         var _isAllTimes = false;
                         if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
-
                         d.Period = $('#BudgetPeriodDDL').val();
                         d.BaseDate = $('#startDate').val();
                         d.IsAllTimes = _isAllTimes;
@@ -421,10 +423,10 @@
                 columns: [
                     { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
                     { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpExp" },
+                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfExp" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
+                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
@@ -503,6 +505,20 @@
                     }
                 }
             });
+
+            function createCellPos(n) {
+                var ordA = 'A'.charCodeAt(0);
+                var ordZ = 'Z'.charCodeAt(0);
+                var len = ordZ - ordA + 1;
+                var s = "";
+
+                while (n >= 0) {
+                    s = String.fromCharCode(n % len + ordA) + s;
+                    n = Math.floor(n / len) - 1;
+                }
+
+                return s;
+            }
 
             function formatDate(value) {
                 if (value === null) return "";
