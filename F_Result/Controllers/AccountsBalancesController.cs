@@ -142,7 +142,7 @@ namespace F_Result.Controllers
         }
 
         //Добавление остатков на счетах GET
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABCreate(int? AccountId)
         {
             if (AccountId == null)
@@ -164,7 +164,7 @@ namespace F_Result.Controllers
         //Добавление остатков на счетах POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABCreate([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
@@ -196,7 +196,7 @@ namespace F_Result.Controllers
         }
 
         //Редактирование остатков на счетах GET
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABEdit(int? id)
         {
             if (id == null)
@@ -217,7 +217,7 @@ namespace F_Result.Controllers
         //Редактирование остатков на счетах POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABEdit([Bind(Include = "AccountsBalanceId,Date,Balance,Note,AccountId")] AccountsBalance accountsBalance)
         {
             if (ModelState.IsValid)
@@ -252,7 +252,7 @@ namespace F_Result.Controllers
         }
 
         //Удаление остатков на счетах GET
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABDelete(int? id)
         {
             if (id == null)
@@ -269,7 +269,7 @@ namespace F_Result.Controllers
         }
 
         //Удаление остатков на счетах POST
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         [HttpPost, ActionName("ABDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -299,7 +299,7 @@ namespace F_Result.Controllers
 
         //Пакетное добавление остатков на счетах 
         //Генерация представления
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult ABBatchCreate()
         {
             ViewData["Date"] = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("dd'/'MM'/'yyyy");
@@ -327,7 +327,7 @@ namespace F_Result.Controllers
 
         //Пакетное добавление остатков на счетах 
         //Запись в БД
-        [Authorize(Roles = "Administrator, Accountant")]
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         [HttpPost]
         public JsonResult SaveBatch(DateTime? Date, String dataJSON)
         {
@@ -344,7 +344,6 @@ namespace F_Result.Controllers
 
             try
             {
-
                 string _user = String.Empty;
                 //Получаем идентификатор текущего пользователя
                 using (ApplicationDbContext aspdb = new ApplicationDbContext())
