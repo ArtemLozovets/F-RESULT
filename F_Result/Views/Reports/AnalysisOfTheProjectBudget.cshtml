@@ -265,8 +265,8 @@
                             var fClass = $(this).attr('class');
                             if ((fClass.indexOf("dfExp") >= 0
                                     || fClass.indexOf("cfExp") >= 0
-                                    || (fClass.indexOf("dpExp") >= 0 )
-                                    || (fClass.indexOf("cpExp") >= 0 ))
+                                    || (fClass.indexOf("dpExp") >= 0 && !$('#isAllTimes').is(':checked'))
+                                    || (fClass.indexOf("cpExp") >= 0 && !$('#isAllTimes').is(':checked')))
                                     && $(this).text() != '0,00') { return false };
                             return true;
                         }
