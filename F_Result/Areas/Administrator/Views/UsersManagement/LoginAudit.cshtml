@@ -49,23 +49,20 @@
         }
     </div>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-        <tr>
-            <th>
+        <tr style="text-align:center; background-color:#eee;">
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.Login)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Password)
-            </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.Ip)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.Url)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.Result)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.Date)
             </th>
         </tr>
@@ -74,9 +71,6 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Login)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Password)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Ip)

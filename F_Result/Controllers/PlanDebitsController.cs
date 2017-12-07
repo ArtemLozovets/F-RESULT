@@ -16,9 +16,21 @@ namespace F_Result.Controllers
 
         // План расходов
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
-        public ActionResult PDShow()
+        public ActionResult PDShow(int? ProjectId, string startDate, string endDate)
         {
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+
+            if (ProjectId != null)
+            {
+                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
+                ViewData["ProjectName"] = ProjectName;
+            }
+
+            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+
             return View();
         }
 
