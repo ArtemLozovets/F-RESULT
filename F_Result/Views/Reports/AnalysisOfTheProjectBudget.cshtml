@@ -60,6 +60,7 @@
     </div>
 
     <div class="row">
+        <div class="form-inline pull-left" style="display:inline-block; margin-top:.4em;" id="plBalance"></div>
         <div class="row form-inline pull-right">
             <label for="isAllPeriod" class="control-label">За весь период</label>
             @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
@@ -361,10 +362,10 @@
                            //    $('row:first c', sheet).attr('s', '51');
                            //},
 
-                           customize: function( xlsx ) {
+                           customize: function (xlsx) {
                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
                                var lastCol = sheet.getElementsByTagName('col').length - 1;
-                               var colRange = createCellPos( lastCol ) + '1';
+                               var colRange = createCellPos(lastCol) + '1';
                                //Has to be done this way to avoid creation of unwanted namespace atributes.
                                var afSerializer = new XMLSerializer();
                                var xmlString = afSerializer.serializeToString(sheet);
@@ -373,7 +374,7 @@
 
                                console.log(xmlDoc);
 
-                               var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main','autoFilter');
+                               var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
                                var filterAttr = xmlDoc.createAttribute('ref');
                                filterAttr.value = 'A1:' + colRange;
                                xlsxFilter.setAttributeNode(filterAttr);
@@ -502,6 +503,11 @@
                         prgTableCrate();
                         $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                         window._flag = false;
+                    };
+
+                    if (json.planningbalance != null) {
+                        var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                        $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
                     }
                 }
             });

@@ -473,6 +473,18 @@ namespace F_Result.Controllers
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
+                //Проверяем роль пользователя
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isAccountant = System.Web.HttpContext.Current.User.IsInRole("Accountant");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                decimal? _PlanningBalance = null;
+                if (isAdministrator || isChief || isAccountant || isFinancier)
+                {
+                    //Запрос вызывает пользовательскую функцию "ufnPlanningBalance" хранящуюся на SQL-сервере.
+                    _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPlanningBalance() as PlanningBalance").FirstOrDefault();
+                }
+
                 List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
@@ -515,6 +527,7 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     data = data,
                     total = total,
+                    planningbalance = _PlanningBalance,
                     prjlist = _prjListJson,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);

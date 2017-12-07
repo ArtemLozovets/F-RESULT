@@ -28,9 +28,9 @@
         </div>
     </div>
     <p>
-        <a title="Статистика событий авторизации в приложении" class="btn btn-default" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
-        <a title="Создание новой учетной записи" class="btn btn-default" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
-        @*<a title="Кнопка доступна в период тестирования приложения. В дальнейшем будет удалена." class="btn btn-default btn-danger" href="~/Administrator/Init/CreateUsers">Создать Администратора</a>*@
+        <a title="Статистика событий авторизации в приложении" class="btn btn-primary" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
+        <a title="Создание новой учетной записи" class="btn btn-primary" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
+        @*<a title="Кнопка доступна в период тестирования приложения. В дальнейшем будет удалена." class="btn btn-primary btn-danger" href="~/Administrator/Init/CreateUsers">Создать Администратора</a>*@
     </p>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
         <tr>
@@ -93,16 +93,16 @@
                 }
 
                 <td style="text-align:center;">
-                    <a class="btn btn-default btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
+                    <a class="btn btn-primary btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
                     @if (@item.URole.Contains("Заблокирован"))
                     {
-                        <a class="btn btn-default btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
+                        <a class="btn btn-primary btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
                     }
                     else
                     {
-                        <a class="btn btn-default btn-sm" href='@Url.Action("BlockUser", "UsersManagement", new {UserId = @item.UId})' title="Блокировать учетную запись"><span class="glyphicon glyphicon-eye-close"></span></a>
+                        <a class="btn btn-primary btn-sm" href='@Url.Action("BlockUser", "UsersManagement", new {UserId = @item.UId})' title="Блокировать учетную запись"><span class="glyphicon glyphicon-eye-close"></span></a>
                     }
-                    <a class="btn btn-default btn-sm" href='@Url.Action("ChangePassword", "UsersManagement", new {UserID = @item.UId})' title="Изменить пароль пользователя"><span class="glyphicon glyphicon-certificate"></span></a>
+                    <a class="btn btn-primary btn-sm" href='@Url.Action("ChangePassword", "UsersManagement", new {UserID = @item.UId})' title="Изменить пароль пользователя"><span class="glyphicon glyphicon-certificate"></span></a>
                 </td>
             </tr>
         }

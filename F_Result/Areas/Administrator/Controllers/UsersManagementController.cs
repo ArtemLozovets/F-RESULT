@@ -113,7 +113,8 @@ namespace F_Result.Areas.Administrator.Controllers
 
             using (FRModel visitorcontext = new FRModel())
             {
-                return View(visitorcontext.AspVisitors.Where(x=>DbFunctions.TruncateTime(x.Date) == _date || String.IsNullOrEmpty(SearchDate)).OrderByDescending(x=>x.Date).ToList());
+                var VisitorList = visitorcontext.AspVisitors.Where(x => DbFunctions.TruncateTime(x.Date) == _date || String.IsNullOrEmpty(SearchDate)).OrderByDescending(x => x.Date).Take(100).ToList();
+                return View(VisitorList);
             }
         }
 

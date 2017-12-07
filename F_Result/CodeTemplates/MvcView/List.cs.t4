@@ -68,7 +68,7 @@ if (!String.IsNullOrEmpty(LayoutPageFile)) {
 	</div>
 
 <p>
-	 <a class="btn btn-default" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("Create")'><i class="fa fa-plus-circle"></i> Добавить...</a>
+	 <a class="btn btn-primary" style="margin:2px 2px;" title="Добавить..." href='@Url.Action("Create")'><i class="fa fa-plus-circle"></i> Добавить...</a>
 </p>
 <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
     <tr>
@@ -127,17 +127,17 @@ string pkName = GetPrimaryKeyName();
 if (pkName != null) {
 #>
         <td style="text-align:center;">
-			 <a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-info-sign"></span></a>
-             <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("Edit", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-edit"></span></a>
-             <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-trash"></span></a>
+			 <a class="btn btn-primary btn-sm" title="Подробно" href='@Url.Action("Details", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-info-sign"></span></a>
+             <a class="btn btn-primary btn-sm" title="Редактировать" href='@Url.Action("Edit", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-edit"></span></a>
+             <a class="btn btn-primary btn-sm" title="Удалить" href='@Url.Action("Delete", new {id=item.<#= pkName #>})'><span class="glyphicon glyphicon-trash"></span></a>
         </td>
 <#
 } else {
 #>
         <td style="text-align:center;">
-			<a class="btn btn-default btn-sm" title="Подробно" href='@Url.Action("Details", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-info-sign"></span></a>
-            <a class="btn btn-default btn-sm" title="Редактировать" href='@Url.Action("Edit", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-edit"></span></a>
-            <a class="btn btn-default btn-sm" title="Удалить" href='@Url.Action("Delete", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-trash"></span></a>
+			<a class="btn btn-primary btn-sm" title="Подробно" href='@Url.Action("Details", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-info-sign"></span></a>
+            <a class="btn btn-primary btn-sm" title="Редактировать" href='@Url.Action("Edit", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-edit"></span></a>
+            <a class="btn btn-primary btn-sm" title="Удалить" href='@Url.Action("Delete", new { /* id=item.PrimaryKey */ })'><span class="glyphicon glyphicon-trash"></span></a>
         </td>
 
 <#
