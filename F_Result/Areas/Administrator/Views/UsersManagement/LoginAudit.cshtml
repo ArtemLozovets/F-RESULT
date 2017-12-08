@@ -4,13 +4,21 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
-<style type="text/css">
+<style>
     #cleardate:hover {
         color: #d9534f;
     }
 
     #cleardate {
         cursor: pointer;
+    }
+
+    .gridtable > tbody > tr > th {
+        text-align: center;
+    }
+
+    .gridtable > tbody > tr:first-child {
+        background-color: #eee;
     }
 </style>
 
@@ -49,20 +57,20 @@
         }
     </div>
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-        <tr style="text-align:center; background-color:#eee;">
-            <th style="text-align:center;">
+        <tr>
+            <th>
                 @Html.DisplayNameFor(model => model.Login)
             </th>
-            <th style="text-align:center;">
+            <th>
                 @Html.DisplayNameFor(model => model.Ip)
             </th>
-            <th style="text-align:center;">
+            <th>
                 @Html.DisplayNameFor(model => model.Url)
             </th>
-            <th style="text-align:center;">
+            <th>
                 @Html.DisplayNameFor(model => model.Result)
             </th>
-            <th style="text-align:center;">
+            <th>
                 @Html.DisplayNameFor(model => model.Date)
             </th>
         </tr>

@@ -521,7 +521,7 @@ namespace F_Result.Areas.Administrator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            SelectList _roles = new SelectList(db.Roles.Where(Name => Name.Name != "blockeduser"), "Name", "Name");
+            SelectList _roles = new SelectList(db.Roles.Where(Name => Name.Name != "blockeduser"), "Name", "Description");
             ViewBag.RolesList = _roles;
             if (ModelState.IsValid)
             {
