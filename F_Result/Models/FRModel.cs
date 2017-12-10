@@ -59,6 +59,10 @@ namespace F_Result.Models
                 .HasKey(t => t.id)
                 .ToTable("Users");
 
+            modelBuilder.Entity<Workers>()
+                .HasKey(t => t.id)
+                .ToTable("Workers");
+
             modelBuilder.Entity<Organizations>()
                 .HasKey(t => t.id)
                 .ToTable("Organizations");
@@ -94,6 +98,12 @@ namespace F_Result.Models
             .HasForeignKey(m => m.UserId)
             .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<UsrWksRelation>()
+               .HasRequired(m => m.ApplicationUser)
+               .WithMany(m => m.UsrWksRelation)
+               .HasForeignKey(m => m.UserId)
+               .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<Account>()
                 .HasMany(e => e.AccountsBalance)
                 .WithRequired(e => e.Account)
@@ -104,25 +114,25 @@ namespace F_Result.Models
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.Account)
             .HasForeignKey(m => m.UserId)
-            .WillCascadeOnDelete(false); 
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<AccountsBalance>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.AccountsBalance)
             .HasForeignKey(m => m.UserId)
-            .WillCascadeOnDelete(false); 
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlanDebit>()
             .HasRequired(m => m.PlanningPeriod)
             .WithMany(m => m.PlanDebit)
             .HasForeignKey(m => m.PeriodId)
-            .WillCascadeOnDelete(false); 
+            .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlanCredit>()
             .HasRequired(m => m.PlanningPeriod)
             .WithMany(m => m.PlanCredit)
             .HasForeignKey(m => m.PeriodId)
-            .WillCascadeOnDelete(false); 
+            .WillCascadeOnDelete(false);
         }
 
         public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
@@ -131,5 +141,6 @@ namespace F_Result.Models
         public System.Data.Entity.DbSet<F_Result.Models.Account> Accounts { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
         public System.Data.Entity.DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
+        public System.Data.Entity.DbSet<F_Result.Models.UsrWksRelation> UsrWksRelations { get; set; }
     }
 }
