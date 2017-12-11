@@ -1,0 +1,59 @@
+﻿@model F_Result.Models.UsrWksRelation
+
+@{
+    ViewBag.Title = "Регистрация";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            @ViewBag.Title
+            <small>Сопоставление пользователей системы сотрудникам</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+            <li>Управление</li>
+            <li>@Html.ActionLink("Пользователи", "ShowUsers", "UsersManagement")</li>
+            <li class="active">Сопоставление пользователей</li>
+        </ol>
+    </div>
+    <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 2 из 2</span>
+
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+    <br />
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сотрудник" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проекты" /></th>
+                <th></th>
+            </tr>
+
+            <tr role="row">
+                <th>Сотрудник</th>
+                <th>Организация</th>
+                <th>Проекты</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+
+    <div>
+        <a class="btn btn-primary" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-user"></span>&nbsp;Пользователи</a>
+        <a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>
+    </div>
+</div>

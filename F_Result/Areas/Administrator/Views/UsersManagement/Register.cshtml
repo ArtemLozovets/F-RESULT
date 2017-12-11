@@ -16,6 +16,7 @@
             <li class="active">Регистрация</li>
         </ol>
     </div>
+    <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 1 из 2</span>
 
     <div class="row">
         <div class="col-md-6">
@@ -29,6 +30,7 @@
         {
             @Html.AntiForgeryToken()
             <hr />
+
             @Html.ValidationSummary("", new { @class = "text-danger" })
 
             <div class="form-group">
@@ -44,7 +46,6 @@
                     @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
                 </div>
             </div>
-
 
             <div class="form-group">
                 @Html.LabelFor(m => m.MiddleName, new { @class = "col-md-4 control-label" })
@@ -80,6 +81,7 @@
                     @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                 </div>
             </div>
+
             <div class="form-group">
                 @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
                 <div class="col-md-8">
@@ -93,11 +95,12 @@
                     @Html.DropDownListFor(m => m.UserRole, ViewBag.RolesList as SelectList, "-- Выберите роль --", new { @class = "form-control" })
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-offset-4 col-md-8">
-                    <button type="submit" title="Добавить пользователя" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-save"></i> Сохранить</button>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <a class="btn btn-primary" title="Список пользователей" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-user"></span>&nbsp;Пользователи</a>
+                        <button type="submit" title="Добавить пользователя и перейти к следующему шагу" class="btn btn-primary">Продолжить&nbsp;&nbsp;<i class="glyphicon glyphicon-circle-arrow-right"></i></button>
+                    </div>
                 </div>
-            </div>
         }
     </div>
 </div>

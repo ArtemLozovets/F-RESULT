@@ -531,20 +531,24 @@ namespace F_Result.Areas.Administrator.Controllers
                     TempData["MessageError"] = string.Format("Ошибка создания учетной записи. Пользователь с логином \"{0}\" уже существует", model.UserName);
                     return View(model);
                 }
-                var user = new ApplicationUser {
+                var user = new ApplicationUser
+                {
                     UserName = model.UserName,
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     MiddleName = model.MiddleName,
                     Post = model.Post,
-                    UserRole = model.UserRole };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                    UserRole = model.UserRole
+                };
+                //  var result = await UserManager.CreateAsync(user, model.Password);
+                //if (result.Succeeded)
+                if(true)
                 {
-                    await UserManager.AddToRoleAsync(user.Id, model.UserRole);
+                    //await UserManager.AddToRoleAsync(user.Id, model.UserRole);
                     TempData["MessageOk"] = "Учетная запись создана";
-                    return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+                    //return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+                    return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement" });
                 }
                 else
                 {
@@ -555,6 +559,23 @@ namespace F_Result.Areas.Administrator.Controllers
             TempData["MessageError"] = "Ошибка валидации модели";
             return View(model);
         }
+        #endregion
+
+        #region Метод сопоставления пользователей приложения сотрудникам ( представление Workers) --------------------------
+
+        public ActionResult UsrWksRelation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UsrWksRelation(UsrWksRelation model)
+        {
+            return View();
+        }
+
+
         #endregion
 
         #region Helpers --------------------------------------------------------------------------------------
