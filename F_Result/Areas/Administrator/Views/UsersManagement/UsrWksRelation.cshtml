@@ -57,3 +57,90 @@
         <a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>
     </div>
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+
+    <script>
+        $(function () {
+            //Скрипт создания таблицы
+            $('#loadingImg').hide();
+            var table = $('#gridtable')
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": true,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "ajax": {
+                        "url": "/Administrator/UsersManagement/LoadWks",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (d.data.length === 0) {
+                                if (d.errormessage != "") {
+                                    alert(d.errormessage);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
+                        { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
+                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
+                        { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                    ],
+                    "createdRow": function (row, data, rowIndex) {
+                       
+                    },
+                    //"columnDefs": [
+                    //    {
+                    //        "targets": [7],
+                    //        "visible": false,
+                    //        "searchable": false
+                    //    }
+                    //]
+                });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+            });
+        });
+
+    </script>
+}

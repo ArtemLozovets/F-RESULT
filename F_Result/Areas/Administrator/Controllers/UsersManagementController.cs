@@ -563,18 +563,27 @@ namespace F_Result.Areas.Administrator.Controllers
 
         #region Метод сопоставления пользователей приложения сотрудникам ( представление Workers) --------------------------
 
+        [Authorize(Roles = "Administrator")]
         public ActionResult UsrWksRelation()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public ActionResult UsrWksRelation(UsrWksRelation model)
         {
             return View();
         }
 
+        // Таблица сотрудников с проектами
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public ActionResult LoadWks()
+        {
+            return View();
+        }
 
         #endregion
 
