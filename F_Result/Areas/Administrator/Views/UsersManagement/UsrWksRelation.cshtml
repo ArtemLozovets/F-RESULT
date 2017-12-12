@@ -34,6 +34,7 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сотрудник" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Проекты" /></th>
@@ -41,10 +42,11 @@
             </tr>
 
             <tr role="row">
+                <th>ID</th>
                 <th>Сотрудник</th>
                 <th>Организация</th>
                 <th>Проекты</th>
-                <th></th>
+                <th><button id="clearWks" title="Отменить выбор всех сотрудников"><span class="fa fa-refresh"></span></button></th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -69,6 +71,12 @@
 
     <script>
         $(function () {
+
+            //Сброс состояния всех чекбоксов таблицы
+            $('#clearWks').on('click', function () {
+                $('.wksSelectCHB').prop('checked', false);
+            });
+
             //Скрипт создания таблицы
             $('#loadingImg').hide();
             var table = $('#gridtable')
@@ -94,7 +102,7 @@
                         "infoEmpty": "Записи отсутствуют",
                         "infoFiltered": "(Отфильтровано из _MAX_ записей)",
                         "search": "Поиск",
-                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../../Content/Images/loader.gif' /></div></div>",
                         "sInfoThousands": " ",
                         "oPaginate": {
                             "sNext": ">",
@@ -102,7 +110,7 @@
                         }
                     },
                     "ajax": {
-                        "url": "/Administrator/UsersManagement/LoadWks",
+                        "url": "/UsersManagement/LoadWks",
                         "type": "POST",
                         "datatype": "json",
                         "dataSrc": function (d) {
@@ -114,16 +122,23 @@
                             return d.data;
                         }
                     },
-                    "order": [[0, "asc"]],
+                    "order": [[1, "asc"]],
                     "columns": [
-                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
-                        { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
-                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                        { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                        { "data": "id", "name": "id", sWidth: '5%', "class": "" },
+                        { "data": "ShortName", "name": "ShortName", sWidth: '20%', "class": "" },
+                        { "data": "Organization", "name": "Organization", sWidth: '20%', "class": "" },
+                        { "data": "projects", "name": "projects", sWidth: '50%', bSortable: false, "class": "" },
+                        {
+                            data: null, sWidth: '5%',
+                            bSortable: false,
+                            render: function (data, type, row, meta) {
+                                var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="1" class="wksSelectCHB" type="checkbox"></div>';
+                                return chkStr;
+                        }
+                    }
                     ],
                     "createdRow": function (row, data, rowIndex) {
-                       
+
                     },
                     //"columnDefs": [
                     //    {

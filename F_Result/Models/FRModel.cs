@@ -40,6 +40,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.Projects> Projects { get; set; }
         public DbSet<F_Result.Models.Organizations> Organizations { get; set; }
         public DbSet<F_Result.Models.DUsers> DUsers { get; set; }
+        public DbSet<F_Result.Models.Workers> Workers { get; set; }
         public DbSet<F_Result.Models.ActualDebit> ActualDebit { get; set; }
         public DbSet<AspVisitor> AspVisitors { get; set; }
 

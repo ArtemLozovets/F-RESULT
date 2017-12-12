@@ -689,12 +689,11 @@
                 columns: [
                     { data: 'PrjId', bSortable: true, visible: false, searchable: false },
                     { data: 'ProjectName', bSortable: true, sWidth: '80%' },
-                    {
-                        data: null, sWidth: '20%',
-                        bSortable: false,
-                        render: function (data, type, row, meta) {
-                            var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
-                            return chkStr;
+                    { data: null, sWidth: '20%',
+                      bSortable: false,
+                      render: function (data, type, row, meta) {
+                          var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                          return chkStr;
                         }
                     }
                 ]

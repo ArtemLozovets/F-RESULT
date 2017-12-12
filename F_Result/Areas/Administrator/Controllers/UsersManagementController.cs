@@ -7,7 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;
-using Microsoft.Owin.Security;
+using System.Linq.Dynamic; //!=====!
 using System.Data.Entity;
 using F_Result.Models;
 
@@ -23,6 +23,7 @@ namespace F_Result.Areas.Administrator.Controllers
         private ApplicationUserManager _userManager;
 
         private ApplicationDbContext db = new ApplicationDbContext();
+        private FRModel dbModel = new FRModel();
 
         public ApplicationUserManager UserManager
         {
@@ -541,14 +542,14 @@ namespace F_Result.Areas.Administrator.Controllers
                     Post = model.Post,
                     UserRole = model.UserRole
                 };
-                //  var result = await UserManager.CreateAsync(user, model.Password);
-                //if (result.Succeeded)
-                if(true)
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                //if(true)
                 {
-                    //await UserManager.AddToRoleAsync(user.Id, model.UserRole);
+                    await UserManager.AddToRoleAsync(user.Id, model.UserRole);
                     TempData["MessageOk"] = "Учетная запись создана";
-                    //return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
-                    return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement" });
+                    return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+                    //return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement" });
                 }
                 else
                 {
@@ -582,7 +583,52 @@ namespace F_Result.Areas.Administrator.Controllers
         [HttpPost]
         public ActionResult LoadWks()
         {
-            return View();
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _name = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _orgname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _prjname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+
+                var _wks = (from worker in dbModel.Workers
+                            where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                                  && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                                  && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
+                                  && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
+                            select worker);
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _wks = _wks.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                }
+                else
+                {
+                    _wks = _wks.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
+                }
+
+                totalRecords = _wks.Count();
+
+                var data = _wks.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         #endregion
@@ -612,6 +658,7 @@ namespace F_Result.Areas.Administrator.Controllers
             if (disposing)
             {
                 db.Dispose();
+                dbModel.Dispose();
 
                 if (_userManager != null)
                 {
