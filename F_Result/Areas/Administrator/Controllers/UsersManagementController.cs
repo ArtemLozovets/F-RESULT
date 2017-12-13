@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic; //!=====!
 using System.Data.Entity;
 using F_Result.Models;
-
-
+using Newtonsoft.Json;
 
 namespace F_Result.Areas.Administrator.Controllers
 {
@@ -542,14 +541,14 @@ namespace F_Result.Areas.Administrator.Controllers
                     Post = model.Post,
                     UserRole = model.UserRole
                 };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                //if(true)
+               // var result = await UserManager.CreateAsync(user, model.Password);
+               // if (result.Succeeded)
+                if(true)
                 {
-                    await UserManager.AddToRoleAsync(user.Id, model.UserRole);
+                    //await UserManager.AddToRoleAsync(user.Id, model.UserRole);
                     TempData["MessageOk"] = "Учетная запись создана";
-                    return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
-                    //return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement" });
+                   // return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+                    return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement", @UserId = user.Id });
                 }
                 else
                 {
@@ -562,20 +561,62 @@ namespace F_Result.Areas.Administrator.Controllers
         }
         #endregion
 
-        #region Метод сопоставления пользователей приложения сотрудникам ( представление Workers) --------------------------
+        #region Метод сопоставления пользователей приложения сотрудникам (представление Workers) --------------------------
 
         [Authorize(Roles = "Administrator")]
-        public ActionResult UsrWksRelation()
+        public ActionResult UsrWksRelation(string UserId)
         {
+            UserId = "06c7924c-c61b-4cdc-8cbf-e712d6ad4cfc"; //-----------------После тестирования УДАЛИТЬ!!!---------------------
+            if (String.IsNullOrEmpty(UserId))
+            {
+                TempData["MessageError"] = "Не указан идентификатор пользователя";
+                return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+            }
+            ViewData["UserId"] = UserId;
             return View();
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        [ValidateAntiForgeryToken]
-        public ActionResult UsrWksRelation(UsrWksRelation model)
+        public JsonResult UsrWksAjax(string UserId, string WorkersIds)
         {
-            return View();
+            var errormessage = String.Empty;
+            var data = String.Empty;
+
+            if (String.IsNullOrEmpty(UserId))
+            {
+                errormessage = "Ошибка валидации модели!";
+                data = "";
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                List<int> WksArray = JsonConvert.DeserializeObject<List<int>>(WorkersIds);
+                List<UsrWksRelation> WksList = new List<UsrWksRelation>();
+
+                foreach (var wks in WksArray)
+                {
+                    UsrWksRelation _wks = new UsrWksRelation
+                    {
+                        UserId = UserId,
+                        WorkerId = wks
+                    };
+                    WksList.Add(_wks);
+                }
+
+                dbModel.UsrWksRelations.AddRange(WksList);
+                dbModel.SaveChanges();
+
+                return Json(new { Result = true, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                data = "";
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+            
         }
 
         // Таблица сотрудников с проектами

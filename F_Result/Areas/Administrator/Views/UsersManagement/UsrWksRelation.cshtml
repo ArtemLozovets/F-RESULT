@@ -1,5 +1,4 @@
-﻿@model F_Result.Models.UsrWksRelation
-
+﻿
 @{
     ViewBag.Title = "Регистрация";
 }
@@ -31,6 +30,9 @@
         </div>
     </div>
     <br />
+
+    @Html.Hidden("UserId")
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
@@ -56,7 +58,8 @@
 
     <div>
         <a class="btn btn-primary" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-user"></span>&nbsp;Пользователи</a>
-        <a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>
+        @*<a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>*@
+        <a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" id="wksSend" href='#'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>
     </div>
 </div>
 
@@ -71,11 +74,6 @@
 
     <script>
         $(function () {
-
-            //Сброс состояния всех чекбоксов таблицы
-            $('#clearWks').on('click', function () {
-                $('.wksSelectCHB').prop('checked', false);
-            });
 
             //Скрипт создания таблицы
             $('#loadingImg').hide();
@@ -132,10 +130,10 @@
                             data: null, sWidth: '5%',
                             bSortable: false,
                             render: function (data, type, row, meta) {
-                                var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="1" class="wksSelectCHB" type="checkbox"></div>';
+                                var chkStr = '<div style="width:100%; text-align:center;"><input data-wksid="' + row['id'] + '" class="wksSelectCHB" type="checkbox"></div>';
                                 return chkStr;
+                            }
                         }
-                    }
                     ],
                     "createdRow": function (row, data, rowIndex) {
 
@@ -155,6 +153,30 @@
                 });
 
             });
+
+            //Сброс состояния всех чекбоксов таблицы
+            $('#clearWks').on('click', function () {
+                $('.wksSelectCHB').prop('checked', false);
+            });
+
+            //Отправка данных на сервер
+            $('#wksSend').on('click', function (e) {
+                e.preventDefault();
+                var wksIds = [];
+                var _userId = $('#UserId').val();
+                $('input:checkbox.wksSelectCHB').each(function () {
+                    if ($(this).is(":checked")) {
+                        wksIds.push($(this).data('wksid'));
+                    }
+                });
+                console.log(JSON.stringify(wksIds), _userId);
+                $.ajax({
+                    method: "POST",
+                    url: "/Administrator/UsersManagement/UsrWksAjax",
+                    data: { UserId: _userId, WorkersIDs: JSON.stringify(wksIds) }
+                })
+            });
+
         });
 
     </script>
