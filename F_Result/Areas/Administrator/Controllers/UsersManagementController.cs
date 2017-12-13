@@ -572,7 +572,9 @@ namespace F_Result.Areas.Administrator.Controllers
                 TempData["MessageError"] = "Не указан идентификатор пользователя";
                 return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
             }
+            ApplicationUser _user = db.Users.FirstOrDefault(x => x.Id == UserId);
             ViewData["UserId"] = UserId;
+            ViewData["UserInfoes"] = "Пользователь: "+ _user.FirstName + " "+_user.LastName+" "+_user.MiddleName+" ("+_user.UserName+")";
             return View();
         }
 
