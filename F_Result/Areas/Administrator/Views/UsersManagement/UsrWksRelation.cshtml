@@ -21,16 +21,10 @@
             <li class="active">Сопоставление пользователей</li>
         </ol>
     </div>
-    <span>@ViewData["UserInfoes"]</span>
-    <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 2 из 2</span>
-
-    <div class="row">
-        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
-            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
-            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
-        </div>
+    <div style="margin-bottom:1em;">
+        <span class="badge sum-block" style="margin-left:1.4em;">@ViewData["UserInfoes"]</span>
+        <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 2 из 2</span>
     </div>
-    <br />
 
     @Html.Hidden("UserId")
 
@@ -55,14 +49,14 @@
         <tbody></tbody>
     </table>
 
-    <a href="#" class="scrollup1">Наверх</a>
-
     <div>
         <a class="btn btn-primary" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-user"></span>&nbsp;Пользователи</a>
-        @*<a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" href='@Url.Action("ShowUsers","UsersManagement")'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>*@
         <a class="btn btn-primary" title="Сохранить изменения и завершить регистрацию" id="wksSend" href='#'><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Завершить</a>
     </div>
+
 </div>
+
+<a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -76,7 +70,59 @@
     <script>
         $(function () {
 
-            //Скрипт создания таблицы
+            //Отключаем кнопку "Завершить"
+            $('#wksSend').attr('disabled', true);
+
+            //Включаем кнопку "Завершить"
+            $('body').on('change', 'input:checkbox.wksSelectCHB', function () {
+                $('#wksSend').attr('disabled', true);
+                $('input:checkbox.wksSelectCHB').each(function () {
+                    if ($(this).prop('checked')) {
+                        $('#wksSend').attr('disabled', false);
+                    }
+                });
+            });
+
+            //Сброс состояния всех чекбоксов таблицы
+            $('#clearWks').on('click', function () {
+                $('.wksSelectCHB').prop('checked', false);
+                $('#wksSend').attr('disabled', true);
+            });
+
+            //Отправка данных на сервер
+            $('#wksSend').on('click', function (e) {
+                e.preventDefault();
+                if ($(this).attr('disabled')) {
+                    return;
+                }
+                var wksIds = [];
+                var _userId = $('#UserId').val();
+                $('input:checkbox.wksSelectCHB').each(function () {
+                    if ($(this).is(":checked")) {
+                        wksIds.push($(this).data('wksid'));
+                    }
+                });
+                console.log(JSON.stringify(wksIds), _userId);
+                $.ajax({
+                    method: "POST",
+                    url: "/Administrator/UsersManagement/UsrWksAjax",
+                    data: { UserId: _userId, WorkersIDs: JSON.stringify(wksIds) },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.Result) {
+                            window.location.href = '/Administrator/UsersManagement/ShowUsers?result=success';
+                        }
+                        else {
+                            alert(data.errormessage);
+                        }
+                    },
+                    error: function () {
+                        alert('Ошибка выполнения запроса!');
+                    }
+                })
+            });
+
+            //Скрипт создания таблицы ===========================
             $('#loadingImg').hide();
             var table = $('#gridtable')
                 .DataTable({
@@ -136,16 +182,6 @@
                             }
                         }
                     ],
-                    "createdRow": function (row, data, rowIndex) {
-
-                    },
-                    //"columnDefs": [
-                    //    {
-                    //        "targets": [7],
-                    //        "visible": false,
-                    //        "searchable": false
-                    //    }
-                    //]
                 });
 
             table.columns().eq(0).each(function (colIdx) {
@@ -153,29 +189,6 @@
                     table.column(colIdx).search(this.value).draw();
                 });
 
-            });
-
-            //Сброс состояния всех чекбоксов таблицы
-            $('#clearWks').on('click', function () {
-                $('.wksSelectCHB').prop('checked', false);
-            });
-
-            //Отправка данных на сервер
-            $('#wksSend').on('click', function (e) {
-                e.preventDefault();
-                var wksIds = [];
-                var _userId = $('#UserId').val();
-                $('input:checkbox.wksSelectCHB').each(function () {
-                    if ($(this).is(":checked")) {
-                        wksIds.push($(this).data('wksid'));
-                    }
-                });
-                console.log(JSON.stringify(wksIds), _userId);
-                $.ajax({
-                    method: "POST",
-                    url: "/Administrator/UsersManagement/UsrWksAjax",
-                    data: { UserId: _userId, WorkersIDs: JSON.stringify(wksIds) }
-                })
             });
 
         });

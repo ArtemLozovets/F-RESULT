@@ -51,7 +51,7 @@ namespace F_Result.Areas.Administrator.Controllers
         #region ShowUsers Метод генерации списка пользователей-----------------------------------------------------
 
         // GET: UsersManagement
-        public ActionResult ShowUsers()
+        public ActionResult ShowUsers(string result)
         {
             List<ApplicationUser> users = new List<ApplicationUser>();
             List<UsRoleViewModel> usrollist = new List<UsRoleViewModel>();
@@ -84,6 +84,11 @@ namespace F_Result.Areas.Administrator.Controllers
                         URole = RoleString
                     };
                     usrollist.Add(currentuser);
+                }
+
+                if (!string.IsNullOrEmpty(result) && result == "success")
+                {
+                    TempData["MessageOk"] = "Учетная запись создана";
                 }
 
                 return View(usrollist);
@@ -541,13 +546,12 @@ namespace F_Result.Areas.Administrator.Controllers
                     Post = model.Post,
                     UserRole = model.UserRole
                 };
-               // var result = await UserManager.CreateAsync(user, model.Password);
-               // if (result.Succeeded)
-                if(true)
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
                 {
-                    //await UserManager.AddToRoleAsync(user.Id, model.UserRole);
-                    TempData["MessageOk"] = "Учетная запись создана";
-                   // return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
+                    await UserManager.AddToRoleAsync(user.Id, model.UserRole);
+                    //TempData["MessageOk"] = "Учетная запись создана";
+                    //return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
                     return RedirectToAction("UsrWksRelation", new { area = "Administrator", controller = "UsersManagement", @UserId = user.Id });
                 }
                 else
@@ -561,12 +565,13 @@ namespace F_Result.Areas.Administrator.Controllers
         }
         #endregion
 
+    
         #region Метод сопоставления пользователей приложения сотрудникам (представление Workers) --------------------------
 
         [Authorize(Roles = "Administrator")]
         public ActionResult UsrWksRelation(string UserId)
         {
-            UserId = "06c7924c-c61b-4cdc-8cbf-e712d6ad4cfc"; //-----------------После тестирования УДАЛИТЬ!!!---------------------
+            //UserId = "162b0ac5-e0d5-4eec-b5e0-248785b3baad"; //-----------------После тестирования УДАЛИТЬ!!!---------------------
             if (String.IsNullOrEmpty(UserId))
             {
                 TempData["MessageError"] = "Не указан идентификатор пользователя";
@@ -574,7 +579,7 @@ namespace F_Result.Areas.Administrator.Controllers
             }
             ApplicationUser _user = db.Users.FirstOrDefault(x => x.Id == UserId);
             ViewData["UserId"] = UserId;
-            ViewData["UserInfoes"] = "Пользователь: "+ _user.FirstName + " "+_user.LastName+" "+_user.MiddleName+" ("+_user.UserName+")";
+            ViewData["UserInfoes"] = _user.LastName + " " + _user.FirstName + " " + _user.MiddleName + " (" + _user.UserName + ")";
             return View();
         }
 
@@ -597,6 +602,15 @@ namespace F_Result.Areas.Administrator.Controllers
                 List<int> WksArray = JsonConvert.DeserializeObject<List<int>>(WorkersIds);
                 List<UsrWksRelation> WksList = new List<UsrWksRelation>();
 
+                var WksExist = dbModel.UsrWksRelations.FirstOrDefault(x => x.UserId == UserId && WksArray.Contains(x.WorkerId));
+                if (WksExist != null)
+                {
+                    string WksNAme = dbModel.Workers.FirstOrDefault(x => x.id == WksExist.WorkerId).ShortName.ToString();
+                    errormessage = "Операция отклонена. Сопоставление с сотрудником \"" + WksNAme + "\" уже существует в базе данных.";
+                    data = "";
+                    return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+                }
+
                 foreach (var wks in WksArray)
                 {
                     UsrWksRelation _wks = new UsrWksRelation
@@ -618,7 +632,7 @@ namespace F_Result.Areas.Administrator.Controllers
                 data = "";
                 return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
-            
+
         }
 
         // Таблица сотрудников с проектами
@@ -645,6 +659,8 @@ namespace F_Result.Areas.Administrator.Controllers
                 string _prjname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
 
                 var _wks = (from worker in dbModel.Workers
+                            join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                            from usrwks in usrwkstmp.DefaultIfEmpty()
                             where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
                                   && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
                                   && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))

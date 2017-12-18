@@ -34,8 +34,8 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <p class="text-success"> @TempData["MessageOk"]</p>
-            <p class="text-danger"> @TempData["MessageError"]</p>
+            <p class="text-success" id="resultOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="resultError"> @TempData["MessageError"]</p>
         </div>
     </div>
     <p>
@@ -66,7 +66,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.URole)
             </th>
-            <th style="width:128px; min-width:128px;"> </th>
+            <th style="width:164px; min-width:164px;"> </th>
         </tr>
         @foreach (var item in Model)
         {
@@ -89,7 +89,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.UPost)
                 </td>
-
                 @if (item.URole.Contains("Заблокирован"))
                 {
                     <td class="text-danger">
@@ -105,6 +104,7 @@
 
                 <td style="text-align:center;">
                     <a class="btn btn-primary btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
+                    <a class="btn btn-primary btn-sm" href='@Url.Action("UsrWksRelation", "UsersManagement", new { UserId = @item.UId })' title="Редактировать сопоставление с сотрудниками"><span class="glyphicon glyphicon-user"></span></a>
                     @if (@item.URole.Contains("Заблокирован"))
                     {
                         <a class="btn btn-primary btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
@@ -118,7 +118,15 @@
             </tr>
         }
     </table>
-
-
-
 </div>
+
+<a href="#" class="scrollup1">Наверх</a>
+
+@section Scripts {
+  <script src="~/Scripts/toparrow.js"></script>  
+    <script>
+        $(function () {
+            
+        });
+    </script>
+}
