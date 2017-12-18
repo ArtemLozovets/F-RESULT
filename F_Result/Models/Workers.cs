@@ -17,5 +17,8 @@ namespace F_Result.Models
         
         [Display(Name = "Проекты")]
         public string projects { get; set; }
+
+        [NotMapped]
+        public int? relation { get; set; } 
     }
 }

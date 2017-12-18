@@ -1,6 +1,9 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Регистрация";
+    if (ViewData["VMode"].ToString() == "Edit")
+    {
+        ViewBag.Title = "Редактирование";
+    }
 }
 
 <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
@@ -22,8 +25,11 @@
         </ol>
     </div>
     <div style="margin-bottom:1em;">
-        <span class="badge sum-block" style="margin-left:1.4em;">@ViewData["UserInfoes"]</span>
-        <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 2 из 2</span>
+        <span id="UserIdBlock" class="badge sum-block" style="margin-left:1.4em;">@ViewData["UserInfoes"]</span>
+        @if (ViewData["VMode"].ToString() != "Edit")
+        {
+            <span class="badge sum-block pull-right" style="margin-right:1.4em;">Шаг 2 из 2</span>
+        }
     </div>
 
     @Html.Hidden("UserId")
@@ -158,6 +164,9 @@
                         "url": "/UsersManagement/LoadWks",
                         "type": "POST",
                         "datatype": "json",
+                        "data":{
+                            UserId: $('#UserId').val()
+                        },
                         "dataSrc": function (d) {
                             if (d.data.length === 0) {
                                 if (d.errormessage != "") {

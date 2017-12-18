@@ -565,18 +565,23 @@ namespace F_Result.Areas.Administrator.Controllers
         }
         #endregion
 
-    
         #region Метод сопоставления пользователей приложения сотрудникам (представление Workers) --------------------------
 
         [Authorize(Roles = "Administrator")]
-        public ActionResult UsrWksRelation(string UserId)
+        public ActionResult UsrWksRelation(string UserId, string Mode)
         {
-            //UserId = "162b0ac5-e0d5-4eec-b5e0-248785b3baad"; //-----------------После тестирования УДАЛИТЬ!!!---------------------
             if (String.IsNullOrEmpty(UserId))
             {
                 TempData["MessageError"] = "Не указан идентификатор пользователя";
                 return RedirectToAction("ShowUsers", new { area = "Administrator", controller = "UsersManagement" });
             }
+
+            if (!String.IsNullOrEmpty(Mode))
+            {
+                ViewData["VMode"] = Mode;
+            }
+            else ViewData["VMode"] = "Create";
+
             ApplicationUser _user = db.Users.FirstOrDefault(x => x.Id == UserId);
             ViewData["UserId"] = UserId;
             ViewData["UserInfoes"] = _user.LastName + " " + _user.FirstName + " " + _user.MiddleName + " (" + _user.UserName + ")";
@@ -638,7 +643,7 @@ namespace F_Result.Areas.Administrator.Controllers
         // Таблица сотрудников с проектами
         [Authorize(Roles = "Administrator")]
         [HttpPost]
-        public ActionResult LoadWks()
+        public ActionResult LoadWks(String UserId)
         {
             try
             {
@@ -666,6 +671,7 @@ namespace F_Result.Areas.Administrator.Controllers
                                   && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
                                   && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
                             select worker);
+
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
