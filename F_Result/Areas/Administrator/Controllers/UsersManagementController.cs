@@ -682,6 +682,8 @@ namespace F_Result.Areas.Administrator.Controllers
                     _wks = _wks.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
                 }
 
+
+
                 totalRecords = _wks.Count();
 
                 var data = _wks.Skip(skip).Take(pageSize);

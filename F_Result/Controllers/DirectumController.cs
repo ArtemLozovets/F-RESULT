@@ -530,6 +530,64 @@ namespace F_Result.Controllers
             }
         }
 
+
+        #region Справочник статей расходов
+        public ActionResult ShowExpenditures()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult LoadExpenditures()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _article = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _name = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _groupname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+
+                var _expenditures = (from expdt in db.Expenditures
+                                      where (expdt.Article.Contains(_article) || string.IsNullOrEmpty(_article))
+                                            && (expdt.Name.Contains(_name) || string.IsNullOrEmpty(_name))
+                                            && (expdt.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
+                                      select expdt);
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _expenditures = _expenditures.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                }
+                else
+                {
+                    _expenditures = _expenditures.OrderByDescending(x => x.Article);
+                }
+
+                totalRecords = _expenditures.Count();
+
+                var data = _expenditures.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

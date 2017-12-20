@@ -219,10 +219,15 @@
     <Compile Include="Migrations\201712120718092_ProjectsChange3.Designer.cs">
       <DependentUpon>201712120718092_ProjectsChange3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712201255429_ProjectsChange4.cs" />
+    <Compile Include="Migrations\201712201255429_ProjectsChange4.Designer.cs">
+      <DependentUpon>201712201255429_ProjectsChange4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
+    <Compile Include="Models\Expenditure.cs" />
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
@@ -683,6 +688,7 @@
     <Content Include="Views\PlanningPeriods\PPEdit.cshtml" />
     <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
     <Content Include="Views\Reports\AnalysisOfTheProjectBudget.cshtml" />
+    <Content Include="Views\Directum\ShowExpenditures.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -718,6 +724,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712120718092_ProjectsChange3.resx">
       <DependentUpon>201712120718092_ProjectsChange3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712201255429_ProjectsChange4.resx">
+      <DependentUpon>201712201255429_ProjectsChange4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -36,14 +36,6 @@ namespace F_Result.Models
         {
         }
 
-        public DbSet<F_Result.Models.Payments> Payments { get; set; }
-        public DbSet<F_Result.Models.Projects> Projects { get; set; }
-        public DbSet<F_Result.Models.Organizations> Organizations { get; set; }
-        public DbSet<F_Result.Models.DUsers> DUsers { get; set; }
-        public DbSet<F_Result.Models.Workers> Workers { get; set; }
-        public DbSet<F_Result.Models.ActualDebit> ActualDebit { get; set; }
-        public DbSet<AspVisitor> AspVisitors { get; set; }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -63,6 +55,10 @@ namespace F_Result.Models
             modelBuilder.Entity<Workers>()
                 .HasKey(t => t.id)
                 .ToTable("Workers");
+
+            modelBuilder.Entity<Expenditure>()
+                .HasKey(t => t.Id)
+                .ToTable("Expenditures");
 
             modelBuilder.Entity<Organizations>()
                 .HasKey(t => t.id)
@@ -136,12 +132,22 @@ namespace F_Result.Models
             .WillCascadeOnDelete(false);
         }
 
-        public System.Data.Entity.DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.Account> Accounts { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
-        public System.Data.Entity.DbSet<F_Result.Models.UsrWksRelation> UsrWksRelations { get; set; }
+        public DbSet<F_Result.Models.Payments> Payments { get; set; }
+        public DbSet<F_Result.Models.Projects> Projects { get; set; }
+        public DbSet<F_Result.Models.Organizations> Organizations { get; set; }
+        public DbSet<F_Result.Models.DUsers> DUsers { get; set; }
+        public DbSet<F_Result.Models.Workers> Workers { get; set; }
+        public DbSet<F_Result.Models.Expenditure> Expenditures { get; set; }
+
+        public DbSet<AspVisitor> AspVisitors { get; set; }
+        public DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }
+
+        public DbSet<F_Result.Models.ActualDebit> ActualDebit { get; set; }
+        public DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
+        public DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
+        public DbSet<F_Result.Models.Account> Accounts { get; set; }
+        public DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
+        public DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
+        public DbSet<F_Result.Models.UsrWksRelation> UsrWksRelations { get; set; }
     }
 }
