@@ -17,7 +17,9 @@ namespace F_Result.Models
         public string PeriodName { get; set; }
 
         public virtual ICollection<PlanCredit> PlanCredit { get; set; }
-
         public virtual ICollection<PlanDebit> PlanDebit { get; set; }
+
+        public virtual ICollection<PlanCreditF2> PlanCreditF2 { get; set; }
+        public virtual ICollection<PlanDebitF2> PlanDebitF2 { get; set; }
     }
 }

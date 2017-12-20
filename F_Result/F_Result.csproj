@@ -180,7 +180,9 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
     <Compile Include="Controllers\DirectumController.cs" />
+    <Compile Include="Controllers\PlanCreditsF2Controller.cs" />
     <Compile Include="Controllers\PlanCreditsController.cs" />
+    <Compile Include="Controllers\PlanDebitsF2Controller.cs" />
     <Compile Include="Controllers\PlanDebitsController.cs" />
     <Compile Include="Controllers\PlanningPeriodsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -231,7 +233,9 @@
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\Payments.cs" />
+    <Compile Include="Models\PlanCreditF2.cs" />
     <Compile Include="Models\PlanCredit.cs" />
+    <Compile Include="Models\PlanDebitF2.cs" />
     <Compile Include="Models\PlanDebit.cs" />
     <Compile Include="Models\PlanningPeriod.cs" />
     <Compile Include="Models\Projects.cs" />
@@ -689,6 +693,16 @@
     <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
     <Content Include="Views\Reports\AnalysisOfTheProjectBudget.cshtml" />
     <Content Include="Views\Directum\ShowExpenditures.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCCreate.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCDelete.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCDetails.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCEdit.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCShow.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDCreate.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDDelete.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDDetails.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDEdit.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -70,6 +70,10 @@ namespace F_Result.Models
                 .HasPrecision(12, 2);
             modelBuilder.Entity<PlanDebit>().Property(p => p.Sum)
                 .HasPrecision(12, 2);
+            modelBuilder.Entity<PlanCreditF2>().Property(p => p.Sum)
+                .HasPrecision(12, 2);
+            modelBuilder.Entity<PlanDebitF2>().Property(p => p.Sum)
+                .HasPrecision(12, 2);
 
             modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
             modelBuilder.Entity<IdentityUser>().ToTable("AspNetUsers");
@@ -92,6 +96,18 @@ namespace F_Result.Models
             modelBuilder.Entity<PlanDebit>()
             .HasRequired(m => m.ApplicationUser)
             .WithMany(m => m.PlanDebit)
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlanCreditF2>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.PlanCreditF2)
+            .HasForeignKey(m => m.UserId)
+            .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlanDebitF2>()
+            .HasRequired(m => m.ApplicationUser)
+            .WithMany(m => m.PlanDebitF2)
             .HasForeignKey(m => m.UserId)
             .WillCascadeOnDelete(false);
 
@@ -130,6 +146,18 @@ namespace F_Result.Models
             .WithMany(m => m.PlanCredit)
             .HasForeignKey(m => m.PeriodId)
             .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlanDebitF2>()
+            .HasRequired(m => m.PlanningPeriod)
+            .WithMany(m => m.PlanDebitF2)
+            .HasForeignKey(m => m.PeriodId)
+            .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlanCreditF2>()
+            .HasRequired(m => m.PlanningPeriod)
+            .WithMany(m => m.PlanCreditF2)
+            .HasForeignKey(m => m.PeriodId)
+            .WillCascadeOnDelete(false);
         }
 
         public DbSet<F_Result.Models.Payments> Payments { get; set; }
@@ -145,6 +173,8 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.ActualDebit> ActualDebit { get; set; }
         public DbSet<F_Result.Models.PlanCredit> PlanCredits { get; set; }
         public DbSet<F_Result.Models.PlanDebit> PlanDebits { get; set; }
+        public DbSet<F_Result.Models.PlanCreditF2> PlanCreditsF2 { get; set; }
+        public DbSet<F_Result.Models.PlanDebitF2> PlanDebitsF2 { get; set; }
         public DbSet<F_Result.Models.Account> Accounts { get; set; }
         public DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
         public DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
