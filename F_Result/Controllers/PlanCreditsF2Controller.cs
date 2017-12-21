@@ -56,12 +56,13 @@ namespace F_Result.Controllers
                 string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _chname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _appoinment = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _expname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _appoinment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -72,14 +73,15 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _periodtxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _periodtxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 int _period;
                 Int32.TryParse(_periodtxt, out _period);
 
                 var _ads = (from plancredit in db.PlanCreditsF2
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
                             join org in db.Organizations on plancredit.OrganizationId equals org.id
+                            join exp in db.Expenditures on plancredit.ExpenditureId equals exp.Id
                             join usr in db.IdentityUsers on plancredit.UserId equals usr.Id into usrtmp
                             from usr in usrtmp.DefaultIfEmpty()
                             join pperiod in db.PlanningPeriods on plancredit.PeriodId equals pperiod.PlanningPeriodId
@@ -87,6 +89,7 @@ namespace F_Result.Controllers
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
+                                        && (exp.Name.Contains(_expname) || string.IsNullOrEmpty(_expname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
                             select new
@@ -106,6 +109,8 @@ namespace F_Result.Controllers
                                 StartDatePlan = prg.StartDatePlan,
                                 StartDateFact = prg.StartDateFact,
                                 OrgName = org.Title,
+                                ExptId = exp.Id,
+                                ExpName = exp.Name,
                                 PeriodName = pperiod.PeriodName
                             }).AsEnumerable().Select(x => new PlanCreditViewF2
                             {
@@ -121,6 +126,8 @@ namespace F_Result.Controllers
                                 StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
+                                ExpenditureId = x.ExptId,
+                                ExpenditureName = x.ExpName,
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
                                 UserFN = x.UserFN,
@@ -297,7 +304,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanCreditF2 planCredit)
+        public ActionResult PCEdit([Bind(Include = "PlanCreditF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanCreditF2 planCredit)
         {
 
             if (ModelState.IsValid)
@@ -319,6 +326,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
+                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planCredit.ExpenditureId).Name;
 
                     return View(planCredit);
                 }
@@ -372,6 +380,9 @@ namespace F_Result.Controllers
 
             string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             planCredit.OrganizationName = _orgName;
+
+            string _expName = db.Expenditures.Where(x => x.Id == planCredit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
+            planCredit.ExpenditureName = _expName;
 
             return View(planCredit);
         }

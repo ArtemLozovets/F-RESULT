@@ -1,7 +1,7 @@
 ﻿@model F_Result.Models.PlanCreditF2
 
 @{
-    ViewBag.Title = "Доходы";
+    ViewBag.Title = "Доходы (Ф.2)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -27,13 +27,13 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Редактирование планового дохода (форма 2)</small>
+            <small>Редактирование планового дохода (Форма 2)</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
             <li>@Html.ActionLink("План доходов", "PCShow", "PlanCredits")</li>
-            <li class="active">Редактирование дохода (ф2)</li>
+            <li class="active">Редактирование дохода (Ф.2)</li>
         </ol>
     </div>
 
@@ -45,12 +45,14 @@
     </div>
 
     <div class="col-md-7" style="margin-top:10px;">
-        @using (Html.BeginForm("PCCreate", "PlanCreditsF2", FormMethod.Post, new { id = "PCForm" }))
+        @using (Html.BeginForm("PCEdit", "PlanCreditsF2", FormMethod.Post, new { id = "PCForm" }))
         {
             @Html.AntiForgeryToken()
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.UserId)
+                @Html.HiddenFor(model => model.PlanCreditF2Id)
                 <div class="form-group">
                     @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
@@ -63,14 +65,14 @@
                     @Html.LabelFor(model => model.Sum, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         @Html.EditorFor(model => model.Sum, new
+               {
+                   htmlAttributes = new
                    {
-                       htmlAttributes = new
-                       {
-                           @class = "form-control",
-                           @onkeyup = "reppoint(this)",
-                           @onchange = "reppoint(this)"
-                       }
-                   })
+                       @class = "form-control",
+                       @onkeyup = "reppoint(this)",
+                       @onchange = "reppoint(this)"
+                   }
+               })
                         @Html.ValidationMessageFor(model => model.Sum, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -81,19 +83,18 @@
                         @Html.HiddenFor(model => model.ProjectId, new { id = "ProjectId" })
                         <div class="input-group">
                             @Html.TextBox("prgSelect", ViewData["ProjectName"], new
+                   
                        {
-                           htmlAttributes = new
-                           {
-                               @class = "form-control",
-                               type = "text",
-                               id = "prgSelect",
-                               @readonly = "readonly",
-                               placeholder = "Щелкните для выбора",
-                               aria_describedby = "prgbasic-addon2",
-                               data_url = "/Directum/ShowProjectsPartial",
-                               style = "cursor:pointer;"
-                           }
-                       })
+                           @class = "form-control",
+                           type = "text",
+                           id = "prgSelect",
+                           @readonly = "readonly",
+                           placeholder = "Щелкните для выбора",
+                           aria_describedby = "prgbasic-addon2",
+                           data_url = "/Directum/ShowProjectsPartial",
+                           style = "cursor:pointer;"
+                   
+                   })
                             <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -109,18 +110,15 @@
                         <div class="input-group">
                             @Html.TextBox("orgSelect", ViewData["OrganizationName"], new
                        {
-                           htmlAttributes = new
-                           {
-                               @class = "form-control",
-                               type = "text",
-                               id = "orgSelect",
-                               @readonly = "readonly",
-                               placeholder = "Щелкните для выбора",
-                               aria_describedby = "orgbasic-addon2",
-                               data_url = "/Directum/ShowOrganizationsPartial",
-                               style = "cursor:pointer;"
-                           }
-                       })
+                           @class = "form-control",
+                           type = "text",
+                           id = "orgSelect",
+                           @readonly = "readonly",
+                           placeholder = "Щелкните для выбора",
+                           aria_describedby = "orgbasic-addon2",
+                           data_url = "/Directum/ShowOrganizationsPartial",
+                           style = "cursor:pointer;"
+                   })
                             <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -134,20 +132,17 @@
                     <div class="col-md-8">
                         @Html.HiddenFor(model => model.ExpenditureId, new { id = "ExpenditureId" })
                         <div class="input-group">
-                            @Html.TextBox("expSelect", ViewData["ExpeditureName"], new
+                            @Html.TextBox("expSelect", ViewData["ExpenditureName"], new
                        {
-                           htmlAttributes = new
-                           {
-                               @class = "form-control",
-                               type = "text",
-                               id = "expSelect",
-                               @readonly = "readonly",
-                               placeholder = "Щелкните для выбора",
-                               aria_describedby = "expbasic-addon2",
-                               data_url = "/Directum/ShowExpendituresPartial",
-                               style = "cursor:pointer;"
-                           }
-                       })
+                           @class = "form-control",
+                           type = "text",
+                           id = "expSelect",
+                           @readonly = "readonly",
+                           placeholder = "Щелкните для выбора",
+                           aria_describedby = "expbasic-addon2",
+                           data_url = "/Directum/ShowExpendituresPartial",
+                           style = "cursor:pointer;"
+                        })
                             <span class="input-group-addon" id="expbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -174,7 +169,7 @@
 
                 <div class="form-group">
                     <div class="col-md-offset-4 col-md-8">
-                        <button type="submit" title="Сохранить информацию" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
+                        <button type="submit" title="Сохранить информацию" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Обновить</button>
                     </div>
                 </div>
             </div>
@@ -306,7 +301,7 @@
         //Читаем из localStorage значение планового периода
         if (localStorage.getItem('PlanningPeriod') !== null) {
             var DDLVal = localStorage.getItem('PlanningPeriod');
-            $('#PeriodId').val(DDLVal);}
+            $('#PeriodId').val(DDLVal);
+        }
     </script>
-
 }

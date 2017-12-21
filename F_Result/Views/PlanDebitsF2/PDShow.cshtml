@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Расходы";
+    ViewBag.Title = "Расходы (Ф.2)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -21,12 +21,12 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 @ViewBag.Title
-                <small>План расходов</small>
+                <small>План расходов (Форма 2)</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
                 <li>Показатели</li>
-                <li class="active">План расходов</li>
+                <li class="active">План расходов (Ф.2)</li>
             </ol>
         </div>
     </div>
@@ -46,9 +46,10 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект"  value="@ViewData["ProjectName"]" id="prjFlt"/></th>
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb expFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
@@ -60,6 +61,7 @@
                 <th>Проект</th>
                 <th>Руководитель</th>
                 <th>Организация</th>
+                <th>Статья</th>
                 <th>Назначение</th>
                 <th>Пользователь</th>
                 <th>Дата</th>
@@ -135,16 +137,16 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'add':
-                            window.location.href = "/PlanDebits/PDCreate/";
+                            window.location.href = "/PlanDebitsF2/PDCreate/";
                             break;
                         case 'details':
-                            window.location.href = "/PlanDebits/PDDetails/" + $(this).closest('tr').data('objid');
+                            window.location.href = "/PlanDebitsF2/PDDetails/" + $(this).closest('tr').data('objid');
                             break;
                         case 'edit':
-                            window.location.href = "/PlanDebits/PDEdit/" + $(this).closest('tr').data('objid');
+                            window.location.href = "/PlanDebitsF2/PDEdit/" + $(this).closest('tr').data('objid');
                             break;
                         case 'delete':
-                            window.location.href = "/PlanDebits/PDDelete/" + $(this).closest('tr').data('objid');
+                            window.location.href = "/PlanDebitsF2/PDDelete/" + $(this).closest('tr').data('objid');
                             break;
                             //-----------------------------
                         case 'filter':
@@ -160,6 +162,11 @@
 
                             if (fClass.indexOf("orgCellf") >= 0) {
                                 $('.orgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("expCellf") >= 0) {
+                                $('.expFlt').val($(this).text()).trigger('change');
                                 break;
                             };
 
@@ -220,7 +227,7 @@
 
             //Двойной щелчек по строке таблицы.
             $('#gridtable tbody').on('dblclick', 'tr', function () {
-                window.location.href = "/PlanDebits/PDEdit/" + $(this).data('objid');
+                window.location.href = "/PlanDebitsF2/PDEdit/" + $(this).data('objid');
             });
         });
     </script>
@@ -232,99 +239,100 @@
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[0].search.value = $('#prjFlt').val();
-                    data.columns[5].search.value = $('#dateFlt').val();
+                    data.columns[6].search.value = $('#dateFlt').val();
                 })
                 .DataTable({
-                "fixedHeader": {
-                    "header": true,
-                    "headerOffset": $('#mainNavbar').height()
-                },
-                "processing": true,
-                "serverSide": true,
-                "filter": true,
-                "orderMulti": true,
-                "responsive": true,
-                "pageLength": 25, // Количество записей в таблице по умолчанию
-                "pagingType": "simple_numbers",
-                "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "language": {
-                    "lengthMenu": "Записей: _MENU_",
-                    "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск",
-                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    "sInfoThousands": " ",
-                    "oPaginate": {
-                        "sNext": ">",
-                        "sPrevious": "<"
-                    }
-                },
-                "fnDrawCallback": function (settings) {
-                    //Используем эту функцию для обновления внешних елементов.
-                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
-                    var api = this.api();
-                    var json = api.ajax.json();
-                    var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
-                },
-                "ajax": {
-                    "url": "/PlanDebits/LoadPD",
-                    "type": "POST",
-                    "datatype": "json",
-                    "dataSrc": function (d) {
-                        if (d.data.length === 0) {
-                            if (d.errormessage != "") {
-                                alert(d.errormessage);
-                            }
-                        }
-                        return d.data;
-                    }
-                },
-                "order": [[5, "desc"]],
-                "columns": [
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
-                    { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                    { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
-                    {
-                        "data": "Date", "name": "Date", "autoWidth": true,
-                        "type": "date ",
-                        "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
-                        },
-                        "class": "dateCellf context-menu-one"
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": false}
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": true,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "fnDrawCallback": function (settings) {
+                        //Используем эту функцию для обновления внешних елементов.
+                        //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                        var api = this.api();
+                        var json = api.ajax.json();
+                        var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                        $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                    },
+                    "ajax": {
+                        "url": "/PlanDebitsF2/LoadPD",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (d.data.length === 0) {
+                                if (d.errormessage != "") {
+                                    alert(d.errormessage);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[6, "desc"]],
+                    "columns": [
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
+                        { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
+                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
+                        { "data": "ExpenditureName", "name": "ExpenditureName", "autoWidth": true, "class": "expCellf context-menu-one" },
+                        { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                        {
+                            "data": "Date", "name": "Date", "autoWidth": true,
+                            "type": "date ",
+                            "render": function (value) {
+                                if (value === null) return "";
+                                var pattern = /Date\(([^)]+)\)/;
+                                var results = pattern.exec(value);
+                                var dt = new Date(parseFloat(results[1]));
+                                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                                return _d + "/" + _m + "/" + dt.getFullYear();
+                            },
+                            "class": "dateCellf context-menu-one"
+                        },
+                        { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                        { "data": "PeriodName", "name": "PeriodName", "autoWidth": false }
 
-                ],
-                "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-objid', data.PlanDebitId);
-                    //Выводим всплывающую подсказку с подробной информацией о проекте
-                    var _datePlan = formatDate(data.StartDatePlan);
-                    var _dateFact = formatDate(data.StartDateFact);
-                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
-                },
-                "columnDefs": [
-                    {
-                        "targets": [7],
-                        "visible": false,
-                        "searchable": false
-                    }
-                ]
-            });
+                    ],
+                    "createdRow": function (row, data, rowIndex) {
+                        $(row).attr('data-objid', data.PlanDebitId);
+                        //Выводим всплывающую подсказку с подробной информацией о проекте
+                        var _datePlan = formatDate(data.StartDatePlan);
+                        var _dateFact = formatDate(data.StartDateFact);
+                        var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                        $('.prgCellf', $(row)).attr('title', prgTitleStr);
+                    },
+                    "columnDefs": [
+                        {
+                            "targets": [8],
+                            "visible": false,
+                            "searchable": false
+                        }
+                    ]
+                });
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -357,15 +365,15 @@
                 var DDLVal = localStorage.getItem('PlanningPeriod');
                 $('#PeriodDDL').val(DDLVal);
                 var table = $('#gridtable').DataTable();
-                table.column(7).search(DDLVal).draw();
+                table.column(8).search(DDLVal).draw();
             }
             var table = $('#gridtable').DataTable();
-            table.column(7).search($('#PeriodDDL').val()).draw();
+            table.column(8).search($('#PeriodDDL').val()).draw();
 
             $('body').on('change', '#PeriodDDL', function () {
                 localStorage.setItem('PlanningPeriod', $(this).val());
                 var table = $('#gridtable').DataTable();
-                table.column(7).search(this.value).draw();
+                table.column(8).search(this.value).draw();
             });
         });
     </script>

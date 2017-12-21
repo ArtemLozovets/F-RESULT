@@ -56,12 +56,13 @@ namespace F_Result.Controllers
                 string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _chname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _appointment = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _userfn = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _expname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _appointment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
-                string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _datetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 if (!String.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
@@ -72,14 +73,15 @@ namespace F_Result.Controllers
                     _endagrdate = DateTime.Parse(_endagrdatetext);
                 }
                 //--------------------------
-                string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _periodtxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _sum = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _periodtxt = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 int _period;
                 Int32.TryParse(_periodtxt, out _period);
 
                 var _ads = (from plandebit in db.PlanDebitsF2
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
                             join org in db.Organizations on plandebit.OrganizationId equals org.id
+                            join exp in db.Expenditures on plandebit.ExpenditureId equals exp.Id
                             join usr in db.IdentityUsers on plandebit.UserId equals usr.Id into usrtmp
                             from usr in usrtmp.DefaultIfEmpty()
                             join pperiod in db.PlanningPeriods on plandebit.PeriodId equals pperiod.PlanningPeriodId
@@ -87,6 +89,7 @@ namespace F_Result.Controllers
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
+                                        && (exp.Name.Contains(_expname) || string.IsNullOrEmpty(_expname))
                                         && (plandebit.Appointment.Contains(_appointment) || string.IsNullOrEmpty(_appointment))
                                         && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
                             select new
@@ -106,6 +109,8 @@ namespace F_Result.Controllers
                                 StartDatePlan = prg.StartDatePlan,
                                 StartDateFact = prg.StartDateFact,
                                 OrgName = org.Title,
+                                ExptId = exp.Id,
+                                ExpName = exp.Name,
                                 PeriodName = pperiod.PeriodName
                             }).AsEnumerable().Select(x => new PlanDebitViewF2
                             {
@@ -121,6 +126,8 @@ namespace F_Result.Controllers
                                 StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
+                                ExpenditureId = x.ExptId,
+                                ExpenditureName = x.ExpName,
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
                                 UserFN = x.UserFN,
@@ -164,26 +171,29 @@ namespace F_Result.Controllers
             }
 
             PlanDebitF2 planDebit = (from _pd in db.PlanDebitsF2
-                                   join _pname in db.Projects on _pd.ProjectId equals _pname.id
-                                   join _org in db.Organizations on _pd.OrganizationId equals _org.id
-                                   join _period in db.PlanningPeriods on _pd.PeriodId equals _period.PlanningPeriodId
-                                   where (_pd.PlanDebitF2Id == id)
-                                   select new
-                                   {
-                                       PlanDebitF2Id = _pd.PlanDebitF2Id,
-                                       Sum = _pd.Sum,
-                                       Date = _pd.Date,
-                                       ProjectName = _pname.ShortName,
-                                       OrganizationName = _org.Title,
-                                       PeriodName = _period.PeriodName,
-                                       Appointment = _pd.Appointment
-                                   }).AsEnumerable().Select(x => new PlanDebitF2
+                                     join _pname in db.Projects on _pd.ProjectId equals _pname.id
+                                     join _org in db.Organizations on _pd.OrganizationId equals _org.id
+                                     join _exp in db.Expenditures on _pd.ExpenditureId equals _exp.Id
+                                     join _period in db.PlanningPeriods on _pd.PeriodId equals _period.PlanningPeriodId
+                                     where (_pd.PlanDebitF2Id == id)
+                                     select new
+                                     {
+                                         PlanDebitF2Id = _pd.PlanDebitF2Id,
+                                         Sum = _pd.Sum,
+                                         Date = _pd.Date,
+                                         ProjectName = _pname.ShortName,
+                                         OrganizationName = _org.Title,
+                                         ExpendituresName = _exp.Name,
+                                         PeriodName = _period.PeriodName,
+                                         Appointment = _pd.Appointment
+                                     }).AsEnumerable().Select(x => new PlanDebitF2
                                    {
                                        PlanDebitF2Id = x.PlanDebitF2Id,
                                        Sum = x.Sum,
                                        Date = x.Date,
                                        ProjectName = x.ProjectName,
                                        OrganizationName = x.OrganizationName,
+                                       ExpenditureName = x.ExpendituresName,
                                        PeriodName = x.PeriodName,
                                        Appointment = x.Appointment
                                    }).FirstOrDefault();
@@ -208,7 +218,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanDebitF2 planDebit)
+        public ActionResult PDCreate([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId,ExpenditureId")] PlanDebitF2 planDebit)
         {
             if (ModelState.IsValid)
             {
@@ -229,7 +239,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planDebit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planDebit.OrganizationId).Title;
-
+                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planDebit.ExpenditureId).Name;
                     return View(planDebit);
                 }
 
@@ -276,7 +286,7 @@ namespace F_Result.Controllers
 
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-
+            planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
             return View(planDebit);
@@ -287,7 +297,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanDebitF2 planDebit)
+        public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanDebitF2 planDebit)
         {
 
             if (ModelState.IsValid)
@@ -309,7 +319,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planDebit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planDebit.OrganizationId).Title;
-
+                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planDebit.ExpenditureId).Name;
                     return View(planDebit);
                 }
 
@@ -342,7 +352,7 @@ namespace F_Result.Controllers
 
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-
+            planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
             return View(planDebit);
         }
 
@@ -363,6 +373,7 @@ namespace F_Result.Controllers
 
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+            planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
 
             return View(planDebit);
         }
