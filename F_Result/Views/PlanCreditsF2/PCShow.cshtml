@@ -1,0 +1,381 @@
+﻿@{
+    ViewBag.Title = "Доходы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>План доходов (форма 2)</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Показатели</li>
+                <li class="active">План доходов (ф2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <div class="row" style="width:100%">
+        @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new { @class = "form-control input-sm", name = "PeriodDDL", title = "Плановый период" })
+    </div>
+
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект"  value="@ViewData["ProjectName"]" id="prjFlt"/></th>
+                <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
+                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th></th>
+            </tr>
+
+            <tr role="row">
+                <th>Проект</th>
+                <th>Руководитель</th>
+                <th>Организация</th>
+                <th>Назначение</th>
+                <th>Пользователь</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Период</th>
+            </tr>
+
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('.dff').each(function () {
+                $(this).dateRangePicker(
+                     {
+                         language: 'ru',
+                         startOfWeek: 'monday',
+                         separator: ' - ',
+                         format: 'DD/MM/YYYY',
+                         autoClose: false,
+                         monthSelect: true,
+                         yearSelect: true,
+                         setValue: function (s) {
+                             $(this).val(s);
+                         },
+                         customOpenAnimation: function (cb) {
+                             $(this).fadeIn(300, cb);
+                         },
+                         customCloseAnimation: function (cb) {
+                             $(this).fadeOut(300, cb);
+                         },
+                         showShortcuts: false,
+                         time: {
+                             enabled: false
+                         },
+                         extraClass: 'date-range-pickerM'
+                     })
+                .bind('datepicker-closed', function (event, obj) {
+                    $(this).attr('title', $(this).val()).trigger('change');
+                })
+                .bind('datepicker-open', function () {
+                    $(this).data('dateRangePicker').clear();
+                });
+
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            //Скрипт для рабты с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'add':
+                            window.location.href = "/PlanCreditsF2/PCCreate";
+                            break;
+                        case 'details':
+                            window.location.href = "/PlanCreditsF2/PCDetails/" + $(this).closest('tr').data('objid');
+                            break;
+                        case 'edit':
+                            window.location.href = "/PlanCreditsF2/PCEdit/" + $(this).closest('tr').data('objid');
+                            break;
+                        case 'delete':
+                            window.location.href = "/PlanCreditsF2/PCDelete/" + $(this).closest('tr').data('objid');
+                            break;
+                            //-----------------------------
+                        case 'filter':
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('.prgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("chCellf") >= 0) {
+                                $('.chFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("orgCellf") >= 0) {
+                                $('.orgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("usrCellf") >= 0) {
+                                $('.usrFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep": "---------",
+                    "add": { name: "Создать", icon: "add" },
+                    "details": {
+                        name: "Подробно", icon: "details", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "edit": {
+                        name: "Редактировать", icon: "edit", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                    "delete": {
+                        name: "Удалить", icon: "delete", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    }
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                window.location.href = "/PlanCreditsF2/PCEdit/" + $(this).data('objid');
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            //Скрипт создания таблицы
+            $('#loadingImg').hide();
+            var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+                    data.columns[0].search.value = $('#prjFlt').val();
+                    data.columns[5].search.value = $('#dateFlt').val();
+                })
+                .DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pageLength": 25, // Количество записей в таблице по умолчанию
+                "pagingType": "simple_numbers",
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "dom": "<'row'<'col-sm-3'l><'col-sm-6'B><'#sumSpan.col-sm-3'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "fnDrawCallback": function (settings) {
+                    //Используем эту функцию для обновления внешних елементов.
+                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                },
+                "ajax": {
+                    "url": "/PlanCreditsF2/LoadPC",
+                    "type": "POST",
+                    "datatype": "json",
+                    "dataSrc": function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "order": [[5, "desc"]],
+                "columns": [
+                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
+                    { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
+                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
+                    { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                    {
+                        "data": "Date", "name": "Date", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                            return _d + "/" + _m + "/" + dt.getFullYear();
+                        },
+                        "class": "dateCellf context-menu-one"
+                    },
+                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": false }
+                ],
+                "createdRow": function (row, data, rowIndex) {
+                    $(row).attr('data-objid', data.PlanCreditF2Id);
+                    var _datePlan = formatDate(data.StartDatePlan);
+                    var _dateFact = formatDate(data.StartDateFact);
+                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
+                },
+                "columnDefs": [
+                    {
+                        "targets": [7],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ]
+            });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+        });
+
+        function formatDate(value) {
+            if (value === null) return "";
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+            return _d + "/" + _m + "/" + dt.getFullYear();
+        };
+
+    </script>
+
+    <script>
+        //Скрипт для работы с фильтром выбора планового периода
+        $(function () {
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+                var table = $('#gridtable').DataTable();
+                table.column(7).search(DDLVal).draw();
+            }
+            var table = $('#gridtable').DataTable();
+            table.column(7).search($('#PeriodDDL').val()).draw();
+
+            $('body').on('change', '#PeriodDDL', function () {
+                localStorage.setItem('PlanningPeriod', $(this).val());
+                var table = $('#gridtable').DataTable();
+                table.column(7).search(this.value).draw();
+            });
+        });
+    </script>
+
+    <script>
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
+    </script>
+}
+
+

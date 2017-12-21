@@ -703,6 +703,7 @@
     <Content Include="Views\PlanDebitsF2\PDDetails.cshtml" />
     <Content Include="Views\PlanDebitsF2\PDEdit.cshtml" />
     <Content Include="Views\PlanDebitsF2\PDShow.cshtml" />
+    <Content Include="Views\Directum\ShowExpendituresPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

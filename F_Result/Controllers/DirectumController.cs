@@ -537,6 +537,11 @@ namespace F_Result.Controllers
             return View();
         }
 
+        public ActionResult ShowExpendituresPartial()
+        {
+            return PartialView();
+        }
+
         [HttpPost]
         public ActionResult LoadExpenditures()
         {

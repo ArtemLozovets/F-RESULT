@@ -132,7 +132,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.ExpenditureId, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.HiddenFor(model => model.ExpenditureId, new { id = "OrganizationId" })
+                        @Html.HiddenFor(model => model.ExpenditureId, new { id = "ExpenditureId" })
                         <div class="input-group">
                             @Html.Editor("expSelect", new
                    {
@@ -148,7 +148,7 @@
                            style = "cursor:pointer;"
                        }
                    })
-                            <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
+                            <span class="input-group-addon" id="expbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
                         </div>

@@ -166,6 +166,7 @@ namespace F_Result.Controllers
             PlanCreditF2 planCredit = (from _pc in db.PlanCreditsF2
                                      join _pname in db.Projects on _pc.ProjectId equals _pname.id
                                      join _org in db.Organizations on _pc.OrganizationId equals _org.id
+                                     join _exp in db.Expenditures on _pc.ExpenditureId equals _exp.Id
                                      join _period in db.PlanningPeriods on _pc.PeriodId equals _period.PlanningPeriodId
                                      where (_pc.PlanCreditF2Id == id)
                                      select new
@@ -175,6 +176,7 @@ namespace F_Result.Controllers
                                          Date = _pc.Date,
                                          ProjectName = _pname.ShortName,
                                          OrganizationName = _org.Title,
+                                         ExpendituresName = _exp.Name,
                                          PeriodName = _period.PeriodName,
                                          Appointment = _pc.Appointment
                                      }).AsEnumerable().Select(x => new PlanCreditF2
@@ -184,6 +186,7 @@ namespace F_Result.Controllers
                                          Date = x.Date,
                                          ProjectName = x.ProjectName,
                                          OrganizationName = x.OrganizationName,
+                                         ExpenditureName = x.ExpendituresName,
                                          PeriodName = x.PeriodName,
                                          Appointment = x.Appointment
                                      }).FirstOrDefault();
@@ -209,7 +212,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId")] PlanCreditF2 planCredit)
+        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId,ExpenditureId")] PlanCreditF2 planCredit)
         {
             if (ModelState.IsValid)
             {
@@ -230,7 +233,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
-
+                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planCredit.ExpenditureId).Name;
                     return View(planCredit);
                 }
 
@@ -281,6 +284,9 @@ namespace F_Result.Controllers
 
             string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             ViewData["OrganizationName"] = _orgName;
+
+            string _expName = db.Expenditures.Where(x => x.Id == planCredit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
+            ViewData["ExpenditureName"] = _expName;
 
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 

@@ -1,12 +1,12 @@
-﻿@model F_Result.Models.PlanCredit
+﻿@model F_Result.Models.PlanCreditF2
 
 @{
-    ViewBag.Title = "Редактирование";
+    ViewBag.Title = "Доходы";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    #prgbasic-addon2:hover, #orgbasic-addon2:hover {
+    #prgbasic-addon2:hover, #orgbasic-addon2:hover, #expbasic-addon2:hover {
         background-color: transparent;
     }
 </style>
@@ -17,17 +17,23 @@
     <div id="dialogContent" class="modal-dialog" style="width:90%;"></div>
 </div>
 
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
 <div class="container">
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Редактирование информации о доходах</small>
+            <small>Редактирование планового дохода (форма 2)</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
             <li>@Html.ActionLink("План доходов", "PCShow", "PlanCredits")</li>
-            <li class="active">Редактирование</li>
+            <li class="active">Редактирование дохода (ф2)</li>
         </ol>
     </div>
 
@@ -39,16 +45,12 @@
     </div>
 
     <div class="col-md-7" style="margin-top:10px;">
-
-        @using (Html.BeginForm("PCEdit", "PlanCredits", FormMethod.Post, new { id = "PCForm" }))
+        @using (Html.BeginForm("PCCreate", "PlanCreditsF2", FormMethod.Post, new { id = "PCForm" }))
         {
             @Html.AntiForgeryToken()
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @Html.HiddenFor(model => model.UserId)
-                @Html.HiddenFor(model => model.PlanCreditId)
-
                 <div class="form-group">
                     @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
@@ -79,16 +81,19 @@
                         @Html.HiddenFor(model => model.ProjectId, new { id = "ProjectId" })
                         <div class="input-group">
                             @Html.TextBox("prgSelect", ViewData["ProjectName"], new
-                        {
-                            @class = "form-control",
-                            type = "text",
-                            id = "prgSelect",
-                            @readonly = "readonly",
-                            placeholder = "Щелкните для выбора",
-                            aria_describedby = "prgbasic-addon2",
-                            data_url = "/Directum/ShowProjectsPartial",
-                            style = "cursor:pointer;"
-                        })
+                       {
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "prgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "prgbasic-addon2",
+                               data_url = "/Directum/ShowProjectsPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
                             <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -103,23 +108,51 @@
                         @Html.HiddenFor(model => model.OrganizationId, new { id = "OrganizationId" })
                         <div class="input-group">
                             @Html.TextBox("orgSelect", ViewData["OrganizationName"], new
-                        {
-
-                            @class = "form-control",
-                            type = "text",
-                            id = "orgSelect",
-                            @readonly = "readonly",
-                            placeholder = "Щелкните для выбора",
-                            aria_describedby = "orgbasic-addon2",
-                            data_url = "/Directum/ShowOrganizationsPartial",
-                            style = "cursor:pointer;"
-
-                        })
+                       {
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "orgSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "orgbasic-addon2",
+                               data_url = "/Directum/ShowOrganizationsPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
                             <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
                         </div>
                         @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ExpenditureId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.HiddenFor(model => model.ExpenditureId, new { id = "ExpenditureId" })
+                        <div class="input-group">
+                            @Html.TextBox("expSelect", ViewData["ExpeditureName"], new
+                       {
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "expSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "expbasic-addon2",
+                               data_url = "/Directum/ShowExpendituresPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
+                            <span class="input-group-addon" id="expbasic-addon2" title="Очистить" style="cursor:pointer;">
+                                <i class="glyphicon glyphicon-refresh"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.ExpenditureId, "", new { @class = "text-danger", id = "ExpenditureValidator" })
                     </div>
                 </div>
 
@@ -160,7 +193,6 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script type="text/javascript">
         $(function () {
-
             $.validator.methods.number = function (value, element) {
                 return this.optional(element) || /(^\d{1,10}(\,\d{1,2})?$)/.test(value);
             }
@@ -203,6 +235,8 @@
 
     <script>
         $(function () {
+            $('#loadingImg').hide();
+
             $('body').on('click', '#prgSelect', function (e) {
                 e.preventDefault();
                 var _href = $(this).data('url');
@@ -221,6 +255,14 @@
                 });
             });
 
+            $('body').on('click', '#expSelect', function (e) {
+                e.preventDefault();
+                var _href = $(this).data('url');
+                $.get(_href, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modDialog').modal('show');
+                });
+            });
 
             $('body').on('click', '#prgbasic-addon2', function () {
                 $("#ProjectId").val('');
@@ -230,6 +272,11 @@
             $('body').on('click', '#orgbasic-addon2', function () {
                 $("#OrganizationId").val('');
                 $("#orgSelect").val('');
+            });
+
+            $('body').on('click', '#expbasic-addon2', function () {
+                $("#ExpenditureId").val('');
+                $("#expSelect").val('');
             });
 
             $('#PCForm').submit(function (e) {
@@ -245,9 +292,21 @@
                     flag = true;
                 }
 
+                if ($("#ExpenditureId").val() == 0) {
+                    $("#ExpenditureValidator").html("Необходимо выбрать статью расходов");
+                    flag = true;
+                }
+
                 if (flag) { return false; }
             });
         })
+    </script>
+
+    <script>
+        //Читаем из localStorage значение планового периода
+        if (localStorage.getItem('PlanningPeriod') !== null) {
+            var DDLVal = localStorage.getItem('PlanningPeriod');
+            $('#PeriodId').val(DDLVal);}
     </script>
 
 }
