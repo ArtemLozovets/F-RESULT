@@ -45,10 +45,10 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb expFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект"  value="@ViewData["ProjectName"]" id="prjFlt"/></th>
                 <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
-                <th><input type="text" class="form-control input-sm sb expFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
                 <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
@@ -57,10 +57,10 @@
             </tr>
 
             <tr role="row">
+                <th>Статья</th>
                 <th>Проект</th>
                 <th>Руководитель</th>
                 <th>Организация</th>
-                <th>Статья</th>
                 <th>Назначение</th>
                 <th>Пользователь</th>
                 <th>Дата</th>
@@ -236,7 +236,7 @@
             $('#loadingImg').hide();
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
-                    data.columns[0].search.value = $('#prjFlt').val();
+                    data.columns[1].search.value = $('#prjFlt').val();
                     data.columns[6].search.value = $('#dateFlt').val();
                 })
                 .DataTable({
@@ -291,10 +291,10 @@
                 },
                 "order": [[6, "desc"]],
                 "columns": [
+                    { "data": "ExpenditureName", "name": "ExpenditureName", "autoWidth": true, "class": "expCellf context-menu-one" },
                     { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
                     { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                    { "data": "ExpenditureName", "name": "ExpenditureName", "autoWidth": true, "class": "expCellf context-menu-one" },
                     { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
                     {

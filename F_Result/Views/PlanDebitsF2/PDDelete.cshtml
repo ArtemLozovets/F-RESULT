@@ -1,28 +1,27 @@
-﻿@model F_Result.Models.PlanDebit
+﻿@model F_Result.Models.PlanDebitF2
 
 @{
-    ViewBag.Title = "Удаление";
+    ViewBag.Title = "Расходы (Ф.2)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
+<div class="container"> 
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Удаление информации о расходах</small>
+            <small>Удаление информации о расходах (Форма 2)</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
             <li>@Html.ActionLink("План расходов", "PDShow", "PlanDebits")</li>
-            <li class="active">Удаление</li>
+            <li class="active">Удаление (Ф.2)</li>
         </ol>
     </div>
 
     <h3 class="text-danger">Вы действительно хотите удалить выбранную запись?</h3>
     <hr />
-
-
+    
     <div>
         <dl class="dl-horizontal">
             <dt>
@@ -55,6 +54,14 @@
 
             <dd>
                 @Html.DisplayFor(model => model.OrganizationName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ExpenditureName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ExpenditureName)
             </dd>
 
             <dt>

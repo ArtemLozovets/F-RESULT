@@ -670,7 +670,7 @@ namespace F_Result.Areas.Administrator.Controllers
                                   && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
                                   && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
                                   && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
-                            select worker);
+                            select worker).Distinct();
 
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

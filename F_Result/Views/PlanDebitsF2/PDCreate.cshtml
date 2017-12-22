@@ -1,12 +1,12 @@
-﻿@model F_Result.Models.PlanDebit
+﻿@model F_Result.Models.PlanDebitF2
 
 @{
-    ViewBag.Title = "Создание";
+    ViewBag.Title = "Расходы (Ф.2)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    #prgbasic-addon2:hover, #orgbasic-addon2:hover {
+    #prgbasic-addon2:hover, #orgbasic-addon2, #expbasic-addon2:hover {
         background-color: transparent;
     }
 </style>
@@ -27,13 +27,13 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Реестр расходов</small>
+            <small>Добавление планового расхода (Форма 2)</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
             <li>@Html.ActionLink("План расходов", "PDShow", "PlanDebits")</li>
-            <li class="active">Создание</li>
+            <li class="active">Добавление расхода (Ф.2)</li>
         </ol>
     </div>
 
@@ -45,7 +45,7 @@
     </div>
 
     <div class="col-md-7" style="margin-top:10px;">
-        @using (Html.BeginForm("PDCreate", "PlanDebits", FormMethod.Post, new { id = "PDForm" }))
+        @using (Html.BeginForm("PDCreate", "PlanDebitsF2", FormMethod.Post, new { id = "PDForm" }))
         {
             @Html.AntiForgeryToken()
 
@@ -126,6 +126,33 @@
                             </span>
                         </div>
                         @Html.ValidationMessageFor(model => model.OrganizationId, "", new { @class = "text-danger", id = "OrganizationValidator" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ExpenditureId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.HiddenFor(model => model.ExpenditureId, new { id = "ExpenditureId" })
+                        <div class="input-group">
+                            @Html.Editor("expSelect", new
+                       {
+                           htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               type = "text",
+                               id = "expSelect",
+                               @readonly = "readonly",
+                               placeholder = "Щелкните для выбора",
+                               aria_describedby = "expbasic-addon2",
+                               data_url = "/Directum/ShowExpendituresPartial",
+                               style = "cursor:pointer;"
+                           }
+                       })
+                            <span class="input-group-addon" id="expbasic-addon2" title="Очистить" style="cursor:pointer;">
+                                <i class="glyphicon glyphicon-refresh"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.ExpenditureId, "", new { @class = "text-danger", id = "ExpenditureValidator" })
                     </div>
                 </div>
 
@@ -228,6 +255,15 @@
                 });
             });
 
+            $('body').on('click', '#expSelect', function (e) {
+                e.preventDefault();
+                var _href = $(this).data('url');
+                $.get(_href, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modDialog').modal('show');
+                });
+            });
+
             $('body').on('click', '#prgbasic-addon2', function () {
                 $("#ProjectId").val('');
                 $("#prgSelect").val('');
@@ -236,6 +272,11 @@
             $('body').on('click', '#orgbasic-addon2', function () {
                 $("#OrganizationId").val('');
                 $("#orgSelect").val('');
+            });
+
+            $('body').on('click', '#expbasic-addon2', function () {
+                $("#ExpenditureId").val('');
+                $("#expSelect").val('');
             });
 
             $('#PDForm').submit(function (e) {
@@ -250,6 +291,12 @@
                     $("#OrganizationValidator").html("Необходимо выбрать организацию");
                     flag = true;
                 }
+
+                if ($("#ExpenditureId").val() == 0) {
+                    $("#ExpenditureValidator").html("Необходимо выбрать статью расходов");
+                    flag = true;
+                }
+
                 if (flag) { return false; }
             });
         })

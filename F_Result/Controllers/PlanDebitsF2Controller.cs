@@ -53,10 +53,10 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _projectname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _chname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _organizationname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _expname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _expname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _projectname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _chname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 string _appointment = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 string _userfn = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
@@ -297,7 +297,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PDEdit([Bind(Include = "PlanDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanDebitF2 planDebit)
+        public ActionResult PDEdit([Bind(Include = "PlanDebitF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanDebitF2 planDebit)
         {
 
             if (ModelState.IsValid)
