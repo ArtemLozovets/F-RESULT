@@ -225,6 +225,18 @@
     <Compile Include="Migrations\201712201255429_ProjectsChange4.Designer.cs">
       <DependentUpon>201712201255429_ProjectsChange4.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712232155116_ProjectsChange5.cs" />
+    <Compile Include="Migrations\201712232155116_ProjectsChange5.Designer.cs">
+      <DependentUpon>201712232155116_ProjectsChange5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712232203590_ProjectsChange6.cs" />
+    <Compile Include="Migrations\201712232203590_ProjectsChange6.Designer.cs">
+      <DependentUpon>201712232203590_ProjectsChange6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712232248276_ProjectsChange7.cs" />
+    <Compile Include="Migrations\201712232248276_ProjectsChange7.Designer.cs">
+      <DependentUpon>201712232248276_ProjectsChange7.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -742,6 +754,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712201255429_ProjectsChange4.resx">
       <DependentUpon>201712201255429_ProjectsChange4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712232155116_ProjectsChange5.resx">
+      <DependentUpon>201712232155116_ProjectsChange5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712232203590_ProjectsChange6.resx">
+      <DependentUpon>201712232203590_ProjectsChange6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712232248276_ProjectsChange7.resx">
+      <DependentUpon>201712232248276_ProjectsChange7.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

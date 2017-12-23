@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -59,5 +60,9 @@ namespace F_Result.Models
         [NotMapped]
         [Display(Name = "Остаток")]
         public decimal? Balance { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Дата остатка")]
+        public DateTime? BalanceDate { get; set; }
     }
 }

@@ -195,7 +195,7 @@
                     { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "MFO", "name": "MFO", "autoWidth": true, "class": "context-menu-one" },
                     { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one haveTitle balanceCell" },
                     {
                         "data": "Status", "name": "Status", "autoWidth": true, "type": "boolean", "class": "text-center context-menu-one",
                         "render": function (value) {
@@ -206,7 +206,9 @@
                     { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" }
                 ],
                 "createdRow": function (row, data, rowIndex) {
+                    var balanceDate = 'Остаток на дату: ' + formatDate(data.BalanceDate);
                     $(row).attr('data-objid', data.AccountId);
+                    $('.balanceCell', $(row)).attr('title', balanceDate);
                 }
             });
 
@@ -221,6 +223,16 @@
             });
 
         });
+
+        function formatDate(value) {
+            if (value === null) return "";
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+            return _d + "/" + _m + "/" + dt.getFullYear();
+        };
 
     </script>
 

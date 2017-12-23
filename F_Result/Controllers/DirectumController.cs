@@ -102,7 +102,9 @@ namespace F_Result.Controllers
                                      StartDateFact = prg.StartDateFact,
                                      Payment = payment.Payment,
                                      PaymentDate = payment.PaymentDate,
-                                     PaymentDesc = payment.PaymentDesc
+                                     PaymentDesc = payment.PaymentDesc,
+                                     planBenefit = prg.planBenefit != null ? prg.planBenefit : 0,
+                                     planExpand = prg.planExpand != null ? prg.planExpand : 0
                                  }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
@@ -122,7 +124,9 @@ namespace F_Result.Controllers
                                      StartDateFact = x.StartDateFact,
                                      Payment = x.Payment,
                                      PaymentDate = x.PaymentDate,
-                                     PaymentDesc = x.PaymentDesc
+                                     PaymentDesc = x.PaymentDesc,
+                                     planBenefit = x.planBenefit,
+                                     planExpand = x.planExpand
                                  }).ToList();
 
                 _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();

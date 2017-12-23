@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace F_Result.Models
 {
@@ -50,5 +51,10 @@ namespace F_Result.Models
         [Display(Name = "Состояние")]
         public string State{get; set;}
 		
+        [Display(Name = "План доходов")]
+        public decimal? planBenefit { get; set; }
+
+        [Display(Name = "План расходов")]
+        public decimal? planExpand { get; set; }
     }
 }

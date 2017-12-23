@@ -69,6 +69,7 @@ namespace F_Result.Controllers
                                             || usr.FirstName.Contains(_userfn)
                                             || usr.MiddleName.Contains(_userfn)
                                             || string.IsNullOrEmpty(_userfn))
+                                    && (acb.Date == db.AccountsBalances.OrderByDescending(x=>x.Date).Select(x=>x.Date).FirstOrDefault() || acb.Date == null)
 
                             select new
                             {
@@ -82,7 +83,8 @@ namespace F_Result.Controllers
                                 Note = account.Note,
                                 UserId = account.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0,1) + "." + usr.MiddleName.Substring(0,1)+".",
-                                Balance = db.AccountsBalances.Where(x=>x.AccountId == acb.AccountId).OrderByDescending(x=>x.Date).Select(x=>x.Balance).FirstOrDefault()
+                                Balance = acb.Balance != null ? acb.Balance : 0,
+                                BalanceDate = acb.Date != null ? acb.Date : DateTime.Today
                             }).Distinct().AsEnumerable().Select(x => new Account
                             {
                                 AccountId = x.AccountId,
@@ -95,7 +97,8 @@ namespace F_Result.Controllers
                                 Note = x.Note,
                                 UserId = x.UserId,
                                 UserFN = x.UserFN,
-                                Balance = x.Balance
+                                Balance = x.Balance,
+                                BalanceDate = x.BalanceDate
                             }).ToList();
 
                 _ads = _ads.Where(x => (x.Balance.ToString().Contains(_balancetxt) || string.IsNullOrEmpty(_balancetxt))).ToList();
