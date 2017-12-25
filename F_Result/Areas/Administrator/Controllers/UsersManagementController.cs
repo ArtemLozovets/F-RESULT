@@ -669,7 +669,22 @@ namespace F_Result.Areas.Administrator.Controllers
                                   join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
                                   from usrwks in usrwkstmp.DefaultIfEmpty()
                                   where usrwks.UserId == UserId
-                                  select worker).Distinct();
+                                  select new
+                                  {
+                                      id = worker.id,
+                                      ShortName = worker.ShortName,
+                                      Organization = worker.Organization,
+                                      projects = worker.projects,
+                                      relation = usrwks.UsrWksRelationId != null ? usrwks.UsrWksRelationId : 0
+                                  }).Distinct().AsEnumerable().Select(x => new Workers
+                                  {
+                                      id = x.id,
+                                      ShortName = x.ShortName,
+                                      Organization = x.Organization,
+                                      projects = x.projects,
+                                      relation = x.relation,
+                                      selected = true
+                                  });
 
                 var _wks = (from worker in dbModel.Workers
                             join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
@@ -678,7 +693,23 @@ namespace F_Result.Areas.Administrator.Controllers
                                   && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
                                   && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
                                   && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
-                            select worker).Distinct();
+                                  && (usrwks.UserId != UserId)
+                            select new
+                            {
+                                id = worker.id,
+                                ShortName = worker.ShortName,
+                                Organization = worker.Organization,
+                                projects = worker.projects,
+                                relation = usrwks.UsrWksRelationId != null ? usrwks.UsrWksRelationId : 0
+                            }).Distinct().AsEnumerable().Select(x => new Workers
+                            {
+                                id = x.id,
+                                ShortName = x.ShortName,
+                                Organization = x.Organization,
+                                projects = x.projects,
+                                relation = x.relation,
+                                selected = false
+                            });
 
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -690,12 +721,10 @@ namespace F_Result.Areas.Administrator.Controllers
                     _wks = _wks.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
                 }
 
-
-
-                totalRecords = _wks.Count();
-
                 wksList.AddRange(_wksSelect);
                 wksList.AddRange(_wks);
+
+                totalRecords = wksList.Count();
 
                 var data = wksList.Skip(skip).Take(pageSize);
                 return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);

@@ -164,7 +164,7 @@
                         "url": "/UsersManagement/LoadWks",
                         "type": "POST",
                         "datatype": "json",
-                        "data":{
+                        "data": {
                             UserId: $('#UserId').val()
                         },
                         "dataSrc": function (d) {
@@ -186,11 +186,17 @@
                             data: null, sWidth: '5%',
                             bSortable: false,
                             render: function (data, type, row, meta) {
-                                var chkStr = '<div style="width:100%; text-align:center;"><input data-wksid="' + row['id'] + '" class="wksSelectCHB" type="checkbox"></div>';
+                                var isChecked = data.selected ? 'checked' : '';
+                                var chkStr = '<div style="width:100%; text-align:center;"><input data-wksid="' + row['id'] + '" class="wksSelectCHB" type="checkbox" ' + isChecked + '></div>';
                                 return chkStr;
                             }
                         }
                     ],
+                    "createdRow": function (row, data, rowIndex) {
+                        if (data.selected) {
+                            $(row).addClass('success');
+                        }
+                    }
                 });
 
             table.columns().eq(0).each(function (colIdx) {
