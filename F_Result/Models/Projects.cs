@@ -52,9 +52,9 @@ namespace F_Result.Models
         public string State{get; set;}
 		
         [Display(Name = "План доходов")]
-        public decimal? planBenefit { get; set; }
+        public decimal planBenefit { get; set; }
 
         [Display(Name = "План расходов")]
-        public decimal? planExpand { get; set; }
+        public decimal planExpand { get; set; }
     }
 }

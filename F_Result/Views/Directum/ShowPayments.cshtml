@@ -278,7 +278,6 @@
                         var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
                         prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
                         prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
-                            
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
                     "order": [[6, "desc"]]

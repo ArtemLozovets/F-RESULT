@@ -322,7 +322,11 @@
                         //Выводим всплывающую подсказку с подробной информацией о проекте
                         var _datePlan = formatDate(data.StartDatePlan);
                         var _dateFact = formatDate(data.StartDateFact);
-                        var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName + '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                        var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                        prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                        prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
                     "columnDefs": [

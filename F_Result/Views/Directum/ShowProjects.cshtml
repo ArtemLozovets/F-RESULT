@@ -258,7 +258,10 @@
                 "order": [[9, "desc"]],
                 "createdRow": function (row, data, rowIndex) {
                     //Выводим всплывающую подсказку с подробной информацией о проекте
+                    var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                     var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                    prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
                     $('.ttlF', $(row)).attr('title', prgTitleStr);
                 },
             });

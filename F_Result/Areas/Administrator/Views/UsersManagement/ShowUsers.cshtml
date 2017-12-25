@@ -104,7 +104,7 @@
 
                 <td style="text-align:center;">
                     <a class="btn btn-primary btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
-                    <a class="btn btn-primary btn-sm UsrWksEdit" disabled href='@Url.Action("UsrWksRelation", "UsersManagement", new { UserId = @item.UId, Mode = "Edit" })' title="Редактировать сопоставление с сотрудниками"><span class="glyphicon glyphicon-user"></span></a>
+                    <a class="btn btn-primary btn-sm UsrWksEdit" href='@Url.Action("UsrWksRelation", "UsersManagement", new { UserId = @item.UId, Mode = "Edit" })' title="Редактировать сопоставление с сотрудниками"><span class="glyphicon glyphicon-user"></span></a>
                     @if (@item.URole.Contains("Заблокирован"))
                     {
                         <a class="btn btn-primary btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
@@ -126,9 +126,9 @@
   <script src="~/Scripts/toparrow.js"></script>  
     <script>
         $(function () {
-            $('.UsrWksEdit').on('click', function (e) {
-                e.preventDefault();
-            })
+            //$('.UsrWksEdit').on('click', function (e) {
+            //    e.preventDefault();
+            //})
         });
     </script>
 }

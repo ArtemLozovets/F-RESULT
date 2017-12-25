@@ -76,5 +76,10 @@ namespace F_Result.Models
         [Display(Name = "Дата начала (Факт)")]
         public DateTime? StartDatePlan { get; set; }
 
+        [Display(Name = "План доходов")]
+        public decimal planBenefit { get; set; }
+
+        [Display(Name = "План расходов")]
+        public decimal planExpand { get; set; }
     }
 }

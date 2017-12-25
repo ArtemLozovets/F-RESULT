@@ -103,8 +103,8 @@ namespace F_Result.Controllers
                                      Payment = payment.Payment,
                                      PaymentDate = payment.PaymentDate,
                                      PaymentDesc = payment.PaymentDesc,
-                                     planBenefit = prg.planBenefit != null ? prg.planBenefit : 0,
-                                     planExpand = prg.planExpand != null ? prg.planExpand : 0
+                                     planBenefit = prg.planBenefit,
+                                     planExpand = prg.planExpand
                                  }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
@@ -277,7 +277,9 @@ namespace F_Result.Controllers
                                      StartDateFact = project.StartDateFact,
                                      EndDateFact = project.EndDateFact,
                                      StartDatePlan = project.StartDatePlan,
-                                     EndDatePlan = project.EndDatePlan
+                                     EndDatePlan = project.EndDatePlan,
+                                     planBenefit = project.planBenefit,
+                                     planExpand = project.planExpand
 
                                  }).AsEnumerable().Select(x => new Projects
                                  {
@@ -292,8 +294,9 @@ namespace F_Result.Controllers
                                      StartDateFact = x.StartDateFact,
                                      EndDateFact = x.EndDateFact,
                                      StartDatePlan = x.StartDatePlan,
-                                     EndDatePlan = x.EndDatePlan
-
+                                     EndDatePlan = x.EndDatePlan,
+                                     planBenefit = x.planBenefit,
+                                     planExpand = x.planExpand
                                  });
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

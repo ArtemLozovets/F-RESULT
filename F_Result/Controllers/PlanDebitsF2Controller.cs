@@ -111,7 +111,9 @@ namespace F_Result.Controllers
                                 OrgName = org.Title,
                                 ExptId = exp.Id,
                                 ExpName = exp.Name,
-                                PeriodName = pperiod.PeriodName
+                                PeriodName = pperiod.PeriodName,
+                                planBenefit = prg.planBenefit,
+                                planExpand = prg.planExpand
                             }).AsEnumerable().Select(x => new PlanDebitViewF2
                             {
                                 PlanDebitF2Id = x.PlanDebitF2Id,
@@ -131,7 +133,9 @@ namespace F_Result.Controllers
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
                                 UserFN = x.UserFN,
-                                PeriodName = x.PeriodName
+                                PeriodName = x.PeriodName,
+                                planBenefit = x.planBenefit,
+                                planExpand = x.planExpand
                             }).ToList();
 
                 _ads = _ads.Where(x => ((x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();

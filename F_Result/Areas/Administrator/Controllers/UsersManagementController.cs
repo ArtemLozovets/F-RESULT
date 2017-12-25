@@ -663,6 +663,14 @@ namespace F_Result.Areas.Administrator.Controllers
                 string _orgname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _prjname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
 
+                List<Workers> wksList = new List<Workers>();
+
+                var _wksSelect = (from worker in dbModel.Workers
+                                  join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                                  from usrwks in usrwkstmp.DefaultIfEmpty()
+                                  where usrwks.UserId == UserId
+                                  select worker).Distinct();
+
                 var _wks = (from worker in dbModel.Workers
                             join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
                             from usrwks in usrwkstmp.DefaultIfEmpty()
@@ -686,7 +694,10 @@ namespace F_Result.Areas.Administrator.Controllers
 
                 totalRecords = _wks.Count();
 
-                var data = _wks.Skip(skip).Take(pageSize);
+                wksList.AddRange(_wksSelect);
+                wksList.AddRange(_wks);
+
+                var data = wksList.Skip(skip).Take(pageSize);
                 return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
             }

@@ -23,6 +23,8 @@ namespace F_Result.Models
         public decimal creditplan { get; set; }
         public decimal creditfact { get; set; }
         public decimal cdelta { get; set; }
+        public decimal planBenefit { get; set; }
+        public decimal planExpand { get; set; }
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }
     }

@@ -80,11 +80,11 @@ namespace F_Result.Models
 
         [NotMapped]
         [Display(Name = "План доходов")]
-        public decimal? planBenefit { get; set; }
+        public decimal planBenefit { get; set; }
 
         [NotMapped]
         [Display(Name = "План расходов")]
-        public decimal? planExpand { get; set; }
+        public decimal planExpand { get; set; }
 
     }
 }

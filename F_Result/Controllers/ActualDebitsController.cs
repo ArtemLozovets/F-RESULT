@@ -103,7 +103,9 @@ namespace F_Result.Controllers
                                 ProjectManagerName = prg.ProjectManagerName,
                                 StartDatePlan = prg.StartDatePlan,
                                 StartDateFact = prg.StartDateFact,
-                                OrgName = org.Title
+                                OrgName = org.Title,
+                                planBenefit = prg.planBenefit,
+                                planExpand = prg.planExpand
                             }).AsEnumerable().Select(x => new ActualDebitView
                             {
                                 ActualDebitId = x.ActualDebitId,
@@ -121,7 +123,9 @@ namespace F_Result.Controllers
                                 Appointment = x.Appointment,
                                 DocNumber = x.DocNumber,
                                 UserId = x.UserId,
-                                UserFN = x.UserFN
+                                UserFN = x.UserFN,
+                                planBenefit = x.planBenefit,
+                                planExpand = x.planExpand
                             }).ToList();
 
                 _ads = _ads.Where(x => ((x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
