@@ -19,9 +19,6 @@ namespace F_Result.Models
         public string projects { get; set; }
 
         [NotMapped]
-        public int? relation { get; set; }
-
-        [NotMapped]
         public bool selected { get; set; }
     }
 }

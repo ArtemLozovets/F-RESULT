@@ -25,11 +25,19 @@ namespace F_Result.Models
         [Display(Name = "Отчество")]
         public string UMiddleName { get; set; }
 
+        [Display(Name = "ФИО")]
+        public string UFullName { get; set; }
+
+        [Display(Name = "Сотрудники")]
+        public string UWorkers { get; set; }
+
         [Display(Name = "Должность")]
         public string UPost { get; set; }
 
         [Display(Name = "Роль")]
         public string URole { get; set; }
+
+
 
     }
 

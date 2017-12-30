@@ -61,16 +61,39 @@ namespace F_Result.Areas.Administrator.Controllers
             ApplicationRole currentRole = null;
             try
             {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
                 users = db.Users.ToList();
                 foreach (var useritem in users)
                 {
                     string RoleString = string.Empty;
+                    string WorkersString = "Связанные сотрудники: \x0A";
+
                     foreach (var roleitem in useritem.Roles)
                     {
                         currentRole = roleManager.FindById(roleitem.RoleId);
                         if (currentRole == null) RoleString = "Неопределена";
                         else RoleString += currentRole.Description.ToString() + " ";
                     }
+
+                    //Получаем список связанных сотрудников
+                    List<int> WorkersList = (from wksid in dbModel.UsrWksRelations
+                                             where wksid.UserId == useritem.Id
+                                             select wksid.WorkerId).ToList();
+                    if (WorkersList.Count > 0)
+                    {
+                        //Получаем информацию о каждом связанном сотруднике
+                        foreach (var workeritem in WorkersList)
+                        {
+                            var wksInfoes = dbModel.Workers.FirstOrDefault(x => x.id == workeritem);
+                            WorkersString += wksInfoes.ShortName.ToString() + " - " + wksInfoes.Organization.ToString() + "\x0A";
+                        }
+                    }
+                    else
+                    {
+                        WorkersString = "Связанные сотрудники отсутствуют";
+                    }
+                    
 
                     UsRoleViewModel currentuser = new UsRoleViewModel
                     {
@@ -80,6 +103,8 @@ namespace F_Result.Areas.Administrator.Controllers
                         UFirstName = useritem.FirstName,
                         ULastName = useritem.LastName,
                         UMiddleName = useritem.MiddleName,
+                        UFullName = useritem.LastName + " " + useritem.FirstName + " " + useritem.MiddleName,
+                        UWorkers = WorkersString,
                         UPost = useritem.Post,
                         URole = RoleString
                     };
@@ -88,7 +113,7 @@ namespace F_Result.Areas.Administrator.Controllers
 
                 if (!string.IsNullOrEmpty(result) && result == "success")
                 {
-                    TempData["MessageOk"] = "Учетная запись создана";
+                    TempData["MessageOk"] = "Операция завершена успешно";
                 }
 
                 return View(usrollist);
@@ -604,17 +629,10 @@ namespace F_Result.Areas.Administrator.Controllers
 
             try
             {
+                dbModel.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
                 List<int> WksArray = JsonConvert.DeserializeObject<List<int>>(WorkersIds);
                 List<UsrWksRelation> WksList = new List<UsrWksRelation>();
-
-                var WksExist = dbModel.UsrWksRelations.FirstOrDefault(x => x.UserId == UserId && WksArray.Contains(x.WorkerId));
-                if (WksExist != null)
-                {
-                    string WksNAme = dbModel.Workers.FirstOrDefault(x => x.id == WksExist.WorkerId).ShortName.ToString();
-                    errormessage = "Операция отклонена. Сопоставление с сотрудником \"" + WksNAme + "\" уже существует в базе данных.";
-                    data = "";
-                    return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
-                }
 
                 foreach (var wks in WksArray)
                 {
@@ -626,10 +644,31 @@ namespace F_Result.Areas.Administrator.Controllers
                     WksList.Add(_wks);
                 }
 
-                dbModel.UsrWksRelations.AddRange(WksList);
-                dbModel.SaveChanges();
+                using (var dbContextTransaction = dbModel.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        //Удаляем ВСЕ сопоставления выбранного пользователя из БД
+                        var DelWksList = dbModel.UsrWksRelations.Where(x => x.UserId == UserId).ToList();
+                        var result = dbModel.UsrWksRelations.RemoveRange(DelWksList);
+                        db.SaveChanges();
 
-                return Json(new { Result = true, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+                        //Добавляем актуальные сопоставления в БД
+                        dbModel.UsrWksRelations.AddRange(WksList);
+                        dbModel.SaveChanges();
+
+                        dbContextTransaction.Commit();
+                        return Json(new { Result = true, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+                    }
+                    catch (Exception exin)
+                    {
+                        dbContextTransaction.Rollback();
+
+                        errormessage = "Ошибка выполнения запроса!\n\r" + exin.Message + "\n\r" + exin.StackTrace;
+                        data = "";
+                        return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -647,7 +686,7 @@ namespace F_Result.Areas.Administrator.Controllers
         {
             try
             {
-                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+                dbModel.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -675,54 +714,52 @@ namespace F_Result.Areas.Administrator.Controllers
                                       ShortName = worker.ShortName,
                                       Organization = worker.Organization,
                                       projects = worker.projects,
-                                      relation = usrwks.UsrWksRelationId != null ? usrwks.UsrWksRelationId : 0
                                   }).Distinct().AsEnumerable().Select(x => new Workers
                                   {
                                       id = x.id,
                                       ShortName = x.ShortName,
                                       Organization = x.Organization,
                                       projects = x.projects,
-                                      relation = x.relation,
                                       selected = true
-                                  });
+                                  }).OrderBy(x => x.ShortName).ToList();
 
-                var _wks = (from worker in dbModel.Workers
-                            join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
-                            from usrwks in usrwkstmp.DefaultIfEmpty()
-                            where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
-                                  && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
-                                  && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
-                                  && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
-                                  && (usrwks.UserId != UserId)
-                            select new
-                            {
-                                id = worker.id,
-                                ShortName = worker.ShortName,
-                                Organization = worker.Organization,
-                                projects = worker.projects,
-                                relation = usrwks.UsrWksRelationId != null ? usrwks.UsrWksRelationId : 0
-                            }).Distinct().AsEnumerable().Select(x => new Workers
+                var _wksNoSelect = (from worker in dbModel.Workers
+                                    join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                                    from usrwks in usrwkstmp.DefaultIfEmpty()
+                                    where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                                          && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                                          && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
+                                          && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
+                                    select new
+                                    {
+                                        id = worker.id,
+                                        ShortName = worker.ShortName,
+                                        Organization = worker.Organization,
+                                        projects = worker.projects,
+                                    }).Distinct().AsEnumerable().Select(x => new Workers
                             {
                                 id = x.id,
                                 ShortName = x.ShortName,
                                 Organization = x.Organization,
                                 projects = x.projects,
-                                relation = x.relation,
                                 selected = false
                             });
 
+                //Выбираем только тех сотрудников, которые отсутствуют в списке сопоставленных (_wksSelect)
+                _wksNoSelect = _wksNoSelect.Where(x => !_wksSelect.Select(z => z.id).ToList().Contains(x.id));
+                //-------------------------------------
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _wks = _wks.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                    _wksNoSelect = _wksNoSelect.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
                 }
                 else
                 {
-                    _wks = _wks.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
+                    _wksNoSelect = _wksNoSelect.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
                 }
 
                 wksList.AddRange(_wksSelect);
-                wksList.AddRange(_wks);
+                wksList.AddRange(_wksNoSelect);
 
                 totalRecords = wksList.Count();
 

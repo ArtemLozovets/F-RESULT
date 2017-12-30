@@ -51,18 +51,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.UEmail)
             </th>
+
             <th>
-                @Html.DisplayNameFor(model => model.ULastName)
+                @Html.DisplayNameFor(model => model.UFullName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UFirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UMiddleName)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.UPost)
             </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.URole)
             </th>
@@ -70,22 +67,18 @@
         </tr>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr title="@item.UWorkers">
                 <td>
                     @Html.DisplayFor(modelItem => item.UUserName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UEmail)
                 </td>
+
                 <td>
-                    @Html.DisplayFor(modelItem => item.ULastName)
+                    @Html.DisplayFor(modelItem => item.UFullName)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UFirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UMiddleName)
-                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.UPost)
                 </td>

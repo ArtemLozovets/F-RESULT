@@ -3,6 +3,7 @@
     if (ViewData["VMode"].ToString() == "Edit")
     {
         ViewBag.Title = "Редактирование";
+        @Html.Hidden("ModeFlag", ViewData["VMode"].ToString())
     }
 }
 
@@ -77,22 +78,28 @@
         $(function () {
 
             //Отключаем кнопку "Завершить"
-            $('#wksSend').attr('disabled', true);
+            if ($('#ModeFlag').val() !== "Edit") {
+                $('#wksSend').attr('disabled', true);
+            };
 
             //Включаем кнопку "Завершить"
             $('body').on('change', 'input:checkbox.wksSelectCHB', function () {
-                $('#wksSend').attr('disabled', true);
-                $('input:checkbox.wksSelectCHB').each(function () {
-                    if ($(this).prop('checked')) {
-                        $('#wksSend').attr('disabled', false);
-                    }
-                });
+                if ($('#ModeFlag').val() !== "Edit") {
+                    $('#wksSend').attr('disabled', true);
+                    $('input:checkbox.wksSelectCHB').each(function () {
+                        if ($(this).prop('checked')) {
+                            $('#wksSend').attr('disabled', false);
+                        }
+                    });
+                };
             });
 
             //Сброс состояния всех чекбоксов таблицы
             $('#clearWks').on('click', function () {
                 $('.wksSelectCHB').prop('checked', false);
-                $('#wksSend').attr('disabled', true);
+                if ($('#ModeFlag').val() !== "Edit") {
+                    $('#wksSend').attr('disabled', true);
+                };
             });
 
             //Отправка данных на сервер
