@@ -439,6 +439,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Content\Images\construction.jpg" />
+    <Content Include="Content\Images\err403.jpg" />
     <Content Include="Content\Images\icon_top.png" />
     <Content Include="Content\Images\loader.gif" />
     <Content Include="Content\Images\sl1.jpg" />

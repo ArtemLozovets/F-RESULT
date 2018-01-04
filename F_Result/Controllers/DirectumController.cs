@@ -2,10 +2,10 @@
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using System.Linq.Dynamic; //!=====!
 using F_Result.Models;
+using Microsoft.AspNet.Identity;
 
 namespace F_Result.Controllers
 {
@@ -39,12 +39,24 @@ namespace F_Result.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
+                //Проверяем принадлежность текущего пользователя к роли "Руководитель проекта"
+                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
+                int? WorkerId = null;
+                if (isPrgManager)
+                {
+                    //Получаем идентификатор текущего пользователя
+                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    {
+                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                        WorkerId = db.UsrWksRelations.FirstOrDefault(x => x.UserId == user).WorkerId;
+                    }
+                }
+
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
                 var length = Request.Form.GetValues("length").FirstOrDefault();
                 var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
-
 
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -83,6 +95,7 @@ namespace F_Result.Controllers
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
+                                        && (prg.ProjectManager == WorkerId)
                                  select new
                                  {
                                      id = payment.id,
@@ -571,10 +584,10 @@ namespace F_Result.Controllers
                 string _groupname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
 
                 var _expenditures = (from expdt in db.Expenditures
-                                      where (expdt.Article.Contains(_article) || string.IsNullOrEmpty(_article))
-                                            && (expdt.Name.Contains(_name) || string.IsNullOrEmpty(_name))
-                                            && (expdt.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
-                                      select expdt);
+                                     where (expdt.Article.Contains(_article) || string.IsNullOrEmpty(_article))
+                                           && (expdt.Name.Contains(_name) || string.IsNullOrEmpty(_name))
+                                           && (expdt.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
+                                     select expdt);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
