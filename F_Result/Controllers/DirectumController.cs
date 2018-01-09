@@ -48,7 +48,8 @@ namespace F_Result.Controllers
                     using (ApplicationDbContext aspdb = new ApplicationDbContext())
                     {
                         var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
-                        WorkerId = db.UsrWksRelations.FirstOrDefault(x => x.UserId == user).WorkerId;
+                        var WorkerEntity = db.UsrWksRelations.FirstOrDefault(x => x.UserId == user);
+                        WorkerId = WorkerEntity != null ? WorkerEntity.WorkerId : -1;
                     }
                 }
 
