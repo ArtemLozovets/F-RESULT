@@ -6,7 +6,9 @@ using System.Net;
 using System.Web.Mvc;
 using F_Result.Models;
 using Microsoft.AspNet.Identity;
-using System.Linq.Dynamic; //!=====!
+using System.Linq.Dynamic;
+using F_Result.Methods;
+using System.Collections.Generic; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -42,6 +44,8 @@ namespace F_Result.Controllers
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -89,6 +93,7 @@ namespace F_Result.Controllers
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plandebit.Appointment.Contains(_appointment) || string.IsNullOrEmpty(_appointment))
                                         && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                             select new
                             {
                                 PlanDebitId = plandebit.PlanDebitId,

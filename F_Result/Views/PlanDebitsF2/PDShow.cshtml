@@ -234,12 +234,20 @@
 
     <script>
         $(function () {
-            //Скрипт создания таблицы
             $('#loadingImg').hide();
+
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+            }
+
+            //Скрипт создания таблицы
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[1].search.value = $('#prjFlt').val();
                     data.columns[6].search.value = $('#dateFlt').val();
+                    data.columns[7].search.value = $('#PeriodDDL').val();
                 })
                 .DataTable({
                     "fixedHeader": {
@@ -349,6 +357,22 @@
             });
         });
 
+        //Скрипт для работы с фильтром выбора планового периода
+        $('body').on('change', '#PeriodDDL', function () {
+            localStorage.setItem('PlanningPeriod', $(this).val());
+            var table = $('#gridtable').DataTable();
+            table.draw();
+        });
+
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
+
         function formatDate(value) {
             if (value === null) return "";
             var pattern = /Date\(([^)]+)\)/;
@@ -361,37 +385,6 @@
 
     </script>
 
-    <script>
-        //Скрипт для работы с фильтром выбора планового периода
-        $(function () {
-            //Читаем значение фильтра планового периода
-            if (localStorage.getItem('PlanningPeriod') !== null) {
-                var DDLVal = localStorage.getItem('PlanningPeriod');
-                $('#PeriodDDL').val(DDLVal);
-                var table = $('#gridtable').DataTable();
-                table.column(8).search(DDLVal).draw();
-            }
-            var table = $('#gridtable').DataTable();
-            table.column(8).search($('#PeriodDDL').val()).draw();
-
-            $('body').on('change', '#PeriodDDL', function () {
-                localStorage.setItem('PlanningPeriod', $(this).val());
-                var table = $('#gridtable').DataTable();
-                table.column(8).search(this.value).draw();
-            });
-        });
-    </script>
-
-    <script>
-        function ClearFilter() {
-            var table = $('#gridtable').DataTable();
-            $(".sb, .dff").each(function (colIdx) {
-                $(this).val('');
-                table.column(colIdx).search('');
-            });
-            table.draw();
-        }
-    </script>
 }
 
 

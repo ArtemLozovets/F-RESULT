@@ -225,24 +225,20 @@
 
     <script type="text/javascript">
         $(function () {
-            //Скрипт создания таблицы
             $('#loadingImg').hide();
 
-            var DDLVal = 0;
             //Читаем значение фильтра планового периода
             if (localStorage.getItem('PlanningPeriod') !== null) {
-                DDLVal = localStorage.getItem('PlanningPeriod');
+                var DDLVal = localStorage.getItem('PlanningPeriod');
                 $('#PeriodDDL').val(DDLVal);
             }
-            else {
-                DDLVal = $('#PeriodDDL').val();
-            }
 
+            //Скрипт создания таблицы
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[0].search.value = $('#prjFlt').val();
                     data.columns[5].search.value = $('#dateFlt').val();
-                    data.columns[7].search.value = DDLVal;
+                    data.columns[7].search.value = $('#PeriodDDL').val();
                 })
                 .DataTable({
                     "fixedHeader": {
