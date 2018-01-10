@@ -7,6 +7,8 @@ using System.Web.Mvc;
 using F_Result.Models;
 using Microsoft.AspNet.Identity;
 using System.Linq.Dynamic; //!=====!
+using F_Result.Methods;
+using System.Collections.Generic;
 
 namespace F_Result.Controllers
 {
@@ -26,7 +28,7 @@ namespace F_Result.Controllers
                 ViewData["ProjectName"] = ProjectName;
             }
 
-            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
                 ViewData["Period"] = startDate + " - " + endDate;
             }
@@ -42,6 +44,8 @@ namespace F_Result.Controllers
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -62,7 +66,7 @@ namespace F_Result.Controllers
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
                 string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                if (!String.IsNullOrEmpty(_datetext))
+                if (!string.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
                     int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
@@ -75,7 +79,7 @@ namespace F_Result.Controllers
                 string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 string _periodtxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 int _period;
-                Int32.TryParse(_periodtxt, out _period);
+                int.TryParse(_periodtxt, out _period);
 
                 var _ads = (from plancredit in db.PlanCredits
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
@@ -88,7 +92,8 @@ namespace F_Result.Controllers
                                         && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
-                                        && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
+                                        && (pperiod.PlanningPeriodId == _period || string.IsNullOrEmpty(_periodtxt))
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief??0)) //Фильтрация записей по проектам для руководителей проектов
                             select new
                             {
                                 PlanCreditId = plancredit.PlanCreditId,

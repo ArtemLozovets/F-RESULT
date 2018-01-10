@@ -45,7 +45,7 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект"  value="@ViewData["ProjectName"]" id="prjFlt"/></th>
+                <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
@@ -227,104 +227,116 @@
         $(function () {
             //Скрипт создания таблицы
             $('#loadingImg').hide();
+
+            var DDLVal = 0;
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+            }
+            else {
+                DDLVal = $('#PeriodDDL').val();
+            }
+
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[0].search.value = $('#prjFlt').val();
                     data.columns[5].search.value = $('#dateFlt').val();
+                    data.columns[7].search.value = DDLVal;
                 })
                 .DataTable({
-                "fixedHeader": {
-                    "header": true,
-                    "headerOffset": $('#mainNavbar').height()
-                },
-                "processing": true,
-                "serverSide": true,
-                "filter": true,
-                "orderMulti": true,
-                "responsive": true,
-                "pageLength": 25, // Количество записей в таблице по умолчанию
-                "pagingType": "simple_numbers",
-                "language": {
-                    "lengthMenu": "Записей: _MENU_",
-                    "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск",
-                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    "sInfoThousands": " ",
-                    "oPaginate": {
-                        "sNext": ">",
-                        "sPrevious": "<"
-                    }
-                },
-                "dom": "<'row'<'col-sm-3'l><'col-sm-6'B><'#sumSpan.col-sm-3'B>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "fnDrawCallback": function (settings) {
-                    //Используем эту функцию для обновления внешних елементов.
-                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
-                    var api = this.api();
-                    var json = api.ajax.json();
-                    var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
-                },
-                "ajax": {
-                    "url": "/PlanCredits/LoadPC",
-                    "type": "POST",
-                    "datatype": "json",
-                    "dataSrc": function (d) {
-                        if (d.data.length === 0) {
-                            if (d.errormessage != "") {
-                                alert(d.errormessage);
-                            }
-                        }
-                        return d.data;
-                    }
-                },
-                "order": [[5, "desc"]],
-                "columns": [
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
-                    { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                    { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
-                    {
-                        "data": "Date", "name": "Date", "autoWidth": true,
-                        "type": "date ",
-                        "render": function (value) {
-                            if (value === null) return "";
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-                            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                            return _d + "/" + _m + "/" + dt.getFullYear();
-                        },
-                        "class": "dateCellf context-menu-one"
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
                     },
-                    { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                    { "data": "PeriodName", "name": "PeriodName", "autoWidth": false }
-                ],
-                "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-objid', data.PlanCreditId);
-                    var _datePlan = formatDate(data.StartDatePlan);
-                    var _dateFact = formatDate(data.StartDateFact);
-                    var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
-                    prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                    prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
-                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
-                },
-                "columnDefs": [
-                    {
-                        "targets": [7],
-                        "visible": false,
-                        "searchable": false
-                    }
-                ]
-            });
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": true,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "dom": "<'row'<'col-sm-3'l><'col-sm-6'B><'#sumSpan.col-sm-3'B>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "fnDrawCallback": function (settings) {
+                        //Используем эту функцию для обновления внешних елементов.
+                        //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                        var api = this.api();
+                        var json = api.ajax.json();
+                        var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                        $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                    },
+                    "ajax": {
+                        "url": "/PlanCredits/LoadPC",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (d.data.length === 0) {
+                                if (d.errormessage != "") {
+                                    alert(d.errormessage);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[5, "desc"]],
+                    "columns": [
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
+                        { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
+                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
+                        { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                        {
+                            "data": "Date", "name": "Date", "autoWidth": true,
+                            "type": "date ",
+                            "render": function (value) {
+                                if (value === null) return "";
+                                var pattern = /Date\(([^)]+)\)/;
+                                var results = pattern.exec(value);
+                                var dt = new Date(parseFloat(results[1]));
+                                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                                return _d + "/" + _m + "/" + dt.getFullYear();
+                            },
+                            "class": "dateCellf context-menu-one"
+                        },
+                        { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                        { "data": "PeriodName", "name": "PeriodName", "autoWidth": false }
+                    ],
+                    "createdRow": function (row, data, rowIndex) {
+                        $(row).attr('data-objid', data.PlanCreditId);
+                        var _datePlan = formatDate(data.StartDatePlan);
+                        var _dateFact = formatDate(data.StartDateFact);
+                        var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                        prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                        prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
+                        $('.prgCellf', $(row)).attr('title', prgTitleStr);
+                    },
+                    "columnDefs": [
+                        {
+                            "targets": [7],
+                            "visible": false,
+                            "searchable": false
+                        }
+                    ]
+                });
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -337,6 +349,22 @@
             });
         });
 
+        //Скрипт для работы с фильтром выбора планового периода
+        $('body').on('change', '#PeriodDDL', function () {
+            localStorage.setItem('PlanningPeriod', $(this).val());
+            var table = $('#gridtable').DataTable();
+            table.draw();
+        });
+
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
+
         function formatDate(value) {
             if (value === null) return "";
             var pattern = /Date\(([^)]+)\)/;
@@ -347,38 +375,6 @@
             return _d + "/" + _m + "/" + dt.getFullYear();
         };
 
-    </script>
-
-    <script>
-        //Скрипт для работы с фильтром выбора планового периода
-        $(function () {
-            //Читаем значение фильтра планового периода
-            if (localStorage.getItem('PlanningPeriod') !== null) {
-                var DDLVal = localStorage.getItem('PlanningPeriod');
-                $('#PeriodDDL').val(DDLVal);
-                var table = $('#gridtable').DataTable();
-                table.column(7).search(DDLVal).draw();
-            }
-            var table = $('#gridtable').DataTable();
-            table.column(7).search($('#PeriodDDL').val()).draw();
-
-            $('body').on('change', '#PeriodDDL', function () {
-                localStorage.setItem('PlanningPeriod', $(this).val());
-                var table = $('#gridtable').DataTable();
-                table.column(7).search(this.value).draw();
-            });
-        });
-    </script>
-
-    <script>
-        function ClearFilter() {
-            var table = $('#gridtable').DataTable();
-            $(".sb, .dff").each(function (colIdx) {
-                $(this).val('');
-                table.column(colIdx).search('');
-            });
-            table.draw();
-        }
     </script>
 }
 

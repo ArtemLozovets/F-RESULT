@@ -5,7 +5,8 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Linq.Dynamic; //!=====!
 using F_Result.Models;
-using Microsoft.AspNet.Identity;
+using F_Result.Methods;
+using System.Collections.Generic;
 
 namespace F_Result.Controllers
 {
@@ -23,7 +24,7 @@ namespace F_Result.Controllers
                 ViewData["ProjectName"] = ProjectName;
             }
 
-            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
                 ViewData["Period"] = startDate + " - " + endDate;
             }
@@ -39,19 +40,7 @@ namespace F_Result.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-                //Проверяем принадлежность текущего пользователя к роли "Руководитель проекта"
-                bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");
-                int? WorkerId = null;
-                if (isPrgManager)
-                {
-                    //Получаем идентификатор текущего пользователя
-                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
-                    {
-                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
-                        var WorkerEntity = db.UsrWksRelations.FirstOrDefault(x => x.UserId == user);
-                        WorkerId = WorkerEntity != null ? WorkerEntity.WorkerId : -1;
-                    }
-                }
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -74,7 +63,7 @@ namespace F_Result.Controllers
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
                 string _paymentdatetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                if (!String.IsNullOrEmpty(_paymentdatetext))
+                if (!string.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
                     int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
@@ -96,7 +85,7 @@ namespace F_Result.Controllers
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                                        && (prg.ProjectManager == WorkerId)
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                                  select new
                                  {
                                      id = payment.id,
@@ -242,7 +231,7 @@ namespace F_Result.Controllers
                 DateTime? _psstartdate = null;
                 DateTime? _psenddate = null;
                 string _pstarttext = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                if (!String.IsNullOrEmpty(_pstarttext))
+                if (!string.IsNullOrEmpty(_pstarttext))
                 {
                     _pstarttext = _pstarttext.Trim();
                     int _length = (_pstarttext.Length) - (_pstarttext.IndexOf('-') + 2);
@@ -550,7 +539,6 @@ namespace F_Result.Controllers
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
-
 
         #region Справочник статей расходов
         public ActionResult ShowExpenditures()

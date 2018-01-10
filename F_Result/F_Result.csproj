@@ -189,6 +189,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Methods\UsrWksMethods.cs" />
     <Compile Include="Migrations\201706061834352_InitialMigration.cs" />
     <Compile Include="Migrations\201706061834352_InitialMigration.Designer.cs">
       <DependentUpon>201706061834352_InitialMigration.cs</DependentUpon>
