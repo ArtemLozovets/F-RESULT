@@ -5,7 +5,8 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Linq.Dynamic;
 using System.Globalization;
-using System.Web.Script.Serialization; //!=====!
+using System.Web.Script.Serialization;
+using F_Result.Methods; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -470,6 +471,7 @@ namespace F_Result.Controllers
 
                 var _isAllTimes = IsAllTimes ? 1 : 0;
 
+
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
@@ -485,12 +487,18 @@ namespace F_Result.Controllers
                     _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPlanningBalance() as PlanningBalance").FirstOrDefault();
                 }
 
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
                 List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
-                _ads = _ads.Where(x => filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.prj)).ToList();
+                _ads = _ads.Where(x => 
+                            (filterPrjIDs == null
+                            || filterPrjIDs.Length == 0
+                            || filterPrjIDs.Contains(x.prj))
+                            &&(WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {

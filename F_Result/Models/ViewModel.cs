@@ -15,6 +15,7 @@ namespace F_Result.Models
         public string ProjectType { get; set; }
         public string ProjectManagerName { get; set; }
         public string ChiefName { get; set; }
+        public int Chief { get; set; }
         public DateTime? StartDateFact { get; set; }
         public DateTime? StartDatePlan { get; set; }
         public decimal debitplan { get; set; }
