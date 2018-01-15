@@ -182,6 +182,7 @@ namespace F_Result.Controllers
                                          PlanCreditId = _pc.PlanCreditId,
                                          Sum = _pc.Sum,
                                          Date = _pc.Date,
+                                         ProjectId = _pname.id,
                                          ProjectName = _pname.ShortName,
                                          OrganizationName = _org.Title,
                                          PeriodName = _period.PeriodName,
@@ -191,6 +192,7 @@ namespace F_Result.Controllers
                                          PlanCreditId = x.PlanCreditId,
                                          Sum = x.Sum,
                                          Date = x.Date,
+                                         ProjectId = x.ProjectId,
                                          ProjectName = x.ProjectName,
                                          OrganizationName = x.OrganizationName,
                                          PeriodName = x.PeriodName,
@@ -199,6 +201,10 @@ namespace F_Result.Controllers
             if (planCredit == null)
             {
                 return HttpNotFound();
+            }
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
             }
 
             return View(planCredit);

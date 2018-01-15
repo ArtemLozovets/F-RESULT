@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Access denied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-danger">ACCESS DENIED</h2>
+            <h3 class="text-danger">Вы не имеете необходимых прав для работы с выбранной сущностью</h3>
+            <h4>Вы можете попробовать следующее:</h4>
+            <ul>
+                <li>убедитесь, что Вы пытаетесь выполнить действие с помощью интерфейса приложения (не из адресной строки браузера);</li>
+                <li>если Вы имеете несколько учетных записей, выполните вход в другую учетную запись;</li>
+                <li>обратитесь к администратору системы.</li>
+            </ul>
+            <p><a class="btn btn-primary" href='@Url.Action("Login", new{ area="Administrator", controller = "UsersManagement"})'><span class="glyphicon glyphicon-user">&nbsp;Вход</span></a></p>
+        </div>
+        <div class="col-md-6">
+            <img src="~/Content/Images/stop.png" class="pull-right" style="margin-top:2em;" />
+        </div>
+    </div>
+</div>
