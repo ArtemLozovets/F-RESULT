@@ -60,6 +60,10 @@ namespace F_Result.Models
                 .HasKey(t => t.Id)
                 .ToTable("Expenditures");
 
+            modelBuilder.Entity<Income>()
+                .HasKey(t => t.Id)
+                .ToTable("Incomes");
+
             modelBuilder.Entity<Organizations>()
                 .HasKey(t => t.id)
                 .ToTable("Organizations");
@@ -166,6 +170,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.DUsers> DUsers { get; set; }
         public DbSet<F_Result.Models.Workers> Workers { get; set; }
         public DbSet<F_Result.Models.Expenditure> Expenditures { get; set; }
+        public DbSet<F_Result.Models.Income> Incomes { get; set; }
 
         public DbSet<AspVisitor> AspVisitors { get; set; }
         public DbSet<F_Result.Models.ApplicationUser> IdentityUsers { get; set; }

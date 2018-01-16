@@ -190,6 +190,7 @@ namespace F_Result.Controllers
                                          PlanDebitF2Id = _pd.PlanDebitF2Id,
                                          Sum = _pd.Sum,
                                          Date = _pd.Date,
+                                         ProjectId = _pd.ProjectId,
                                          ProjectName = _pname.ShortName,
                                          OrganizationName = _org.Title,
                                          ExpendituresName = _exp.Name,
@@ -200,6 +201,7 @@ namespace F_Result.Controllers
                                        PlanDebitF2Id = x.PlanDebitF2Id,
                                        Sum = x.Sum,
                                        Date = x.Date,
+                                       ProjectId = x.ProjectId,
                                        ProjectName = x.ProjectName,
                                        OrganizationName = x.OrganizationName,
                                        ExpenditureName = x.ExpendituresName,
@@ -210,6 +212,13 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planDebit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             return View(planDebit);
         }
 
@@ -293,6 +302,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planDebit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
@@ -308,6 +323,12 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PDEdit([Bind(Include = "PlanDebitF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanDebitF2 planDebit)
         {
+
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planDebit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
 
             if (ModelState.IsValid)
             {
@@ -380,6 +401,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planDebit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             planDebit.ProjectName = db.Projects.Where(x => x.id == planDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planDebit.OrganizationName = db.Organizations.Where(x => x.id == planDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
@@ -402,6 +429,12 @@ namespace F_Result.Controllers
                 {
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
                     return RedirectToAction("PDShow");
+                }
+
+                //Проверяем наличие у пользователя прав для работы с данной сущностью
+                if (!UsrWksMethods.isAllowed(db, planDebit.ProjectId))
+                {
+                    return View("~/Views/Shared/AccessDenied.cshtml");
                 }
 
                 db.PlanDebitsF2.Remove(planDebit);

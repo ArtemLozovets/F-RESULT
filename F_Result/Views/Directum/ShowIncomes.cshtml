@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "Доходы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Статьи доходов</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Справочники</li>
+                <li class="active">Статьи доходов</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
+            <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Код" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Название" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Группа" /></th>
+            </tr>
+
+            <tr role="row">
+                <th>Код</th>
+                <th>Название</th>
+                <th>Группа</th>
+            </tr>
+        </thead>
+    </table>
+
+    <a href="#" class="scrollup1">Наверх</a>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    <script>
+        $(function () {
+            //Скрипт для работы с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: { "refresh": { name: "Сброс фильтра", icon: "refresh" } }
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $('#loadingImg').hide();
+            var table = $('#gridtable').DataTable({
+                "fixedHeader": {
+                    "header": true,
+                    "headerOffset": $('#mainNavbar').height()
+                },
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": true,
+                "responsive": true,
+                "pageLength": 25, // Количество записей в таблице по умолчанию
+                "pagingType": "simple_numbers",
+                "dom": "<'row'<'col-sm-3'l><'col-sm-9 text-center'B>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "language": {
+                    "lengthMenu": "Записей: _MENU_",
+                    "zeroRecords": "Записи отсутствуют",
+                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                    "infoEmpty": "Записи отсутствуют",
+                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                    "search": "Поиск",
+                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                    "sInfoThousands": " ",
+                    "oPaginate": {
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    }
+                },
+                "ajax": {
+                    "url": "/Directum/LoadIncomes",
+                    "type": "POST",
+                    "datatype": "json",
+                    "dataSrc": function (d) {
+                        if (d.data.length === 0) {
+                            if (d.errormessage != "") {
+                                alert(d.errormessage);
+                            }
+                        }
+                        return d.data;
+                    }
+                },
+                "columns": [
+                    { "data": "Article", "name": "Article", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Name", "name": "Name", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "GroupName", "name": "GroupName", "autoWidth": true, "class": "context-menu-one" },
+                ],
+                "order": [[0, "asc"]]
+            });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+
+    </script>
+
+    <script>
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
+    </script>
+
+}
+
+

@@ -93,7 +93,7 @@ namespace F_Result.Areas.Administrator.Controllers
                     {
                         WorkersString = "Связанные сотрудники отсутствуют";
                     }
-                    
+
 
                     UsRoleViewModel currentuser = new UsRoleViewModel
                     {
@@ -737,13 +737,13 @@ namespace F_Result.Areas.Administrator.Controllers
                                         Organization = worker.Organization,
                                         projects = worker.projects,
                                     }).Distinct().AsEnumerable().Select(x => new Workers
-                            {
-                                id = x.id,
-                                ShortName = x.ShortName,
-                                Organization = x.Organization,
-                                projects = x.projects,
-                                selected = false
-                            });
+                                    {
+                                        id = x.id,
+                                        ShortName = x.ShortName,
+                                        Organization = x.Organization,
+                                        projects = x.projects,
+                                        selected = false
+                                    });
 
                 //Выбираем только тех сотрудников, которые отсутствуют в списке сопоставленных (_wksSelect)
                 _wksNoSelect = _wksNoSelect.Where(x => !_wksSelect.Select(z => z.id).ToList().Contains(x.id));

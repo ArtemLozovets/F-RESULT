@@ -190,6 +190,7 @@ namespace F_Result.Controllers
                                          PlanCreditF2Id = _pc.PlanCreditF2Id,
                                          Sum = _pc.Sum,
                                          Date = _pc.Date,
+                                         ProjectId = _pc.ProjectId,
                                          ProjectName = _pname.ShortName,
                                          OrganizationName = _org.Title,
                                          ExpendituresName = _exp.Name,
@@ -200,6 +201,7 @@ namespace F_Result.Controllers
                                          PlanCreditF2Id = x.PlanCreditF2Id,
                                          Sum = x.Sum,
                                          Date = x.Date,
+                                         ProjectId = x.ProjectId,
                                          ProjectName = x.ProjectName,
                                          OrganizationName = x.OrganizationName,
                                          ExpenditureName = x.ExpendituresName,
@@ -209,6 +211,12 @@ namespace F_Result.Controllers
             if (planCredit == null)
             {
                 return HttpNotFound();
+            }
+
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
             }
 
             return View(planCredit);
@@ -295,6 +303,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             ViewData["ProjectName"] = _prgName;
 
@@ -315,6 +329,11 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PCEdit([Bind(Include = "PlanCreditF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanCreditF2 planCredit)
         {
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
 
             if (ModelState.IsValid)
             {
@@ -384,6 +403,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planCredit.ProjectName = _prgName;
 
@@ -410,6 +435,12 @@ namespace F_Result.Controllers
                 {
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
                     return RedirectToAction("PCShow");
+                }
+
+                //Проверяем наличие у пользователя прав для работы с данной сущностью
+                if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+                {
+                    return View("~/Views/Shared/AccessDenied.cshtml");
                 }
 
                 db.PlanCreditsF2.Remove(planCredit);

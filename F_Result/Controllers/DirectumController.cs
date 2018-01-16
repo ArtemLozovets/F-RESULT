@@ -602,6 +602,67 @@ namespace F_Result.Controllers
 
         #endregion
 
+        #region СПравочник статей доходов
+        public ActionResult ShowIncomes()
+        {
+            return View();
+        }
+
+        public ActionResult ShowIncomesPartial()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult LoadIncomes()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _article = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _name = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _groupname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+
+                var _incomes = (from _inc in db.Incomes
+                                     where (_inc.Article.Contains(_article) || string.IsNullOrEmpty(_article))
+                                           && (_inc.Name.Contains(_name) || string.IsNullOrEmpty(_name))
+                                           && (_inc.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
+                                     select _inc);
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _incomes = _incomes.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                }
+                else
+                {
+                    _incomes = _incomes.OrderByDescending(x => x.Article);
+                }
+
+                totalRecords = _incomes.Count();
+
+                var data = _incomes.Skip(skip).Take(pageSize);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

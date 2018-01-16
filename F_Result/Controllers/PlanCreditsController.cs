@@ -202,6 +202,7 @@ namespace F_Result.Controllers
             {
                 return HttpNotFound();
             }
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
             if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
             {
                 return View("~/Views/Shared/AccessDenied.cshtml");
@@ -291,6 +292,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             ViewData["ProjectName"] = _prgName;
 
@@ -308,6 +315,12 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PCEdit([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId")] PlanCredit planCredit)
         {
+
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
 
             if (ModelState.IsValid)
             {
@@ -376,6 +389,12 @@ namespace F_Result.Controllers
                 return HttpNotFound();
             }
 
+            //Проверяем наличие у пользователя прав для работы с данной сущностью
+            if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+            {
+                return View("~/Views/Shared/AccessDenied.cshtml");
+            }
+
             string _prgName = db.Projects.Where(x => x.id == planCredit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
             planCredit.ProjectName = _prgName;
 
@@ -399,6 +418,12 @@ namespace F_Result.Controllers
                 {
                     TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
                     return RedirectToAction("PCShow");
+                }
+
+                //Проверяем наличие у пользователя прав для работы с данной сущностью
+                if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
+                {
+                    return View("~/Views/Shared/AccessDenied.cshtml");
                 }
 
                 db.PlanCredits.Remove(planCredit);

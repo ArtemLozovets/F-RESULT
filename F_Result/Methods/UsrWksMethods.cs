@@ -46,7 +46,8 @@ namespace F_Result.Methods
             {
                 //Получаем идентификатор текущего пользователя
                 var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
-                //Получаем список связанных сотрудников
+                
+                //Проверяем наличие сопоставления текущего пользователя системы руководителю указанного проекта
                 int? _wksCount = (from _prj in db.Projects
                           join _usrwks in db.UsrWksRelations on _prj.Chief equals _usrwks.WorkerId
                           where _prj.id == PrjId && _usrwks.UserId == user
