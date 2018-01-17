@@ -704,6 +704,64 @@ namespace F_Result.Areas.Administrator.Controllers
 
                 List<Workers> wksList = new List<Workers>();
 
+                //var _wksSelect = (from worker in dbModel.Workers
+                //                  join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                //                  from usrwks in usrwkstmp.DefaultIfEmpty()
+                //                  where usrwks.UserId == UserId
+                //                  select new
+                //                  {
+                //                      id = worker.id,
+                //                      ShortName = worker.ShortName,
+                //                      Organization = worker.Organization,
+                //                      projects = worker.projects,
+                //                  }).Distinct().AsEnumerable().Select(x => new Workers
+                //                  {
+                //                      id = x.id,
+                //                      ShortName = x.ShortName,
+                //                      Organization = x.Organization,
+                //                      projects = x.projects,
+                //                      selected = true
+                //                  }).OrderBy(x => x.ShortName).ToList();
+
+                //var _wksNoSelect = (from worker in dbModel.Workers
+                //                    join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                //                    from usrwks in usrwkstmp.DefaultIfEmpty()
+                //                    where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                //                          && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
+                //                          && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
+                //                          && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
+                //                    select new
+                //                    {
+                //                        id = worker.id,
+                //                        ShortName = worker.ShortName,
+                //                        Organization = worker.Organization,
+                //                        projects = worker.projects,
+                //                    }).Distinct().AsEnumerable().Select(x => new Workers
+                //                    {
+                //                        id = x.id,
+                //                        ShortName = x.ShortName,
+                //                        Organization = x.Organization,
+                //                        projects = x.projects,
+                //                        selected = false
+                //                    });
+
+                ////Выбираем только тех сотрудников, которые отсутствуют в списке сопоставленных (_wksSelect)
+                //_wksNoSelect = _wksNoSelect.Where(x => !_wksSelect.Select(z => z.id).ToList().Contains(x.id));
+                ////-------------------------------------
+
+                //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                //{
+                //    _wksNoSelect = _wksNoSelect.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                //}
+                //else
+                //{
+                //    _wksNoSelect = _wksNoSelect.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
+                //}
+
+                //wksList.AddRange(_wksSelect);
+                //wksList.AddRange(_wksNoSelect);
+
+                //-----------------------------------------------------------------------------------------------------------------------------------------------
                 var _wksSelect = (from worker in dbModel.Workers
                                   join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
                                   from usrwks in usrwkstmp.DefaultIfEmpty()
@@ -714,52 +772,47 @@ namespace F_Result.Areas.Administrator.Controllers
                                       ShortName = worker.ShortName,
                                       Organization = worker.Organization,
                                       projects = worker.projects,
-                                  }).Distinct().AsEnumerable().Select(x => new Workers
-                                  {
-                                      id = x.id,
-                                      ShortName = x.ShortName,
-                                      Organization = x.Organization,
-                                      projects = x.projects,
                                       selected = true
-                                  }).OrderBy(x => x.ShortName).ToList();
+                                  }).Distinct();
 
-                var _wksNoSelect = (from worker in dbModel.Workers
-                                    join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
-                                    from usrwks in usrwkstmp.DefaultIfEmpty()
-                                    where (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
-                                          && (worker.ShortName.Contains(_name) || string.IsNullOrEmpty(_name))
-                                          && (worker.Organization.Contains(_orgname) || string.IsNullOrEmpty(_orgname))
-                                          && (worker.projects.Contains(_prjname) || string.IsNullOrEmpty(_prjname))
-                                    select new
-                                    {
-                                        id = worker.id,
-                                        ShortName = worker.ShortName,
-                                        Organization = worker.Organization,
-                                        projects = worker.projects,
-                                    }).Distinct().AsEnumerable().Select(x => new Workers
-                                    {
-                                        id = x.id,
-                                        ShortName = x.ShortName,
-                                        Organization = x.Organization,
-                                        projects = x.projects,
-                                        selected = false
-                                    });
+                var _wksNotSelect = (from worker in dbModel.Workers
+                                     join usrwks in dbModel.UsrWksRelations on worker.id equals usrwks.WorkerId into usrwkstmp
+                                     from usrwks in usrwkstmp.DefaultIfEmpty()
+                                     where usrwks.UserId != UserId
+                                     select new
+                                     {
+                                         id = worker.id,
+                                         ShortName = worker.ShortName,
+                                         Organization = worker.Organization,
+                                         projects = worker.projects,
+                                         selected = false
+                                     }).Distinct();
 
-                //Выбираем только тех сотрудников, которые отсутствуют в списке сопоставленных (_wksSelect)
-                _wksNoSelect = _wksNoSelect.Where(x => !_wksSelect.Select(z => z.id).ToList().Contains(x.id));
-                //-------------------------------------
+                wksList = _wksSelect.Union(_wksNotSelect).AsEnumerable().Select(x => new Workers
+                {
+                    id = x.id,
+                    ShortName = x.ShortName,
+                    Organization = x.Organization,
+                    projects = x.projects,
+                    selected = x.selected
+                }).ToList();
+
+
+                wksList = wksList.Where(x => (!wksList.Where(z => z.selected == true).Select(z => z.id).Contains(x.id))
+                                            && ((x.ShortName.ToUpper().Contains(_name.ToUpper()) || string.IsNullOrEmpty(_name))
+                                            && (x.Organization.ToUpper().Contains(_orgname.ToUpper()) || string.IsNullOrEmpty(_orgname))
+                                            && ((x.projects != null && x.projects.ToUpper().Contains(_prjname.ToUpper())) || string.IsNullOrEmpty(_prjname)))
+                                            || (x.selected == true)).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _wksNoSelect = _wksNoSelect.OrderBy(sortColumn + " " + sortColumnDir + ", id desc");
+                    wksList = wksList.OrderBy("selected desc," + sortColumn + " " + sortColumnDir + ", id desc").ToList();
                 }
                 else
                 {
-                    _wksNoSelect = _wksNoSelect.OrderByDescending(x => x.id).ThenByDescending(x => x.id);
+                    wksList = wksList.OrderByDescending(x => x.selected).ThenByDescending(x => x.id).ToList();
                 }
 
-                wksList.AddRange(_wksSelect);
-                wksList.AddRange(_wksNoSelect);
 
                 totalRecords = wksList.Count();
 
