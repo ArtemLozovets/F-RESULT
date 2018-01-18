@@ -15,7 +15,7 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        //Входящие платежи
+        #region Входящие платежи
         public ActionResult ShowPayments(int? ProjectId, string startDate, string endDate)
         {
             if (ProjectId != null)
@@ -161,7 +161,9 @@ namespace F_Result.Controllers
             }
 
         }
+        #endregion
 
+        #region Проекты
         public ActionResult ShowProjects()
         {
             return View();
@@ -325,13 +327,14 @@ namespace F_Result.Controllers
             }
         }
 
-
         [HttpPost]
         public ActionResult LoadProjectsPartial()
         {
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -364,6 +367,7 @@ namespace F_Result.Controllers
                                         && (project.EndDateFact == _enddatefact || _enddatefact == null)
                                         && (project.StartDatePlan == _startdateplan || _startdateplan == null)
                                         && (project.EndDatePlan == _enddateplan || _enddateplan == null)
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(project.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                                  select new
                                  {
                                      id = project.id,
@@ -414,6 +418,10 @@ namespace F_Result.Controllers
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        #endregion
+
+        #region Организации
 
         public ActionResult ShowOrganizations()
         {
@@ -482,6 +490,10 @@ namespace F_Result.Controllers
             }
         }
 
+        #endregion
+
+        #region Пользователи Directum
+
         public ActionResult ShowUsers()
         {
             return View();
@@ -539,6 +551,7 @@ namespace F_Result.Controllers
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
         #region Справочник статей расходов
         public ActionResult ShowExpenditures()
@@ -602,7 +615,7 @@ namespace F_Result.Controllers
 
         #endregion
 
-        #region СПравочник статей доходов
+        #region Справочник статей доходов
         public ActionResult ShowIncomes()
         {
             return View();
@@ -635,10 +648,10 @@ namespace F_Result.Controllers
                 string _groupname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
 
                 var _incomes = (from _inc in db.Incomes
-                                     where (_inc.Article.Contains(_article) || string.IsNullOrEmpty(_article))
-                                           && (_inc.Name.Contains(_name) || string.IsNullOrEmpty(_name))
-                                           && (_inc.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
-                                     select _inc);
+                                where (_inc.Article.Contains(_article) || string.IsNullOrEmpty(_article))
+                                      && (_inc.Name.Contains(_name) || string.IsNullOrEmpty(_name))
+                                      && (_inc.GroupName.Contains(_groupname) || string.IsNullOrEmpty(_groupname))
+                                select _inc);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
