@@ -53,6 +53,17 @@ namespace F_Result.Areas.Administrator.Controllers
         // GET: UsersManagement
         public ActionResult ShowUsers(string result)
         {
+            if (!string.IsNullOrEmpty(result) && result == "success")
+            {
+                TempData["MessageOk"] = "Операция завершена успешно";
+            }
+
+            return View();
+        }
+
+        // GET: UsersManagement
+        public ActionResult ShowUsersPartial(string fUserName)
+        {
             List<ApplicationUser> users = new List<ApplicationUser>();
             List<UsRoleViewModel> usrollist = new List<UsRoleViewModel>();
             UpdateUserInfoesViewModel usrolcontext = new UpdateUserInfoesViewModel();
@@ -63,7 +74,14 @@ namespace F_Result.Areas.Administrator.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-                users = db.Users.ToList();
+              //  fUserName = string.IsNullOrEmpty(fUserName)? fUserName.ToUpper() : "";
+
+                users = db.Users.Where(x => x.FirstName.ToUpper().Contains(fUserName.ToUpper())
+                                        || x.LastName.ToUpper().Contains(fUserName.ToUpper())
+                                        || x.MiddleName.ToUpper().Contains(fUserName.ToUpper())
+                                        || x.UserName.ToUpper().Contains(fUserName.ToUpper())
+                                        || string.IsNullOrEmpty(fUserName.ToUpper())
+                                        ).ToList();
                 foreach (var useritem in users)
                 {
                     string RoleString = string.Empty;
@@ -111,12 +129,7 @@ namespace F_Result.Areas.Administrator.Controllers
                     usrollist.Add(currentuser);
                 }
 
-                if (!string.IsNullOrEmpty(result) && result == "success")
-                {
-                    TempData["MessageOk"] = "Операция завершена успешно";
-                }
-
-                return View(usrollist);
+                return PartialView(usrollist);
 
             }
             catch (Exception ex)

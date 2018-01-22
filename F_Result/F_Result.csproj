@@ -628,6 +628,7 @@
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="Areas\Administrator\Views\UsersManagement\UsrWksRelation.cshtml" />
+    <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsersPartial.cshtml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />

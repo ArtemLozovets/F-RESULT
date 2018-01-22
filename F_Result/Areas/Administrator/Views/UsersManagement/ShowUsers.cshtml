@@ -5,14 +5,28 @@
 }
 
 <style>
-   .gridtable > tbody > tr > th {
+    .gridtable > tbody > tr > th {
         text-align: center;
     }
 
     .gridtable > tbody > tr:first-child {
         background-color: #eee;
     }
+
+    #clearfilter:hover, #applyfilter:hover {
+        color: #d9534f;
+    }
+
+    #clearfilter, #applyfilter {
+        cursor: pointer;
+    }
 </style>
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
 
 <div class="container">
     <div class="row">
@@ -38,90 +52,52 @@
             <p class="text-danger" id="resultError"> @TempData["MessageError"]</p>
         </div>
     </div>
-    <p>
-        <a title="Статистика событий авторизации в приложении" class="btn btn-primary" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
-        <a title="Создание новой учетной записи" class="btn btn-primary" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
-        @*<a title="Кнопка доступна в период тестирования приложения. В дальнейшем будет удалена." class="btn btn-primary btn-danger" href="~/Administrator/Init/CreateUsers">Создать Администратора</a>*@
-    </p>
-    <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UUserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UEmail)
-            </th>
 
-            <th>
-                @Html.DisplayNameFor(model => model.UFullName)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.UPost)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.URole)
-            </th>
-            <th style="width:164px; min-width:164px;"> </th>
-        </tr>
-        @foreach (var item in Model)
+    <div class="form-inline" style="margin-bottom:10px;">
+        @using (Ajax.BeginForm("ShowUsersPartial", "UsersManagement", new AjaxOptions { UpdateTargetId = "usersBlock", LoadingElementId = "loadingImg" }, new { @id = "userFilterForm" }))
         {
-            <tr title="@item.UWorkers">
-                <td>
-                    @Html.DisplayFor(modelItem => item.UUserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UEmail)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.UFullName)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.UPost)
-                </td>
-                @if (item.URole.Contains("Заблокирован"))
+            <a title="Статистика событий авторизации в приложении" class="btn btn-primary" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
+            <a title="Создание новой учетной записи" class="btn btn-primary" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
+            <div class="input-group pull-right">
+                <span class="input-group-addon" id="clearfilter" title="Сброс фильтра"><i class="fa fa-refresh"></i></span>
+                @Html.TextBox("fUserName", null,
+                new
                 {
-                    <td class="text-danger">
-                        @Html.DisplayFor(modelItem => item.URole)
-                    </td>
-                }
-                else
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.URole)
-                    </td>
-                }
-
-                <td style="text-align:center;">
-                    <a class="btn btn-primary btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
-                    <a class="btn btn-primary btn-sm UsrWksEdit" href='@Url.Action("UsrWksRelation", "UsersManagement", new { UserId = @item.UId, Mode = "Edit" })' title="Редактировать сопоставление с сотрудниками"><span class="glyphicon glyphicon-user"></span></a>
-                    @if (@item.URole.Contains("Заблокирован"))
-                    {
-                        <a class="btn btn-primary btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary btn-sm" href='@Url.Action("BlockUser", "UsersManagement", new {UserId = @item.UId})' title="Блокировать учетную запись"><span class="glyphicon glyphicon-eye-close"></span></a>
-                    }
-                    <a class="btn btn-primary btn-sm" href='@Url.Action("ChangePassword", "UsersManagement", new {UserID = @item.UId})' title="Изменить пароль пользователя"><span class="glyphicon glyphicon-certificate"></span></a>
-                </td>
-            </tr>
+                    @style = "width:260px;",
+                    @type = "text",
+                    @class = "form-control",
+                    @placeholder = "Пользователь",
+                    @title = "ФИО пользователя, логин",
+                })
+                <span class="input-group-addon" id="applyfilter" title="Применить фильтр"><i class="fa fa-check-circle"></i></span>
+            </div>
         }
-    </table>
+    </div>
+
+    <div id="usersBlock">
+        @Html.Action("ShowUsersPartial", "UsersManagement", new { @fUserName = "" })
+    </div>
 </div>
 
 <a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
-  <script src="~/Scripts/toparrow.js"></script>  
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/toparrow.js"></script>
     <script>
         $(function () {
-            //$('.UsrWksEdit').on('click', function (e) {
-            //    e.preventDefault();
-            //})
+
+            $('#loadingImg').hide();
+
+            $('#clearfilter').on('click', function () {
+                $('#fUserName').val("");
+                $('#userFilterForm').submit();
+            });
+
+            $('body').on('click', '#applyfilter', function (e) {
+                $('#userFilterForm').submit();
+            });
         });
     </script>
 }

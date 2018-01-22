@@ -1,0 +1,71 @@
+﻿@model IEnumerable<F_Result.Models.UsRoleViewModel>
+
+
+<table class="table table table-bordered table-striped table-responsive table-hover gridtable">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.UUserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UEmail)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.UFullName)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.UPost)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.URole)
+        </th>
+        <th style="width:164px; min-width:164px;"> </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr title="@item.UWorkers">
+            <td>
+                @Html.DisplayFor(modelItem => item.UUserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UEmail)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.UFullName)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.UPost)
+            </td>
+            @if (item.URole.Contains("Заблокирован"))
+                {
+                <td class="text-danger">
+                    @Html.DisplayFor(modelItem => item.URole)
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.URole)
+                </td>
+            }
+
+            <td style="text-align:center;">
+                <a class="btn btn-primary btn-sm" href='@Url.Action("UpdateUserInfoes", "UsersManagement", new { UserId = @item.UId })' title="Редактировать учетные данные"><span class="glyphicon glyphicon-edit"></span></a>
+                <a class="btn btn-primary btn-sm UsrWksEdit" href='@Url.Action("UsrWksRelation", "UsersManagement", new { UserId = @item.UId, Mode = "Edit" })' title="Редактировать сопоставление с сотрудниками"><span class="glyphicon glyphicon-user"></span></a>
+                @if (@item.URole.Contains("Заблокирован"))
+                {
+                    <a class="btn btn-primary btn-sm" href='@Url.Action("UnblockUser", "UsersManagement", new {UserId = @item.UId})' title="Разблокировать учетную запись"><span class="glyphicon glyphicon-eye-open"></span></a>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-sm" href='@Url.Action("BlockUser", "UsersManagement", new {UserId = @item.UId})' title="Блокировать учетную запись"><span class="glyphicon glyphicon-eye-close"></span></a>
+                }
+                <a class="btn btn-primary btn-sm" href='@Url.Action("ChangePassword", "UsersManagement", new {UserID = @item.UId})' title="Изменить пароль пользователя"><span class="glyphicon glyphicon-certificate"></span></a>
+            </td>
+        </tr>
+    }
+</table>
