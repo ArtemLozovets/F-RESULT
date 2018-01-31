@@ -6,7 +6,7 @@
 }
 
 <style>
-    #prgbasic-addon2:hover, #orgbasic-addon2:hover, #expbasic-addon2:hover {
+    #prgbasic-addon2:hover, #orgbasic-addon2:hover, #incbasic-addon2:hover {
         background-color: transparent;
     }
 </style>
@@ -83,7 +83,7 @@
                         @Html.HiddenFor(model => model.ProjectId, new { id = "ProjectId" })
                         <div class="input-group">
                             @Html.TextBox("prgSelect", ViewData["ProjectName"], new
-                   
+
                        {
                            @class = "form-control",
                            type = "text",
@@ -93,8 +93,8 @@
                            aria_describedby = "prgbasic-addon2",
                            data_url = "/Directum/ShowProjectsPartial",
                            style = "cursor:pointer;"
-                   
-                   })
+
+                       })
                             <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -118,7 +118,7 @@
                            aria_describedby = "orgbasic-addon2",
                            data_url = "/Directum/ShowOrganizationsPartial",
                            style = "cursor:pointer;"
-                   })
+                       })
                             <span class="input-group-addon" id="orgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
@@ -128,26 +128,28 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.ExpenditureId, htmlAttributes: new { @class = "control-label col-md-4" })
+                    @Html.LabelFor(model => model.IncomeId, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
-                        @Html.HiddenFor(model => model.ExpenditureId, new { id = "ExpenditureId" })
+                        @Html.HiddenFor(model => model.IncomeId, new { id = "IncomeId" })
                         <div class="input-group">
-                            @Html.TextBox("expSelect", ViewData["ExpenditureName"], new
+                            @Html.TextBox("expSelect", ViewData["IncomeName"], new
+
                        {
                            @class = "form-control",
                            type = "text",
-                           id = "expSelect",
+                           id = "incSelect",
                            @readonly = "readonly",
                            placeholder = "Щелкните для выбора",
-                           aria_describedby = "expbasic-addon2",
-                           data_url = "/Directum/ShowExpendituresPartial",
+                           aria_describedby = "incbasic-addon2",
+                           data_url = "/Directum/ShowIncomesPartial",
                            style = "cursor:pointer;"
-                        })
-                            <span class="input-group-addon" id="expbasic-addon2" title="Очистить" style="cursor:pointer;">
+
+                       })
+                            <span class="input-group-addon" id="incbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
                             </span>
                         </div>
-                        @Html.ValidationMessageFor(model => model.ExpenditureId, "", new { @class = "text-danger", id = "ExpenditureValidator" })
+                        @Html.ValidationMessageFor(model => model.IncomeId, "", new { @class = "text-danger", id = "IncomeValidator" })
                     </div>
                 </div>
 
@@ -250,7 +252,7 @@
                 });
             });
 
-            $('body').on('click', '#expSelect', function (e) {
+            $('body').on('click', '#incSelect', function (e) {
                 e.preventDefault();
                 var _href = $(this).data('url');
                 $.get(_href, function (data) {
@@ -269,9 +271,9 @@
                 $("#orgSelect").val('');
             });
 
-            $('body').on('click', '#expbasic-addon2', function () {
-                $("#ExpenditureId").val('');
-                $("#expSelect").val('');
+            $('body').on('click', '#incbasic-addon2', function () {
+                $("#IncomeId").val('');
+                $("#incSelect").val('');
             });
 
             $('#PCForm').submit(function (e) {
@@ -287,8 +289,8 @@
                     flag = true;
                 }
 
-                if ($("#ExpenditureId").val() == 0) {
-                    $("#ExpenditureValidator").html("Необходимо выбрать статью расходов");
+                if ($("#IncomeId").val() == 0) {
+                    $("#IncomeValidator").html("Необходимо выбрать статью доходов");
                     flag = true;
                 }
 

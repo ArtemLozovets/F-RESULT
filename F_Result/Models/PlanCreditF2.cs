@@ -29,9 +29,9 @@ namespace F_Result.Models
         [Display(Name = "Организация")]
         public int OrganizationId { get; set; }
 
-        [Required(ErrorMessage = "Необходимо указать статью расходов")]
-        [Display(Name = "Статья расходов")]
-        public int ExpenditureId { get; set; }
+        [Required(ErrorMessage = "Необходимо указать статью доходов")]
+        [Display(Name = "Статья доходов")]
+        public int IncomeId { get; set; }
 
         [StringLength(200, ErrorMessage = "Значение должно содержать не больше 200 символов")]
         [Display(Name = "Назначение")]
@@ -59,8 +59,8 @@ namespace F_Result.Models
         public string OrganizationName { get; set; }
 
         [NotMapped]
-        [Display(Name = "Статья расходов")]
-        public string ExpenditureName { get; set; }
+        [Display(Name = "Статья доходов")]
+        public string IncomeName { get; set; }
 
         [NotMapped]
         [Display(Name = "Период")]

@@ -57,7 +57,7 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _expname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _incname = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
                 string _projectname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
                 string _chname = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _organizationname = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
@@ -85,7 +85,7 @@ namespace F_Result.Controllers
                 var _ads = (from plancredit in db.PlanCreditsF2
                             join prg in db.Projects on plancredit.ProjectId equals prg.id
                             join org in db.Organizations on plancredit.OrganizationId equals org.id
-                            join exp in db.Expenditures on plancredit.ExpenditureId equals exp.Id
+                            join inc in db.Incomes on plancredit.IncomeId equals inc.Id
                             join usr in db.IdentityUsers on plancredit.UserId equals usr.Id into usrtmp
                             from usr in usrtmp.DefaultIfEmpty()
                             join pperiod in db.PlanningPeriods on plancredit.PeriodId equals pperiod.PlanningPeriodId
@@ -93,7 +93,7 @@ namespace F_Result.Controllers
                                         && (prg.ShortName.Contains(_projectname) || string.IsNullOrEmpty(_projectname))
                                         && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
-                                        && (exp.Name.Contains(_expname) || string.IsNullOrEmpty(_expname))
+                                        && (inc.Name.Contains(_incname) || string.IsNullOrEmpty(_incname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
                                         && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
@@ -114,8 +114,8 @@ namespace F_Result.Controllers
                                 StartDatePlan = prg.StartDatePlan,
                                 StartDateFact = prg.StartDateFact,
                                 OrgName = org.Title,
-                                ExptId = exp.Id,
-                                ExpName = exp.Name,
+                                IncId = inc.Id,
+                                IncName = inc.Name,
                                 PeriodName = pperiod.PeriodName,
                                 planBenefit = prg.planBenefit,
                                 planExpand = prg.planExpand
@@ -133,8 +133,8 @@ namespace F_Result.Controllers
                                 StartDateFact = x.StartDateFact,
                                 OrganizationId = x.OrgId,
                                 OrganizationName = x.OrgName,
-                                ExpenditureId = x.ExptId,
-                                ExpenditureName = x.ExpName,
+                                IncomeId = x.IncId,
+                                IncomeName = x.IncName,
                                 Appointment = x.Appointment,
                                 UserId = x.UserId,
                                 UserFN = x.UserFN,
@@ -182,7 +182,7 @@ namespace F_Result.Controllers
             PlanCreditF2 planCredit = (from _pc in db.PlanCreditsF2
                                      join _pname in db.Projects on _pc.ProjectId equals _pname.id
                                      join _org in db.Organizations on _pc.OrganizationId equals _org.id
-                                     join _exp in db.Expenditures on _pc.ExpenditureId equals _exp.Id
+                                     join _inc in db.Incomes on _pc.IncomeId equals _inc.Id
                                      join _period in db.PlanningPeriods on _pc.PeriodId equals _period.PlanningPeriodId
                                      where (_pc.PlanCreditF2Id == id)
                                      select new
@@ -193,7 +193,7 @@ namespace F_Result.Controllers
                                          ProjectId = _pc.ProjectId,
                                          ProjectName = _pname.ShortName,
                                          OrganizationName = _org.Title,
-                                         ExpendituresName = _exp.Name,
+                                         IncomesName = _inc.Name,
                                          PeriodName = _period.PeriodName,
                                          Appointment = _pc.Appointment
                                      }).AsEnumerable().Select(x => new PlanCreditF2
@@ -204,7 +204,7 @@ namespace F_Result.Controllers
                                          ProjectId = x.ProjectId,
                                          ProjectName = x.ProjectName,
                                          OrganizationName = x.OrganizationName,
-                                         ExpenditureName = x.ExpendituresName,
+                                         IncomeName = x.IncomesName,
                                          PeriodName = x.PeriodName,
                                          Appointment = x.Appointment
                                      }).FirstOrDefault();
@@ -236,7 +236,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId,ExpenditureId")] PlanCreditF2 planCredit)
+        public ActionResult PCCreate([Bind(Include = "PlanCreditId,Date,Sum,ProjectId,OrganizationId,Appointment,UserId,PeriodId,IncomeId")] PlanCreditF2 planCredit)
         {
             if (ModelState.IsValid)
             {
@@ -257,7 +257,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
-                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planCredit.ExpenditureId).Name;
+                    ViewData["incSelect"] = db.Incomes.FirstOrDefault(x => x.Id == planCredit.IncomeId).Name;
                     return View(planCredit);
                 }
 
@@ -315,8 +315,8 @@ namespace F_Result.Controllers
             string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             ViewData["OrganizationName"] = _orgName;
 
-            string _expName = db.Expenditures.Where(x => x.Id == planCredit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
-            ViewData["ExpenditureName"] = _expName;
+            string _incName = db.Incomes.Where(x => x.Id == planCredit.IncomeId).Select(x => x.Name).FirstOrDefault().ToString();
+            ViewData["IncomeName"] = _incName;
 
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
@@ -327,7 +327,7 @@ namespace F_Result.Controllers
         [HttpPost]
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
         [ValidateAntiForgeryToken]
-        public ActionResult PCEdit([Bind(Include = "PlanCreditF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, ExpenditureId")] PlanCreditF2 planCredit)
+        public ActionResult PCEdit([Bind(Include = "PlanCreditF2Id,Date,Sum,ProjectId,OrganizationId,Appointment,PeriodId, IncomeId")] PlanCreditF2 planCredit)
         {
             //Проверяем наличие у пользователя прав для работы с данной сущностью
             if (!UsrWksMethods.isAllowed(db, planCredit.ProjectId))
@@ -354,7 +354,7 @@ namespace F_Result.Controllers
                     ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
                     ViewData["prgSelect"] = db.Projects.FirstOrDefault(x => x.id == planCredit.ProjectId).ShortName;
                     ViewData["orgSelect"] = db.Organizations.FirstOrDefault(x => x.id == planCredit.OrganizationId).Title;
-                    ViewData["expSelect"] = db.Expenditures.FirstOrDefault(x => x.Id == planCredit.ExpenditureId).Name;
+                    ViewData["incSelect"] = db.Incomes.FirstOrDefault(x => x.Id == planCredit.IncomeId).Name;
 
                     return View(planCredit);
                 }
@@ -415,8 +415,8 @@ namespace F_Result.Controllers
             string _orgName = db.Organizations.Where(x => x.id == planCredit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             planCredit.OrganizationName = _orgName;
 
-            string _expName = db.Expenditures.Where(x => x.Id == planCredit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
-            planCredit.ExpenditureName = _expName;
+            string _incName = db.Incomes.Where(x => x.Id == planCredit.IncomeId).Select(x => x.Name).FirstOrDefault().ToString();
+            planCredit.IncomeName = _incName;
 
             return View(planCredit);
         }

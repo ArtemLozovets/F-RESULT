@@ -45,7 +45,7 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb expFlt" style="width: 100%" placeholder="Статья" /></th>
+                <th><input type="text" class="form-control input-sm sb incFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект"  value="@ViewData["ProjectName"]" id="prjFlt"/></th>
                 <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
                 <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
@@ -163,8 +163,8 @@
                                 break;
                             };
 
-                            if (fClass.indexOf("expCellf") >= 0) {
-                                $('.expFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("incCellf") >= 0) {
+                                $('.incFlt').val($(this).text()).trigger('change');
                                 break;
                             };
 
@@ -299,7 +299,7 @@
                 },
                 "order": [[6, "desc"]],
                 "columns": [
-                    { "data": "ExpenditureName", "name": "ExpenditureName", "autoWidth": true, "class": "expCellf context-menu-one" },
+                    { "data": "IncomeName", "name": "IncomeName", "autoWidth": true, "class": "incCellf context-menu-one" },
                     { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
                     { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
                     { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },

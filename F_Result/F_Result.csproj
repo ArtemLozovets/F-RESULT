@@ -734,6 +734,7 @@
     <Content Include="Views\Directum\ShowExpendituresPartial.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\Directum\ShowIncomes.cshtml" />
+    <Content Include="Views\Directum\ShowIncomesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
