@@ -1,5 +1,6 @@
 ﻿using F_Result.Models;
 using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +20,18 @@ namespace F_Result.Methods
             // Если текущий пользователь не принадлежит к роли "Руководитель проекта" - 
             // возвращаем один элемент списка со значением "-1". 
             List<int> WorkerIdsList = new List<int>() { -1 };
+
+            //Если в системных настройках включен параметр "Разрешить руководителям проектов доступ ко всем проектам" -
+            //возвращаем "-1" (фильтрация не выполняется)
+            var _PM_access_all_projects = db.Settings.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
+            if ( _PM_access_all_projects != null)
+            {
+                if (Convert.ToBoolean(_PM_access_all_projects.SettingValue.ToString()))
+                {
+                    return WorkerIdsList;
+                }
+            }
+
             if (isPrgManager)
             {
                 //Получаем идентификатор текущего пользователя
@@ -35,6 +48,17 @@ namespace F_Result.Methods
         public static bool isAllowed(FRModel db, int PrjId)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+            //Если в системных настройках включен параметр "Разрешить руководителям проектов доступ ко всем проектам" -
+            //возвращаем "true" (фильтрация не выполняется)
+            var _PM_access_all_projects = db.Settings.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
+            if (_PM_access_all_projects != null)
+            {
+                if (Convert.ToBoolean(_PM_access_all_projects.SettingValue.ToString()))
+                {
+                    return true;
+                }
+            }
 
             // Проверяем принадлежность текущего пользователя к роли "Руководитель проекта"
             bool isPrgManager = System.Web.HttpContext.Current.User.IsInRole("ProjectManager");

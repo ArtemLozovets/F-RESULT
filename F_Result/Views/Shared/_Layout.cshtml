@@ -7,19 +7,17 @@
     <title>@ViewBag.Title</title>
 
     <!-- Bootstrap -->
-        @Styles.Render("~/Content/fontawesome")
+    @Styles.Render("~/Content/fontawesome")
     @Styles.Render("~/Content/Spacelab/css")
-
     @Scripts.Render("~/bundles/modernizr")
-
 
     <!--[if lt IE 9]>
       <script src="~/Scripts/html5shiv.js"></script>
       <script src="~/Scripts/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
 
+<body>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="mainNavbar">
         <div class="container">
             <div class="navbar-header">
@@ -115,17 +113,24 @@
                         </ul>
                     </li>
 
-                    <li id="admin" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li id="fullwidthpage1">
-                                <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
-                            </li>
-                            <li id="fullwidthpage2">
-                                <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
-                            </li>
-                        </ul>
-                    </li>
+                    <!-- If current user is Administrator -->
+                    @if (this.User.IsInRole("Administrator"))
+                    {
+                        <li id="admin" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li id="usersblock">
+                                    <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                                </li>
+                                <li id="auditblock">
+                                    <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
+                                </li>
+                                <li id="settingslock">
+                                    <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -136,9 +141,7 @@
     @RenderBody()
 
     <div class="container">
-
         <hr>
-
         <footer>
             <div class="row">
                 <div class="col-lg-12">

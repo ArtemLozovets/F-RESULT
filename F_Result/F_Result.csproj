@@ -186,6 +186,7 @@
     <Compile Include="Controllers\PlanDebitsController.cs" />
     <Compile Include="Controllers\PlanningPeriodsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -265,6 +266,7 @@
     <Compile Include="Models\PlanningPeriod.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\DUsers.cs" />
+    <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\UsrWksRelation.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\Workers.cs">
@@ -735,6 +737,7 @@
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\Directum\ShowIncomes.cshtml" />
     <Content Include="Views\Directum\ShowIncomesPartial.cshtml" />
+    <Content Include="Views\Settings\ShowSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

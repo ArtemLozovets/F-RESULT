@@ -57,6 +57,7 @@ namespace F_Result.Models
        public virtual ICollection<Account> Account { get; set; }
        public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
        public virtual ICollection<UsrWksRelation> UsrWksRelation { get; set; }
+       public virtual ICollection<Settings> Settings { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {

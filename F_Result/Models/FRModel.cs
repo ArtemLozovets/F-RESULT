@@ -162,6 +162,12 @@ namespace F_Result.Models
             .WithMany(m => m.PlanCreditF2)
             .HasForeignKey(m => m.PeriodId)
             .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Settings>()
+           .HasRequired(m => m.ApplicationUser)
+           .WithMany(m => m.Settings)
+           .HasForeignKey(m => m.UserId)
+           .WillCascadeOnDelete(false);
         }
 
         public DbSet<F_Result.Models.Payments> Payments { get; set; }
@@ -184,5 +190,6 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.AccountsBalance> AccountsBalances { get; set; }
         public DbSet<F_Result.Models.PlanningPeriod> PlanningPeriods { get; set; }
         public DbSet<F_Result.Models.UsrWksRelation> UsrWksRelations { get; set; }
+        public DbSet<F_Result.Models.Settings> Settings { get; set; }
     }
 }
