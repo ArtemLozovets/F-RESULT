@@ -290,7 +290,7 @@ namespace F_Result.Controllers
 
         // Редактирование плана расходов GET
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
-        public ActionResult PDEdit(int? id)
+        public ActionResult PDEdit(int? id, string isClone)
         {
             if (id == null)
             {
@@ -313,7 +313,16 @@ namespace F_Result.Controllers
             planDebit.ExpenditureName = db.Expenditures.Where(x => x.Id == planDebit.ExpenditureId).Select(x => x.Name).FirstOrDefault().ToString();
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
-            return View(planDebit);
+            if (Convert.ToBoolean(isClone))
+            {
+                planDebit.Date = DateTime.Today;
+                return View("PDClone", planDebit);
+            }
+            else
+            {
+                return View(planDebit);
+            }
+
         }
 
 

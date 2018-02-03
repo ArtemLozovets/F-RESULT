@@ -18,129 +18,146 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="mainNavbar">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <!-- You'll want to use a responsive image option so this logo looks good on devices - I recommend using something like retina.js (do a quick Google search for it and you'll find it) -->
-                @Html.ActionLink("F - RESULT", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
+    @if (Request.IsAuthenticated)
+    {
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="mainNavbar">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("F - RESULT", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                @Html.Partial("_LoginPartial")
-                <ul class="nav navbar-nav navbar-right">
-                    <li id="findicators" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Показатели<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li style="text-align:center; background-color:#C9D2DC;  margin:0 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
-                                ФАКТ
-                            </li>
-                            <li>
-                                <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-up" style="margin-right:10px;"></i>&nbsp;Входящие платежи</a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Исходящие платежи</a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("ABShow", "AccountsBalances", new {Area = "" })"><i class="glyphicon glyphicon-piggy-bank" style="margin-right:10px;"></i>&nbsp;Остатки на счетах</a>
-                            </li>
-                            <li style="text-align:center; background-color:#C9D2DC; margin:2px 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
-                                ПЛАН
-                            </li>
-                            <li>
-                                <a href="@Url.Action("PCShow", "PlanCredits", new {Area = "" })"><i class="glyphicon glyphicon-hand-up" style="margin-right:10px;"></i>&nbsp;План доходов Ф1</a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("PDShow", "PlanDebits", new {Area = "" })"><i class="glyphicon glyphicon-hand-down" style="margin-right:10px;"></i>&nbsp;План расходов Ф1</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="@Url.Action("PCShow", "PlanCreditsF2", new {Area = "" })"><i class="glyphicon glyphicon-triangle-top" style="margin-right:10px;"></i>&nbsp;План доходов Ф2</a>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("PDShow", "PlanDebitsF2", new {Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;План расходов Ф2</a>
-                                @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;План расходов Ф2</a>*@
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li id="report" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отчеты <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li id="repFactAnal">
-                                <a href="@Url.Action("AnalysisOfPayments", "Reports", new {Area = "" })"><i class="glyphicon glyphicon-signal" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>
-                            </li>
-                            <li id="repPlanAnal">
-                                <a href="@Url.Action("AnalysisOfPlanPayments", "Reports", new {Area = "" })"><i class="fa fa-line-chart" style="margin-right:10px;"></i>&nbsp;Анализ плановых показателей</a>
-                            </li>
-                            <li id="repPlanAnal">
-                                <a href="@Url.Action("AnalysisOfTheProjectBudget", "Reports", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование</a>
-                                @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование</a>*@
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li id="dict" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Справочники <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li id="projects_li">
-                                <a href="@Url.Action("ShowProjects", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-briefcase" style="margin-right:10px;"></i>&nbsp;Проекты</a>
-                            </li>
-                            <li id="period_li">
-                                <a href="@Url.Action("PPShow", "PlanningPeriods", new {Area = "" })"><i class="glyphicon glyphicon-time" style="margin-right:10px;"></i>&nbsp;Плановые периоды</a>
-                            </li>
-                            <li id="income_li">
-                                <a href="@Url.Action("ShowIncomes", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-tags" style="margin-right:10px;"></i>&nbsp;Статьи доходов</a>
-                            </li>
-                            <li id="expenditure_li">
-                                <a href="@Url.Action("ShowExpenditures", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-tag" style="margin-right:10px;"></i>&nbsp;Статьи расходов</a>
-                            </li>
-                            <li id="org_li">
-                                <a href="@Url.Action("ShowOrganizations", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-barcode" style="margin-right:10px;"></i>&nbsp;Организации</a>
-                            </li>
-                            <li id="account_li">
-                                <a href="@Url.Action("ACShow", "Accounts", new {Area = "" })"><i class="glyphicon glyphicon-list-alt" style="margin-right:10px;"></i>&nbsp;Счета организаций</a>
-                            </li>
-                            <li id="usr_li">
-                                <a href="@Url.Action("ShowUsers", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- If current user is Administrator -->
-                    @if (this.User.IsInRole("Administrator"))
-                    {
-                        <li id="admin" class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    @Html.Partial("_LoginPartial")
+                    <ul class="nav navbar-nav navbar-right">
+                        <li id="findicators" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Показатели<b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li id="usersblock">
-                                    <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                                <li style="text-align:center; background-color:#C9D2DC;  margin:0 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
+                                    ФАКТ
                                 </li>
-                                <li id="auditblock">
-                                    <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
+
+                                <li>
+                                    <a href="@Url.Action("ShowPayments", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-up" style="margin-right:10px;"></i>&nbsp;Входящие платежи Ф1</a>
                                 </li>
-                                <li id="settingslock">
-                                    <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
+                                <li>
+                                    <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Исходящие платежи Ф1</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="@Url.Action("ShowPaymentsF2", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-triangle-top" style="margin-right:10px;"></i>&nbsp;Входящие платежи Ф2</a>
+                                    @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="glyphicon glyphicon-triangle-top" style="margin-right:10px;"></i>&nbsp;Входящие платежи Ф2</a>*@
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("ShowOutgoingPaymentsF2", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;Исходящие платежи Ф2</a>
+                                    @*<a href="@Url.Action("InDeveloping", "Home", new { Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;Исходящие платежи Ф2</a>*@
+                                </li>
+
+                                <li style="text-align:center; background-color:#C9D2DC; margin:2px 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
+                                    ПЛАН
+                                </li>
+
+                                <li>
+                                    <a href="@Url.Action("PCShow", "PlanCredits", new {Area = "" })"><i class="glyphicon glyphicon-hand-up" style="margin-right:10px;"></i>&nbsp;План доходов Ф1</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("PDShow", "PlanDebits", new {Area = "" })"><i class="glyphicon glyphicon-hand-down" style="margin-right:10px;"></i>&nbsp;План расходов Ф1</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="@Url.Action("PCShow", "PlanCreditsF2", new {Area = "" })"><i class="glyphicon glyphicon-triangle-top" style="margin-right:10px;"></i>&nbsp;План доходов Ф2</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("PDShow", "PlanDebitsF2", new {Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;План расходов Ф2</a>
+                                    @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="glyphicon glyphicon-triangle-bottom" style="margin-right:10px;"></i>&nbsp;План расходов Ф2</a>*@
+                                </li>
+
+                                <li style="text-align:center; background-color:#C9D2DC;  margin:0 0 2px 0; padding:3px 3px 3px 23px; letter-spacing: 20px;">
+                                    ОСТАТКИ
+                                </li>
+
+                                <li>
+                                    <a href="@Url.Action("ABShow", "AccountsBalances", new {Area = "" })"><i class="glyphicon glyphicon-piggy-bank" style="margin-right:10px;"></i>&nbsp;Остатки на счетах</a>
                                 </li>
                             </ul>
                         </li>
-                    }
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
 
+                        <li id="report" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отчеты <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li id="repFactAnal">
+                                    <a href="@Url.Action("AnalysisOfPayments", "Reports", new {Area = "" })"><i class="glyphicon glyphicon-signal" style="margin-right:10px;"></i>&nbsp;Анализ платежей</a>
+                                </li>
+                                <li id="repPlanAnal">
+                                    <a href="@Url.Action("AnalysisOfPlanPayments", "Reports", new {Area = "" })"><i class="fa fa-line-chart" style="margin-right:10px;"></i>&nbsp;Анализ плановых показателей</a>
+                                </li>
+                                <li id="repPlanAnal">
+                                    <a href="@Url.Action("AnalysisOfTheProjectBudget", "Reports", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование</a>
+                                    @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование</a>*@
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li id="dict" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Справочники <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li id="projects_li">
+                                    <a href="@Url.Action("ShowProjects", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-briefcase" style="margin-right:10px;"></i>&nbsp;Проекты</a>
+                                </li>
+                                <li id="period_li">
+                                    <a href="@Url.Action("PPShow", "PlanningPeriods", new {Area = "" })"><i class="glyphicon glyphicon-time" style="margin-right:10px;"></i>&nbsp;Плановые периоды</a>
+                                </li>
+                                <li id="income_li">
+                                    <a href="@Url.Action("ShowIncomes", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-tags" style="margin-right:10px;"></i>&nbsp;Статьи доходов</a>
+                                </li>
+                                <li id="expenditure_li">
+                                    <a href="@Url.Action("ShowExpenditures", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-tag" style="margin-right:10px;"></i>&nbsp;Статьи расходов</a>
+                                </li>
+                                <li id="org_li">
+                                    <a href="@Url.Action("ShowOrganizations", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-barcode" style="margin-right:10px;"></i>&nbsp;Организации</a>
+                                </li>
+                                <li id="account_li">
+                                    <a href="@Url.Action("ACShow", "Accounts", new {Area = "" })"><i class="glyphicon glyphicon-list-alt" style="margin-right:10px;"></i>&nbsp;Счета организаций</a>
+                                </li>
+                                <li id="usr_li">
+                                    <a href="@Url.Action("ShowUsers", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-user" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- If current user is Administrator -->
+                        @if (this.User.IsInRole("Administrator"))
+                    {
+                    <li id="admin" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li id="usersblock">
+                                <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                            </li>
+                            <li id="auditblock">
+                                <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
+                            </li>
+                            <li id="settingslock">
+                                <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
+                            </li>
+                        </ul>
+                    </li>
+                    }
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+    }
     @RenderBody()
 
-    <div class="container">
+    <div class="container" id="footerBlock">
         <hr>
         <footer>
             <div class="row">

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Доходы Ф1";
+    ViewBag.Title = "Платежи Ф2";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,6 +9,11 @@
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+<style>
+    .sum-container:first-child {
+        margin-right: 20px;
+    }
+</style>
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -21,12 +26,12 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 @ViewBag.Title
-                <small>План доходов Ф1</small>
+                <small>Входящие платежи Ф2</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
                 <li>Показатели</li>
-                <li class="active">План доходов Ф1</li>
+                <li class="active">Входящие платежи Ф2</li>
             </ol>
         </div>
     </div>
@@ -38,36 +43,36 @@
         </div>
     </div>
 
-    <div class="row" style="width:100%">
-        @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new { @class = "form-control input-sm", name = "PeriodDDL", title = "Плановый период" })
-    </div>
-
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb chFlt" style="width: 100%" placeholder="Руководитель" /></th>
-                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Назначение" /></th>
-                <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Пользователь" /></th>
+                <th><input type="text" class="form-control input-sm sb chiefFlt" style="width: 100%" placeholder="Руководитель проекта" /></th>
+                <th><input type="text" class="form-control input-sm sb clientFlt" style="width: 100%" placeholder="Заказчик" /></th>
+                <th><input type="text" class="form-control input-sm sb agrFlt" style="width: 100%" placeholder="Договор" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Куратор" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th></th>
+            </tr>
+
+            <tr role="row">
+                <th colspan="2">Проект</th>
+                <th colspan="3">Договор</th>
+                <th colspan="3">Оплата</th>
             </tr>
 
             <tr role="row">
                 <th>Проект</th>
                 <th>Руководитель</th>
-                <th>Организация</th>
-                <th>Назначение</th>
-                <th>Пользователь</th>
+                <th>Заказчик</th>
+                <th>Договор</th>
+                <th>Куратор</th>
+                <th>Тип</th>
                 <th>Дата</th>
                 <th>Сумма</th>
-                <th>Период</th>
             </tr>
-
         </thead>
-        <tbody></tbody>
     </table>
 
     <a href="#" class="scrollup1">Наверх</a>
@@ -79,8 +84,8 @@
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -124,57 +129,37 @@
         });
     </script>
 
-    <script type="text/javascript">
+    <script>
+        //Скрипт для работы с контекстным меню
         $(function () {
-            //Скрипт для рабты с контекстным меню
             $.contextMenu({
                 selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
                     switch (key) {
-                        case 'add':
-                            window.location.href = "/PlanCredits/PCCreate";
-                            break;
-                        case 'clone':
-                            window.location.href = "/PlanCredits/PCEdit/" + $(this).closest('tr').data('objid') + '?isClone=True';
-                            break;
-                        case 'details':
-                            window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
-                            break;
-                        case 'edit':
-                            window.location.href = "/PlanCredits/PCEdit/" + $(this).closest('tr').data('objid');
-                            break;
-                        case 'delete':
-                            window.location.href = "/PlanCredits/PCDelete/" + $(this).closest('tr').data('objid');
-                            break;
-                            //-----------------------------
                         case 'filter':
                             if (fClass.indexOf("prgCellf") >= 0) {
                                 $('.prgFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-
-                            if (fClass.indexOf("chCellf") >= 0) {
-                                $('.chFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("chiefCellf") >= 0) {
+                                $('.chiefFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-
-                            if (fClass.indexOf("orgCellf") >= 0) {
-                                $('.orgFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("clientCellf") >= 0) {
+                                $('.clientFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-
-                            if (fClass.indexOf("usrCellf") >= 0) {
-                                $('.usrFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("agrCellf") >= 0) {
+                                $('.agrFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-
                             if (fClass.indexOf("dateCellf") >= 0) {
                                 var dateStr = $(this).text() + ' - ' + $(this).text();
                                 $('.dateFlt').val(dateStr).trigger('change');
                                 break;
                             };
-                            //-----------------------
+                            break;
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -192,63 +177,20 @@
                             return true;
                         }
                     },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
-                    "sep": "---------",
-                    "add": { name: "Создать", icon: "add" },
-                    "clone": {
-                        name: "Клонировать", icon: "copy", disabled: function () {
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    },
-                    "details": {
-                        name: "Подробно", icon: "details", disabled: function () {
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    },
-                    "edit": {
-                        name: "Редактировать", icon: "edit", disabled: function () {
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    },
-                    "delete": {
-                        name: "Удалить", icon: "delete", disabled: function () {
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    }
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
-            });
-
-            //Двойной щелчек по строке таблицы.
-            $('#gridtable tbody').on('dblclick', 'tr', function () {
-                window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
             });
         });
     </script>
 
     <script type="text/javascript">
+        //Скрипт создания таблицы
         $(function () {
             $('#loadingImg').hide();
-
-            //Читаем значение фильтра планового периода
-            if (localStorage.getItem('PlanningPeriod') !== null) {
-                var DDLVal = localStorage.getItem('PlanningPeriod');
-                $('#PeriodDDL').val(DDLVal);
-            }
-
-            //Скрипт создания таблицы
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[0].search.value = $('#prjFlt').val();
-                    data.columns[5].search.value = $('#dateFlt').val();
-                    data.columns[7].search.value = $('#PeriodDDL').val();
+                    data.columns[6].search.value = $('#dateFlt').val();
                 })
                 .DataTable({
                     "fixedHeader": {
@@ -262,6 +204,9 @@
                     "responsive": true,
                     "pageLength": 25, // Количество записей в таблице по умолчанию
                     "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                     "language": {
                         "lengthMenu": "Записей: _MENU_",
                         "zeroRecords": "Записи отсутствуют",
@@ -276,19 +221,18 @@
                             "sPrevious": "<"
                         }
                     },
-                    "dom": "<'row'<'col-sm-3'l><'col-sm-6'B><'#sumSpan.col-sm-3'B>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                     "fnDrawCallback": function (settings) {
                         //Используем эту функцию для обновления внешних елементов.
                         //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
                         var api = this.api();
                         var json = api.ajax.json();
-                        var _cSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                        $("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                        var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
+                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
                     },
                     "ajax": {
-                        "url": "/PlanCredits/LoadPC",
+                        "url": "/Directum/LoadPaymentsF2",
                         "type": "POST",
                         "datatype": "json",
                         "dataSrc": function (d) {
@@ -300,32 +244,33 @@
                             return d.data;
                         }
                     },
-                    "order": [[5, "desc"]],
                     "columns": [
-                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf context-menu-one haveTitle" },
-                        { "data": "ChiefName", "name": "ChiefName", "autoWidth": true, "class": "chCellf context-menu-one" },
-                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "orgCellf context-menu-one" },
-                        { "data": "Appointment", "name": "Appointment", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                        { "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
+                        { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
+                        { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
+                        { "data": "Agreement", "name": "Agreement", "class": "agrCellf haveTitle context-menu-one", "autoWidth": true },
+                        { "data": "Manager", "name": "Manager", "autoWidth": true, "class": "context-menu-one" },
+
+                        { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true, "class": "context-menu-one" },
                         {
-                            "data": "Date", "name": "Date", "autoWidth": true,
-                            "type": "date ",
+                            "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
                             "render": function (value) {
-                                if (value === null) return "";
-                                var pattern = /Date\(([^)]+)\)/;
-                                var results = pattern.exec(value);
-                                var dt = new Date(parseFloat(results[1]));
-                                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                                return _d + "/" + _m + "/" + dt.getFullYear();
+                                return formatDate(value);
                             },
                             "class": "dateCellf context-menu-one"
                         },
-                        { "data": "Sum", "name": "Sum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                        { "data": "PeriodName", "name": "PeriodName", "autoWidth": false }
+                        { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                     ],
                     "createdRow": function (row, data, rowIndex) {
-                        $(row).attr('data-objid', data.PlanCreditId);
+                        var _summ = 0;
+                        var _date = formatDate(data.AgrDate);
+                        var _type = data.AgrType;
+                        if (data.Summ > 0) {
+                            _summ = data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        }
+                        var titleStr = 'Дата договора: ' + _date + '\r\nСумма договора: ' + _summ + '\r\nТип договора: ' + _type + '\r\nПредмет договора: ' + data.Soder;
+                        $('.agrCellf', $(row)).attr('title', titleStr);
+
                         var _datePlan = formatDate(data.StartDatePlan);
                         var _dateFact = formatDate(data.StartDateFact);
                         var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
@@ -335,13 +280,7 @@
                         prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
-                    "columnDefs": [
-                        {
-                            "targets": [7],
-                            "visible": false,
-                            "searchable": false
-                        }
-                    ]
+                    "order": [[6, "desc"]]
                 });
 
             table.columns().eq(0).each(function (colIdx) {
@@ -353,23 +292,8 @@
                     table.column(colIdx).search(this.value).draw();
                 });
             });
-        });
 
-        //Скрипт для работы с фильтром выбора планового периода
-        $('body').on('change', '#PeriodDDL', function () {
-            localStorage.setItem('PlanningPeriod', $(this).val());
-            var table = $('#gridtable').DataTable();
-            table.draw();
         });
-
-        function ClearFilter() {
-            var table = $('#gridtable').DataTable();
-            $(".sb, .dff").each(function (colIdx) {
-                $(this).val('');
-                table.column(colIdx).search('');
-            });
-            table.draw();
-        }
 
         function formatDate(value) {
             if (value === null) return "";
@@ -382,6 +306,16 @@
         };
 
     </script>
+
+    <script>
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
+    </script>
+
 }
-
-

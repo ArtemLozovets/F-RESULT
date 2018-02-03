@@ -139,6 +139,9 @@
                         case 'add':
                             window.location.href = "/PlanDebitsF2/PDCreate/";
                             break;
+                        case 'clone':
+                            window.location.href = "/PlanDebitsF2/PDEdit/" + $(this).closest('tr').data('objid') + '?isClone=True';
+                            break;
                         case 'details':
                             window.location.href = "/PlanDebitsF2/PDDetails/" + $(this).closest('tr').data('objid');
                             break;
@@ -201,6 +204,13 @@
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "sep": "---------",
                     "add": { name: "Создать", icon: "add" },
+                    "clone": {
+                        name: "Клонировать", icon: "copy", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
                     "details": {
                         name: "Подробно", icon: "details", disabled: function () {
                             var rClass = $(this).attr('class');

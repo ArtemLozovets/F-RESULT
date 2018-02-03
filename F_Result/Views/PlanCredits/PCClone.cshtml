@@ -1,7 +1,7 @@
-﻿@model F_Result.Models.ActualDebit
+﻿@model F_Result.Models.PlanCredit
 
 @{
-    ViewBag.Title = "Платежи Ф1";
+    ViewBag.Title = "Доходы Ф1";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -21,13 +21,13 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Редактирование исходящего платежа Ф1</small>
+            <small>Клонирование планового дохода Ф1</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
-            <li>@Html.ActionLink("Исходящие платежи Ф1", "ADShow", "ActualDebits")</li>
-            <li class="active">Редактирование платежа Ф1</li>
+            <li>@Html.ActionLink("План доходов", "PCShow", "PlanCredits")</li>
+            <li class="active">Клонирование дохода Ф1</li>
         </ol>
     </div>
 
@@ -40,14 +40,13 @@
 
     <div class="col-md-7" style="margin-top:10px;">
 
-        @using (Html.BeginForm("ADEdit", "ActualDebits", FormMethod.Post, new { id = "ADForm" }))
+        @using (Html.BeginForm("PCCreate", "PlanCredits", FormMethod.Post, new { id = "PCForm" }))
         {
             @Html.AntiForgeryToken()
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @Html.HiddenFor(model => model.UserId)
-                @Html.HiddenFor(model => model.ActualDebitId)
+
                 <div class="form-group">
                     @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
@@ -79,14 +78,14 @@
                         <div class="input-group">
                             @Html.TextBox("prgSelect", ViewData["ProjectName"], new
                         {
-                               @class = "form-control",
-                               type = "text",
-                               id = "prgSelect",
-                               @readonly = "readonly",
-                               placeholder = "Щелкните для выбора",
-                               aria_describedby = "prgbasic-addon2",
-                               data_url = "/Directum/ShowProjectsPartial",
-                               style = "cursor:pointer;"
+                            @class = "form-control",
+                            type = "text",
+                            id = "prgSelect",
+                            @readonly = "readonly",
+                            placeholder = "Щелкните для выбора",
+                            aria_describedby = "prgbasic-addon2",
+                            data_url = "/Directum/ShowProjectsPartial",
+                            style = "cursor:pointer;"
                         })
                             <span class="input-group-addon" id="prgbasic-addon2" title="Очистить" style="cursor:pointer;">
                                 <i class="glyphicon glyphicon-refresh"></i>
@@ -110,7 +109,7 @@
                             @readonly = "readonly",
                             placeholder = "Щелкните для выбора",
                             aria_describedby = "orgbasic-addon2",
-                            data_url = "/Directum/ShowOrganizationsPartial",    
+                            data_url = "/Directum/ShowOrganizationsPartial",
                             style = "cursor:pointer;"
 
                         })
@@ -123,6 +122,14 @@
                 </div>
 
                 <div class="form-group">
+                    @Html.LabelFor(model => model.PeriodName, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.DropDownList("PeriodId", (SelectList)ViewData["periodItems"], "- Период -", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.PeriodId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
                     @Html.LabelFor(model => model.Appointment, htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
                         @Html.TextAreaFor(model => model.Appointment, new { @class = "form-control", rows = "3", maxlength = "200", style = "resize:vertical;" })
@@ -131,23 +138,15 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.DocNumber, htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(model => model.DocNumber, new { htmlAttributes = new { @class = "form-control", maxlength = "50" } })
-                        @Html.ValidationMessageFor(model => model.DocNumber, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <div class="col-md-offset-4 col-md-8">
-                        <button type="submit" title="Сохранить информацию" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Сохранить</button>
+                        <button type="submit" title="Сохранить информацию" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Клонировать</button>
                     </div>
                 </div>
             </div>
         }
 
         <div>
-            <a class="btn btn-primary" href='@Url.Action("ADShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
+            <a class="btn btn-primary" href='@Url.Action("PCShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
         </div>
     </div>
 </div>
@@ -231,7 +230,7 @@
                 $("#orgSelect").val('');
             });
 
-            $('#ADForm').submit(function (e) {
+            $('#PCForm').submit(function (e) {
                 var flag = false;
 
                 if ($("#ProjectId").val() == 0) {

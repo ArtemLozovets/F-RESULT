@@ -15,7 +15,7 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
-        #region Входящие платежи
+        #region Входящие платежи Ф1
         public ActionResult ShowPayments(int? ProjectId, string startDate, string endDate)
         {
             if (ProjectId != null)
@@ -160,6 +160,186 @@ namespace F_Result.Controllers
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
 
+        }
+        #endregion
+
+        #region Входящие платежи Ф2
+        public ActionResult ShowPaymentsF2(int? ProjectId, string startDate, string endDate)
+        {
+            if (ProjectId != null)
+            {
+                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
+                ViewData["ProjectName"] = ProjectName;
+            }
+
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+
+            return View();
+        }
+
+        //Список входящих платежей 
+        [HttpPost]
+        public ActionResult LoadPaymentsF2()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _chief = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _client = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _agreement = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _manager = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _paymentdesc = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startpaymentdate = null;
+                DateTime? _endpaymentdate = null;
+                string _paymentdatetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                if (!string.IsNullOrEmpty(_paymentdatetext))
+                {
+                    _paymentdatetext = _paymentdatetext.Trim();
+                    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
+                    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
+                    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
+                    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                }
+                //--------------------------
+
+                string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+
+                var _payments = (from payment in db.Payments
+                                 join prg in db.Projects on payment.ProjectId equals prg.id
+                                 where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
+                                        && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
+                                        && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
+                                        && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
+                                        && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
+                                        && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
+                                        && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                 select new
+                                 {
+                                     id = payment.id,
+                                     Project = payment.Project,
+                                     Chief = payment.Chief,
+                                     Manager = payment.Manager,
+                                     Client = payment.Client,
+                                     Agreement = payment.Agreement,
+                                     AgrDate = payment.AgrDate,
+                                     Soder = payment.Soder,
+                                     Summ = payment.Summ,
+                                     AgrType = payment.AgrType,
+                                     ProjectType = prg.ProjectType,
+                                     ChiefName = prg.ChiefName,
+                                     ProjectManagerName = prg.ProjectManagerName,
+                                     StartDatePlan = prg.StartDatePlan,
+                                     StartDateFact = prg.StartDateFact,
+                                     Payment = payment.Payment,
+                                     PaymentDate = payment.PaymentDate,
+                                     PaymentDesc = payment.PaymentDesc,
+                                     planBenefit = prg.planBenefit,
+                                     planExpand = prg.planExpand
+                                 }).AsEnumerable().Select(x => new PaymentsView
+                                 {
+                                     id = x.id,
+                                     Project = x.Project,
+                                     Chief = x.Chief,
+                                     Manager = x.Manager,
+                                     Client = x.Client,
+                                     Agreement = x.Agreement,
+                                     AgrDate = x.AgrDate,
+                                     Soder = x.Soder,
+                                     Summ = x.Summ,
+                                     AgrType = x.AgrType,
+                                     ProjectType = x.ProjectType,
+                                     ChiefName = x.ChiefName,
+                                     ProjectManagerName = x.ProjectManagerName,
+                                     StartDatePlan = x.StartDatePlan,
+                                     StartDateFact = x.StartDateFact,
+                                     Payment = x.Payment,
+                                     PaymentDate = x.PaymentDate,
+                                     PaymentDesc = x.PaymentDesc,
+                                     planBenefit = x.planBenefit,
+                                     planExpand = x.planExpand
+                                 }).ToList();
+
+                _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+                }
+                else
+                {
+                    _payments = _payments.OrderByDescending(x => x.PaymentDate).ThenByDescending(x => x.id).ToList();
+                }
+
+                var pSum = _payments.GroupBy(x => new { x.Agreement, x.AgrDate, x.Summ }).Sum(x => x.Select(y => y.Summ).FirstOrDefault());
+                var fSum = _payments.Sum(x => x.Payment);
+
+                totalRecords = _payments.Count();
+
+                var data = _payments.Skip(skip).Take(pageSize).ToList();
+                return Json(new { psum = pSum, fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region Исходящие платежи Ф2
+        public ActionResult ShowOutgoingPaymentsF2(int? ProjectId, string startDate, string endDate)
+        {
+            if (ProjectId != null)
+            {
+                string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
+                ViewData["ProjectName"] = ProjectName;
+            }
+
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+
+            return View();
+        }
+
+        //Список входящих платежей 
+        [HttpPost]
+        public ActionResult LoadOutgoingPaymentsF2()
+        {
+            try
+            {
+                 return Json(new { tmp = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
         }
         #endregion
 

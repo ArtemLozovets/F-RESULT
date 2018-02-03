@@ -1,121 +1,63 @@
-﻿@using F_Result.Models
-@model LoginViewModel
-@{
-    ViewBag.Title = "Главная";
+﻿@{
+    ViewBag.Title = "F-RESULT";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    #rolesinf {
-        font-weight: bold;
-        line-height: 30px;
-        list-style: none;
-        padding: 0;
+    H1 {
+        text-shadow: -1px -1px #FFF, -2px -2px #FFF, -1px 1px #FFF, -2px 2px #FFF, 1px 1px #FFF, 2px 2px #FFF, 1px -1px #FFF, 2px -2px #FFF, -3px -3px 2px #BBB, -3px 3px 2px #BBB, 3px 3px 2px #BBB, 3px -3px 2px #BBB;
+        color: steelblue;
+        -moz-transition: all 1s;
+        -o-transition: all 1s;
+        -webkit-transition: all 1s;
+        transition: all 1s;
     }
 
-    span.badge {
-        padding: 6px 10px;
-        background-color: #446E9B;
-        letter-spacing: 8px;
-    }
-
-    #rolesinf li {
-        padding-left: 1.3em;
-    }
-
-        #rolesinf li:before {
-            content: "\f00c"; /* FontAwesome Unicode */
-            font-family: FontAwesome;
-            display: inline-block;
-            margin-left: -1.3em; /* same as padding-left set on li */
-            width: 1.3em; /* same as padding-left set on li */
+        H1:hover {
+            color: yellowgreen;
         }
 </style>
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-    </ol>
 
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner">
-        <div class="item active">
-            <div class="fill" style="background-image: url('../../Content/Images/sl1.jpg'); "></div>
-            <div class="carousel-caption">
-                <h1 style="color:#ff6a00">Финансы</h1>
-            </div>
+<div class="container">
+    @if (Request.IsAuthenticated) { 
+        <div style="width:100%; margin:5em auto; text-align:center;">
+            <h1>F-RESULT</h1>
         </div>
-        <div class="item">
-            <div class="fill" style="background-image: url('../../Content/Images/sl2.jpg'); "></div>
-            <div class="carousel-caption">
-                <h1 style="color:#ff6a00">Планирование</h1>
-            </div>
-        </div>
-        <div class="item">
-            <div class="fill" style="background-image: url('../../Content/Images/sl3.jpg');"></div>
-            <div class="carousel-caption">
-                <h1 style="color:#ff6a00">Результат</h1>
-            </div>
-        </div>
-    </div>
+    }
 
-    <!-- Controls -->
-    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-        <span class="icon-prev"></span>
-    </a>
-    <a class="right carousel-control" href="#myCarousel" data-slide="next">
-        <span class="icon-next"></span>
-    </a>
+    @if (!Request.IsAuthenticated)
+    {
+        <div style="position:absolute" id="btnPanel">
+            <a class="btn btn-primary btn-lg" href='@Url.Action("Login", "UsersManagement", new { Area = "Administrator", ReturnUrl = ViewBag.ReturnUrl })'><span class="fa fa-key"></span>&nbsp;ВХОД</a>
+        </div>
+    }
 </div>
 
-<div class="section" style="padding-top:20px !important">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-6">
-                <h3 style="color:#446E9B;"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;Вход</h3>
-                <section id="loginForm">
-                    @using (Html.BeginForm("Login", "UsersManagement", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.UserName, new { @class = "col-md-3 control-label" })
-                            <div class="col-md-6">
-                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.Password, new { @class = "col-md-3 control-label" })
-                            <div class="col-md-6">
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-4">
-                                <div class="checkbox">
-                                    @Html.CheckBoxFor(m => m.RememberMe, new { style = "margin-left:4px;" })
-                                    @Html.LabelFor(m => m.RememberMe)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-8">
-                                <button type="submit" title="Войти" class="btn btn-primary"><i class="glyphicon glyphicon-log-in"></i> Вход</button>
-                            </div>
-                        </div>
-                    }
-                </section>
-            </div>
-            <div class="col-lg-6 col-md-6">
-                    
-            </div>
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container -->
-</div>
-<!-- /.section -->
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            setPosition();
+        })
+
+        $(window).resize(function () {
+            setPosition();
+        });
+
+        function setPosition() {
+            var wHeight = $(window).height();
+            var fHeight = $('#footerBlock').height();
+            $('#footerBlock')
+                .css('position', 'absolute')
+                .css('top', wHeight - fHeight)
+                .css('left', ($(window).width() / 2) - ($('#footerBlock').width() / 2));
+
+            var btpHeight = $('#btnPanel').height();
+            var dt = ((wHeight - btpHeight - fHeight) / 2) + 50;
+            $('#btnPanel')
+                .css('top', dt)
+                .css('left', ($(window).width() / 2) - ($('#btnPanel').width() / 2));
+        }
+    </script>
+}

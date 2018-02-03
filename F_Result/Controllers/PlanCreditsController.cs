@@ -93,7 +93,7 @@ namespace F_Result.Controllers
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
                                         && (pperiod.PlanningPeriodId == _period || string.IsNullOrEmpty(_periodtxt))
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief??0)) //Фильтрация записей по проектам для руководителей проектов
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                             select new
                             {
                                 PlanCreditId = plancredit.PlanCreditId,
@@ -280,7 +280,7 @@ namespace F_Result.Controllers
 
         //Редактирование плана доходов GET
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
-        public ActionResult PCEdit(int? id)
+        public ActionResult PCEdit(int? id, string isClone)
         {
             if (id == null)
             {
@@ -306,7 +306,16 @@ namespace F_Result.Controllers
 
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
-            return View(planCredit);
+            if (Convert.ToBoolean(isClone))
+            {
+                planCredit.Date = DateTime.Today;
+                return View("PCClone", planCredit);
+            }
+            else
+            {
+                return View(planCredit);
+            }
+
         }
 
         //Редактирование плана доходов POST

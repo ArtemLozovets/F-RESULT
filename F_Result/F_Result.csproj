@@ -738,6 +738,13 @@
     <Content Include="Views\Directum\ShowIncomes.cshtml" />
     <Content Include="Views\Directum\ShowIncomesPartial.cshtml" />
     <Content Include="Views\Settings\ShowSettings.cshtml" />
+    <Content Include="Views\ActualDebits\ADClone.cshtml" />
+    <Content Include="Views\PlanCredits\PCClone.cshtml" />
+    <Content Include="Views\PlanCreditsF2\PCClone.cshtml" />
+    <Content Include="Views\PlanDebits\PDClone.cshtml" />
+    <Content Include="Views\PlanDebitsF2\PDClone.cshtml" />
+    <Content Include="Views\Directum\ShowPaymentsF2.cshtml" />
+    <Content Include="Views\Directum\ShowOutgoingPaymentsF2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

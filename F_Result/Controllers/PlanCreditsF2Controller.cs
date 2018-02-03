@@ -291,7 +291,7 @@ namespace F_Result.Controllers
 
         //Редактирование плана доходов GET
         [Authorize(Roles = "Administrator, ProjectManager, Financier")]
-        public ActionResult PCEdit(int? id)
+        public ActionResult PCEdit(int? id, string isClone)
         {
             if (id == null)
             {
@@ -320,7 +320,15 @@ namespace F_Result.Controllers
 
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
-            return View(planCredit);
+            if (Convert.ToBoolean(isClone))
+            {
+                planCredit.Date = DateTime.Today;
+                return View("PCClone", planCredit);
+            }
+            else
+            {
+                return View(planCredit);
+            }
         }
 
         //Редактирование плана доходов POST

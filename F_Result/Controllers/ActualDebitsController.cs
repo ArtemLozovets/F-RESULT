@@ -228,7 +228,7 @@ namespace F_Result.Controllers
 
         //Редактирование исходящего платежа GET
         [Authorize(Roles = "Administrator, Accountant, Financier")]
-        public ActionResult ADEdit(int? id)
+        public ActionResult ADEdit(int? id, string isClone)
         {
             if (id == null)
             {
@@ -246,7 +246,15 @@ namespace F_Result.Controllers
             string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             ViewData["OrganizationName"] = _orgName;
 
-            return View(actualDebit);
+            if (Convert.ToBoolean(isClone))
+            {
+                actualDebit.Date = DateTime.Today;
+                return View("ADClone", actualDebit);
+            }
+            else
+            {
+                return View(actualDebit);
+            }
         }
 
 

@@ -1,7 +1,7 @@
 ﻿@model F_Result.Models.ActualDebit
 
 @{
-    ViewBag.Title = "Создание";
+    ViewBag.Title = "Платежи Ф1";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -27,12 +27,12 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             @ViewBag.Title
-            <small>Добавление исходящего платежа</small>
+            <small>Добавление исходящего платежа Ф1</small>
         </h1>
         <ol class="breadcrumb">
             <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
             <li>Показатели</li>
-            <li>@Html.ActionLink("Исходящие платежи", "ADShow", "ActualDebits")</li>
+            <li>@Html.ActionLink("Исходящие платежи Ф1", "ADShow", "ActualDebits")</li>
             <li class="active">Создание</li>
         </ol>
     </div>

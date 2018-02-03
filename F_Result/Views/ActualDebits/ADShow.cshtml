@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Платежи";
+    ViewBag.Title = "Платежи Ф1";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -21,12 +21,12 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 @ViewBag.Title
-                <small>Исходящие платежи</small>
+                <small>Исходящие платежи Ф1</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
                 <li>Показатели</li>
-                <li class="active">Исходящие платежи</li>
+                <li class="active">Исходящие платежи Ф1</li>
             </ol>
         </div>
     </div>
@@ -130,6 +130,9 @@
                         case 'add':
                             window.location.href = "/ActualDebits/ADCreate/";
                             break;
+                        case 'clone':
+                            window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid')+'?isClone=True';
+                            break;
                         case 'details':
                             window.location.href = "/ActualDebits/ADDetails/" + $(this).closest('tr').data('objid');
                             break;
@@ -187,6 +190,13 @@
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "sep": "---------",
                     "add": { name: "Создать", icon: "add" },
+                    "clone": {
+                        name: "Клонировать", icon: "copy", disabled: function () {
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
                     "details": {
                         name: "Подробно", icon: "details", disabled: function () {
                             var rClass = $(this).attr('class');
