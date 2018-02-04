@@ -74,7 +74,6 @@
 
         $('#PrjAccChb').on('click', function (e) {
             if (confirm("Изменить параметр?")) {
-
                 var _pName = 'PM_access_all_projects';
                 var _pValue = $(this).prop('checked');
                 var _pNote = 'Данный параметр определяет будут ли пользователю в роли "Руководитель проекта" доступны данные по всем проектам ';
@@ -99,6 +98,10 @@
                     }
                 });
 
+            }
+            else {
+                //Если пользователь выбрал "Отмена" - возвращаем чекбокс в исходное состояние
+                $('#PrjAccChb').prop('checked', !$('#PrjAccChb').prop('checked'));
             }
         });
     </script>

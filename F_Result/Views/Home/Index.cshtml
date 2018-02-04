@@ -11,27 +11,28 @@
         -o-transition: all 1s;
         -webkit-transition: all 1s;
         transition: all 1s;
+        font-size: 4em;
     }
 
         H1:hover {
             color: yellowgreen;
         }
-</style>
+
+ </style>
 
 
 <div class="container">
-    @if (Request.IsAuthenticated) { 
+    @if (Request.IsAuthenticated)
+    {
         <div style="width:100%; margin:5em auto; text-align:center;">
             <h1>F-RESULT</h1>
+            <p>Добро пожаловать, @ViewData["FirstName"]!</p>
+            <p>Вы вошли как @ViewData["UserName"]</p>
+            <p>Ваша роль в системе - @ViewData["UserRole"]</p>
+            <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
         </div>
     }
 
-    @if (!Request.IsAuthenticated)
-    {
-        <div style="position:absolute" id="btnPanel">
-            <a class="btn btn-primary btn-lg" href='@Url.Action("Login", "UsersManagement", new { Area = "Administrator", ReturnUrl = ViewBag.ReturnUrl })'><span class="fa fa-key"></span>&nbsp;ВХОД</a>
-        </div>
-    }
 </div>
 
 @section Scripts {
@@ -48,16 +49,16 @@
         function setPosition() {
             var wHeight = $(window).height();
             var fHeight = $('#footerBlock').height();
-            $('#footerBlock')
-                .css('position', 'absolute')
-                .css('top', wHeight - fHeight)
-                .css('left', ($(window).width() / 2) - ($('#footerBlock').width() / 2));
-
-            var btpHeight = $('#btnPanel').height();
-            var dt = ((wHeight - btpHeight - fHeight) / 2) + 50;
-            $('#btnPanel')
-                .css('top', dt)
-                .css('left', ($(window).width() / 2) - ($('#btnPanel').width() / 2));
+            if (wHeight < 420) {
+                $('#footerBlock').hide();
+            }
+            else {
+                $('#footerBlock')
+                    .show()
+                    .css('position', 'absolute')
+                    .css('top', wHeight - fHeight)
+                    .css('left', ($(window).width() / 2) - ($('#footerBlock').width() / 2));
+            };
         }
     </script>
 }
