@@ -311,7 +311,7 @@ namespace F_Result.Controllers
         #endregion
 
         #region Исходящие платежи Ф2
-        public ActionResult ShowOutgoingPaymentsF2(int? ProjectId, string startDate, string endDate)
+        public ActionResult ShowActualDebitsF2(int? ProjectId, string startDate, string endDate)
         {
             if (ProjectId != null)
             {
@@ -329,17 +329,119 @@ namespace F_Result.Controllers
 
         //Список входящих платежей 
         [HttpPost]
-        public ActionResult LoadOutgoingPaymentsF2()
+        public ActionResult LoadActualDebitsF2()
         {
             try
             {
-                 return Json(new { tmp = "" }, JsonRequestBehavior.AllowGet);
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _chief = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _client = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _agreement = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _manager = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _paymentdesc = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startpaymentdate = null;
+                DateTime? _endpaymentdate = null;
+                string _paymentdatetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                if (!string.IsNullOrEmpty(_paymentdatetext))
+                {
+                    _paymentdatetext = _paymentdatetext.Trim();
+                    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
+                    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
+                    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
+                    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                }
+                //--------------------------
+
+                string _paymenttxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+
+                var _payments = (from payment in db.ActualDebitsF2
+                                 join prg in db.Projects on payment.ProjectId equals prg.id
+                                 //where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
+                                 //       && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
+                                 //       && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
+                                 //       && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
+                                 //       && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
+                                 //       && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
+                                 //       && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
+                                 //       && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                 select new
+                                 {
+                                     id = payment.id,
+                                     WorkerID = payment.WorkerId,
+                                     WorkerName = payment.WorkerName,
+                                     DocumentNumber = payment.DocumentNumber,
+                                     DocumentDate = payment.DocumentDate,
+                                     ItemDescr = payment.ItemDescr,
+                                     IncomeItems = payment.IncomeItems,
+                                     IncomeItemsName = payment.IncomeItemsName,
+                                     ProjectId = payment.ProjectId,
+                                     ProjectName = payment.ProjectName,
+                                     ItemSum = payment.ItemSum,
+                                     Receipt = payment.Receipt,
+                                     DocumentDescr = payment.DocumentDescr,
+                                     Tags = payment.Tags
+                                 }).AsEnumerable().Select(x => new ActualDebitsF2
+                                 {
+                                     id = x.id,
+                                     WorkerId = x.WorkerID,
+                                     WorkerName = x.WorkerName,
+                                     DocumentNumber = x.DocumentNumber,
+                                     DocumentDate = x.DocumentDate,
+                                     ItemDescr = x.ItemDescr,
+                                     IncomeItems = x.IncomeItems,
+                                     IncomeItemsName = x.IncomeItemsName,
+                                     ProjectId = x.ProjectId,
+                                     ProjectName = x.ProjectName,
+                                     ItemSum = x.ItemSum,
+                                     Receipt = x.Receipt,
+                                     DocumentDescr = x.DocumentDescr,
+                                     Tags = x.Tags
+                                 }).ToList();
+
+                _payments = _payments.Where(x => (x.ItemSum.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+                }
+                else
+                {
+                    _payments = _payments.OrderByDescending(x => x.DocumentDate).ThenByDescending(x => x.id).ToList();
+                }
+
+                var fSum = _payments.Sum(x => x.ItemSum);
+
+                totalRecords = _payments.Count();
+
+                var data = _payments.Skip(skip).Take(pageSize).ToList();
+                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+
+
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
-                throw;
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
+
         }
         #endregion
 

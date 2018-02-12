@@ -251,6 +251,26 @@
     <Compile Include="Migrations\201801201508370_ProjectsChange10.Designer.cs">
       <DependentUpon>201801201508370_ProjectsChange10.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802121430145_ProjectsChange11.cs" />
+    <Compile Include="Migrations\201802121430145_ProjectsChange11.Designer.cs">
+      <DependentUpon>201802121430145_ProjectsChange11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802121451573_ProjectsChange12.cs" />
+    <Compile Include="Migrations\201802121451573_ProjectsChange12.Designer.cs">
+      <DependentUpon>201802121451573_ProjectsChange12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802121525197_ProjectsChange13.cs" />
+    <Compile Include="Migrations\201802121525197_ProjectsChange13.Designer.cs">
+      <DependentUpon>201802121525197_ProjectsChange13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802121831206_ProjectsChange14.cs" />
+    <Compile Include="Migrations\201802121831206_ProjectsChange14.Designer.cs">
+      <DependentUpon>201802121831206_ProjectsChange14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802121916062_ProjectsChange15.cs" />
+    <Compile Include="Migrations\201802121916062_ProjectsChange15.Designer.cs">
+      <DependentUpon>201802121916062_ProjectsChange15.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -258,6 +278,7 @@
     <Compile Include="Models\DirectoryOfArticles.cs" />
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
+    <Compile Include="Models\PayModelF2.cs" />
     <Compile Include="Models\Payments.cs" />
     <Compile Include="Models\PlanCreditF2.cs" />
     <Compile Include="Models\PlanCredit.cs" />
@@ -741,7 +762,7 @@
     <Content Include="Views\PlanDebits\PDClone.cshtml" />
     <Content Include="Views\PlanDebitsF2\PDClone.cshtml" />
     <Content Include="Views\Directum\ShowPaymentsF2.cshtml" />
-    <Content Include="Views\Directum\ShowOutgoingPaymentsF2.cshtml" />
+    <Content Include="Views\Directum\ShowActualDebitsF2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -798,6 +819,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801201508370_ProjectsChange10.resx">
       <DependentUpon>201801201508370_ProjectsChange10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121430145_ProjectsChange11.resx">
+      <DependentUpon>201802121430145_ProjectsChange11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121451573_ProjectsChange12.resx">
+      <DependentUpon>201802121451573_ProjectsChange12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121525197_ProjectsChange13.resx">
+      <DependentUpon>201802121525197_ProjectsChange13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121831206_ProjectsChange14.resx">
+      <DependentUpon>201802121831206_ProjectsChange14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121916062_ProjectsChange15.resx">
+      <DependentUpon>201802121916062_ProjectsChange15.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

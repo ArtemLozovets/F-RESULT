@@ -44,6 +44,14 @@ namespace F_Result.Models
                 .HasKey(t => t.id)
                 .ToTable("DirectumPayments");
 
+            modelBuilder.Entity<PaymentsF2>()
+                .HasKey(t => t.id)
+                .ToTable("DirectumPaymentsF2");
+
+            modelBuilder.Entity<ActualDebitsF2>()
+                .HasKey(t => t.id)
+                .ToTable("ActualDebitsF2");
+
             modelBuilder.Entity<Projects>()
                 .HasKey(t => t.id)
                 .ToTable("Projects");
@@ -171,6 +179,8 @@ namespace F_Result.Models
         }
 
         public DbSet<F_Result.Models.Payments> Payments { get; set; }
+        public DbSet<F_Result.Models.PaymentsF2> PaymentsF2 { get; set; }
+        public DbSet<F_Result.Models.ActualDebitsF2> ActualDebitsF2 { get; set; }
         public DbSet<F_Result.Models.Projects> Projects { get; set; }
         public DbSet<F_Result.Models.Organizations> Organizations { get; set; }
         public DbSet<F_Result.Models.DUsers> DUsers { get; set; }
