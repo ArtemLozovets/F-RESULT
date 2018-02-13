@@ -341,7 +341,12 @@ td.agrCellf:before,
 td.orgCellf:before,
 td.dateCellf:before,
 td.usrCellf:before,
-td.bankCellf:before {
+td.bankCellf:before,
+td.wksCellf:before,
+td.docCellf:before,
+td.itemCellf:before,
+td.itemCatCellf:before,
+td.tagsCellf:before {
     font-family: FontAwesome;
     white-space: nowrap;
     content: "\F0B0\00A0";

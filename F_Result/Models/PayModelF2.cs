@@ -53,6 +53,35 @@ namespace F_Result.Models
         [Display(Name = "Теги")]
         public string Tags { get; set; }
 
+        //==============================================
+        [NotMapped]
+        [Display(Name = "Тип проекта")]
+        public string ProjectType { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Менеджер")]
+        public string ProjectManagerName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Руководитель проекта")]
+        public string ChiefName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Дата начала (План)")]
+        public DateTime? StartDateFact { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Дата начала (Факт)")]
+        public DateTime? StartDatePlan { get; set; }
+
+        [NotMapped]
+        [Display(Name = "План доходов")]
+        public decimal planBenefit { get; set; }
+
+        [NotMapped]
+        [Display(Name = "План расходов")]
+        public decimal planExpand { get; set; }
+
     }
 
 
