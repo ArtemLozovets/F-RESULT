@@ -180,7 +180,7 @@ namespace F_Result.Controllers
             return View();
         }
 
-        //Список входящих платежей 
+        //Список исходящих платежей Ф2
         [HttpPost]
         public ActionResult LoadPaymentsF2()
         {
@@ -201,16 +201,17 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _chief = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _client = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _agreement = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _manager = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _paymentdesc = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-
+                string _itemname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _tags = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _docnum = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _itemdescr = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _docdescr = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _receipt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
-                string _paymentdatetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetext = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 if (!string.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
@@ -221,66 +222,65 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext);
                 }
                 //--------------------------
+                string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
 
-                string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-
-                var _payments = (from payment in db.Payments
+                var _payments = (from payment in db.PaymentsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id
-                                 where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
-                                        && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
-                                        && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
-                                        && (payment.Agreement.Contains(_agreement) || string.IsNullOrEmpty(_agreement))
-                                        && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
-                                        && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
-                                        && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                 where ((payment.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
+                                        && (payment.DocumentNumber.Contains(_docnum) || string.IsNullOrEmpty(_docnum))
+                                        && (payment.DocumentDate >= _startpaymentdate && payment.DocumentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
+                                        && (payment.ItemDescr.Contains(_itemdescr) || string.IsNullOrEmpty(_itemdescr))
+                                        && (payment.IncomeItemsName.Contains(_itemname) || string.IsNullOrEmpty(_itemname))
+                                        && (payment.ProjectName.Contains(_project) || string.IsNullOrEmpty(_project))
+                                        && (payment.Receipt.Contains(_receipt) || string.IsNullOrEmpty(_receipt))
+                                        && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
+                                        && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
                                  select new
                                  {
                                      id = payment.id,
-                                     Project = payment.Project,
-                                     Chief = payment.Chief,
-                                     Manager = payment.Manager,
-                                     Client = payment.Client,
-                                     Agreement = payment.Agreement,
-                                     AgrDate = payment.AgrDate,
-                                     Soder = payment.Soder,
-                                     Summ = payment.Summ,
-                                     AgrType = payment.AgrType,
+                                     WorkerID = payment.WorkerId,
+                                     WorkerName = payment.WorkerName,
+                                     DocumentNumber = payment.DocumentNumber,
+                                     DocumentDate = payment.DocumentDate,
+                                     ItemDescr = payment.ItemDescr,
+                                     IncomeItems = payment.IncomeItems,
+                                     IncomeItemsName = payment.IncomeItemsName,
+                                     ProjectId = payment.ProjectId,
+                                     ProjectName = payment.ProjectName,
+                                     ItemSum = payment.ItemSum,
+                                     Receipt = payment.Receipt,
+                                     DocumentDescr = payment.DocumentDescr,
+                                     Tags = payment.Tags,
                                      ProjectType = prg.ProjectType,
                                      ChiefName = prg.ChiefName,
                                      ProjectManagerName = prg.ProjectManagerName,
                                      StartDatePlan = prg.StartDatePlan,
-                                     StartDateFact = prg.StartDateFact,
-                                     Payment = payment.Payment,
-                                     PaymentDate = payment.PaymentDate,
-                                     PaymentDesc = payment.PaymentDesc,
-                                     planBenefit = prg.planBenefit,
-                                     planExpand = prg.planExpand
-                                 }).AsEnumerable().Select(x => new PaymentsView
+                                     StartDateFact = prg.StartDateFact
+                                 }).AsEnumerable().Select(x => new PaymentsF2
                                  {
                                      id = x.id,
-                                     Project = x.Project,
-                                     Chief = x.Chief,
-                                     Manager = x.Manager,
-                                     Client = x.Client,
-                                     Agreement = x.Agreement,
-                                     AgrDate = x.AgrDate,
-                                     Soder = x.Soder,
-                                     Summ = x.Summ,
-                                     AgrType = x.AgrType,
+                                     WorkerId = x.WorkerID,
+                                     WorkerName = x.WorkerName,
+                                     DocumentNumber = x.DocumentNumber,
+                                     DocumentDate = x.DocumentDate,
+                                     ItemDescr = x.ItemDescr,
+                                     IncomeItems = x.IncomeItems,
+                                     IncomeItemsName = x.IncomeItemsName,
+                                     ProjectId = x.ProjectId,
+                                     ProjectName = x.ProjectName,
+                                     ItemSum = x.ItemSum,
+                                     Receipt = x.Receipt,
+                                     DocumentDescr = x.DocumentDescr,
+                                     Tags = x.Tags,
                                      ProjectType = x.ProjectType,
                                      ChiefName = x.ChiefName,
                                      ProjectManagerName = x.ProjectManagerName,
                                      StartDatePlan = x.StartDatePlan,
-                                     StartDateFact = x.StartDateFact,
-                                     Payment = x.Payment,
-                                     PaymentDate = x.PaymentDate,
-                                     PaymentDesc = x.PaymentDesc,
-                                     planBenefit = x.planBenefit,
-                                     planExpand = x.planExpand
+                                     StartDateFact = x.StartDateFact
                                  }).ToList();
 
-                _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
+                _payments = _payments.Where(x => x.ItemSum.Value.ToString().Contains(_paymenttxt)).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -288,16 +288,15 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _payments = _payments.OrderByDescending(x => x.PaymentDate).ThenByDescending(x => x.id).ToList();
+                    _payments = _payments.OrderByDescending(x => x.DocumentDate).ThenByDescending(x => x.id).ToList();
                 }
 
-                var pSum = _payments.GroupBy(x => new { x.Agreement, x.AgrDate, x.Summ }).Sum(x => x.Select(y => y.Summ).FirstOrDefault());
-                var fSum = _payments.Sum(x => x.Payment);
+                var fSum = _payments.Sum(x => x.ItemSum);
 
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { psum = pSum, fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }
@@ -307,6 +306,7 @@ namespace F_Result.Controllers
                 var data = "";
                 return Json(new { data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
+
         }
         #endregion
 
@@ -327,7 +327,7 @@ namespace F_Result.Controllers
             return View();
         }
 
-        //Список входящих платежей 
+        //Список исходящих платежей Ф2
         [HttpPost]
         public ActionResult LoadActualDebitsF2()
         {
@@ -347,12 +347,18 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _worker = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _docnum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _project = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _itemname = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _tags = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _docnum = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _itemdescr = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _docdescr = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _receipt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
-                string _paymentdatetext = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetext = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 if (!string.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
@@ -363,14 +369,7 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext);
                 }
                 //--------------------------
-                string _itemdescr = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _itemname = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _project = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _paymenttxt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _receipt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                string _docdescr = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
-                string _tags = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
-
+                string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id

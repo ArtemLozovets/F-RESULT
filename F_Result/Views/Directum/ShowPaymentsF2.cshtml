@@ -47,28 +47,26 @@
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb chiefFlt" style="width: 100%" placeholder="Руководитель проекта" /></th>
-                <th><input type="text" class="form-control input-sm sb clientFlt" style="width: 100%" placeholder="Заказчик" /></th>
-                <th><input type="text" class="form-control input-sm sb agrFlt" style="width: 100%" placeholder="Договор" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Куратор" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Тип" /></th>
+                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Теги" /></th>
+                <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Код" /></th>
+                <th><input type="text" class="form-control input-sm sb itemFlt" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Квитанция" /></th>
+                <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
-                <th colspan="2">Проект</th>
-                <th colspan="3">Договор</th>
-                <th colspan="3">Оплата</th>
-            </tr>
-
-            <tr role="row">
                 <th>Проект</th>
-                <th>Руководитель</th>
-                <th>Заказчик</th>
-                <th>Договор</th>
-                <th>Куратор</th>
-                <th>Тип</th>
+                <th>Статья</th>
+                <th>Теги</th>
+                <th>Код</th>
+                <th>Назначение</th>
+                <th>Примечание</th>
+                <th>Квитанция</th>
+                <th>Сотрудник</th>
                 <th>Дата</th>
                 <th>Сумма</th>
             </tr>
@@ -138,25 +136,33 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'filter':
-                            if (fClass.indexOf("prgCellf") >= 0) {
-                                $('.prgFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("wksCellf") >= 0) {
+                                $('.wksFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-                            if (fClass.indexOf("chiefCellf") >= 0) {
-                                $('.chiefFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-                            if (fClass.indexOf("clientCellf") >= 0) {
-                                $('.clientFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-                            if (fClass.indexOf("agrCellf") >= 0) {
-                                $('.agrFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("docCellf") >= 0) {
+                                $('.docFlt').val($(this).text()).trigger('change');
                                 break;
                             };
                             if (fClass.indexOf("dateCellf") >= 0) {
                                 var dateStr = $(this).text() + ' - ' + $(this).text();
                                 $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("itemCellf") >= 0) {
+                                $('.itemFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("itemCatCellf") >= 0) {
+                                $('.itemCatFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('.prgFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("tagsCellf") >= 0) {
+                                $('.tagsFlt').val($(this).text()).trigger('change');
                                 break;
                             };
                             break;
@@ -190,7 +196,7 @@
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
                     data.columns[0].search.value = $('#prjFlt').val();
-                    data.columns[6].search.value = $('#dateFlt').val();
+                    data.columns[8].search.value = $('#dateFlt').val();
                 })
                 .DataTable({
                     "fixedHeader": {
@@ -201,7 +207,7 @@
                     "serverSide": true,
                     "filter": true,
                     "orderMulti": true,
-                    "responsive": true,
+                    "responsive": false,
                     "pageLength": 25, // Количество записей в таблице по умолчанию
                     "pagingType": "simple_numbers",
                     "dom": "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
@@ -226,10 +232,8 @@
                         //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
                         var api = this.api();
                         var json = api.ajax.json();
-                        var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
                     },
                     "ajax": {
                         "url": "/Directum/LoadPaymentsF2",
@@ -245,32 +249,24 @@
                         }
                     },
                     "columns": [
-                        { "data": "Project", "name": "Project", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
-                        { "data": "Chief", "name": "Chief", "autoWidth": true, "class": "chiefCellf context-menu-one" },
-                        { "data": "Client", "name": "Client", "autoWidth": true, "class": "clientCellf context-menu-one" },
-                        { "data": "Agreement", "name": "Agreement", "class": "agrCellf haveTitle context-menu-one", "autoWidth": true },
-                        { "data": "Manager", "name": "Manager", "autoWidth": true, "class": "context-menu-one" },
-
-                        { "data": "PaymentDesc", "name": "PaymentDesc", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
+                        { "data": "IncomeItemsName", "name": "IncomeItemsName", "autoWidth": true, "class": "itemCatCellf context-menu-one" },
+                        { "data": "Tags", "name": "Tags", "autoWidth": true, "class": "tagsCellf context-menu-one" },
+                        { "data": "DocumentNumber", "name": "DocumentNumber", "autoWidth": true, "class": "docCellf context-menu-one" },
+                        { "data": "ItemDescr", "name": "ItemDescr", "autoWidth": true, "class": "itemCellf context-menu-one" },
+                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "Receipt", "name": "Receipt", "autoWidth": true, "class": "ovrcell context-menu-one" },
+                        { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "wksCellf context-menu-one" },
                         {
-                            "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
+                            "data": "DocumentDate", "name": "DocumentDate", "autoWidth": true, "type": "date ",
                             "render": function (value) {
                                 return formatDate(value);
                             },
                             "class": "dateCellf context-menu-one"
                         },
-                        { "data": "Payment", "name": "Payment", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
+                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                     ],
                     "createdRow": function (row, data, rowIndex) {
-                        var _summ = 0;
-                        var _date = formatDate(data.AgrDate);
-                        var _type = data.AgrType;
-                        if (data.Summ > 0) {
-                            _summ = data.Summ.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        }
-                        var titleStr = 'Дата договора: ' + _date + '\r\nСумма договора: ' + _summ + '\r\nТип договора: ' + _type + '\r\nПредмет договора: ' + data.Soder;
-                        $('.agrCellf', $(row)).attr('title', titleStr);
-
                         var _datePlan = formatDate(data.StartDatePlan);
                         var _dateFact = formatDate(data.StartDateFact);
                         var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
@@ -280,7 +276,7 @@
                         prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
-                    "order": [[6, "desc"]]
+                    "order": [[8, "desc"]]
                 });
 
             table.columns().eq(0).each(function (colIdx) {

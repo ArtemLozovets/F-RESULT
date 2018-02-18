@@ -13,14 +13,16 @@
     .sum-container:first-child {
         margin-right: 0;
     }
+
     .ovrcell {
-        max-width:10em;
+        max-width: 10em;
         -ms-word-wrap: break-word;
         word-wrap: break-word;
         overflow-wrap: break-word;
     }
-    .docCellf{
-        min-width:5em;
+
+    .docCellf {
+        min-width: 5em;
     }
 </style>
 
@@ -55,29 +57,29 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
-                <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Код" /></th>
-                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb itemFlt" style="width: 100%" placeholder="Назначение" /></th>
-                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Квитанция" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Теги" /></th>
+                <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Код" /></th>
+                <th><input type="text" class="form-control input-sm sb itemFlt" style="width: 100%" placeholder="Назначение" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Квитанция" /></th>
+                <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
             </tr>
 
             <tr role="row">
-                <th>Сотрудник</th>
-                <th>Код</th>
-                <th>Дата</th>
-                <th>Назначение</th>
-                <th>Статья</th>
                 <th>Проект</th>
-                <th>Сумма</th>
-                <th>Квитанция</th>
-                <th>Примечание</th>
+                <th>Статья</th>
                 <th>Теги</th>
+                <th>Код</th>
+                <th>Назначение</th>
+                <th>Примечание</th>
+                <th>Квитанция</th>
+                <th>Сотрудник</th>
+                <th>Дата</th>
+                <th>Сумма</th>
             </tr>
         </thead>
     </table>
@@ -204,8 +206,8 @@
             $('#loadingImg').hide();
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
-                    data.columns[5].search.value = $('#prjFlt').val();
-                    data.columns[2].search.value = $('#dateFlt').val();
+                    data.columns[0].search.value = $('#prjFlt').val();
+                    data.columns[8].search.value = $('#dateFlt').val();
                 })
                 .DataTable({
                     "fixedHeader": {
@@ -258,8 +260,14 @@
                         }
                     },
                     "columns": [
-                        { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "wksCellf context-menu-one" },
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
+                        { "data": "IncomeItemsName", "name": "IncomeItemsName", "autoWidth": true, "class": "itemCatCellf context-menu-one" },
+                        { "data": "Tags", "name": "Tags", "autoWidth": true, "class": "tagsCellf context-menu-one" },
                         { "data": "DocumentNumber", "name": "DocumentNumber", "autoWidth": true, "class": "docCellf context-menu-one" },
+                        { "data": "ItemDescr", "name": "ItemDescr", "autoWidth": true, "class": "itemCellf context-menu-one" },
+                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "Receipt", "name": "Receipt", "autoWidth": true, "class": "ovrcell context-menu-one" },
+                        { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "wksCellf context-menu-one" },
                         {
                             "data": "DocumentDate", "name": "DocumentDate", "autoWidth": true, "type": "date ",
                             "render": function (value) {
@@ -267,13 +275,7 @@
                             },
                             "class": "dateCellf context-menu-one"
                         },
-                        { "data": "ItemDescr", "name": "ItemDescr", "autoWidth": true, "class": "itemCellf context-menu-one" },
-                        { "data": "IncomeItemsName", "name": "IncomeItemsName", "autoWidth": true, "class": "itemCatCellf context-menu-one" },
-                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "prgCellf haveTitle context-menu-one" },
-                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                        { "data": "Receipt", "name": "Receipt", "autoWidth": true, "class": "ovrcell context-menu-one" },
-                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "Tags", "name": "Tags", "autoWidth": true, "class": "tagsCellf context-menu-one" }
+                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
                     ],
                     "createdRow": function (row, data, rowIndex) {
                         var _datePlan = formatDate(data.StartDatePlan);
@@ -285,18 +287,18 @@
                         prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
-            "order": [[2, "desc"]]
-        });
+                    "order": [[8, "desc"]]
+                });
 
-        table.columns().eq(0).each(function (colIdx) {
-            $('.sb', $('th')[colIdx]).on('keyup change', function () {
-                table.column(colIdx).search(this.value).draw();
-            });
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
 
-            $('.dff', $('th')[colIdx]).on('change', function () {
-                table.column(colIdx).search(this.value).draw();
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
             });
-        });
 
         });
 
