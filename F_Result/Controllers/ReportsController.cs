@@ -488,10 +488,6 @@ namespace F_Result.Controllers
                 }
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
-
-                var jsonSerialiser = new JavaScriptSerializer();
-                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 _ads = _ads.Where(x => 
                             (filterPrjIDs == null
@@ -499,6 +495,11 @@ namespace F_Result.Controllers
                             || filterPrjIDs.Contains(x.prj))
                             &&(WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
+
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {

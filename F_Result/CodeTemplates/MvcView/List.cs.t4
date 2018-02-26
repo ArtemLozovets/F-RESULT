@@ -151,7 +151,7 @@ if (pkName != null) {
 
  @section Scripts {
             @Scripts.Render("~/bundles/jqueryval")
-            <script src="~/Scripts/toparrow.js"></script>
+            <script src="~/Scripts/FRScripts/toparrow.js"></script>
             <script type="text/javascript">
                 $(function () {
 					

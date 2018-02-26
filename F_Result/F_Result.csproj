@@ -673,9 +673,10 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\FRScripts\prjFilterFlowPanel.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\toparrow.js" />
+    <Content Include="Scripts\FRScripts\toparrow.js" />
     <Content Include="CodeTemplates\MvcView\List.cs.t4" />
     <Content Include="CodeTemplates\MvcView\Imports.include.t4" />
     <Content Include="Content\DataTables\css\semanticui.scss" />
