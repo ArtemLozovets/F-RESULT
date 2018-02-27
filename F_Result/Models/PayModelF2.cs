@@ -44,6 +44,9 @@ namespace F_Result.Models
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal? ItemSum { get; set; }
 
+        [Display(Name = "Валюта")]
+        public string Currency { get; set; }
+
         [Display(Name = "Квитанция")]
         public string Receipt { get; set; }
 

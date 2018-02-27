@@ -223,6 +223,7 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
                 string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+                string _curr = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.PaymentsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id
@@ -235,6 +236,7 @@ namespace F_Result.Controllers
                                         && (payment.Receipt.Contains(_receipt) || string.IsNullOrEmpty(_receipt))
                                         && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
                                         && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
+                                        && (payment.Currency.Contains(_curr) || string.IsNullOrEmpty(_curr))
                                         && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
                                  select new
                                  {
@@ -249,6 +251,7 @@ namespace F_Result.Controllers
                                      ProjectId = payment.ProjectId,
                                      ProjectName = payment.ProjectName,
                                      ItemSum = payment.ItemSum,
+                                     Currency = payment.Currency,
                                      Receipt = payment.Receipt,
                                      DocumentDescr = payment.DocumentDescr,
                                      Tags = payment.Tags,
@@ -270,6 +273,7 @@ namespace F_Result.Controllers
                                      ProjectId = x.ProjectId,
                                      ProjectName = x.ProjectName,
                                      ItemSum = x.ItemSum,
+                                     Currency = x.Currency,
                                      Receipt = x.Receipt,
                                      DocumentDescr = x.DocumentDescr,
                                      Tags = x.Tags,
@@ -370,6 +374,7 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
                 string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+                string _curr = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id
@@ -382,6 +387,7 @@ namespace F_Result.Controllers
                                         && (payment.Receipt.Contains(_receipt) || string.IsNullOrEmpty(_receipt))
                                         && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
                                         && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
+                                        && (payment.Currency.Contains(_curr) || string.IsNullOrEmpty(_curr))
                                         && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
                                  select new
                                  {
@@ -396,6 +402,7 @@ namespace F_Result.Controllers
                                      ProjectId = payment.ProjectId,
                                      ProjectName = payment.ProjectName,
                                      ItemSum = payment.ItemSum,
+                                     Currency = payment.Currency,
                                      Receipt = payment.Receipt,
                                      DocumentDescr = payment.DocumentDescr,
                                      Tags = payment.Tags,
@@ -417,6 +424,7 @@ namespace F_Result.Controllers
                                      ProjectId = x.ProjectId,
                                      ProjectName = x.ProjectName,
                                      ItemSum = x.ItemSum,
+                                     Currency = x.Currency,
                                      Receipt = x.Receipt,
                                      DocumentDescr = x.DocumentDescr,
                                      Tags = x.Tags,

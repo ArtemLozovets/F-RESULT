@@ -334,7 +334,7 @@ td.haveTitle::after {
 
 /* ------------------- Auto Filter block ------------------ */
 
-td.prgCellf:before,
+/*td.prgCellf:before,
 td.chiefCellf:before,
 td.clientCellf:before,
 td.agrCellf:before,
@@ -351,7 +351,7 @@ td.tagsCellf:before {
     white-space: nowrap;
     content: "\F0B0\00A0";
     color: #ddd;
-}
+}*/
 
 /*#region AnalysisOfTheProjectBudget.chtml */
 

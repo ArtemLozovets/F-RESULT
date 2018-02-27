@@ -22,7 +22,7 @@
     }
 
     .docCellf {
-        min-width: 5em;
+        /*min-width: 5em;*/
     }
 </style>
 
@@ -67,6 +67,8 @@
                 <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
+
             </tr>
 
             <tr role="row">
@@ -80,6 +82,7 @@
                 <th>Сотрудник</th>
                 <th>Дата</th>
                 <th>Сумма</th>
+                <th>&#8372</th>
             </tr>
         </thead>
     </table>
@@ -174,6 +177,10 @@
                             };
                             if (fClass.indexOf("tagsCellf") >= 0) {
                                 $('.tagsFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("currCellf") >= 0) {
+                                $('.currFlt').val($(this).text()).trigger('change');
                                 break;
                             };
                             break;
@@ -275,7 +282,8 @@
                             },
                             "class": "dateCellf context-menu-one"
                         },
-                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
+                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                        { "data": "Currency", "name": "Currency", "autoWidth": true, "class": "currCellf context-menu-one" }
                     ],
                     "createdRow": function (row, data, rowIndex) {
                         var _datePlan = formatDate(data.StartDatePlan);
