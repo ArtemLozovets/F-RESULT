@@ -7,6 +7,7 @@ using System.Linq.Dynamic; //!=====!
 using F_Result.Models;
 using F_Result.Methods;
 using System.Collections.Generic;
+using System.Web.Script.Serialization;
 
 namespace F_Result.Controllers
 {
@@ -34,12 +35,13 @@ namespace F_Result.Controllers
 
         //Список входящих платежей 
         [HttpPost]
-        public ActionResult LoadPayments()
+        public ActionResult LoadPayments(int[] filterPrjIDs)
         {
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
+                
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
@@ -99,6 +101,7 @@ namespace F_Result.Controllers
                                      Summ = payment.Summ,
                                      AgrType = payment.AgrType,
                                      ProjectType = prg.ProjectType,
+                                     ProjectId = prg.id,
                                      ChiefName = prg.ChiefName,
                                      ProjectManagerName = prg.ProjectManagerName,
                                      StartDatePlan = prg.StartDatePlan,
@@ -112,6 +115,7 @@ namespace F_Result.Controllers
                                  {
                                      id = x.id,
                                      Project = x.Project,
+                                     ProjectId = x.ProjectId,
                                      Chief = x.Chief,
                                      Manager = x.Manager,
                                      Client = x.Client,
@@ -133,6 +137,12 @@ namespace F_Result.Controllers
                                  }).ToList();
 
                 _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
+                _payments = _payments.Where(x => (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+
+                List<APBFilterIDs> _prjList = _payments.Select(x => new APBFilterIDs { PrjId = x.ProjectId, ProjectName = x.Project }).OrderBy(x => x.ProjectName).ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -149,9 +159,14 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { psum = pSum, fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
-
-
+                return Json(new { psum = pSum
+                    ,fsum = fSum
+                    ,draw = draw
+                    ,recordsFiltered = totalRecords
+                    ,recordsTotal = totalRecords
+                    ,data = data
+                    ,prjlist = _prjListJson
+                    ,errormessage = "" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

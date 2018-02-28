@@ -51,45 +51,49 @@
         else if (!allChecked) {
             $('#allPrgCHB').prop('checked', false);
         }
+        alert(filterPrjIDs);
         if (window.filterPrjIDs.length > 0) {
             var table = $("#gridtable").DataTable();
             table.draw();
         };
     });
 
-    //-----------------------------------------------------------------
-    //Функция создания таблицы со списком проектов
-    function prgTableCrate() {
-        var prgTable = $('#prgtable').DataTable({
-            autoWidth: true,
-            "scrollY": "360px",
-            "scrollCollapse": true,
-            scrollX: '100%',
-            dom: "<<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
-            language: {
-                zeroRecords: "Записи отсутствуют",
-                infoEmpty: "Записи отсутствуют",
-                search: "",
-                searchPlaceholder: "Проект...",
-            },
-            autoWidth: true,
-            paging: false,
-            processing: false,
-            serverSide: false,
-            data: _prjIDs,
-            order: [[1, "asc"]],
-            columns: [
-                { data: 'PrjId', bSortable: true, visible: false, searchable: false },
-                { data: 'ProjectName', bSortable: true, sWidth: '80%' },
-                {
-                    data: null, sWidth: '20%',
-                    bSortable: false,
-                    render: function (data, type, row, meta) {
-                        var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
-                        return chkStr;
-                    }
-                }
-            ]
-        });
-    };
+
 });
+
+//-----------------------------------------------------------------
+//Функция создания таблицы со списком проектов
+function prgTableCrate() {
+    var prgTable = $('#prgtable').DataTable({
+        autoWidth: true,
+        "scrollY": "360px",
+        "scrollCollapse": true,
+        scrollX: '100%',
+        dom: "<<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
+        language: {
+            zeroRecords: "Записи отсутствуют",
+            infoEmpty: "Записи отсутствуют",
+            search: "",
+            searchPlaceholder: "Проект...",
+        },
+        autoWidth: true,
+        paging: false,
+        processing: false,
+        serverSide: false,
+        data: _prjIDs,
+        order: [[1, "asc"]],
+        columns: [
+            { data: 'PrjId', bSortable: true, visible: false, searchable: false },
+            { data: 'ProjectName', bSortable: true, sWidth: '80%' },
+            {
+                data: null, sWidth: '20%',
+                bSortable: false,
+                render: function (data, type, row, meta) {
+                    var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                    return chkStr;
+                }
+            }
+        ]
+    });
+};
+

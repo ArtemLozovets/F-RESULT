@@ -10,6 +10,16 @@
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
+     #flowPanel div.dataTables_wrapper div.dataTables_filter {
+        text-align: center !important;
+        margin-top: 10px;
+    }
+
+    #flowPanel #prgtable_filter input {
+        width: 300px !important;
+        margin-right: 8px;
+    }
+
     .sum-container:first-child {
         margin-right: 20px;
     }
@@ -118,6 +128,31 @@
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
+        $(function () {
+            window._flag = true;
+            window._prjIDs = []; //Массив проектов таблицы отчета
+            window.filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
+
+            jQuery.cachedScript = function (url, options) {
+
+                // Allow user to set any option except for dataType, cache, and url
+                options = $.extend(options || {}, {
+                    dataType: "script",
+                    cache: true,
+                    url: url
+                });
+
+                // Use $.ajax() since it is more flexible than $.getScript
+                // Return the jqXHR object so we can chain callbacks
+                return jQuery.ajax(options);
+            };
+
+            // Usage
+            $.cachedScript('../Scripts/FRScripts/prjFilterFlowPanel.js').done(function (script, textStatus) {
+                console.log(textStatus);
+            });
+        });
+
         $(function () {
             $('.dff').each(function () {
                 $(this).dateRangePicker(
@@ -256,11 +291,30 @@
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
                             + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+
+                        //Инициализация таблицы проектов в плавающей панели
+                        if (window._flag) {
+
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            _prjIDs = JSON.parse(json.prjlist)
+
+                            var pTable = $('#prgtable').DataTable();
+                            pTable.destroy();
+                            $.getScript('../Scripts/FRScripts/prjFilterFlowPanel.js', function () {
+                                prgTableCrate();
+                            });
+                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            window._flag = false;
+                        };
+
                     },
                     "ajax": {
                         "url": "/Directum/LoadPayments",
                         "type": "POST",
                         "datatype": "json",
+                        "data": function (d) {
+                            d.filterPrjIDs = window.filterPrjIDs;
+                        },
                         "dataSrc": function (d) {
                             if (d.data.length === 0) {
                                 if (d.errormessage != "") {
