@@ -51,7 +51,6 @@
         else if (!allChecked) {
             $('#allPrgCHB').prop('checked', false);
         }
-        alert(filterPrjIDs);
         if (window.filterPrjIDs.length > 0) {
             var table = $("#gridtable").DataTable();
             table.draw();
@@ -93,7 +92,13 @@ function prgTableCrate() {
                     return chkStr;
                 }
             }
-        ]
+        ],
+        fnDrawCallback: function (settings) {
+            $('#flowPanel').show();
+        }
+    }).on('search.dt', function () {
+        //Установка всех чекбоксов после фильтрации
+        $('#allPrgCHB').prop('checked', 'checked').trigger('change');
     });
 };
 

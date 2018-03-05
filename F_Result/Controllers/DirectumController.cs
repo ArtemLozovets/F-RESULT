@@ -136,11 +136,14 @@ namespace F_Result.Controllers
                                      planExpand = x.planExpand
                                  }).ToList();
 
-                _payments = _payments.Where(x => (x.Payment.ToString().Contains(_paymenttxt)) || string.IsNullOrEmpty(_paymenttxt)).ToList();
-                _payments = _payments.Where(x => (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+                _payments = _payments.Where(x => ((x.Payment.ToString().Contains(_paymenttxt) 
+                            || string.IsNullOrEmpty(_paymenttxt))
+                            && (filterPrjIDs == null 
+                                    || filterPrjIDs.Length == 0 
+                                    || filterPrjIDs.Contains(x.ProjectId)))).ToList();
 
-                List<APBFilterIDs> _prjList = _payments.Select(x => new APBFilterIDs { PrjId = x.ProjectId, ProjectName = x.Project }).OrderBy(x => x.ProjectName).ToList();
-
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.Project).First() }).ToList();
+                
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
 

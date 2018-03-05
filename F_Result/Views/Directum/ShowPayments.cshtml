@@ -86,7 +86,7 @@
     </table>
 
     <!-- #Плавающая панель -->
-    <div id="flowPanel">
+    <div id="flowPanel" hidden>
         <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
             <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
@@ -129,28 +129,10 @@
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {
+            //Переменные для работы с плавающей панелью
             window._flag = true;
             window._prjIDs = []; //Массив проектов таблицы отчета
             window.filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
-
-            jQuery.cachedScript = function (url, options) {
-
-                // Allow user to set any option except for dataType, cache, and url
-                options = $.extend(options || {}, {
-                    dataType: "script",
-                    cache: true,
-                    url: url
-                });
-
-                // Use $.ajax() since it is more flexible than $.getScript
-                // Return the jqXHR object so we can chain callbacks
-                return jQuery.ajax(options);
-            };
-
-            // Usage
-            $.cachedScript('../Scripts/FRScripts/prjFilterFlowPanel.js').done(function (script, textStatus) {
-                console.log(textStatus);
-            });
         });
 
         $(function () {
@@ -292,14 +274,13 @@
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
                             + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
-                        //Инициализация таблицы проектов в плавающей панели
+                        //Инициализация таблицы проектов в плавающей панели---------
                         if (window._flag) {
-
                             //Заполнение массива проектов для таблицы в плавающей панели
                             _prjIDs = JSON.parse(json.prjlist)
-
                             var pTable = $('#prgtable').DataTable();
                             pTable.destroy();
+                            //Ajax-метод вызова функции создания теблицы
                             $.getScript('../Scripts/FRScripts/prjFilterFlowPanel.js', function () {
                                 prgTableCrate();
                             });
@@ -394,6 +375,16 @@
                 $(this).val('');
                 table.column(colIdx).search('');
             });
+            table.draw();
+        }
+
+        //Функция очистки массивов, сброса глобальных переменных и реинициализации таблицы отчета
+        function globalVarsClear() {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
+            $('#allPrgCHB').prop('checked', 'checked');
+            var table = $("#gridtable").DataTable();
             table.draw();
         }
     </script>

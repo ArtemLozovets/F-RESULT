@@ -115,7 +115,7 @@
 </div>
 
 <!-- #Плавающая панель -->
-<div id="flowPanel">
+<div id="flowPanel" hidden>
     <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
     <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
         <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
@@ -154,6 +154,7 @@
     <script src="~/Scripts/DataTables/buttons.flash.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    @*<script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>*@
 
     <script>
         $(function () {
@@ -692,15 +693,23 @@
                 columns: [
                     { data: 'PrjId', bSortable: true, visible: false, searchable: false },
                     { data: 'ProjectName', bSortable: true, sWidth: '80%' },
-                    { data: null, sWidth: '20%',
-                      bSortable: false,
-                      render: function (data, type, row, meta) {
-                          var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
-                          return chkStr;
+                    {
+                        data: null, sWidth: '20%',
+                        bSortable: false,
+                        render: function (data, type, row, meta) {
+                            var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                            return chkStr;
                         }
                     }
-                ]
-            });
+                ],
+                fnDrawCallback: function (settings) {
+                    $('#flowPanel').show();
+                },
+            })
+                .on('search.dt', function () {
+                    //Установка всех чекбоксов после фильтрации
+                    $('#allPrgCHB').prop('checked', false).trigger('change');
+                });
         };
 
     </script>
