@@ -33,7 +33,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/07/2017 14:46:24</publishTime>
     </File>
     <File Include="Areas/Administrator/Views/UsersManagement/ShowUsers.cshtml">
-      <publishTime>02/26/2018 15:59:31</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Areas/Administrator/Views/UsersManagement/ShowUsersPartial.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
@@ -42,7 +42,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/07/2017 14:46:40</publishTime>
     </File>
     <File Include="Areas/Administrator/Views/UsersManagement/UsrWksRelation.cshtml">
-      <publishTime>02/26/2018 15:55:58</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Areas/Administrator/Views/web.config">
       <publishTime>06/06/2017 08:11:34</publishTime>
@@ -69,10 +69,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/17/2017 19:53:52</publishTime>
     </File>
     <File Include="bin/F_Result.dll">
-      <publishTime>03/06/2018 09:28:50</publishTime>
+      <publishTime>03/06/2018 21:23:54</publishTime>
     </File>
     <File Include="bin/F_Result.pdb">
-      <publishTime>03/06/2018 09:28:50</publishTime>
+      <publishTime>03/06/2018 21:23:54</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>03/17/2017 19:54:00</publishTime>
@@ -171,7 +171,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:56</publishTime>
     </File>
     <File Include="CodeTemplates/MvcView/List.cs.t4">
-      <publishTime>02/26/2018 15:56:09</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="CodeTemplates/MvcView/ModelMetadataFunctions.cs.include.t4">
       <publishTime>06/02/2017 08:31:56</publishTime>
@@ -771,7 +771,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:31:58</publishTime>
     </File>
     <File Include="Content/modern-business.css">
-      <publishTime>02/27/2018 13:57:38</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Content/Site.css">
       <publishTime>06/02/2017 08:31:58</publishTime>
@@ -1191,10 +1191,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/17/2017 08:42:26</publishTime>
     </File>
     <File Include="Scripts/FRScripts/prjFilterFlowPanel.js">
-      <publishTime>03/06/2018 11:24:04</publishTime>
+      <publishTime>03/06/2018 20:12:06</publishTime>
     </File>
     <File Include="Scripts/FRScripts/toparrow.js">
-      <publishTime>06/02/2017 08:32:00</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Scripts/html5shiv.js">
       <publishTime>06/02/2017 08:32:00</publishTime>
@@ -1308,10 +1308,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/07/2017 14:56:58</publishTime>
     </File>
     <File Include="Views/Accounts/ACShow.cshtml">
-      <publishTime>02/26/2018 15:56:25</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Accounts/ACShowPartial.cshtml">
-      <publishTime>02/26/2018 15:56:36</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/AccountsBalances/ABBatchCreate.cshtml">
       <publishTime>12/07/2017 14:59:46</publishTime>
@@ -1326,7 +1326,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/07/2017 15:01:24</publishTime>
     </File>
     <File Include="Views/AccountsBalances/ABShow.cshtml">
-      <publishTime>02/26/2018 15:56:44</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/ActualDebits/ADClone.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
@@ -1344,7 +1344,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/ActualDebits/ADShow.cshtml">
-      <publishTime>02/26/2018 15:56:55</publishTime>
+      <publishTime>03/06/2018 21:06:43</publishTime>
     </File>
     <File Include="Views/ActualDebits/Details.cshtml">
       <publishTime>06/06/2017 08:11:33</publishTime>
@@ -1353,40 +1353,40 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/12/2017 08:27:32</publishTime>
     </File>
     <File Include="Views/Directum/ShowActualDebitsF2.cshtml">
-      <publishTime>02/27/2018 14:02:58</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowExpenditures.cshtml">
-      <publishTime>02/26/2018 15:57:11</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowExpendituresPartial.cshtml">
       <publishTime>12/22/2017 08:19:42</publishTime>
     </File>
     <File Include="Views/Directum/ShowIncomes.cshtml">
-      <publishTime>02/26/2018 15:57:19</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowIncomesPartial.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/Directum/ShowOrganizations.cshtml">
-      <publishTime>02/26/2018 15:57:28</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowOrganizationsPartial.cshtml">
-      <publishTime>02/26/2018 15:57:37</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowPayments.cshtml">
-      <publishTime>03/06/2018 11:16:28</publishTime>
+      <publishTime>03/06/2018 20:12:06</publishTime>
     </File>
     <File Include="Views/Directum/ShowPaymentsF2.cshtml">
-      <publishTime>02/27/2018 14:08:34</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowProjects.cshtml">
-      <publishTime>02/26/2018 15:58:01</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowProjectsPartial.cshtml">
-      <publishTime>02/26/2018 15:58:08</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Directum/ShowUsers.cshtml">
-      <publishTime>02/26/2018 15:59:55</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Home/About.cshtml">
       <publishTime>01/01/0001 00:00:00</publishTime>
@@ -1431,7 +1431,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/PlanCredits/PCShow.cshtml">
-      <publishTime>02/26/2018 15:58:23</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/PlanCreditsF2/PCClone.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
@@ -1449,7 +1449,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/PlanCreditsF2/PCShow.cshtml">
-      <publishTime>02/26/2018 15:58:32</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/PlanDebits/PDClone.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
@@ -1467,7 +1467,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/PlanDebits/PDShow.cshtml">
-      <publishTime>02/26/2018 15:58:44</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/PlanDebitsF2/PDClone.cshtml">
       <publishTime>02/16/2018 09:23:06</publishTime>
@@ -1485,7 +1485,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/16/2018 09:23:06</publishTime>
     </File>
     <File Include="Views/PlanDebitsF2/PDShow.cshtml">
-      <publishTime>02/26/2018 15:59:49</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/PlanningPeriods/Create.cshtml">
       <publishTime>09/06/2017 11:58:47</publishTime>
@@ -1512,19 +1512,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/07/2017 15:10:10</publishTime>
     </File>
     <File Include="Views/PlanningPeriods/PPShow.cshtml">
-      <publishTime>02/26/2018 15:59:00</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfPayments.cshtml">
       <publishTime>10/04/2017 16:27:56</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfPlanPayments.cshtml">
-      <publishTime>02/26/2018 15:59:11</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectBudget.cshtml">
-      <publishTime>03/06/2018 11:24:54</publishTime>
+      <publishTime>03/06/2018 20:12:06</publishTime>
     </File>
     <File Include="Views/Settings/ShowSettings.cshtml">
-      <publishTime>02/26/2018 15:59:18</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Shared/AccessDenied.cshtml">
       <publishTime>01/16/2018 08:13:26</publishTime>
@@ -1539,7 +1539,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/04/2018 14:27:22</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>02/19/2018 10:48:08</publishTime>
+      <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>06/02/2017 08:32:00</publishTime>
@@ -1551,7 +1551,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:32:00</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/27/2018 14:14:12</publishTime>
+      <publishTime>03/06/2018 21:24:17</publishTime>
     </File>
   </ItemGroup>
 </Project>

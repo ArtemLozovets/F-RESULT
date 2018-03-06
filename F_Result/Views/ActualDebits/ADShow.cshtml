@@ -329,6 +329,9 @@
                         "url": "/ActualDebits/LoadAD",
                         "type": "POST",
                         "datatype": "json",
+                        "data": function (d) {
+                            d.filterPrjIDs = window.filterPrjIDs;
+                        },
                         "dataSrc": function (d) {
                             if (d.data.length === 0) {
                                 if (d.errormessage != "") {
