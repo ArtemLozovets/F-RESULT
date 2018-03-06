@@ -129,13 +129,6 @@
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {
-            //Переменные для работы с плавающей панелью
-            window._flag = true;
-            window._prjIDs = []; //Массив проектов таблицы отчета
-            window.filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
-        });
-
-        $(function () {
             $('.dff').each(function () {
                 $(this).dateRangePicker(
                      {
@@ -280,10 +273,7 @@
                             _prjIDs = JSON.parse(json.prjlist)
                             var pTable = $('#prgtable').DataTable();
                             pTable.destroy();
-                            //Ajax-метод вызова функции создания теблицы
-                            $.getScript('../Scripts/FRScripts/prjFilterFlowPanel.js', function () {
-                                prgTableCrate();
-                            });
+                            prgTableCrate();
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
                         };

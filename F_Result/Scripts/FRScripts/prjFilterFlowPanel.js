@@ -1,5 +1,18 @@
-﻿$(function () {
-    //Блок скриптов для работы с панелью проектов
+﻿//Скрипты для работы с плавающей панелью фильтрации проектов.
+
+$(function () {
+
+    //Объявление глобальных переменных
+    window._flag = true;
+    window._prjIDs = []; //Массив проектов таблицы отчета
+    window.filterPrjIDs = []; //Массив выбранных ID проектов в плавающей панели
+
+    //Обработчик ввода в поле фильтра таблицы
+    $('body').on('keyup change', '#prgtable_filter>label>input[type="search"]', function () {
+        $('#allPrgCHB').prop('checked', 'checked').trigger('change');
+    });
+
+    //Блок скриптов для работы с плавающей панелью
     $('#showButton').on('click', function (e) {
         e.stopImmediatePropagation();
         if ($('#flowPanel').hasClass('open')) {
@@ -57,7 +70,6 @@
         };
     });
 
-
 });
 
 //-----------------------------------------------------------------
@@ -96,9 +108,7 @@ function prgTableCrate() {
         fnDrawCallback: function (settings) {
             $('#flowPanel').show();
         }
-    }).on('search.dt', function () {
-        //Установка всех чекбоксов после фильтрации
-        $('#allPrgCHB').prop('checked', 'checked').trigger('change');
     });
+
 };
 
