@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using System.Linq.Dynamic;
 using F_Result.Methods;
 using System.Collections.Generic; //!=====!
+using System.Web.Script.Serialization;
 
 namespace F_Result.Controllers
 {
@@ -39,7 +40,7 @@ namespace F_Result.Controllers
         // Таблица плана расходов
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         [HttpPost]
-        public ActionResult LoadPD()
+        public ActionResult LoadPD(int[] filterPrjIDs)
         {
             try
             {
@@ -143,7 +144,13 @@ namespace F_Result.Controllers
                                 planExpand = x.planExpand
                             }).ToList();
 
-                _ads = _ads.Where(x => ((x.Sum.ToString().Contains(_sum)) || string.IsNullOrEmpty(_sum)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
+                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum))
+                                       && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))
+                                       && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+
+                List<APBFilterIDs> _prjList = _ads.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -159,7 +166,13 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { fsum = fSum
+                    , draw = draw
+                    , prjlist = _prjListJson
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
 
             }
             catch (Exception ex)
