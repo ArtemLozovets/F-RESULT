@@ -72,6 +72,16 @@ $(function () {
 
 });
 
+//Функция очистки массивов, сброса глобальных переменных и реинициализации таблицы отчета
+function globalVarsClear() {
+    window._prjIDs = [];
+    window.filterPrjIDs = [];
+    window._flag = true;
+    $('#allPrgCHB').prop('checked', 'checked');
+    var table = $("#gridtable").DataTable();
+    table.draw();
+}
+
 //-----------------------------------------------------------------
 //Функция создания таблицы со списком проектов
 function prgTableCrate() {

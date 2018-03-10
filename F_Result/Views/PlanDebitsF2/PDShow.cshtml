@@ -421,6 +421,7 @@
         //Скрипт для работы с фильтром выбора планового периода
         $('body').on('change', '#PeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
+            globalVarsClear();
             var table = $('#gridtable').DataTable();
             table.draw();
         });

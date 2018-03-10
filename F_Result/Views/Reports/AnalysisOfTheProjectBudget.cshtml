@@ -278,16 +278,6 @@
 
         //--------------------------------------F U N C T I O N S----------------------------------
 
-        //Функция очистки массивов, сброса глобальных переменных и реинициализации таблицы отчета
-        function globalVarsClear() {
-            window._prjIDs = [];
-            window.filterPrjIDs = [];
-            window._flag = true;
-            $('#allPrgCHB').prop('checked', 'checked');
-            var table = $("#gridtable").DataTable();
-            table.draw();
-        }
-
         //Функция сброса фильтра проектов
         function ClearFilter() {
             $('#gridtable_filter').val('');

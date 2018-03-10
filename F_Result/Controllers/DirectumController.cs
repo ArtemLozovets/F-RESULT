@@ -200,7 +200,7 @@ namespace F_Result.Controllers
 
         //Список исходящих платежей Ф2
         [HttpPost]
-        public ActionResult LoadPaymentsF2()
+        public ActionResult LoadPaymentsF2(int[] filterPrjIDs)
         {
             try
             {
@@ -302,7 +302,14 @@ namespace F_Result.Controllers
                                      StartDateFact = x.StartDateFact
                                  }).ToList();
 
-                _payments = _payments.Where(x => x.ItemSum.Value.ToString().Contains(_paymenttxt)).ToList();
+                _payments = _payments.Where(x => (x.ItemSum.Value.ToString().Contains(_paymenttxt))
+                                                && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+
+
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
+
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -318,7 +325,13 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { fsum = fSum
+                    , draw = draw
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , prjlist = _prjListJson
+                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }
@@ -351,7 +364,7 @@ namespace F_Result.Controllers
 
         //Список исходящих платежей Ф2
         [HttpPost]
-        public ActionResult LoadActualDebitsF2()
+        public ActionResult LoadActualDebitsF2(int[] filterPrjIDs)
         {
             try
             {
@@ -453,7 +466,13 @@ namespace F_Result.Controllers
                                      StartDateFact = x.StartDateFact
                                  }).ToList();
 
-                _payments = _payments.Where(x => x.ItemSum.Value.ToString().Contains(_paymenttxt)).ToList();
+                _payments = _payments.Where(x => (x.ItemSum.Value.ToString().Contains(_paymenttxt))
+                                               && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+
+
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -469,7 +488,13 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new { fsum = fSum
+                    , draw = draw
+                    , prjlist = _prjListJson
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
 
 
             }

@@ -21,7 +21,6 @@
     }
 </style>
 
-
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -410,6 +409,7 @@
         //Скрипт для работы с фильтром выбора планового периода
         $('body').on('change', '#PeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
+            globalVarsClear();
             var table = $('#gridtable').DataTable();
             table.draw();
         });
