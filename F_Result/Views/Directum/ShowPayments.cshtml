@@ -10,7 +10,7 @@
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 <style>
-     #flowPanel div.dataTables_wrapper div.dataTables_filter {
+    #flowPanel div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
         margin-top: 10px;
     }
@@ -265,7 +265,10 @@
                         var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>'
+                            + '&nbsp;<button id="ExcelExportBtn" class="btn btn-primary btn-sm"><i class="fa fa-file-excel-o"></i></button>');
+
+                        $('#IDs').val(json.idslist);
 
                         //Инициализация таблицы проектов в плавающей панели---------
                         if (window._flag) {
@@ -280,7 +283,7 @@
 
                     },
                     "ajax": {
-                        "url": "/Directum/LoadPayments",
+                        "url": '/Directum/LoadPayments',
                         "type": "POST",
                         "datatype": "json",
                         "data": function (d) {
@@ -356,6 +359,26 @@
             return _d + "/" + _m + "/" + dt.getFullYear();
         };
 
+    </script>
+
+    <script>
+        //Обработчик кнопки експорта в Excel
+        $('body').on('click', '#ExcelExportBtn', function () {
+            var api = $('#gridtable').dataTable().api();
+            var json = api.ajax.json();
+            var IDs = json.idslist;
+
+            $.ajax({
+                url: "../Export/ExportPayments",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ IDs: json.idslist }),
+                success: function (data) {
+                   window.location.href = '../Export/GetFile?FName='+data.filename;
+                }
+            });
+        })
     </script>
 
     <script>

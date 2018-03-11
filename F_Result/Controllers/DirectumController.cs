@@ -8,6 +8,8 @@ using F_Result.Models;
 using F_Result.Methods;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace F_Result.Controllers
 {
@@ -35,13 +37,13 @@ namespace F_Result.Controllers
 
         //Список входящих платежей 
         [HttpPost]
-        public ActionResult LoadPayments(int[] filterPrjIDs)
+        public ActionResult LoadPayments(int[] filterPrjIDs, bool? isExport)
         {
             try
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-                
+
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
@@ -136,16 +138,20 @@ namespace F_Result.Controllers
                                      planExpand = x.planExpand
                                  }).ToList();
 
-                _payments = _payments.Where(x => ((x.Payment.ToString().Contains(_paymenttxt) 
+                _payments = _payments.Where(x => ((x.Payment.ToString().Contains(_paymenttxt)
                             || string.IsNullOrEmpty(_paymenttxt))
-                            && (filterPrjIDs == null 
-                                    || filterPrjIDs.Length == 0 
+                            && (filterPrjIDs == null
+                                    || filterPrjIDs.Length == 0
                                     || filterPrjIDs.Contains(x.ProjectId)))).ToList();
 
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.Project).First() }).ToList();
-                
+                //Список ID для передачи в ф-цию экспорта в Excel
+                List<int> _IDsList = _payments.Select(x => x.id).ToList();
+                ViewBag.IDsList = _IDsList;
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -162,14 +168,18 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { psum = pSum
+                return Json(new
+                {
+                    psum = pSum
                     ,fsum = fSum
                     ,draw = draw
                     ,recordsFiltered = totalRecords
                     ,recordsTotal = totalRecords
                     ,data = data
                     ,prjlist = _prjListJson
-                    ,errormessage = "" }, JsonRequestBehavior.AllowGet);
+                    ,idslist = _IDsListJson
+                    ,errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -179,6 +189,7 @@ namespace F_Result.Controllers
             }
 
         }
+
         #endregion
 
         #region Входящие платежи Ф2
@@ -325,13 +336,22 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { fsum = fSum
-                    , draw = draw
-                    , recordsFiltered = totalRecords
-                    , recordsTotal = totalRecords
-                    , data = data
-                    , prjlist = _prjListJson
-                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    fsum = fSum
+                    ,
+                    draw = draw
+                    ,
+                    recordsFiltered = totalRecords
+                    ,
+                    recordsTotal = totalRecords
+                    ,
+                    data = data
+                    ,
+                    prjlist = _prjListJson
+                    ,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
 
 
             }
@@ -488,13 +508,22 @@ namespace F_Result.Controllers
                 totalRecords = _payments.Count();
 
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
-                return Json(new { fsum = fSum
-                    , draw = draw
-                    , prjlist = _prjListJson
-                    , recordsFiltered = totalRecords
-                    , recordsTotal = totalRecords
-                    , data = data
-                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    fsum = fSum
+                    ,
+                    draw = draw
+                    ,
+                    prjlist = _prjListJson
+                    ,
+                    recordsFiltered = totalRecords
+                    ,
+                    recordsTotal = totalRecords
+                    ,
+                    data = data
+                    ,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
 
 
             }

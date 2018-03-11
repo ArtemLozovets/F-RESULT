@@ -40,7 +40,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=4.5.0.3, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.0.3-rc\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -177,6 +182,7 @@
     <Compile Include="Controllers\AccountsBalancesController.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\ActualDebitsController.cs" />
+    <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
     <Compile Include="Controllers\DirectumController.cs" />
@@ -771,6 +777,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Reports\" />
+    <Folder Include="Views\Export\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
