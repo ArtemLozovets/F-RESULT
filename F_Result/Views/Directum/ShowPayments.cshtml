@@ -199,6 +199,9 @@
                         case 'refresh':
                             ClearFilter();
                             break;
+                        case 'epexport':
+                            Export2Excel();
+                            break;
                         default:
                             return;
                     }
@@ -213,7 +216,9 @@
                             return true;
                         }
                     },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" }
                 }
             });
         });
@@ -364,6 +369,11 @@
     <script>
         //Обработчик кнопки експорта в Excel
         $('body').on('click', '#ExcelExportBtn', function () {
+            Export2Excel();
+        });
+
+        function Export2Excel() {
+            $('#loadingImg').show();
             var api = $('#gridtable').dataTable().api();
             var json = api.ajax.json();
             var IDs = json.idslist;
@@ -375,10 +385,11 @@
                 dataType: "json",
                 data: JSON.stringify({ IDs: json.idslist }),
                 success: function (data) {
-                   window.location.href = '../Export/GetFile?FName='+data.filename;
+                    window.location.href = '../Export/GetFile?FName=' + data.filename;
+                    $('#loadingImg').hide();
                 }
             });
-        })
+        }
     </script>
 
     <script>
@@ -390,7 +401,6 @@
             });
             table.draw();
         }
-
     </script>
 
 }

@@ -79,6 +79,10 @@
   content: "\F021";
 }
 
+.context-menu-icon-export2excel:before {
+  content: "\F1C3";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;
