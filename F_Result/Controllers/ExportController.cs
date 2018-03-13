@@ -187,6 +187,7 @@ namespace F_Result.Controllers
         #endregion
 
         #region Метод загрузки файла отчета
+        [DeleteFile] // Фильтр удаления файла после загрузки
         public ActionResult GetFile(string FName)
         {
             try
@@ -215,6 +216,20 @@ namespace F_Result.Controllers
         }
         #endregion
 
+        #region Фильтр удаления файла после загрузки
+        public class DeleteFile : ActionFilterAttribute
+        {
+            public override void OnResultExecuted(ResultExecutedContext filterContext)
+            {
+                filterContext.HttpContext.Response.Flush();
+                var filePathResult = filterContext.Result as FilePathResult;
+                if (filePathResult != null)
+                {
+                    System.IO.File.Delete(filePathResult.FileName);
+                }
+            }
+        }
+        #endregion
 
         protected override void Dispose(bool disposing)
         {
