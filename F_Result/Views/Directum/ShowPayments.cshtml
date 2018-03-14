@@ -270,8 +270,8 @@
                         var _pSum = json.psum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
-                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>'
-                            + '&nbsp;<button id="ExcelExportBtn" class="btn btn-primary btn-sm"><i class="fa fa-file-excel-o"></i></button>');
+                            + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                            //+ '&nbsp;<button id="ExcelExportBtn" class="btn btn-primary btn-sm"><i class="fa fa-file-excel-o"></i></button>');
 
                         $('#IDs').val(json.idslist);
 
@@ -383,7 +383,7 @@
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify({ IDs: json.idslist }),
+                data: JSON.stringify({ IDs: json.idslist, sortColumn: json.sortcolumn, sortColumnDir:json.sortdir}),
                 success: function (data) {
                     window.location.href = '../Export/GetFile?FName=' + data.filename;
                     $('#loadingImg').hide();

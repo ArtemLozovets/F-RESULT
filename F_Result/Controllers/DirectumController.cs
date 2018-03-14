@@ -8,8 +8,6 @@ using F_Result.Models;
 using F_Result.Methods;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace F_Result.Controllers
 {
@@ -178,6 +176,8 @@ namespace F_Result.Controllers
                     ,data = data
                     ,prjlist = _prjListJson
                     ,idslist = _IDsListJson
+                    ,sortcolumn = sortColumn
+                    ,sortdir = sortColumnDir
                     ,errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }

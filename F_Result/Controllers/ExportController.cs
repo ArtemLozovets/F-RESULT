@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using F_Result.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using Newtonsoft.Json;
+using System.Linq.Dynamic; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -16,10 +16,18 @@ namespace F_Result.Controllers
 
         #region Входящие платежи Ф1. Экспорт в Excel
 
-        public ActionResult ExportPayments(string IDs)
+        public ActionResult ExportPayments(string IDs, string sortColumn, string sortColumnDir)
         {
             var IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
             var _payments = db.Payments.Where(x => (IDsArray.Contains(x.id))).ToList();
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+            }
+            else
+            {
+                _payments = _payments.OrderByDescending(x => x.PaymentDate).ThenByDescending(x => x.id).ToList();
+            }
 
             ExcelPackage pck = new ExcelPackage();
             ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Входящие платежи Ф1");
@@ -42,6 +50,8 @@ namespace F_Result.Controllers
             ws.Cells["G4"].Value = "Тип оплаты";
             ws.Cells["H4"].Value = "Дата оплаты";
             ws.Cells["I4"].Value = "Сумма";
+
+            ws.Cells["A4:I4"].AutoFilter = true;
 
             using (ExcelRange col = ws.Cells[4, 1, 4, 9])
             {
@@ -67,6 +77,11 @@ namespace F_Result.Controllers
 
                 row++;
             }
+
+            ws.Cells[string.Format("H{0}", row)].Value="Итого:";
+            ws.Cells[string.Format("H{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("I{0}", row)].Formula = string.Format("SUM(I5:I{0})", row-1);
+            ws.Cells[string.Format("I{0}", row)].Style.Font.Bold = true;
 
             using (ExcelRange col = ws.Cells[5, 8, row, 8])
             {
@@ -96,7 +111,7 @@ namespace F_Result.Controllers
             ws.Column(9).Width = 15;
 
             string path = Server.MapPath("~/DownloadRPT/");
-            string repName = "PyamentsF1_" + DateTime.Now.Ticks + ".xlsx";
+            string repName = "PaymentsF1_" + DateTime.Now.Ticks + ".xlsx";
             pck.SaveAs(new System.IO.FileInfo(path + repName));
 
             return Json(new { filename = repName }, JsonRequestBehavior.AllowGet);
