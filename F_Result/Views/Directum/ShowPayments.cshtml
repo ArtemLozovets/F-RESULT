@@ -123,6 +123,7 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -200,7 +201,7 @@
                             ClearFilter();
                             break;
                         case 'epexport':
-                            Export2Excel();
+                            Export2Excel('../Export/ExportPaymentsF1');
                             break;
                         default:
                             return;
@@ -271,7 +272,7 @@
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>дог. </sub><span class="badge sum-block">' + _pSum + '&#8372;</span></span>'
                             + '<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
-                            //+ '&nbsp;<button id="ExcelExportBtn" class="btn btn-primary btn-sm"><i class="fa fa-file-excel-o"></i></button>');
+                        //+ '&nbsp;<button id="ExcelExportBtn" class="btn btn-primary btn-sm"><i class="fa fa-file-excel-o"></i></button>');
 
                         $('#IDs').val(json.idslist);
 
@@ -364,32 +365,6 @@
             return _d + "/" + _m + "/" + dt.getFullYear();
         };
 
-    </script>
-
-    <script>
-        //Обработчик кнопки експорта в Excel
-        $('body').on('click', '#ExcelExportBtn', function () {
-            Export2Excel();
-        });
-
-        function Export2Excel() {
-            $('#loadingImg').show();
-            var api = $('#gridtable').dataTable().api();
-            var json = api.ajax.json();
-            var IDs = json.idslist;
-
-            $.ajax({
-                url: "../Export/ExportPayments",
-                type: "POST",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify({ IDs: json.idslist, sortColumn: json.sortcolumn, sortColumnDir:json.sortdir}),
-                success: function (data) {
-                    window.location.href = '../Export/GetFile?FName=' + data.filename;
-                    $('#loadingImg').hide();
-                }
-            });
-        }
     </script>
 
     <script>

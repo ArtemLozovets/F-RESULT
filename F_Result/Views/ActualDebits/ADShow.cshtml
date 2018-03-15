@@ -100,7 +100,7 @@
         </div>
     </div>
     <!-- #endregion -->
-    
+
     <a href="#" class="scrollup1">Наверх</a>
 </div>
 
@@ -115,6 +115,7 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -169,7 +170,7 @@
                             window.location.href = "/ActualDebits/ADCreate/";
                             break;
                         case 'clone':
-                            window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid')+'?isClone=True';
+                            window.location.href = "/ActualDebits/ADEdit/" + $(this).closest('tr').data('objid') + '?isClone=True';
                             break;
                         case 'details':
                             window.location.href = "/ActualDebits/ADDetails/" + $(this).closest('tr').data('objid');
@@ -211,6 +212,9 @@
                         case 'refresh':
                             ClearFilter();
                             break;
+                        case 'epexport':
+                            Export2Excel('../Export/ExportActualDebitsF1');
+                            break;
                         default:
                             return;
                     }
@@ -226,6 +230,8 @@
                         }
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" },
                     "sep": "---------",
                     "add": { name: "Создать", icon: "add" },
                     "clone": {

@@ -145,7 +145,6 @@ namespace F_Result.Controllers
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.Project).First() }).ToList();
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
-                ViewBag.IDsList = _IDsList;
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
