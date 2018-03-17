@@ -14,6 +14,8 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
+        #region ---------------------- Форма 1 ---------------------------
+
         #region Входящие платежи Ф1. Экспорт в Excel
 
         public ActionResult ExportPaymentsF1(string IDs, string sortColumn, string sortColumnDir)
@@ -587,7 +589,623 @@ namespace F_Result.Controllers
         }
         #endregion
 
-        #region Проекты. Экспорт в excel
+        #endregion
+
+        #region ---------------------- Форма 2 ---------------------------
+
+        #region Входящие платежи Ф2. Экспорт в Excel
+
+        public ActionResult ExportPaymentsF2(string IDs, string sortColumn, string sortColumnDir)
+        {
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _payments = (from payment in db.PaymentsF2
+                             join prg in db.Projects on payment.ProjectId equals prg.id
+                             where (IDsArray.Contains(payment.id))
+                             select new
+                             {
+                                 id = payment.id,
+                                 WorkerID = payment.WorkerId,
+                                 WorkerName = payment.WorkerName,
+                                 DocumentNumber = payment.DocumentNumber,
+                                 DocumentDate = payment.DocumentDate,
+                                 ItemDescr = payment.ItemDescr,
+                                 IncomeItems = payment.IncomeItems,
+                                 IncomeItemsName = payment.IncomeItemsName,
+                                 ProjectId = payment.ProjectId,
+                                 ProjectName = payment.ProjectName,
+                                 ItemSum = payment.ItemSum,
+                                 Currency = payment.Currency,
+                                 Receipt = payment.Receipt,
+                                 DocumentDescr = payment.DocumentDescr,
+                                 Tags = payment.Tags,
+                                 ProjectType = prg.ProjectType,
+                                 ChiefName = prg.ChiefName,
+                                 ProjectManagerName = prg.ProjectManagerName,
+                                 StartDatePlan = prg.StartDatePlan,
+                                 StartDateFact = prg.StartDateFact
+                             }).AsEnumerable().Select(x => new PaymentsF2
+                             {
+                                 id = x.id,
+                                 WorkerId = x.WorkerID,
+                                 WorkerName = x.WorkerName,
+                                 DocumentNumber = x.DocumentNumber,
+                                 DocumentDate = x.DocumentDate,
+                                 ItemDescr = x.ItemDescr,
+                                 IncomeItems = x.IncomeItems,
+                                 IncomeItemsName = x.IncomeItemsName,
+                                 ProjectId = x.ProjectId,
+                                 ProjectName = x.ProjectName,
+                                 ItemSum = x.ItemSum,
+                                 Currency = x.Currency,
+                                 Receipt = x.Receipt,
+                                 DocumentDescr = x.DocumentDescr,
+                                 Tags = x.Tags,
+                                 ProjectType = x.ProjectType,
+                                 ChiefName = x.ChiefName,
+                                 ProjectManagerName = x.ProjectManagerName,
+                                 StartDatePlan = x.StartDatePlan,
+                                 StartDateFact = x.StartDateFact
+                             }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+            }
+            else
+            {
+                _payments = _payments.OrderByDescending(x => x.DocumentDate).ThenByDescending(x => x.id).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Входящие платежи Ф2");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ВХОДЯЩИЕ ПЛАТЕЖИ Ф2\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Проект";
+            ws.Cells["B4"].Value = "Статья";
+            ws.Cells["C4"].Value = "Теги";
+            ws.Cells["D4"].Value = "Код";
+            ws.Cells["E4"].Value = "Назначение";
+            ws.Cells["F4"].Value = "Примечание";
+            ws.Cells["G4"].Value = "Квитанция";
+            ws.Cells["H4"].Value = "Сотрудник";
+            ws.Cells["I4"].Value = "Дата";
+            ws.Cells["J4"].Value = "Сумма";
+            ws.Cells["K4"].Value = "Валюта";
+
+            ws.Cells["A4:K4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 11])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _payments)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.IncomeItemsName;
+                ws.Cells[string.Format("C{0}", row)].Value = item.Tags;
+                ws.Cells[string.Format("D{0}", row)].Value = item.DocumentNumber;
+                ws.Cells[string.Format("E{0}", row)].Value = item.ItemDescr;
+                ws.Cells[string.Format("F{0}", row)].Value = item.DocumentDescr;
+                ws.Cells[string.Format("G{0}", row)].Value = item.Receipt;
+                ws.Cells[string.Format("H{0}", row)].Value = item.WorkerName;
+                ws.Cells[string.Format("I{0}", row)].Value = item.DocumentDate;
+                ws.Cells[string.Format("J{0}", row)].Value = item.ItemSum;
+                ws.Cells[string.Format("K{0}", row)].Value = item.Currency;
+
+                row++;
+            }
+
+            ws.Cells[string.Format("I{0}", row)].Value = "Итого:";
+            ws.Cells[string.Format("I{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("J{0}", row)].Formula = string.Format("SUM(J5:J{0})", row - 1);
+            ws.Cells[string.Format("J{0}", row)].Style.Font.Bold = true;
+
+            using (ExcelRange col = ws.Cells[5, 9, row, 9])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 10, row, 10])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Cells["A:AZ"].Style.Indent = 1;
+            ws.Column(9).Width = 16;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "PaymentsF2_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+        #region Исходящие платежи Ф2. Экспорт в Excel
+
+        public ActionResult ExportActualDebitsF2(string IDs, string sortColumn, string sortColumnDir)
+        {
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _payments = (from payment in db.ActualDebitsF2
+                             join prg in db.Projects on payment.ProjectId equals prg.id
+                             where (IDsArray.Contains(payment.id))
+                             select new
+                             {
+                                 id = payment.id,
+                                 WorkerID = payment.WorkerId,
+                                 WorkerName = payment.WorkerName,
+                                 DocumentNumber = payment.DocumentNumber,
+                                 DocumentDate = payment.DocumentDate,
+                                 ItemDescr = payment.ItemDescr,
+                                 IncomeItems = payment.IncomeItems,
+                                 IncomeItemsName = payment.IncomeItemsName,
+                                 ProjectId = payment.ProjectId,
+                                 ProjectName = payment.ProjectName,
+                                 ItemSum = payment.ItemSum,
+                                 Currency = payment.Currency,
+                                 Receipt = payment.Receipt,
+                                 DocumentDescr = payment.DocumentDescr,
+                                 Tags = payment.Tags,
+                                 ProjectType = prg.ProjectType,
+                                 ChiefName = prg.ChiefName,
+                                 ProjectManagerName = prg.ProjectManagerName,
+                                 StartDatePlan = prg.StartDatePlan,
+                                 StartDateFact = prg.StartDateFact
+                             }).AsEnumerable().Select(x => new ActualDebitsF2
+                             {
+                                 id = x.id,
+                                 WorkerId = x.WorkerID,
+                                 WorkerName = x.WorkerName,
+                                 DocumentNumber = x.DocumentNumber,
+                                 DocumentDate = x.DocumentDate,
+                                 ItemDescr = x.ItemDescr,
+                                 IncomeItems = x.IncomeItems,
+                                 IncomeItemsName = x.IncomeItemsName,
+                                 ProjectId = x.ProjectId,
+                                 ProjectName = x.ProjectName,
+                                 ItemSum = x.ItemSum,
+                                 Currency = x.Currency,
+                                 Receipt = x.Receipt,
+                                 DocumentDescr = x.DocumentDescr,
+                                 Tags = x.Tags,
+                                 ProjectType = x.ProjectType,
+                                 ChiefName = x.ChiefName,
+                                 ProjectManagerName = x.ProjectManagerName,
+                                 StartDatePlan = x.StartDatePlan,
+                                 StartDateFact = x.StartDateFact
+                             }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+            }
+            else
+            {
+                _payments = _payments.OrderByDescending(x => x.DocumentDate).ThenByDescending(x => x.id).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Исходящие платежи Ф2");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ИСХОДЯЩИЕ ПЛАТЕЖИ Ф2\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Проект";
+            ws.Cells["B4"].Value = "Статья";
+            ws.Cells["C4"].Value = "Теги";
+            ws.Cells["D4"].Value = "Код";
+            ws.Cells["E4"].Value = "Назначение";
+            ws.Cells["F4"].Value = "Примечание";
+            ws.Cells["G4"].Value = "Квитанция";
+            ws.Cells["H4"].Value = "Сотрудник";
+            ws.Cells["I4"].Value = "Дата";
+            ws.Cells["J4"].Value = "Сумма";
+            ws.Cells["K4"].Value = "Валюта";
+
+            ws.Cells["A4:K4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 11])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _payments)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.IncomeItemsName;
+                ws.Cells[string.Format("C{0}", row)].Value = item.Tags;
+                ws.Cells[string.Format("D{0}", row)].Value = item.DocumentNumber;
+                ws.Cells[string.Format("E{0}", row)].Value = item.ItemDescr;
+                ws.Cells[string.Format("F{0}", row)].Value = item.DocumentDescr;
+                ws.Cells[string.Format("G{0}", row)].Value = item.Receipt;
+                ws.Cells[string.Format("H{0}", row)].Value = item.WorkerName;
+                ws.Cells[string.Format("I{0}", row)].Value = item.DocumentDate;
+                ws.Cells[string.Format("J{0}", row)].Value = item.ItemSum;
+                ws.Cells[string.Format("K{0}", row)].Value = item.Currency;
+
+                row++;
+            }
+
+            ws.Cells[string.Format("I{0}", row)].Value = "Итого:";
+            ws.Cells[string.Format("I{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("J{0}", row)].Formula = string.Format("SUM(J5:J{0})", row - 1);
+            ws.Cells[string.Format("J{0}", row)].Style.Font.Bold = true;
+
+            using (ExcelRange col = ws.Cells[5, 9, row, 9])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 10, row, 10])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Cells["A:AZ"].Style.Indent = 1;
+            ws.Column(9).Width = 16;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "ADF2_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+        #region План доходов Ф2. Экспорт в Excel
+
+        public ActionResult ExportPlanCreditsF2(string IDs, string sortColumn, string sortColumnDir)
+        {
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _ads = (from plancredit in db.PlanCreditsF2
+                            join prg in db.Projects on plancredit.ProjectId equals prg.id
+                            join org in db.Organizations on plancredit.OrganizationId equals org.id
+                            join inc in db.Incomes on plancredit.IncomeId equals inc.Id
+                            join usr in db.IdentityUsers on plancredit.UserId equals usr.Id into usrtmp
+                            from usr in usrtmp.DefaultIfEmpty()
+                            join pperiod in db.PlanningPeriods on plancredit.PeriodId equals pperiod.PlanningPeriodId
+                            where (IDsArray.Contains(plancredit.PlanCreditF2Id))
+                            select new
+                            {
+                                PlanCreditF2Id = plancredit.PlanCreditF2Id,
+                                Date = plancredit.Date,
+                                Sum = plancredit.Sum,
+                                ProjectId = plancredit.ProjectId,
+                                OrgId = org.id,
+                                Appointment = plancredit.Appointment,
+                                UserId = plancredit.UserId,
+                                UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
+                                ProjectName = prg.ShortName,
+                                ProjectType = prg.ProjectType,
+                                ChiefName = prg.ChiefName,
+                                ProjectManagerName = prg.ProjectManagerName,
+                                StartDatePlan = prg.StartDatePlan,
+                                StartDateFact = prg.StartDateFact,
+                                OrgName = org.Title,
+                                IncId = inc.Id,
+                                IncName = inc.Name,
+                                PeriodName = pperiod.PeriodName,
+                                planBenefit = prg.planBenefit,
+                                planExpand = prg.planExpand
+                            }).AsEnumerable().Select(x => new PlanCreditViewF2
+                            {
+                                PlanCreditF2Id = x.PlanCreditF2Id,
+                                Date = x.Date,
+                                Sum = x.Sum,
+                                ProjectId = x.ProjectId,
+                                ProjectName = x.ProjectName,
+                                ProjectType = x.ProjectType,
+                                ChiefName = x.ChiefName,
+                                ProjectManagerName = x.ProjectManagerName,
+                                StartDatePlan = x.StartDatePlan,
+                                StartDateFact = x.StartDateFact,
+                                OrganizationId = x.OrgId,
+                                OrganizationName = x.OrgName,
+                                IncomeId = x.IncId,
+                                IncomeName = x.IncName,
+                                Appointment = x.Appointment,
+                                UserId = x.UserId,
+                                UserFN = x.UserFN,
+                                PeriodName = x.PeriodName,
+                                planBenefit = x.planBenefit,
+                                planExpand = x.planExpand
+                            }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", PlanCreditF2Id desc").ToList();
+            }
+            else
+            {
+                _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.PlanCreditF2Id).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("План доходов Ф2");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ПЛАН ДОХОДОВ Ф2\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Статья";
+            ws.Cells["B4"].Value = "Проект";
+            ws.Cells["C4"].Value = "Руководитель";
+            ws.Cells["D4"].Value = "Организация";
+            ws.Cells["E4"].Value = "Назначение";
+            ws.Cells["F4"].Value = "Пользователь";
+            ws.Cells["G4"].Value = "Дата";
+            ws.Cells["H4"].Value = "Сумма";
+
+            ws.Cells["A4:H4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 8])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _ads)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.IncomeName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.ProjectName;
+                ws.Cells[string.Format("C{0}", row)].Value = item.ChiefName;
+                ws.Cells[string.Format("D{0}", row)].Value = item.OrganizationName;
+                ws.Cells[string.Format("E{0}", row)].Value = item.Appointment;
+                ws.Cells[string.Format("F{0}", row)].Value = item.UserFN;
+                ws.Cells[string.Format("G{0}", row)].Value = item.Date;
+                ws.Cells[string.Format("H{0}", row)].Value = item.Sum;
+
+                row++;
+            }
+
+            ws.Cells[string.Format("G{0}", row)].Value = "Итого:";
+            ws.Cells[string.Format("G{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("G{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
+            ws.Cells[string.Format("H{0}", row)].Style.Font.Bold = true;
+
+            using (ExcelRange col = ws.Cells[5, 7, row, 7])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 8, row, 8])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].Style.Indent = 1;
+            ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Column(7).Width = 16;
+            ws.Column(8).Width = 15;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "PCF2_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+        #region План расходов Ф2. Экспорт в Excel
+
+        public ActionResult ExportPlanDebitsF2(string IDs, string sortColumn, string sortColumnDir)
+        {
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _ads = (from plandebit in db.PlanDebitsF2
+                        join prg in db.Projects on plandebit.ProjectId equals prg.id
+                        join org in db.Organizations on plandebit.OrganizationId equals org.id
+                        join exp in db.Expenditures on plandebit.ExpenditureId equals exp.Id
+                        join usr in db.IdentityUsers on plandebit.UserId equals usr.Id into usrtmp
+                        from usr in usrtmp.DefaultIfEmpty()
+                        join pperiod in db.PlanningPeriods on plandebit.PeriodId equals pperiod.PlanningPeriodId
+                        where (IDsArray.Contains(plandebit.PlanDebitF2Id))
+                        select new
+                        {
+                            PlanDebitF2Id = plandebit.PlanDebitF2Id,
+                            Date = plandebit.Date,
+                            Sum = plandebit.Sum,
+                            ProjectId = plandebit.ProjectId,
+                            OrgId = org.id,
+                            Appointment = plandebit.Appointment,
+                            UserId = plandebit.UserId,
+                            UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
+                            ProjectName = prg.ShortName,
+                            ProjectType = prg.ProjectType,
+                            ChiefName = prg.ChiefName,
+                            ProjectManagerName = prg.ProjectManagerName,
+                            StartDatePlan = prg.StartDatePlan,
+                            StartDateFact = prg.StartDateFact,
+                            OrgName = org.Title,
+                            ExptId = exp.Id,
+                            ExpName = exp.Name,
+                            PeriodName = pperiod.PeriodName,
+                            planBenefit = prg.planBenefit,
+                            planExpand = prg.planExpand
+                        }).AsEnumerable().Select(x => new PlanDebitViewF2
+                        {
+                            PlanDebitF2Id = x.PlanDebitF2Id,
+                            Date = x.Date,
+                            Sum = x.Sum,
+                            ProjectId = x.ProjectId,
+                            ProjectName = x.ProjectName,
+                            ProjectType = x.ProjectType,
+                            ChiefName = x.ChiefName,
+                            ProjectManagerName = x.ProjectManagerName,
+                            StartDatePlan = x.StartDatePlan,
+                            StartDateFact = x.StartDateFact,
+                            OrganizationId = x.OrgId,
+                            OrganizationName = x.OrgName,
+                            ExpenditureId = x.ExptId,
+                            ExpenditureName = x.ExpName,
+                            Appointment = x.Appointment,
+                            UserId = x.UserId,
+                            UserFN = x.UserFN,
+                            PeriodName = x.PeriodName,
+                            planBenefit = x.planBenefit,
+                            planExpand = x.planExpand
+                        }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", PlanDebitF2Id desc").ToList();
+            }
+            else
+            {
+                _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.PlanDebitF2Id).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("План расходов Ф2");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ПЛАН РАСХОДОВ Ф2\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Статья";
+            ws.Cells["B4"].Value = "Проект";
+            ws.Cells["C4"].Value = "Руководитель";
+            ws.Cells["D4"].Value = "Организация";
+            ws.Cells["E4"].Value = "Назначение";
+            ws.Cells["F4"].Value = "Пользователь";
+            ws.Cells["G4"].Value = "Дата";
+            ws.Cells["H4"].Value = "Сумма";
+
+            ws.Cells["A4:H4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 8])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _ads)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.ExpenditureName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.ProjectName;
+                ws.Cells[string.Format("C{0}", row)].Value = item.ChiefName;
+                ws.Cells[string.Format("D{0}", row)].Value = item.OrganizationName;
+                ws.Cells[string.Format("E{0}", row)].Value = item.Appointment;
+                ws.Cells[string.Format("F{0}", row)].Value = item.UserFN;
+                ws.Cells[string.Format("G{0}", row)].Value = item.Date;
+                ws.Cells[string.Format("H{0}", row)].Value = item.Sum;
+
+                row++;
+            }
+
+            ws.Cells[string.Format("G{0}", row)].Value = "Итого:";
+            ws.Cells[string.Format("G{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("G{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
+            ws.Cells[string.Format("H{0}", row)].Style.Font.Bold = true;
+
+            using (ExcelRange col = ws.Cells[5, 7, row, 7])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 8, row, 8])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].Style.Indent = 1;
+            ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Column(7).Width = 16;
+            ws.Column(8).Width = 15;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "PDF2_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+        #endregion
+
+        #region Оригинал. Экспорт в excel
 
         public void EPExport()
         {
@@ -713,6 +1331,7 @@ namespace F_Result.Controllers
             }
         }
         #endregion
+
 
         protected override void Dispose(bool disposing)
         {

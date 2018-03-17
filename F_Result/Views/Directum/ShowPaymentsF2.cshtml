@@ -133,6 +133,7 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -221,6 +222,9 @@
                         case 'refresh':
                             ClearFilter();
                             break;
+                        case 'epexport':
+                            Export2Excel('../Export/ExportPaymentsF2');
+                            break;
                         default:
                             return;
                     }
@@ -235,7 +239,9 @@
                             return true;
                         }
                     },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" }
                 }
             });
         });

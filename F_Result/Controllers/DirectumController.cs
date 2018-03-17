@@ -316,10 +316,12 @@ namespace F_Result.Controllers
                                                 && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
 
 
+                //Список ID для передачи в ф-цию экспорта в Excel
+                List<int> _IDsList = _payments.Select(x => x.id).ToList();
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
-
+                var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -338,20 +340,16 @@ namespace F_Result.Controllers
                 return Json(new
                 {
                     fsum = fSum
-                    ,
-                    draw = draw
-                    ,
-                    recordsFiltered = totalRecords
-                    ,
-                    recordsTotal = totalRecords
-                    ,
-                    data = data
-                    ,
-                    prjlist = _prjListJson
-                    ,
-                    errormessage = ""
+                    , draw = draw
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , prjlist = _prjListJson
+                    , idslist = _IDsListJson
+                    , sortcolumn = sortColumn
+                    , sortdir = sortColumnDir
+                    , errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
-
 
             }
             catch (Exception ex)
@@ -489,9 +487,12 @@ namespace F_Result.Controllers
                                                && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
 
 
+                //Список ID для передачи в ф-цию экспорта в Excel
+                List<int> _IDsList = _payments.Select(x => x.id).ToList();
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -510,20 +511,16 @@ namespace F_Result.Controllers
                 return Json(new
                 {
                     fsum = fSum
-                    ,
-                    draw = draw
-                    ,
-                    prjlist = _prjListJson
-                    ,
-                    recordsFiltered = totalRecords
-                    ,
-                    recordsTotal = totalRecords
-                    ,
-                    data = data
-                    ,
-                    errormessage = ""
+                    , draw = draw
+                    , prjlist = _prjListJson
+                    , idslist = _IDsListJson
+                    , sortcolumn = sortColumn
+                    , sortdir = sortColumnDir
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
-
 
             }
             catch (Exception ex)
