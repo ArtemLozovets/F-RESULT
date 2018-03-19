@@ -1205,6 +1205,132 @@ namespace F_Result.Controllers
 
         #endregion
 
+        #region Входящие платежи Ф1. Экспорт в Excel
+
+        public ActionResult ExportAccountsBalances(string IDs, string sortColumn, string sortColumnDir)
+        {
+
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _ads = (from accbalance in db.AccountsBalances
+                        join account in db.Accounts on accbalance.AccountId equals account.AccountId
+                        join org in db.Organizations on account.OrganizationId equals org.id
+                        join usr in db.IdentityUsers on accbalance.UserId equals usr.Id
+                        where (IDsArray.Contains(accbalance.AccountsBalanceId))
+                        select new
+                        {
+                            AccountBalanceId = accbalance.AccountsBalanceId,
+                            AccountId = account.AccountId,
+                            OrgId = org.id,
+                            OrgName = org.Title,
+                            BankName = account.BankName,
+                            AccountNumber = account.AccountNumber,
+                            Date = accbalance.Date,
+                            Balance = accbalance.Balance,
+                            Note = accbalance.Note,
+                            UserId = account.UserId,
+                            UserFN = usr.LastName + " " + usr.FirstName.Substring(0, 1) + "." + usr.MiddleName.Substring(0, 1) + ".",
+                        }).AsEnumerable().Select(x => new AccountsBalance
+                        {
+                            AccountsBalanceId = x.AccountBalanceId,
+                            AccountId = x.AccountId,
+                            OrganizationId = x.OrgId,
+                            BankName = x.BankName,
+                            AccountNumber = x.AccountNumber,
+                            OrganizationName = x.OrgName,
+                            Balance = x.Balance,
+                            Date = x.Date,
+                            Note = x.Note,
+                            UserId = x.UserId,
+                            UserFN = x.UserFN
+                        }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", AccountsBalanceId desc").ToList();
+            }
+            else
+            {
+                _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.AccountsBalanceId).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Остатки на счетах");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ОСТАТКИ НА СЧЕТАХ\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Организация";
+            ws.Cells["B4"].Value = "Банк";
+            ws.Cells["C4"].Value = "Счет";
+            ws.Cells["D4"].Value = "Примечание";
+            ws.Cells["E4"].Value = "Пользователь";
+            ws.Cells["F4"].Value = "Дата";
+            ws.Cells["G4"].Value = "Сумма";
+
+
+            ws.Cells["A4:G4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 7])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _ads)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.OrganizationName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.BankName;
+                ws.Cells[string.Format("C{0}", row)].Value = item.AccountNumber;
+                ws.Cells[string.Format("D{0}", row)].Value = item.Note;
+                ws.Cells[string.Format("E{0}", row)].Value = item.UserFN;
+                ws.Cells[string.Format("F{0}", row)].Value = item.Date;
+                ws.Cells[string.Format("G{0}", row)].Value = item.Balance;
+
+                row++;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 6, row, 6])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 7, row, 7])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].Style.Indent = 1;
+            ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Column(7).Width = 16;
+            ws.Column(8).Width = 15;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "ABalances_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
         #region Оригинал. Экспорт в excel
 
         public void EPExport()

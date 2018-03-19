@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using F_Result.Models;
 using System.Linq.Dynamic; //!=====!
 using Microsoft.AspNet.Identity;
+using System.Web.Script.Serialization;
 
 namespace F_Result.Controllers
 {
@@ -115,6 +116,11 @@ namespace F_Result.Controllers
 
                 _ads = _ads.Where(x => ((x.Balance.ToString().Contains(_balance)) || string.IsNullOrEmpty(_balance) ) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
 
+                //Список ID для передачи в ф-цию экспорта в Excel
+                List<int> _IDsList = _ads.Select(x => x.AccountsBalanceId).ToList();
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
+
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir + ", AccountsBalanceId desc").ToList();
@@ -129,9 +135,15 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { fsum = fSum, draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, errormessage = "" }, JsonRequestBehavior.AllowGet);
-
-
+                return Json(new { fsum = fSum
+                    , draw = draw
+                    , recordsFiltered = totalRecords
+                    , recordsTotal = totalRecords
+                    , data = data
+                    , idslist = _IDsListJson
+                    , sortcolumn = sortColumn
+                    , sortdir = sortColumnDir
+                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
