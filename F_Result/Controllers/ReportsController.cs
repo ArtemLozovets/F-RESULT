@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Linq.Dynamic;
-using System.Globalization;
 using System.Web.Script.Serialization;
 using F_Result.Methods; //!=====!
 
@@ -462,8 +461,6 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                List<TableReport> RepList = new List<TableReport>();
-
                 DateTime _stmp = Convert.ToDateTime(StartPeriod.ToString());
                 string _startPeriod = _stmp.ToString("yyyyMMdd");
                 DateTime _etmp = Convert.ToDateTime(EndPeriod.ToString());
@@ -537,6 +534,94 @@ namespace F_Result.Controllers
                     data = data,
                     total = total,
                     planningbalance = _PlanningBalance,
+                    prjlist = _prjListJson,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        //Отчет "Прибыльность проектов" GET
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public ActionResult AnalysisOfTheProjectProfitability()
+        {
+            return View();
+        }
+
+        //Получение данных для построения отчета "Бюджетирование" POST
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public JsonResult GetAPP(DateTime? RepDate, int[] filterPrjIDs, string ProjectName)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try
+            {
+
+                if (RepDate == null)
+                {
+                    return Json(new { Result = false, data = "", errormessage = "Неверные параметры запроса" }, JsonRequestBehavior.AllowGet);
+                }
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                List<APPTableReport> RepList = new List<APPTableReport>();
+
+
+                //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}')", RepDate, ProjectName)).ToList();
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+
+                _ads = _ads.Where(x =>
+                            (filterPrjIDs == null
+                            || filterPrjIDs.Length == 0
+                            || filterPrjIDs.Contains(x.prj))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
+
+                //APBTableReportTotal total = new APBTableReportTotal
+                //{
+                //    DebitPlanTotal = _ads.Sum(x => x.debitplan),
+                //    DebitFactTotal = _ads.Sum(x => x.debitfact),
+                //    dDeltaTotal = _ads.Sum(x => x.ddelta),
+                //    CreditPlanTotal = _ads.Sum(x => x.creditplan),
+                //    CreditFactTotal = _ads.Sum(x => x.creditfact),
+                //    cDeltaTotal = _ads.Sum(x => x.cdelta)
+                //};
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+
+                var total = _ads.Count();
+                var data = _ads.Skip(skip).Take(pageSize);
+
+                return Json(new
+                {
+                    Result = true,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    total = total,
                     prjlist = _prjListJson,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);

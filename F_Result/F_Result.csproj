@@ -775,6 +775,7 @@
     <Content Include="Views\PlanDebitsF2\PDClone.cshtml" />
     <Content Include="Views\Directum\ShowPaymentsF2.cshtml" />
     <Content Include="Views\Directum\ShowActualDebitsF2.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectProfitability.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

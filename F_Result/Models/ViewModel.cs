@@ -50,6 +50,28 @@ namespace F_Result.Models
 
     #endregion ----------------------------------------------------------
 
+    #region "Analysis of the project Profitability" table report -------------------
+    [NotMapped]
+    public class APPTableReport
+    {
+        public int prj { get; set; }
+        public string ProjectName { get; set; }
+        public decimal prjres { get; set; }
+        public string ProjectManagerName { get; set; }
+        public string ChiefName { get; set; }
+        public int Chief { get; set; }
+        public decimal FactCreditF1 { get; set; }
+        public decimal FactCreditF2 { get; set; }
+        public decimal FCTotalF1F2 { get; set; }
+        public decimal FactDebitF1 { get; set; }
+        public decimal FactDebitF2 { get; set; }
+        public decimal FDTotalF1F2 { get; set; }
+        public decimal IncomeF1 { get; set; }
+        public decimal IncomeF2 { get; set; }
+        public decimal IncomeTotal { get; set; }
+    }
+    #endregion
+
     #region Table report --------------------------
 
     [NotMapped]
