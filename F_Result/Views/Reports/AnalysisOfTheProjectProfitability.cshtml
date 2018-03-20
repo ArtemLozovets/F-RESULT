@@ -8,8 +8,6 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
-<link href="~/Content/DataTables/css/buttons.bootstrap.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <style>
@@ -48,13 +46,13 @@
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
-                Бюджетирование
-                <small>Контроль выполнения бюджетов</small>
+                Прибильность
+                <small>Анализ прибыльности проектов</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
                 <li>Отчеты</li>
-                <li class="active">Бюджетирование</li>
+                <li class="active">Прибыльность</li>
             </ol>
         </div>
     </div>
@@ -62,12 +60,9 @@
     <div class="row">
         <div class="form-inline pull-left" style="display:inline-block; margin-top:.4em;" id="plBalance"></div>
         <div class="row form-inline pull-right">
-            <label for="isAllPeriod" class="control-label">За весь период</label>
-            @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
-
             <input type="text" style="width:10em;text-align:center; margin:0 0.4em;"
-                   id="startDate" placeholder="Базовая дата"
-                   title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+                   id="startDate" placeholder="Дата..."
+                   title="Отчетная дата" class="form-control input-sm" value="" />
         </div>
     </div>
 
@@ -76,22 +71,28 @@
             <thead>
                 <tr>
                     <th rowspan="2">Проект</th>
-                    <th rowspan="2">Финансовый результат</th>
-                    <th colspan="2">Доходы</th>
-                    <th rowspan="2">&#916;&nbsp;<sub>дох.</sub></th>
-                    <th colspan="2">Расходы</th>
-                    <th rowspan="2">&#916;&nbsp;<sub>расх.</sub></th>
+                    <th colspan="3">Доходы</th>
+                    <th colspan="3">Расходы</th>
+                    <th colspan="2">Прибыль</th>
+                    <th rowspan="2">Прибыльность</th>
                 </tr>
                 <tr>
-                    <th class="smallTH">План</th>
-                    <th class="smallTH">Факт</th>
-                    <th class="smallTH">План</th>
-                    <th class="smallTH" style="border-right:1px solid #ddd !important">Факт</th>
+                    <th class="smallTH">Ф1</th>
+                    <th class="smallTH">Ф2</th>
+                    <th class="smallTH">Ф1 + Ф2</th>
+                    <th class="smallTH">Ф1</th>
+                    <th class="smallTH">Ф2</th>
+                    <th class="smallTH">Ф1 + Ф2</th>
+                    <th class="smallTH">Ф1</th>
+                    <th class="smallTH" style="border-right:1px solid #ddd !important">Ф2</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr class="tright">
-                    <th colspan="2">Итого</th>
+                    <th>Итого</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -139,27 +140,12 @@
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.buttons.js"></script>
-    <script src="~/Scripts/DataTables/buttons.bootstrap.js"></script>
-    <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
-    <script src="~/Scripts/DataTables/buttons.flash.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
 
     <script>
         $(function () {
-            //Читаем значение фильтра планового периода
-            if (localStorage.getItem('PlanningPeriod') !== null) {
-                var DDLVal = localStorage.getItem('PlanningPeriod');
-                $('#BudgetPeriodDDL').val(DDLVal);
-            }
-
-            var nowDT = new Date;
-            var nowDate = moment(nowDT).format('DD/MM/YYYY');
-            $("#startDate").val(nowDate);
-            $('#loadingImg').hide();
-
             //Скрипт для работы с контекстным меню
             $.contextMenu({
                 selector: '.dataTables_empty, td.context-menu-one',
@@ -173,49 +159,6 @@
                                 table.draw();
                             }
                             break;
-
-                        case 'alltimesfilter':
-                            if (fClass.indexOf("prgCellf") >= 0) {
-                                $('#isAllTimes').prop('checked', true);
-                                $('#startDate').prop('disabled', true);
-                                $('#gridtable_filter').val($(this).text());
-                                var table = $("#gridtable").DataTable();
-                                table.draw();
-                            }
-                            break;
-
-                        case 'expand':
-                            var table = $("#gridtable").DataTable();
-                            var json = table.ajax.json();
-                            var prj = table.row(this).data().prj;
-                            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
-                            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
-
-                            if (fClass.indexOf("cpExp") >= 0) {
-                                var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
-                            }
-
-                            if (fClass.indexOf("cfExp") >= 0) {
-                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
-                            }
-
-                            if (fClass.indexOf("dpExp") >= 0) {
-                                var url = '@Url.Action("PDShow", "PlanDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
-                            }
-
-                            if (fClass.indexOf("dfExp") >= 0) {
-                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
-                            }
-                            break;
-
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -233,32 +176,6 @@
                             return true;
                         }
                     },
-
-                    "alltimesfilter": {
-                        name: "Фильтр за весь период",
-                        icon: "alltimesfilter",
-                        disabled: function () {
-                            var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cellf") >= 0) { return false };
-                            return true;
-                        }
-                    },
-
-                    "sep1": "---------",
-                    "expand": {
-                        name: "Расшифровка",
-                        icon: "expand",
-                        disabled: function () {
-                            var fClass = $(this).attr('class');
-                            if ((fClass.indexOf("dfExp") >= 0
-                                    || fClass.indexOf("cfExp") >= 0
-                                    || (fClass.indexOf("dpExp") >= 0 && !$('#isAllTimes').is(':checked'))
-                                    || (fClass.indexOf("cpExp") >= 0 && !$('#isAllTimes').is(':checked')))
-                                    && $(this).text() != '0,00') { return false };
-                            return true;
-                        }
-                    },
-                    "sep2": "---------",
                     "refresh": { name: "Сброс фильтра", icon: "refresh" }
                 }
             });
@@ -276,26 +193,6 @@
             table.draw();
         }
 
-        //Обработчик выбора планового периода
-        $('body').on('change', '#BudgetPeriodDDL', function () {
-            localStorage.setItem('PlanningPeriod', $(this).val());
-            globalVarsClear();
-        });
-
-        //Обработчик изменения состояния элемента "За весь период"
-        $('#isAllTimes').on('change', function () {
-            globalVarsClear();
-            if ($(this).is(':checked')) {
-                $('#startDate').attr('disabled', 'disabled');
-                var table = $("#gridtable").DataTable();
-                table.draw();
-            } else {
-                $('#startDate').removeAttr('disabled');
-                var table = $("#gridtable").DataTable();
-                table.draw();
-            }
-        });
-
         //-------------------------------------------------------------
         //Функция создания таблицы отчета
         function createGrid() {
@@ -304,7 +201,7 @@
             var table = $('#gridtable').DataTable({
                 "fixedHeader": {
                     "header": true,
-                    footer: true,
+                    "footer": true,
                     "headerOffset": $('#mainNavbar').height()
                 },
                 autoWidth: true,
@@ -338,69 +235,14 @@
                         sPrevious: "<"
                     }
                 },
-                buttons: [
-                    {
-                        extend: 'copy',
-                        text: '<i class="fa fa-copy"></i>&nbsp;Copy',
-                        className: 'btn-primary expButton',
-                    },
-                       {
-                           extend: 'excel',
-                           text: '<i class="fa fa-file-excel-o"></i>&nbsp;Excel',
-                           className: 'btn-primary expButton',
-                           filename: 'AOPBReport',
-
-                           //customize: function (xlsx) {
-                           //    var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                           //    $('row:first c', sheet).attr('s', '51');
-                           //},
-
-                           customize: function (xlsx) {
-                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                               var lastCol = sheet.getElementsByTagName('col').length - 1;
-                               var colRange = createCellPos(lastCol) + '1';
-                               //Has to be done this way to avoid creation of unwanted namespace atributes.
-                               var afSerializer = new XMLSerializer();
-                               var xmlString = afSerializer.serializeToString(sheet);
-                               var parser = new DOMParser();
-                               var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-
-                               console.log(xmlDoc);
-
-                               var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
-                               var filterAttr = xmlDoc.createAttribute('ref');
-                               filterAttr.value = 'A1:' + colRange;
-                               xlsxFilter.setAttributeNode(filterAttr);
-                               sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
-                           },
-
-                           exportOptions: {
-                               modifier: {
-                                   page: 'current'
-                               },
-                               format: {
-                                   body: function (data, row, column, node) {
-                                       var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g, '.') : data;
-                                       return res;
-                                   }
-                               }
-                           }
-                       }
-                ],
                 ajax: {
                     type: 'POST',
-                    url: '/Reports/GetAPB/',
+                    url: '/Reports/GetAPP/',
                     datatype: "json",
-                    //Получаем Id планового периода.
-                    // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
                     data: function (d) {
-                        var _isAllTimes = false;
-                        if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
-                        d.Period = $('#BudgetPeriodDDL').val();
-                        d.BaseDate = $('#startDate').val();
-                        d.IsAllTimes = _isAllTimes;
                         d.ProjectName = $('#gridtable_filter').val();
                         d.filterPrjIDs = window.filterPrjIDs;
+                        d.repDate = '20/03/2018'
                     },
                     dataSrc: function (d) {
                         $('#loadingImg').hide();
@@ -415,79 +257,76 @@
                 },
                 order: [[0, "asc"]],
                 columns: [
-                    { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpExp" },
-                    { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfExp" },
-                    { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
-                    { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
-                    { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
+                    { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
+                    { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
                 ],
 
                 fnCreatedRow: function (row, data, rowIndex) {
                     //Выводим всплывающую подсказку с подробной информацией о проекте
-                    var _datePlan = formatDate(data.StartDatePlan);
-                    var _dateFact = formatDate(data.StartDateFact);
-                    var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
-                    prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                    prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
+                    var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
                     $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
-                    // Выделение цветом дельта-ячеек
-                    if (data.prjres > 0) {
-                        $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    }
-                    else if (data.prjres < 0) {
-                        $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    }
+                    //// Выделение цветом дельта-ячеек
+                    //if (data.prjres > 0) {
+                    //    $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    //}
+                    //else if (data.prjres < 0) {
+                    //    $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    //}
 
-                    if (data.ddelta > 0) {
-                        $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    }
-                    else if (data.ddelta < 0) {
-                        $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    }
+                    //if (data.ddelta > 0) {
+                    //    $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    //}
+                    //else if (data.ddelta < 0) {
+                    //    $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    //}
 
-                    if (data.cdelta > 0) {
-                        $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    }
-                    else if (data.cdelta < 0) {
-                        $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    }
+                    //if (data.cdelta > 0) {
+                    //    $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    //}
+                    //else if (data.cdelta < 0) {
+                    //    $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    //}
                 },
 
                 fnDrawCallback: function (settings) {
+                        var api = this.api();
+                        var json = api.ajax.json();
+
                     //Заполнение футера
-                    var api = this.api();
-                    var json = api.ajax.json();
-                    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
-                    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
-                    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
-                    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
-                    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
-                    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
-                    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
+                    //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+                    //    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
+                    //    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
+                    //    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
+                    //    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
+                    //    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
+                    //    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    //    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    //    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    //    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    //    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
 
 
-                    if (json.Result) {
-                        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
-                            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
-                        }
-                        else {
-                            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
-                            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
-                            $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
-                        }
-                    };
+                    //    if (json.Result) {
+                    //        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
+                    //            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
+                    //        }
+                    //        else {
+                    //            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
+                    //            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
+                    //            $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
+                    //        }
+                    //    };
 
                     //Инициализация таблицы проектов в плавающей панели
                     if (window._flag) {
@@ -500,26 +339,12 @@
                         window._flag = false;
                     };
 
-                    if (json.planningbalance != null) {
-                        var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                        $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
-                    }
+                    //if (json.planningbalance != null) {
+                    //    var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                    //    $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
+                    //}
                 }
             });
-
-            function createCellPos(n) {
-                var ordA = 'A'.charCodeAt(0);
-                var ordZ = 'Z'.charCodeAt(0);
-                var len = ordZ - ordA + 1;
-                var s = "";
-
-                while (n >= 0) {
-                    s = String.fromCharCode(n % len + ordA) + s;
-                    n = Math.floor(n / len) - 1;
-                }
-
-                return s;
-            }
 
             function formatDate(value) {
                 if (value === null) return "";
@@ -530,7 +355,6 @@
                 var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                 return _d + "/" + _m + "/" + dt.getFullYear();
             };
-
         };
 
     </script>
@@ -540,9 +364,13 @@
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
         $(function () {
+            var nowDT = new Date;
+            var nowDate = moment(nowDT).format('DD/MM/YYYY');
+            $("#startDate").val(nowDate);
+
             $('#startDate').dateRangePicker(
                  {
-                     customTopBar: 'Начало периода',
+                     customTopBar: 'Отчетная дата',
                      showWeekNumbers: true,
                      startOfWeek: 'monday',
                      singleDate: true,

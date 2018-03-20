@@ -551,6 +551,7 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public ActionResult AnalysisOfTheProjectProfitability()
         {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 
@@ -579,9 +580,10 @@ namespace F_Result.Controllers
 
                 List<APPTableReport> RepList = new List<APPTableReport>();
 
+                string repdt = RepDate.Value.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}')", RepDate, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
@@ -611,7 +613,7 @@ namespace F_Result.Controllers
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
 
-                var total = _ads.Count();
+                totalRecords = _ads.Count();
                 var data = _ads.Skip(skip).Take(pageSize);
 
                 return Json(new
@@ -621,7 +623,6 @@ namespace F_Result.Controllers
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     data = data,
-                    total = total,
                     prjlist = _prjListJson,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
