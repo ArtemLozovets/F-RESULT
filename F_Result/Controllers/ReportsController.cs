@@ -551,7 +551,6 @@ namespace F_Result.Controllers
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public ActionResult AnalysisOfTheProjectProfitability()
         {
-            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
 

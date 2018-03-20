@@ -25,22 +25,26 @@
         margin-right: 8px;
     }
 
-    .dt-buttons.btn-group {
-        float: none;
+    #repDT {
+        padding-right: .8em;
     }
 
-    .expButton {
-        padding: 5px 12px;
-    }
+    table.dataTable,
+table.dataTable th,
+table.dataTable td {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
 </style>
+
+<input type="hidden" id="hRepDate" value="" />
 
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
     </div>
 </div>
-
-<input type="text" value="" id="gridtable_filter" hidden />
 
 <div class="container">
     <div class="row">
@@ -59,24 +63,21 @@
 
     <div class="row">
         <div class="form-inline pull-left" style="display:inline-block; margin-top:.4em;" id="plBalance"></div>
-        <div class="row form-inline pull-right">
-            <input type="text" style="width:10em;text-align:center; margin:0 0.4em;"
-                   id="startDate" placeholder="Дата..."
-                   title="Отчетная дата" class="form-control input-sm" value="" />
-        </div>
     </div>
 
     <div class="row">
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
                 <tr>
-                    <th rowspan="2">Проект</th>
+                    @*<th rowspan="2">Проект</th>
                     <th colspan="3">Доходы</th>
                     <th colspan="3">Расходы</th>
                     <th colspan="2">Прибыль</th>
                     <th rowspan="2">Прибыльность</th>
+                    <th rowspan="2">ID</th>*@
                 </tr>
                 <tr>
+                    <th>Проект</th>
                     <th class="smallTH">Ф1</th>
                     <th class="smallTH">Ф2</th>
                     <th class="smallTH">Ф1 + Ф2</th>
@@ -85,11 +86,14 @@
                     <th class="smallTH">Ф1 + Ф2</th>
                     <th class="smallTH">Ф1</th>
                     <th class="smallTH" style="border-right:1px solid #ddd !important">Ф2</th>
+                    <th class="smallTH">Прибыльность</th>
+                    <th>ID</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr class="tright">
                     <th>Итого</th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -134,11 +138,10 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script src="~/Scripts/DataTables/jszip.min.js"></script>
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
-    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    @*<script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>*@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
@@ -146,6 +149,9 @@
 
     <script>
         $(function () {
+            var nowDate = moment(new Date).format('DD/MM/YYYY');
+            $('#hRepDate').val(nowDate);
+
             //Скрипт для работы с контекстным меню
             $.contextMenu({
                 selector: '.dataTables_empty, td.context-menu-one',
@@ -197,154 +203,168 @@
         //Функция создания таблицы отчета
         function createGrid() {
             $('#loadingImg').hide();
-            if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
-            var table = $('#gridtable').DataTable({
-                "fixedHeader": {
-                    "header": true,
-                    "footer": true,
-                    "headerOffset": $('#mainNavbar').height()
-                },
-                autoWidth: true,
-                paging: true,
-                processing: true,
-                serverSide: true,
-                filter: false,
-                orderMulti: false,
-                responsive: false,
-                lengthMenu: [
-                                [10, 25, 50, 100, -1],
-                                ['10', '25', '50', '100', 'Все']
-                ],
-                pageLength: 25, // Количество записей в таблице по умолчанию
-                pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'col-sm-3 text-right'B>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                language: {
-                    lengthMenu: "Записей: _MENU_",
-                    zeroRecords: "Записи отсутствуют",
-                    info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    infoEmpty: "Записи отсутствуют",
-                    infoFiltered: "(Отфильтровано из _MAX_ записей)",
-                    search: "",
-                    searchPlaceholder: "Проект...",
-                    processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    sInfoThousands: " ",
-                    oPaginate: {
-                        sNext: ">",
-                        sPrevious: "<"
-                    }
-                },
-                ajax: {
-                    type: 'POST',
-                    url: '/Reports/GetAPP/',
-                    datatype: "json",
-                    data: function (d) {
-                        d.ProjectName = $('#gridtable_filter').val();
-                        d.filterPrjIDs = window.filterPrjIDs;
-                        d.repDate = '20/03/2018'
+            var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+                    $('#repDT').html('<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" id="startDate" title="Отчетная дата" class="form-control input-sm" value="" />');
+                    var repDate = $('#hRepDate').val();
+                    $("#startDate").val(repDate);
+                    DRPickerInit();
+                })
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "footer": true,
+                        "headerOffset": $('#mainNavbar').height()
                     },
-                    dataSrc: function (d) {
-                        $('#loadingImg').hide();
-                        if (!d.Result) {
-                            alert(d.errormessage);
-                            return false;
-                        }
-                        else {
-                            return d.data;
+                    autoWidth: true,
+                    paging: true,
+                    processing: true,
+                    serverSide: true,
+                    filter: false,
+                    orderMulti: false,
+                    responsive: false,
+                    lengthMenu: [
+                                    [10, 25, 50, 100],
+                                    ['10', '25', '50', '100']
+                    ],
+                    pageLength: 25, // Количество записей в таблице по умолчанию
+                    pagingType: "simple_numbers",
+                    dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'#repDT.col-sm-3 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    language: {
+                        lengthMenu: "Записей: _MENU_",
+                        zeroRecords: "Записи отсутствуют",
+                        info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        infoEmpty: "Записи отсутствуют",
+                        infoFiltered: "(Отфильтровано из _MAX_ записей)",
+                        search: "",
+                        searchPlaceholder: "Проект...",
+                        processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        sInfoThousands: " ",
+                        oPaginate: {
+                            sNext: ">",
+                            sPrevious: "<"
                         }
                     },
-                },
-                order: [[0, "asc"]],
-                columns: [
-                    { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
-                ],
+                    ajax: {
+                        type: 'POST',
+                        url: '/Reports/GetAPP/',
+                        datatype: "json",
+                        data: function (d) {
+                            d.ProjectName = $('#gridtable_filter').val();
+                            d.filterPrjIDs = window.filterPrjIDs;
+                            d.RepDate = $("#hRepDate").val();
+                        },
+                        dataSrc: function (d) {
+                            $('#loadingImg').hide();
+                            if (!d.Result) {
+                                alert(d.errormessage);
+                                return false;
+                            }
+                            else {
+                                return d.data;
+                            }
+                        },
+                    },
+                    order: [10, "desc"],
+                    columnDefs: [
+                        {
+                            "targets": [10],
+                            "visible": false,
+                            "searchable": false
+                        }
+                    ],
+                    columns: [
+                                { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
+                                { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "prj", sWidth: '0%', bSortable: true, name: "prj", "class": "context-menu-one" }
+                    ],
 
-                fnCreatedRow: function (row, data, rowIndex) {
-                    //Выводим всплывающую подсказку с подробной информацией о проекте
-                    var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
-                    $('.prgCellf', $(row)).attr('title', prgTitleStr);
+                    fnCreatedRow: function (row, data, rowIndex) {
+                        //Выводим всплывающую подсказку с подробной информацией о проекте
+                        var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                        $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
-                    //// Выделение цветом дельта-ячеек
-                    //if (data.prjres > 0) {
-                    //    $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    //}
-                    //else if (data.prjres < 0) {
-                    //    $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    //}
+                        //// Выделение цветом дельта-ячеек
+                        //if (data.prjres > 0) {
+                        //    $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        //}
+                        //else if (data.prjres < 0) {
+                        //    $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        //}
 
-                    //if (data.ddelta > 0) {
-                    //    $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    //}
-                    //else if (data.ddelta < 0) {
-                    //    $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    //}
+                        //if (data.ddelta > 0) {
+                        //    $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        //}
+                        //else if (data.ddelta < 0) {
+                        //    $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        //}
 
-                    //if (data.cdelta > 0) {
-                    //    $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                    //}
-                    //else if (data.cdelta < 0) {
-                    //    $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                    //}
-                },
+                        //if (data.cdelta > 0) {
+                        //    $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        //}
+                        //else if (data.cdelta < 0) {
+                        //    $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        //}
+                    },
 
-                fnDrawCallback: function (settings) {
+                    fnDrawCallback: function (settings) {
                         var api = this.api();
                         var json = api.ajax.json();
 
-                    //Заполнение футера
-                    //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
-                    //    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
-                    //    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
-                    //    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
-                    //    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
-                    //    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
-                    //    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
+                        //Заполнение футера
+                        //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+                        //    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
+                        //    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
+                        //    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
+                        //    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
+                        //    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
+                        //    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                    //    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                    //    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                        //    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        //    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                    //    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-                    //    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        //    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                        //    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
 
 
-                    //    if (json.Result) {
-                    //        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
-                    //            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
-                    //        }
-                    //        else {
-                    //            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
-                    //            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
-                    //            $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
-                    //        }
-                    //    };
+                        //    if (json.Result) {
+                        //        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
+                        //            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
+                        //        }
+                        //        else {
+                        //            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
+                        //            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
+                        //            $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
+                        //        }
+                        //    };
 
-                    //Инициализация таблицы проектов в плавающей панели
-                    if (window._flag) {
-                        //Заполнение массива проектов для таблицы в плавающей панели
-                        _prjIDs = JSON.parse(json.prjlist)
-                        var pTable = $('#prgtable').DataTable();
-                        pTable.destroy();
-                        prgTableCrate();
-                        $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
-                        window._flag = false;
-                    };
+                        //Инициализация таблицы проектов в плавающей панели
+                        if (window._flag) {
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            _prjIDs = JSON.parse(json.prjlist)
+                            var pTable = $('#prgtable').DataTable();
+                            pTable.destroy();
+                            prgTableCrate();
+                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            window._flag = false;
+                        };
 
-                    //if (json.planningbalance != null) {
-                    //    var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                    //    $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
-                    //}
-                }
-            });
+                        //if (json.planningbalance != null) {
+                        //    var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                        //    $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
+                        //}
+                    }
+                });
 
             function formatDate(value) {
                 if (value === null) return "";
@@ -363,12 +383,8 @@
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
-        $(function () {
-            var nowDT = new Date;
-            var nowDate = moment(nowDT).format('DD/MM/YYYY');
-            $("#startDate").val(nowDate);
-
-            $('#startDate').dateRangePicker(
+            function DRPickerInit() {
+                $('#startDate').dateRangePicker(
                  {
                      customTopBar: 'Отчетная дата',
                      showWeekNumbers: true,
@@ -383,6 +399,7 @@
                      monthSelect: true,
                      yearSelect: true,
                      setValue: function (s) {
+                         $('#hRepDate').val(s);
                          $(this).val(s);
                      },
                      customOpenAnimation: function (cb) {
@@ -399,18 +416,20 @@
                  })
             .bind('datepicker-apply', function (event, obj) {
                 globalVarsClear();
-            })
+            });
+            };
 
-            $('#startDate').on('change', function () {
+
+            $('body').on('change', '#startDate', function () {
                 if ($(this).val() === '') {
                     var nowDT = new Date;
                     var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                    $('#hRepDate').val(nowDate);
                     $(this).val(nowDate);
                 };
                 globalVarsClear();
             });
 
-        });
     </script>
 
 }
