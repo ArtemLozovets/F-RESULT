@@ -28,17 +28,10 @@
     #repDT {
         padding-right: .8em;
     }
-
-    table.dataTable,
-table.dataTable th,
-table.dataTable td {
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-}
 </style>
 
 <input type="hidden" id="hRepDate" value="" />
+<input type="text" value="" id="gridtable_filter" hidden />
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -68,24 +61,24 @@ table.dataTable td {
     <div class="row">
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
-                <tr>
-                    @*<th rowspan="2">Проект</th>
-                    <th colspan="3">Доходы</th>
-                    <th colspan="3">Расходы</th>
-                    <th colspan="2">Прибыль</th>
-                    <th rowspan="2">Прибыльность</th>
-                    <th rowspan="2">ID</th>*@
-                </tr>
+                @*<tr>
+                        <th rowspan="2">Проект</th>
+                            <th colspan="3">Доходы</th>
+                            <th colspan="3">Расходы</th>
+                            <th colspan="2">Прибыль</th>
+                            <th rowspan="2">Прибыльность</th>
+                            <th rowspan="2">ID</th>
+                    </tr>*@
                 <tr>
                     <th>Проект</th>
-                    <th class="smallTH">Ф1</th>
-                    <th class="smallTH">Ф2</th>
-                    <th class="smallTH">Ф1 + Ф2</th>
-                    <th class="smallTH">Ф1</th>
-                    <th class="smallTH">Ф2</th>
-                    <th class="smallTH">Ф1 + Ф2</th>
-                    <th class="smallTH">Ф1</th>
-                    <th class="smallTH" style="border-right:1px solid #ddd !important">Ф2</th>
+                    <th class="smallTH">Доходы&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Доходы&nbsp;<sub>Ф2</sub></th>
+                    <th class="smallTH">&#8721;&nbsp;<sub>дох.</sub></th>
+                    <th class="smallTH">Расходы&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Расходы&nbsp;<sub>Ф2</sub></th>
+                    <th class="smallTH">&#8721;&nbsp;<sub>расх.</sub></th>
+                    <th class="smallTH">Прибыль&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Прибыль&nbsp;<sub>Ф2</sub></th>
                     <th class="smallTH">Прибыльность</th>
                     <th>ID</th>
                 </tr>
@@ -140,8 +133,8 @@ table.dataTable td {
 
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
-    @*<script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
-    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>*@
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
@@ -294,27 +287,27 @@ table.dataTable td {
                         var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
-                        //// Выделение цветом дельта-ячеек
-                        //if (data.prjres > 0) {
-                        //    $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                        //}
-                        //else if (data.prjres < 0) {
-                        //    $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                        //}
+                        // Выделение цветом дельта-ячеек
+                        if (data.IncomeF1 > 0) {
+                            $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        }
+                        else if (data.IncomeF1 < 0) {
+                            $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        }
 
-                        //if (data.ddelta > 0) {
-                        //    $('td:eq(4)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                        //}
-                        //else if (data.ddelta < 0) {
-                        //    $('td:eq(4)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                        //}
+                        if (data.IncomeF2 > 0) {
+                            $('td:eq(8)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        }
+                        else if (data.IncomeF2 < 0) {
+                            $('td:eq(8)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        }
 
-                        //if (data.cdelta > 0) {
-                        //    $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                        //}
-                        //else if (data.cdelta < 0) {
-                        //    $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                        //}
+                        if (data.IncomeTotal > 0) {
+                            $('td:eq(9)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                        }
+                        else if (data.IncomeTotal < 0) {
+                            $('td:eq(9)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                        }
                     },
 
                     fnDrawCallback: function (settings) {
@@ -322,20 +315,25 @@ table.dataTable td {
                         var json = api.ajax.json();
 
                         //Заполнение футера
-                        //    var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
-                        //    $(api.column(2).footer()).html(numFormat(json.total.DebitPlanTotal));
-                        //    $(api.column(3).footer()).html(numFormat(json.total.DebitFactTotal));
-                        //    $(api.column(4).footer()).html(numFormat(json.total.dDeltaTotal));
-                        //    $(api.column(5).footer()).html(numFormat(json.total.CreditPlanTotal));
-                        //    $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
-                        //    $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
+                        var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+                        $(api.column(1).footer()).html(numFormat(json.total.FactCreditF1Total));
+                        $(api.column(2).footer()).html(numFormat(json.total.FactCreditF2Total));
+                        $(api.column(3).footer()).html(numFormat(json.total.FCF1F2Total));
+                        $(api.column(4).footer()).html(numFormat(json.total.FactDebitF1Total));
+                        $(api.column(5).footer()).html(numFormat(json.total.FactDebitF2Total));
+                        $(api.column(6).footer()).html(numFormat(json.total.FDF1F2Total));
+                        $(api.column(7).footer()).html(numFormat(json.total.IncomeF1Total));
+                        $(api.column(8).footer()).html(numFormat(json.total.IncomeF2Total));
+                        $(api.column(9).footer()).html(numFormat(json.total.IncomeTotal));
 
-                        //    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                        //    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                        if (json.total.IncomeF1Total * 1 > 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        else if (json.total.IncomeF1Total * 1 < 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                        //    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-                        //    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        if (json.total.IncomeF2Total * 1 > 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        else if (json.total.IncomeF2Total * 1 < 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
+                        if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                        else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
                         //    if (json.Result) {
                         //        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
@@ -383,52 +381,52 @@ table.dataTable td {
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
     <script>
-            function DRPickerInit() {
-                $('#startDate').dateRangePicker(
-                 {
-                     customTopBar: 'Отчетная дата',
-                     showWeekNumbers: true,
-                     startOfWeek: 'monday',
-                     singleDate: true,
-                     singleMonth: true,
-                     language: 'ru',
-                     startOfWeek: 'monday',
-                     separator: ' - ',
-                     format: 'DD/MM/YYYY',
-                     autoClose: false,
-                     monthSelect: true,
-                     yearSelect: true,
-                     setValue: function (s) {
-                         $('#hRepDate').val(s);
-                         $(this).val(s);
-                     },
-                     customOpenAnimation: function (cb) {
-                         $(this).fadeIn(300, cb);
-                     },
-                     customCloseAnimation: function (cb) {
-                         $(this).fadeOut(300, cb);
-                     },
-                     showShortcuts: false,
-                     time: {
-                         enabled: false
-                     },
-                     extraClass: 'date-range-pickerM'
-                 })
-            .bind('datepicker-apply', function (event, obj) {
-                globalVarsClear();
-            });
+        function DRPickerInit() {
+            $('#startDate').dateRangePicker(
+             {
+                 customTopBar: 'Отчетная дата',
+                 showWeekNumbers: true,
+                 startOfWeek: 'monday',
+                 singleDate: true,
+                 singleMonth: true,
+                 language: 'ru',
+                 startOfWeek: 'monday',
+                 separator: ' - ',
+                 format: 'DD/MM/YYYY',
+                 autoClose: false,
+                 monthSelect: true,
+                 yearSelect: true,
+                 setValue: function (s) {
+                     $('#hRepDate').val(s);
+                     $(this).val(s);
+                 },
+                 customOpenAnimation: function (cb) {
+                     $(this).fadeIn(300, cb);
+                 },
+                 customCloseAnimation: function (cb) {
+                     $(this).fadeOut(300, cb);
+                 },
+                 showShortcuts: false,
+                 time: {
+                     enabled: false
+                 },
+                 extraClass: 'date-range-pickerM'
+             })
+        .bind('datepicker-apply', function (event, obj) {
+            globalVarsClear();
+        });
+        };
+
+
+        $('body').on('change', '#startDate', function () {
+            if ($(this).val() === '') {
+                var nowDT = new Date;
+                var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                $('#hRepDate').val(nowDate);
+                $(this).val(nowDate);
             };
-
-
-            $('body').on('change', '#startDate', function () {
-                if ($(this).val() === '') {
-                    var nowDT = new Date;
-                    var nowDate = moment(nowDT).format('DD/MM/YYYY');
-                    $('#hRepDate').val(nowDate);
-                    $(this).val(nowDate);
-                };
-                globalVarsClear();
-            });
+            globalVarsClear();
+        });
 
     </script>
 

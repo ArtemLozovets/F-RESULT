@@ -528,6 +528,8 @@ namespace F_Result.Controllers
                     StartPeriod = StartPeriod,
                     EndPeriod = EndPeriod,
                     isAllTimes = IsAllTimes,
+                    Period = Period,
+                    ProjectName = ProjectName,
                     draw = draw,
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
@@ -593,19 +595,23 @@ namespace F_Result.Controllers
                             && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
+                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderByDescending(x => x.PrjId).ToList();
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
-                //APBTableReportTotal total = new APBTableReportTotal
-                //{
-                //    DebitPlanTotal = _ads.Sum(x => x.debitplan),
-                //    DebitFactTotal = _ads.Sum(x => x.debitfact),
-                //    dDeltaTotal = _ads.Sum(x => x.ddelta),
-                //    CreditPlanTotal = _ads.Sum(x => x.creditplan),
-                //    CreditFactTotal = _ads.Sum(x => x.creditfact),
-                //    cDeltaTotal = _ads.Sum(x => x.cdelta)
-                //};
+                APPTableReportTotal total = new APPTableReportTotal
+                {
+                    FactCreditF1Total= _ads.Sum(x => x.FactCreditF1),
+                    FactCreditF2Total = _ads.Sum(x => x.FactCreditF2),
+                    FCF1F2Total = _ads.Sum(x => x.FCTotalF1F2),
+                    FactDebitF1Total = _ads.Sum(x => x.FactDebitF1),
+                    FactDebitF2Total = _ads.Sum(x => x.FactDebitF2),
+                    FDF1F2Total = _ads.Sum(x => x.FDTotalF1F2),
+                    IncomeF1Total = _ads.Sum(x => x.IncomeF1),
+                    IncomeF2Total = _ads.Sum(x => x.IncomeF2),
+                    IncomeTotal = _ads.Sum(x => x.IncomeTotal)
+
+                };
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -622,6 +628,7 @@ namespace F_Result.Controllers
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     data = data,
+                    total = total,
                     prjlist = _prjListJson,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);

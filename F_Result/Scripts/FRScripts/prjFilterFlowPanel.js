@@ -29,7 +29,6 @@ $(function () {
         $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
     }).on('click', '#flowPanel', function (e) {
         e.stopPropagation();
-
     });
 
     //Сброс/Установка всех чекбоксов выбора проекта
@@ -86,7 +85,6 @@ function globalVarsClear() {
 //Функция создания таблицы со списком проектов
 function prgTableCrate() {
     var prgTable = $('#prgtable').DataTable({
-        autoWidth: true,
         "scrollY": "360px",
         "scrollCollapse": true,
         scrollX: '100%',
@@ -102,7 +100,7 @@ function prgTableCrate() {
         processing: false,
         serverSide: false,
         data: _prjIDs,
-        order: [[1, "asc"]],
+        order: [[0, "desc"]],
         columns: [
             { data: 'PrjId', bSortable: true, visible: false, searchable: false },
             { data: 'ProjectName', bSortable: true, sWidth: '80%' },

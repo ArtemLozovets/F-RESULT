@@ -69,6 +69,21 @@ namespace F_Result.Models
         public decimal IncomeF2 { get; set; }
         public decimal IncomeTotal { get; set; }
     }
+
+    [NotMapped]
+    public class APPTableReportTotal
+    {
+        public decimal FactCreditF1Total { get; set; }
+        public decimal FactCreditF2Total { get; set; }
+        public decimal FCF1F2Total { get; set; }
+        public decimal FactDebitF1Total { get; set; }
+        public decimal FactDebitF2Total { get; set; }
+        public decimal FDF1F2Total { get; set; }
+        public decimal IncomeF1Total { get; set; }
+        public decimal IncomeF2Total { get; set; }
+        public decimal IncomeTotal { get; set; }
+    }
+
     #endregion
 
     #region Table report --------------------------
