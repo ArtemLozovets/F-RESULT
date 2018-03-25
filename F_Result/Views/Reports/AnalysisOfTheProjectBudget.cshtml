@@ -155,6 +155,7 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     <script>
         $(function () {
@@ -228,6 +229,9 @@
                         case 'refresh':
                             ClearFilter();
                             break;
+                        case 'epexport':
+                            APBExport2Excel('../Export/ExportAPBReport');
+                            break;
                         default:
                             return;
                     }
@@ -252,6 +256,7 @@
                             return true;
                         }
                     },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
 
                     "sep1": "---------",
                     "expand": {
@@ -267,8 +272,9 @@
                             return true;
                         }
                     },
-                    "sep2": "---------",
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                  
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" },
                 }
             });
 

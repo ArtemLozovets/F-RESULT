@@ -456,6 +456,8 @@ namespace F_Result.Controllers
                 var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
 
+
+                //Удалить !!!!!!!!!!!!!!!!!!!!!
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 if (pageSize == -1) { pageSize = 2147483647; }
                 int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -537,6 +539,8 @@ namespace F_Result.Controllers
                     total = total,
                     planningbalance = _PlanningBalance,
                     prjlist = _prjListJson,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }
