@@ -8,8 +8,6 @@
 <link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
-<link href="~/Content/DataTables/css/buttons.bootstrap.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <style>
@@ -27,13 +25,6 @@
         margin-right: 8px;
     }
 
-    .dt-buttons.btn-group {
-        float: none;
-    }
-
-    .expButton {
-        padding: 5px 12px;
-    }
 </style>
 
 <div id="loadingImg">
@@ -142,16 +133,11 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script src="~/Scripts/DataTables/jszip.min.js"></script>
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.buttons.js"></script>
-    <script src="~/Scripts/DataTables/buttons.bootstrap.js"></script>
-    <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
-    <script src="~/Scripts/DataTables/buttons.flash.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
@@ -272,7 +258,6 @@
                             return true;
                         }
                     },
-                  
                     "separator": "-----",
                     "epexport": { name: "Экспорт в Excel", icon: "export2excel" },
                 }
@@ -319,7 +304,7 @@
             var table = $('#gridtable').DataTable({
                 "fixedHeader": {
                     "header": true,
-                    footer: true,
+                    "footer": true,
                     "headerOffset": $('#mainNavbar').height()
                 },
                 autoWidth: true,
@@ -335,7 +320,7 @@
                 ],
                 pageLength: 25, // Количество записей в таблице по умолчанию
                 pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'col-sm-3 text-right'B>>" +
+                dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-9 text-right'>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 language: {
@@ -353,55 +338,6 @@
                         sPrevious: "<"
                     }
                 },
-                buttons: [
-                    {
-                        extend: 'copy',
-                        text: '<i class="fa fa-copy"></i>&nbsp;Copy',
-                        className: 'btn-primary expButton',
-                    },
-                       {
-                           extend: 'excel',
-                           text: '<i class="fa fa-file-excel-o"></i>&nbsp;Excel',
-                           className: 'btn-primary expButton',
-                           filename: 'AOPBReport',
-
-                           //customize: function (xlsx) {
-                           //    var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                           //    $('row:first c', sheet).attr('s', '51');
-                           //},
-
-                           customize: function (xlsx) {
-                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                               var lastCol = sheet.getElementsByTagName('col').length - 1;
-                               var colRange = createCellPos(lastCol) + '1';
-                               //Has to be done this way to avoid creation of unwanted namespace atributes.
-                               var afSerializer = new XMLSerializer();
-                               var xmlString = afSerializer.serializeToString(sheet);
-                               var parser = new DOMParser();
-                               var xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-
-                               console.log(xmlDoc);
-
-                               var xlsxFilter = xmlDoc.createElementNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'autoFilter');
-                               var filterAttr = xmlDoc.createAttribute('ref');
-                               filterAttr.value = 'A1:' + colRange;
-                               xlsxFilter.setAttributeNode(filterAttr);
-                               sheet.getElementsByTagName('worksheet')[0].appendChild(xlsxFilter);
-                           },
-
-                           exportOptions: {
-                               modifier: {
-                                   page: 'current'
-                               },
-                               format: {
-                                   body: function (data, row, column, node) {
-                                       var res = column != 0 ? data.replace(/[&nbsp;]/g, '').replace(/[,]/g, '.') : data;
-                                       return res;
-                                   }
-                               }
-                           }
-                       }
-                ],
                 ajax: {
                     type: 'POST',
                     url: '/Reports/GetAPB/',

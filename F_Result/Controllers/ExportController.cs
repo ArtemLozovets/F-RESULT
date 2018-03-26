@@ -7,7 +7,8 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using Newtonsoft.Json;
 using System.Linq.Dynamic;
-using Newtonsoft.Json.Converters; //!=====!
+using F_Result.Methods;
+using System.Globalization;
 
 namespace F_Result.Controllers
 {
@@ -940,28 +941,28 @@ namespace F_Result.Controllers
                             planBenefit = prg.planBenefit,
                             planExpand = prg.planExpand
                         }).AsEnumerable().Select(x => new PlanCreditViewF2
-                            {
-                                PlanCreditF2Id = x.PlanCreditF2Id,
-                                Date = x.Date,
-                                Sum = x.Sum,
-                                ProjectId = x.ProjectId,
-                                ProjectName = x.ProjectName,
-                                ProjectType = x.ProjectType,
-                                ChiefName = x.ChiefName,
-                                ProjectManagerName = x.ProjectManagerName,
-                                StartDatePlan = x.StartDatePlan,
-                                StartDateFact = x.StartDateFact,
-                                OrganizationId = x.OrgId,
-                                OrganizationName = x.OrgName,
-                                IncomeId = x.IncId,
-                                IncomeName = x.IncName,
-                                Appointment = x.Appointment,
-                                UserId = x.UserId,
-                                UserFN = x.UserFN,
-                                PeriodName = x.PeriodName,
-                                planBenefit = x.planBenefit,
-                                planExpand = x.planExpand
-                            }).ToList();
+                        {
+                            PlanCreditF2Id = x.PlanCreditF2Id,
+                            Date = x.Date,
+                            Sum = x.Sum,
+                            ProjectId = x.ProjectId,
+                            ProjectName = x.ProjectName,
+                            ProjectType = x.ProjectType,
+                            ChiefName = x.ChiefName,
+                            ProjectManagerName = x.ProjectManagerName,
+                            StartDatePlan = x.StartDatePlan,
+                            StartDateFact = x.StartDateFact,
+                            OrganizationId = x.OrgId,
+                            OrganizationName = x.OrgName,
+                            IncomeId = x.IncId,
+                            IncomeName = x.IncName,
+                            Appointment = x.Appointment,
+                            UserId = x.UserId,
+                            UserFN = x.UserFN,
+                            PeriodName = x.PeriodName,
+                            planBenefit = x.planBenefit,
+                            planExpand = x.planExpand
+                        }).ToList();
 
             if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
             {
@@ -1348,15 +1349,41 @@ namespace F_Result.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
 
-                string _startPeriod = JsonConvert.DeserializeObject<DateTime>("\"" + startPeriod + "\"").ToString("yyyyMMdd");
-                string _endPeriod = JsonConvert.DeserializeObject<DateTime>("\"" + endPeriod + "\"").ToString("yyyyMMdd");
-
                 var _isAllTimes = isAllTimes ? 1 : 0;
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
+                //Проверяем роль пользователя
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isAccountant = System.Web.HttpContext.Current.User.IsInRole("Accountant");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                decimal? _PlanningBalance = null;
+                if (isAdministrator || isChief || isAccountant || isFinancier)
+                {
+                    //Запрос вызывает пользовательскую функцию "ufnPlanningBalance" хранящуюся на SQL-сервере.
+                    _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPlanningBalance() as PlanningBalance").FirstOrDefault();
+                }
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+
+                _ads = _ads.Where(x =>
+                            (IDs == null
+                            || IDs.Length == 0
+                            || IDs.Contains(x.prj))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+                else
+                {
+                    _ads = _ads.OrderByDescending(x => x.ProjectName).ToList();
+                }
 
                 //---------------------EXPORT----------------------//
 
@@ -1369,22 +1396,35 @@ namespace F_Result.Controllers
                 ws.Cells["B2"].Value = DateTime.Now;
                 ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
-                ws.Cells["B1:B2"].Style.Font.Bold = true;
-                ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                
+                string _sd = DateTime.ParseExact(startPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                string _ed = DateTime.ParseExact(endPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
 
-                ws.Cells["A4"].Value = "Проект";
-                ws.Cells["B4"].Value = "Финансовый результат";
-                ws.Cells["C4"].Value = "Доходы (план)";
-                ws.Cells["D4"].Value = "Доходы (факт)";
-                ws.Cells["E4"].Value = "Дельта дох.";
-                ws.Cells["F4"].Value = "Расходы (план)";
-                ws.Cells["G4"].Value = "Расходы (факт)";
-                ws.Cells["H4"].Value = "Дельта расх.";
+                ws.Cells["A3"].Value = "Отчетный период:";
+                ws.Cells["B3"].Value = _sd + " - " + _ed;
 
+                if (_PlanningBalance != null)
+                {
+                    ws.Cells["A4"].Value = "Плановый остаток:";
+                    ws.Cells["B4"].Value = _PlanningBalance;
+                    ws.Cells["B4"].Style.Numberformat.Format = "#,##0.00";
+                }
 
-                ws.Cells["A4:H4"].AutoFilter = true;
+                ws.Cells["B1:B4"].Style.Font.Bold = true;
+                ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                using (ExcelRange col = ws.Cells[4, 1, 4, 8])
+                ws.Cells["A6"].Value = "Проект";
+                ws.Cells["B6"].Value = "Финансовый результат";
+                ws.Cells["C6"].Value = "Доходы (план)";
+                ws.Cells["D6"].Value = "Доходы (факт)";
+                ws.Cells["E6"].Value = "\u0394 дох.";
+                ws.Cells["F6"].Value = "Расходы (план)";
+                ws.Cells["G6"].Value = "Расходы (факт)";
+                ws.Cells["H6"].Value = "\u0394 расх.";
+
+                ws.Cells["A6:H6"].AutoFilter = true;
+
+                using (ExcelRange col = ws.Cells[6, 1, 6, 8])
                 {
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     col.Style.Font.Size = 12;
@@ -1392,18 +1432,18 @@ namespace F_Result.Controllers
                     col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
                 }
 
-                int row = 5;
+                int row = 7;
 
                 foreach (var item in _ads)
                 {
                     ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
                     ws.Cells[string.Format("B{0}", row)].Value = item.prjres;
-                    ws.Cells[string.Format("C{0}", row)].Value = item.creditplan;
-                    ws.Cells[string.Format("D{0}", row)].Value = item.creditfact;
-                    ws.Cells[string.Format("E{0}", row)].Value = item.cdelta;
-                    ws.Cells[string.Format("F{0}", row)].Value = item.debitplan;
-                    ws.Cells[string.Format("G{0}", row)].Value = item.debitfact;
-                    ws.Cells[string.Format("H{0}", row)].Value = item.ddelta;
+                    ws.Cells[string.Format("C{0}", row)].Value = item.debitplan;
+                    ws.Cells[string.Format("D{0}", row)].Value = item.debitfact;
+                    ws.Cells[string.Format("E{0}", row)].Value = item.ddelta;
+                    ws.Cells[string.Format("F{0}", row)].Value = item.creditplan;
+                    ws.Cells[string.Format("G{0}", row)].Value = item.creditfact;
+                    ws.Cells[string.Format("H{0}", row)].Value = item.cdelta;
 
                     row++;
                 }
@@ -1414,7 +1454,7 @@ namespace F_Result.Controllers
                 ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
                 ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
-                ws.Cells[string.Format("C{0}", row)].Formula = string.Format("SUM(C5:C{0})", row-1);
+                ws.Cells[string.Format("C{0}", row)].Formula = string.Format("SUM(C5:C{0})", row - 1);
                 ws.Cells[string.Format("D{0}", row)].Formula = string.Format("SUM(D5:D{0})", row - 1);
                 ws.Cells[string.Format("E{0}", row)].Formula = string.Format("SUM(E5:E{0})", row - 1);
                 ws.Cells[string.Format("F{0}", row)].Formula = string.Format("SUM(F5:F{0})", row - 1);
@@ -1428,13 +1468,13 @@ namespace F_Result.Controllers
                     col.Style.Font.Bold = true;
                 }
 
-                using (ExcelRange col = ws.Cells[5, 2, row, 8])
+                using (ExcelRange col = ws.Cells[7, 2, row, 8])
                 {
                     col.Style.Numberformat.Format = "#,##0.00";
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 }
 
-                using (ExcelRange col = ws.Cells[4, 1, row, 8])
+                using (ExcelRange col = ws.Cells[6, 1, row, 8])
                 {
                     col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     col.Style.Border.Right.Style = ExcelBorderStyle.Thin;

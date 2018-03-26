@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Linq.Dynamic;
 using System.Web.Script.Serialization;
 using F_Result.Methods; //!=====!
+using Newtonsoft.Json;
 
 namespace F_Result.Controllers
 {
@@ -385,8 +386,8 @@ namespace F_Result.Controllers
 
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
 
-                DateTime? StartPeriod = null;
-                DateTime? EndPeriod = null;
+                DateTime StartPeriod = DateTime.Now;
+                DateTime EndPeriod = DateTime.Now;
 
                 if (!IsAllTimes)
                 {
@@ -457,7 +458,6 @@ namespace F_Result.Controllers
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
 
 
-                //Удалить !!!!!!!!!!!!!!!!!!!!!
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 if (pageSize == -1) { pageSize = 2147483647; }
                 int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -524,11 +524,14 @@ namespace F_Result.Controllers
                     EndPeriod = _ads.Max(x => x.MaxDate);
                 }
 
+                var _startDate = StartPeriod.ToString("yyyyMMdd");
+                var _endDate = EndPeriod.ToString("yyyyMMdd");
+
                 return Json(new
                 {
                     Result = true,
-                    StartPeriod = StartPeriod,
-                    EndPeriod = EndPeriod,
+                    StartPeriod = _startDate,
+                    EndPeriod = _endDate,
                     isAllTimes = IsAllTimes,
                     Period = Period,
                     ProjectName = ProjectName,
