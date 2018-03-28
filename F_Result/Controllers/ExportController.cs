@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System.Linq.Dynamic;
 using F_Result.Methods;
 using System.Globalization;
+using OfficeOpenXml.ConditionalFormatting;
+using System.Drawing;
 
 namespace F_Result.Controllers
 {
@@ -1440,13 +1442,40 @@ namespace F_Result.Controllers
                     ws.Cells[string.Format("B{0}", row)].Value = item.prjres;
                     ws.Cells[string.Format("C{0}", row)].Value = item.debitplan;
                     ws.Cells[string.Format("D{0}", row)].Value = item.debitfact;
-                    ws.Cells[string.Format("E{0}", row)].Value = item.ddelta;
+                    ws.Cells[string.Format("E{0}", row)].Formula = string.Format("D{0}-C{0}", row);
                     ws.Cells[string.Format("F{0}", row)].Value = item.creditplan;
                     ws.Cells[string.Format("G{0}", row)].Value = item.creditfact;
-                    ws.Cells[string.Format("H{0}", row)].Value = item.cdelta;
+                    ws.Cells[string.Format("H{0}", row)].Formula = string.Format("G{0}-F{0}", row);
 
                     row++;
                 }
+
+                // Условное форматирование итоговых и дельта-ячеек
+                var cfRule1_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("B7:B{0}", row)]);
+                cfRule1_1.Formula = "0";
+                cfRule1_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+                var cfRule1_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("B7:B{0}", row)]);
+                cfRule1_2.Formula = "0";
+                cfRule1_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule2_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("E7:E{0}", row)]);
+                cfRule2_1.Formula = "0";
+                cfRule2_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+                var cfRule2_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("E7:E{0}", row)]);
+                cfRule2_2.Formula = "0";
+                cfRule2_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule3_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("H7:H{0}", row)]);
+                cfRule3_1.Formula = "0";
+                cfRule3_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule3_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("H7:H{0}", row)]);
+                cfRule3_2.Formula = "0";
+                cfRule3_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+
 
                 //Итоги
                 ws.Cells[string.Format("A{0}:B{0}", row)].Merge = true;
@@ -1483,8 +1512,12 @@ namespace F_Result.Controllers
                 }
 
                 ws.Cells["A:AZ"].Style.Indent = 1;
+                ws.Cells["B6"].Style.WrapText = true;
+                ws.Row(6).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 ws.Cells["A:AZ"].AutoFitColumns();
-                ws.Column(2).Width = 30;
+                ws.Column(2).Width = 23;
+                ws.Column(5).Width = 20;
+                ws.Column(8).Width = 20;
 
                 string path = Server.MapPath("~/DownloadRPT/");
                 string repName = "APBReport_" + DateTime.Now.Ticks + ".xlsx";

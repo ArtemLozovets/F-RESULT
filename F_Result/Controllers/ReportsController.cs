@@ -459,7 +459,6 @@ namespace F_Result.Controllers
 
 
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                if (pageSize == -1) { pageSize = 2147483647; }
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
