@@ -29,8 +29,15 @@ public class LoginAuditAttribute : ActionFilterAttribute
 
         using (FRModel db = new FRModel())
         {
-            db.AspVisitors.Add(visitor);
-            db.SaveChanges();
+            try
+            {
+                db.AspVisitors.Add(visitor);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return;               
+            }
         }
         base.OnActionExecuted(filterContext);
     }

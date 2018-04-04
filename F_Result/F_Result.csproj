@@ -214,18 +214,12 @@
     <Compile Include="Migrations\201709101928333_Soder.Designer.cs">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201803281113043_ProjectsChange.cs" />
-    <Compile Include="Migrations\201803281113043_ProjectsChange.Designer.cs">
-      <DependentUpon>201803281113043_ProjectsChange.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\DirectoryOfArticles.cs" />
-    <Compile Include="C:\Users\Root\Desktop\Feedback.cs">
-      <Link>Models\Feedback.cs</Link>
-    </Compile>
+    <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\PayModelF2.cs" />
@@ -741,9 +735,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709101928333_Soder.resx">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803281113043_ProjectsChange.resx">
-      <DependentUpon>201803281113043_ProjectsChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

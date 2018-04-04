@@ -56,6 +56,8 @@ namespace F_Result.Models
        public virtual ICollection<PlanDebitF2> PlanDebitF2 { get; set; }
        public virtual ICollection<Account> Account { get; set; }
        public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
+       public virtual ICollection<Feedback> Feedback { get; set; }
+       public virtual ICollection<Feedback> Feedback1 { get; set; }
        public virtual ICollection<UsrWksRelation> UsrWksRelation { get; set; }
        public virtual ICollection<Settings> Settings { get; set; }
 

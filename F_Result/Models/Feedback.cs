@@ -10,7 +10,7 @@ namespace F_Result.Models
     {
         public int FeedbackId { get; set; }
 
-        [StringLength(500, ErrorMessage = "Отзыв должен содержать не более 500 символов")]
+        [StringLength(1000, ErrorMessage = "Отзыв должен содержать не более 1000 символов")]
         [Display(Name = "Отзыв")]
         public string Comment { get; set; }
 
@@ -29,7 +29,7 @@ namespace F_Result.Models
         public short Status { get; set; }
 
         [Display(Name = "Дата рассмотрения")]
-        public DateTime DateOfApproved { get; set; }
+        public DateTime? DateOfApproved { get; set; }
 
         //------------------------------------------------------
         public virtual ApplicationUser ApplicationUser { get; set; }

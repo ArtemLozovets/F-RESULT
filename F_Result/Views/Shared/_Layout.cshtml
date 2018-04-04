@@ -10,6 +10,11 @@
     @Styles.Render("~/Content/fontawesome")
     @Styles.Render("~/Content/Spacelab/css")
     @Scripts.Render("~/bundles/modernizr")
+    
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <style>
+        #draggable { width:300px; height: 300px; padding: 0.5em; position:absolute}
+    </style>
 
     <!--[if lt IE 9]>
       <script src="~/Scripts/html5shiv.js"></script>
@@ -157,6 +162,10 @@
     }
     @RenderBody()
 
+    <div id="draggable" hidden class="ui-widget-content">
+        <p>Drag me around</p>
+    </div>
+
     <div class="container" id="footerBlock">
         <footer>
             <div class="row">
@@ -166,13 +175,25 @@
                 </div>
             </div>
         </footer>
-
+       
     </div>
     <!-- /.container -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryui")
     <script src="~/Scripts/messageClear.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script>
+        $(function () {
+            $("#draggable").position({ top: 100, left: 100 });
+            $('#draggable').draggable();
+
+        });
+
+        $('#addComment').on('click', function () {
+            $('#draggable').show(500);
+        });
+    </script>
     @RenderSection("scripts", required: false)
 </body>
 </html>
