@@ -183,6 +183,7 @@
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\ActualDebitsController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
+    <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\InitController.cs" />
     <Compile Include="Controllers\DirectumController.cs" />
@@ -222,6 +223,9 @@
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\DirectoryOfArticles.cs" />
+    <Compile Include="C:\Users\Root\Desktop\Feedback.cs">
+      <Link>Models\Feedback.cs</Link>
+    </Compile>
     <Compile Include="Models\FRModel.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\PayModelF2.cs" />
@@ -712,6 +716,7 @@
     <Content Include="Views\Directum\ShowPaymentsF2.cshtml" />
     <Content Include="Views\Directum\ShowActualDebitsF2.cshtml" />
     <Content Include="Views\Reports\AnalysisOfTheProjectProfitability.cshtml" />
+    <Content Include="Views\Feedback\CommentsShow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
