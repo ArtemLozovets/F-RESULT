@@ -10,13 +10,14 @@
                 <a href="#" title="Персональный раздел" class="dropdown-toggle" data-toggle="dropdown">-@User.Identity.GetUserName()-&nbsp;<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="@Url.Action("SelfPasswordChange", "UsersManagement", new {Area = "Administrator" })"><i class="fa fa-key" style="margin-right:10px;"></i>&nbsp;Смена пароля</a>
-                    </li>
-                    <li>
                         <a href="#" id="addComment"><i class="fa fa-comment" style="margin-right:10px;"></i>&nbsp;Добавить отзыв</a>
                     </li>
                     <li>
-                        <a href="@Url.Action("CommentsShow", "Feedback", new {Area = "", cUrl=Request.RawUrl })"><i class="fa fa-comments" style="margin-right:10px;"></i>&nbsp;Отзывы</a>
+                        <a href="@Url.Action("CommentsShow", "Feedback")"><i class="fa fa-comments" style="margin-right:10px;"></i>&nbsp;Отзывы</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="@Url.Action("SelfPasswordChange", "UsersManagement", new {Area = "Administrator" })"><i class="fa fa-key" style="margin-right:10px;"></i>&nbsp;Смена пароля</a>
                     </li>
                 </ul>
             </li>

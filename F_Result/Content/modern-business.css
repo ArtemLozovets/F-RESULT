@@ -355,7 +355,7 @@ td.tagsCellf:before {
 
 /*#region AnalysisOfTheProjectBudget.chtml */
 
- input[type="radio"].prjRb {
+input[type="radio"].prjRb {
     margin-top: -1px;
     vertical-align: middle;
 }
@@ -419,11 +419,28 @@ input[type=checkbox]#isAllTimes {
 
 /*#endregion */
 
+/*#region name */
+#draggable {
+    position: fixed;
+    padding: 1em;
+    width: 40em;
+    opacity: 0.8;
+    border-radius: .5em;
+    background-color: #57A;
+    z-index: 99999;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#commentText {
+    resize: none;
+    margin-bottom: .5em;
+}
+/*#endregion */
+
+
 /* ----------------RESPONSIVE---------------*/
-
 @media (max-width: 767px) {
-
-    .carousel {
+    .carousel; {
         height: 70%;
         /* increases the carousel height so it looks good on phones */
     }

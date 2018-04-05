@@ -10,11 +10,8 @@
     @Styles.Render("~/Content/fontawesome")
     @Styles.Render("~/Content/Spacelab/css")
     @Scripts.Render("~/bundles/modernizr")
-    
+
     <link href="~/Content/jquery-ui.css" rel="stylesheet" />
-    <style>
-        #draggable { width:300px; height: 300px; padding: 0.5em; position:absolute}
-    </style>
 
     <!--[if lt IE 9]>
       <script src="~/Scripts/html5shiv.js"></script>
@@ -137,22 +134,22 @@
 
                         <!-- If current user is Administrator -->
                         @if (this.User.IsInRole("Administrator"))
-                    {
-                    <li id="admin" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li id="usersblock">
-                                <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                        {
+                            <li id="admin" class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li id="usersblock">
+                                        <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
+                                    </li>
+                                    <li id="auditblock">
+                                        <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
+                                    </li>
+                                    <li id="settingslock">
+                                        <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li id="auditblock">
-                                <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
-                            </li>
-                            <li id="settingslock">
-                                <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
-                            </li>
-                        </ul>
-                    </li>
-                    }
+                        }
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -160,11 +157,21 @@
             <!-- /.container -->
         </nav>
     }
-    @RenderBody()
+    <div class="mContent">
+        @RenderBody()
 
-    <div id="draggable" hidden class="ui-widget-content">
-        <p>Drag me around</p>
+        <div id="draggable" hidden class="ui-widget-content">
+            <textarea id="commentText" cols="30" rows="10" 
+                      class="form-control" 
+                      onchange="DisplayCount(this, 1000)"
+                      onkeyup="DisplayCount(this, 1000)"></textarea>
+            <button class="btn btn-primary btn-sm" id="sendComment" disabled><i class="fa fa-save"></i>&nbsp;Отправить</button>
+            <span id="charNum" class="text-center" style="color:#fff; width:24.2em; display:inline-block; margin-top:0.5em">Доступно 1000 сим.</span>
+            <button class="btn btn-primary pull-right btn-sm" id="hidePanel"><i class="fa fa-eye-slash"></i>&nbsp;Скрыть</button>
+        </div>
     </div>
+
+
 
     <div class="container" id="footerBlock">
         <footer>
@@ -175,25 +182,15 @@
                 </div>
             </div>
         </footer>
-       
+
     </div>
     <!-- /.container -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryui")
-    <script src="~/Scripts/messageClear.js"></script>
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    <script>
-        $(function () {
-            $("#draggable").position({ top: 100, left: 100 });
-            $('#draggable').draggable();
-
-        });
-
-        $('#addComment').on('click', function () {
-            $('#draggable').show(500);
-        });
-    </script>
+    <script src="~/Scripts/messageClear.js"></script>
+    <script src="~/Scripts/FRScripts/feedbackPanel.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>
