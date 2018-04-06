@@ -157,18 +157,19 @@
             <!-- /.container -->
         </nav>
     }
-    <div class="mContent">
-        @RenderBody()
+    @RenderBody()
 
-        <div id="draggable" hidden class="ui-widget-content">
-            <textarea id="commentText" cols="30" rows="10" 
-                      class="form-control" 
-                      onchange="DisplayCount(this, 1000)"
-                      onkeyup="DisplayCount(this, 1000)"></textarea>
-            <button class="btn btn-primary btn-sm" id="sendComment" disabled><i class="fa fa-save"></i>&nbsp;Отправить</button>
-            <span id="charNum" class="text-center" style="color:#fff; width:24.2em; display:inline-block; margin-top:0.5em">Доступно 1000 сим.</span>
-            <button class="btn btn-primary pull-right btn-sm" id="hidePanel"><i class="fa fa-eye-slash"></i>&nbsp;Скрыть</button>
-        </div>
+    <div id="draggable" hidden class="ui-widget-content">
+        @* Url текущей страницы *@
+        @Html.Hidden("cmUrl", Request.RawUrl)
+
+        <textarea id="commentText" cols="30" rows="10"
+                  class="form-control"
+                  onchange="DisplayCount(this, 1000)"
+                  onkeyup="DisplayCount(this, 1000)"></textarea>
+        <button class="btn btn-primary btn-sm" id="sendComment" disabled><i class="fa fa-save"></i>&nbsp;Отправить</button>
+        <span id="charNum" class="text-center" style="color:#fff; width:24.2em; display:inline-block; margin-top:0.5em">Доступно 1000 сим.</span>
+        <button class="btn btn-primary pull-right btn-sm" id="hidePanel"><i class="fa fa-eye-slash"></i>&nbsp;Скрыть</button>
     </div>
 
 

@@ -24,9 +24,33 @@ $('#sendComment').on('click', function () {
         alert('Введите текст отзыва');
         return false;
     }
-    alert('В РАЗРАБОТКЕ!');
-    console.log($('#draggable').draggable("option"));
-    $('#commentText').val('').trigger('change');
+
+    $('#loadingImg').show();
+    var _cmText = $('#commentText').val();
+    var _cmUrl = $('#cmUrl').val();
+
+    $.ajax({
+        url: "../Feedback/CommentsCreate",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            cmText: _cmText,
+            cmUrl: _cmUrl
+        }),
+        success: function (data) {
+            if (!data.result) {
+                $('#loadingImg').hide(function () {
+                    alert(data.message);
+                });
+                return false;
+            }
+            $('#commentText').val('').trigger('change');
+            $('#draggable').fadeOut(500, function () {
+                $('#loadingImg').hide();
+            });
+        }
+    });
 });
 
 //Скрипт отображения количества оставшихся символов при вводе отзыва
