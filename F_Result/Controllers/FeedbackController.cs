@@ -33,10 +33,15 @@ namespace F_Result.Controllers
                 var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
 
-
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
+
+
+                string _statusTXT = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                int _status;
+                Int32.TryParse(_statusTXT, out _status);
+                Feedback.StateEnum _state = (Feedback.StateEnum)_status;
 
                 string curr_user = "";
                 //Получаем идентификатор текущего пользователя
@@ -50,7 +55,7 @@ namespace F_Result.Controllers
                            from usr in usrtmp.DefaultIfEmpty()
                            join app_usr in db.IdentityUsers on comment.ApprovedUserId equals app_usr.Id into appusrtmp
                            from app_usr in appusrtmp.DefaultIfEmpty()
-                           where comment.UserId == curr_user
+                           where comment.UserId == curr_user && (_status == 0 || comment.Status == _state)
                            select new
                            {
                                FeedbackId = comment.FeedbackId,
@@ -64,18 +69,19 @@ namespace F_Result.Controllers
                                Status = comment.Status,
                                DateOfApproved = comment.DateOfApproved
                            }).AsEnumerable().Select(x => new Feedback
-                            {
-                                FeedbackId = x.FeedbackId,
-                                Comment = x.Comment,
-                                SbUrl = x.SbUrl,
-                                DateOfCreation = x.DateOfCreation,
-                                UserId = x.UserId,
-                                UserFN = x.UserFN,
-                                ApprovedUserId = x.ApprovedUserId,
-                                ApprovedUserFN = x.ApprovedUserFN,
-                                Status = x.Status,
-                                DateOfApproved = x.DateOfApproved
+                           {
+                               FeedbackId = x.FeedbackId,
+                               Comment = x.Comment,
+                               SbUrl = x.SbUrl,
+                               DateOfCreation = x.DateOfCreation,
+                               UserId = x.UserId,
+                               UserFN = x.UserFN,
+                               ApprovedUserId = x.ApprovedUserId,
+                               ApprovedUserFN = x.ApprovedUserFN,
+                               Status = (Feedback.StateEnum)x.Status,
+                               DateOfApproved = x.DateOfApproved
                             }).ToList();
+
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
@@ -85,7 +91,6 @@ namespace F_Result.Controllers
                 {
                     _cm = _cm.OrderByDescending(x => x.DateOfCreation).ThenByDescending(x => x.FeedbackId).ToList();
                 }
-
 
                 totalRecords = _cm.Count();
                 var data = _cm.Skip(skip).Take(pageSize);
@@ -115,7 +120,7 @@ namespace F_Result.Controllers
                     DateOfCreation = DateTime.Today,
                     Comment = cmText,
                     SbUrl = cmUrl,
-                    Status = 1
+                    Status = Feedback.StateEnum.Добавлен
                 };
 
                 //Получаем идентификатор текущего пользователя
@@ -133,8 +138,6 @@ namespace F_Result.Controllers
             {
                 return Json(new { result = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-
-
         }
 
         protected override void Dispose(bool disposing)

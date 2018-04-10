@@ -10,6 +10,14 @@
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
+<style>
+    .stBadge {
+        color: #888;
+        cursor: pointer;
+        padding: .8em;
+    }
+</style>
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -38,6 +46,13 @@
         </div>
     </div>
 
+    <div id="hdStatusFilter" hidden>
+        <span class="badge stBadge" data-status="1" style="border:1px solid #bbb; background-color:transparent;">Добавлен</span>
+        <span class="badge stBadge" data-status="4" style="background-color:rgba(64, 128, 200, 0.3)">Рассмотрение</span>
+        <span class="badge stBadge" data-status="8" style="background-color:rgba(128, 200, 64, 0.3)">Принят</span>
+        <span class="badge stBadge" data-status="12" style="background-color:rgba(255, 99, 132, 0.3)">Отклонен</span>
+    </div>
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
@@ -45,9 +60,8 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Отзыв" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Ссылка" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Автор" /></th>
-                <th><input type="text" class="form-control input-sm dff appdateFlt" readonly style="width: 100%" placeholder="Рассмотрен" id="appDateFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Рассмотрел" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Статус" /></th>
+                <th><input type="text" class="form-control input-sm dff app_dateFlt" readonly style="width: 100%" placeholder="Рассмотрен" id="appDateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb app_UserFlt" style="width: 100%" placeholder="Рассмотрел" /></th>
             </tr>
             <tr role="row">
                 <th>Дата</th>
@@ -56,7 +70,6 @@
                 <th>Автор</th>
                 <th>Рассмотрен</th>
                 <th>Рассмотрел</th>
-                <th>Статус</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -116,7 +129,80 @@
         });
     </script>
 
+<script type="text/javascript">
+         $(function () {
+             //Скрипт для рабты с контекстным меню
+             $.contextMenu({
+                 selector: '.dataTables_empty, td.context-menu-one',
+                 callback: function (key, options) {
+                     var fClass = $(this).attr('class');
+                     switch (key) {
+                         case 'add':
+                             $('#addComment').trigger('click');
+                             break;
+                         case 'details':
+                             window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
+                             break;
+                             //-----------------------------
+                         case 'filter':
+                             if (fClass.indexOf("dateCellf") >= 0) {
+                                 var dateStr = $(this).text() + ' - ' + $(this).text();
+                                 $('.dateFlt').val(dateStr).trigger('change');
+                                 break;
+                             };
+                             if (fClass.indexOf("app_dateCellf") >= 0) {
+                                 var dateStr = $(this).text() + ' - ' + $(this).text();
+                                 $('.app_dateFlt').val(dateStr).trigger('change');
+                                 break;
+                             };
+                             if (fClass.indexOf("app_UserCellf") >= 0) {
+                                 var dateStr = $(this).text() + ' - ' + $(this).text();
+                                 $('.app_UserFlt').val(dateStr).trigger('change');
+                                 break;
+                             };
+                             //-----------------------
+                         case 'refresh':
+                             ClearFilter();
+                             break;
+                         case 'epexport':
+                             Export2Excel('../Export/ExportPlanCreditsF1');
+                             break;
+                         default:
+                             return;
+                     }
+                 },
+                 items: {
+                     "filter": {
+                         name: "Фильтр по значению",
+                         icon: "filter",
+                         disabled: function () {
+                             var fClass = $(this).attr('class');
+                             if (fClass.indexOf("Cellf") >= 0) { return false };
+                             return true;
+                         }
+                     },
+                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                     "separator": "-----",
+                     "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
+                     "sep": "---------",
+                     "add": { name: "Добавить отзыв", icon: "add" },
+                     "details": {
+                         name: "Подробно", icon: "details", disabled: function () {
+                             return true; //--------------------!!!!!----------------------
+                             var rClass = $(this).attr('class');
+                             if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                             return false;
+                         }
+                     },
+                 }
+             });
 
+             //Двойной щелчек по строке таблицы.
+             $('#gridtable tbody').on('dblclick', 'tr', function () {
+                 window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
+             });
+         });
+</script>
 
     <script type="text/javascript">
         //Скрипт создания таблицы
@@ -135,7 +221,7 @@
                     "responsive": true,
                     "pageLength": 25, // Количество записей в таблице по умолчанию
                     "pagingType": "simple_numbers",
-                    "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'B>>" +
+                    "dom": "<'row'<'col-sm-3'l><'#stFilter.col-sm-9 text-right'B>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                     "language": {
@@ -158,7 +244,7 @@
                         //var api = this.api();
                         //var json = api.ajax.json();
                         //var _cSum = json.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                        //$("#sumSpan").html('&sum;<sub>плат. </sub><span class="badge sum-block">' + _cSum + '&#8372;</span>');
+                        $("#stFilter").html($('#hdStatusFilter').html());
 
                         ////Инициализация таблицы проектов в плавающей панели---------
                         //if (window._flag) {
@@ -193,42 +279,60 @@
                     {
                         "data": "DateOfCreation", "name": "DateOfCreation", "autoWidth": true,
                         "type": "date ",
-                        "render": function (value) {
-                            return formatDate(value);
-                        },
+                        "render": function (value) { return formatDate(value); },
                         "class": "dateCellf context-menu-one"
                     },
 
-                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "context-menu-one" },
                     {
-                        "data": "SbUrl", "name": "SbUrl", "autoWidth": true, "class": "prgCellf context-menu-one",
+                        "data": "SbUrl", "name": "SbUrl", "autoWidth": true, "class": "context-menu-one",
                         render: function (data, type, row, meta) {
-                            var urlStr = '<a href='+data+' target="_blank">'+data+'</a>';
+                            var urlStr = '<a href=' + data + ' target="_blank">' + data + '</a>';
                             return urlStr;
                         }
                     },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" },
                     {
-                         "data": "DateOfApproved", "name": "DateOfApproved", "autoWidth": true,
-                         "type": "date ",
-                         "render": function (value) {
-                             return formatDate(value);
-                         },
-                         "class": "dateCellf context-menu-one"
+                        "data": "DateOfApproved", "name": "DateOfApproved", "autoWidth": true,
+                        "type": "date ",
+                        "render": function (value) { return formatDate(value); },
+                        "class": "app_dateCellf context-menu-one"
                     },
-                    { "data": "ApprovedUserFN", "name": "ApprovedUserFN", "autoWidth": true, "class": "chCellf context-menu-one" },
-                    { "data": "Status", "name": "Status", "autoWidth": true, "class": "chCellf context-menu-one" },
+                    { "data": "ApprovedUserFN", "name": "ApprovedUserFN", "autoWidth": true, "class": "app_UserCellf context-menu-one" },
+                    { "data": "Status", "name": "Status", "autoWidth": false, "class": "" },
 
                     ],
+                    "columnDefs": [
+                        {
+                            "targets": [6],
+                            "visible": false,
+                            "searchable": false
+                        }
+                    ],
                     "createdRow": function (row, data, rowIndex) {
-                        //$(row).attr('data-objid', data.ActualDebitId);
-                        //var _datePlan = formatDate(data.StartDatePlan);
-                        //var _dateFact = formatDate(data.StartDateFact);
-                        //var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        //var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        //var prgTitleStr = 'Тип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
-                        //prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                        //prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
+                        $(row).attr('data-objid', data.FeedbackId);
+                        // Скрипт цветового выделения строк в зависимости от статуса
+                        switch (data.Status) {
+                            case 1:
+                                // Добавлен
+                                break;
+                            case 4:
+                                // На рассмотрении
+                                $(row).css('background-color', 'rgba(64, 128, 200, 0.3)');
+                                break;
+                            case 8:
+                                // Принят
+                                $(row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                                break;
+                            case 12:
+                                // Отклонен
+                                $(row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                                break;
+                            default:
+                                break;
+                        }
+
+                        //var TitleStr = 'TITLE';
                         //$('.prgCellf', $(row)).attr('title', prgTitleStr);
                     }
                 });
@@ -255,6 +359,17 @@
             return _d + "/" + _m + "/" + dt.getFullYear();
         };
 
+    </script>
+
+    <script>
+        $('body').on('click', '.stBadge', function () {
+            var statusCode = $(this).data('status');
+            $("#gridtable")
+            .on('preXhr.dt', function (e, settings, data) {
+                data.columns[6].search.value = statusCode;
+            })
+            .DataTable().draw();
+        })
     </script>
 
     <script>

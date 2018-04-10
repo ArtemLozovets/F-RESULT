@@ -8,6 +8,14 @@ namespace F_Result.Models
     [Table("Feedback")]
     public class Feedback
     {
+        public enum StateEnum
+        {
+            Добавлен = 1,
+            Рассмотрение = 4,
+            Принят = 8,
+            Отклонен = 12
+        }
+
         public int FeedbackId { get; set; }
 
         [StringLength(1000, ErrorMessage = "Отзыв должен содержать не более 1000 символов")]
@@ -26,7 +34,7 @@ namespace F_Result.Models
         public string ApprovedUserId { get; set; }
 
         [Display(Name = "Статус")]
-        public short Status { get; set; }
+        public StateEnum Status { get; set; }
 
         [Display(Name = "Дата рассмотрения")]
         public DateTime? DateOfApproved { get; set; }
