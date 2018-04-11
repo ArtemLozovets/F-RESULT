@@ -37,8 +37,41 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
+                string _dateTXT = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _commentTXT = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _linkTXT = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _appDateTXT = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _appUserTXT = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _statusTXT = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
 
-                string _statusTXT = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                // Парсинг диапазона дат из DateRangePicker (Дата создания)
+                DateTime? _startdate = null;
+                DateTime? _enddate = null;
+                if (!string.IsNullOrEmpty(_dateTXT ))
+                {
+                    _dateTXT = _dateTXT.Trim();
+                    int _length = (_dateTXT.Length) - (_dateTXT.IndexOf('-') + 2);
+                    string _startdateStr = _dateTXT.Substring(0, _dateTXT.IndexOf('-')).Trim();
+                    string _enddateStr = _dateTXT.Substring(_dateTXT.IndexOf('-') + 2, _length).Trim();
+                    _startdate = DateTime.Parse(_startdateStr);
+                    _enddate = DateTime.Parse(_enddateStr);
+                }
+                //--------------------------
+
+                // Парсинг диапазона дат из DateRangePicker (Дата рассмотрения)
+                DateTime? _app_startdate = null;
+                DateTime? _app_enddate = null;
+                if ((!string.IsNullOrEmpty(_appDateTXT)) && (_appDateTXT != "Нерассмотренные"))
+                {
+                    _appDateTXT = _appDateTXT.Trim();
+                    int _length = (_appDateTXT.Length) - (_appDateTXT.IndexOf('-') + 2);
+                    string _app_startdateStr = _appDateTXT.Substring(0, _appDateTXT.IndexOf('-')).Trim();
+                    string _app_enddateStr = _appDateTXT.Substring(_appDateTXT.IndexOf('-') + 2, _length).Trim();
+                    _app_startdate = DateTime.Parse(_app_startdateStr);
+                    _app_enddate = DateTime.Parse(_app_enddateStr);
+                }
+                //--------------------------
+
                 int _status;
                 Int32.TryParse(_statusTXT, out _status);
                 Feedback.StateEnum _state = (Feedback.StateEnum)_status;
@@ -55,7 +88,17 @@ namespace F_Result.Controllers
                            from usr in usrtmp.DefaultIfEmpty()
                            join app_usr in db.IdentityUsers on comment.ApprovedUserId equals app_usr.Id into appusrtmp
                            from app_usr in appusrtmp.DefaultIfEmpty()
-                           where comment.UserId == curr_user && (_status == 0 || comment.Status == _state)
+                           where (comment.UserId == curr_user
+                                    && (_status == 0 || comment.Status == _state)
+                                    && (comment.DateOfCreation >= _startdate && comment.DateOfCreation <= _enddate || string.IsNullOrEmpty(_dateTXT)) //Дата создания
+                                    && ((string.IsNullOrEmpty(_appDateTXT)) 
+                                            || (comment.DateOfApproved >= _app_startdate && comment.DateOfApproved <= _app_enddate)
+                                            || (_appDateTXT == "Нерассмотренные" && comment.DateOfApproved == null)    
+                                        ) //Дата рассмотрения
+                                    && (string.IsNullOrEmpty(_commentTXT) || comment.Comment.Contains(_commentTXT))
+                                    && (string.IsNullOrEmpty(_linkTXT) || comment.SbUrl.Contains(_linkTXT))
+                                    && (string.IsNullOrEmpty(_appUserTXT) || app_usr.LastName.Contains(_appUserTXT))
+                                    )
                            select new
                            {
                                FeedbackId = comment.FeedbackId,
@@ -80,7 +123,7 @@ namespace F_Result.Controllers
                                ApprovedUserFN = x.ApprovedUserFN,
                                Status = (Feedback.StateEnum)x.Status,
                                DateOfApproved = x.DateOfApproved
-                            }).ToList();
+                           }).ToList();
 
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

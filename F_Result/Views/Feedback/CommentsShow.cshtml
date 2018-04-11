@@ -59,7 +59,6 @@
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Отзыв" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Ссылка" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Автор" /></th>
                 <th><input type="text" class="form-control input-sm dff app_dateFlt" readonly style="width: 100%" placeholder="Рассмотрен" id="appDateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb app_UserFlt" style="width: 100%" placeholder="Рассмотрел" /></th>
             </tr>
@@ -67,7 +66,6 @@
                 <th>Дата</th>
                 <th>Отзыв</th>
                 <th>Ссылка</th>
-                <th>Автор</th>
                 <th>Рассмотрен</th>
                 <th>Рассмотрел</th>
             </tr>
@@ -116,6 +114,12 @@
                          time: {
                              enabled: false
                          },
+                         customValueLabel: 'Шаблон:',
+                         showCustomValues: true,
+                         customValues:
+                    		[
+			                    { name: 'Нерассмотренные', value: 'Нерассмотренные' }
+                    		],
                          extraClass: 'date-range-pickerM'
                      })
                 .bind('datepicker-closed', function (event, obj) {
@@ -129,80 +133,88 @@
         });
     </script>
 
-<script type="text/javascript">
-         $(function () {
-             //Скрипт для рабты с контекстным меню
-             $.contextMenu({
-                 selector: '.dataTables_empty, td.context-menu-one',
-                 callback: function (key, options) {
-                     var fClass = $(this).attr('class');
-                     switch (key) {
-                         case 'add':
-                             $('#addComment').trigger('click');
-                             break;
-                         case 'details':
-                             window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
-                             break;
-                             //-----------------------------
-                         case 'filter':
-                             if (fClass.indexOf("dateCellf") >= 0) {
-                                 var dateStr = $(this).text() + ' - ' + $(this).text();
-                                 $('.dateFlt').val(dateStr).trigger('change');
-                                 break;
-                             };
-                             if (fClass.indexOf("app_dateCellf") >= 0) {
-                                 var dateStr = $(this).text() + ' - ' + $(this).text();
-                                 $('.app_dateFlt').val(dateStr).trigger('change');
-                                 break;
-                             };
-                             if (fClass.indexOf("app_UserCellf") >= 0) {
-                                 var dateStr = $(this).text() + ' - ' + $(this).text();
-                                 $('.app_UserFlt').val(dateStr).trigger('change');
-                                 break;
-                             };
-                             //-----------------------
-                         case 'refresh':
-                             ClearFilter();
-                             break;
-                         case 'epexport':
-                             Export2Excel('../Export/ExportPlanCreditsF1');
-                             break;
-                         default:
-                             return;
-                     }
-                 },
-                 items: {
-                     "filter": {
-                         name: "Фильтр по значению",
-                         icon: "filter",
-                         disabled: function () {
-                             var fClass = $(this).attr('class');
-                             if (fClass.indexOf("Cellf") >= 0) { return false };
-                             return true;
-                         }
-                     },
-                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
-                     "separator": "-----",
-                     "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
-                     "sep": "---------",
-                     "add": { name: "Добавить отзыв", icon: "add" },
-                     "details": {
-                         name: "Подробно", icon: "details", disabled: function () {
-                             return true; //--------------------!!!!!----------------------
-                             var rClass = $(this).attr('class');
-                             if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                             return false;
-                         }
-                     },
-                 }
-             });
+    <script type="text/javascript">
+        $(function () {
+            //Скрипт для рабты с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'add':
+                            $('#addComment').trigger('click');
+                            break;
+                        case 'details':
+                            window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
+                            break;
+                            //-----------------------------
+                        case 'filter':
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("appCellf") >= 0) {
+                                var dateStr = '';
+                                if ($(this).text() == '') {
+                                    dateStr = "Нерассмотренные"
+                                }
+                                else {
+                                    dateStr = $(this).text() + ' - ' + $(this).text();
+                                };
 
-             //Двойной щелчек по строке таблицы.
-             $('#gridtable tbody').on('dblclick', 'tr', function () {
-                 window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
-             });
-         });
-</script>
+                                $('.app_dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("app_UserCellf") >= 0) {
+                                var dateStr = $(this).text();
+                                $('.app_UserFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        case 'epexport':
+                            Export2Excel('../Export/ExportPlanCreditsF1');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
+                    "sep": "---------",
+                    "add": { name: "Добавить отзыв", icon: "add" },
+                    "details": {
+                        name: "Подробно", icon: "details", disabled: function () {
+                            return true; //--------------------!!!!!----------------------
+                            var rClass = $(this).attr('class');
+                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
+                            return false;
+                        }
+                    },
+                }
+            });
+
+            //Двойной щелчек по строке таблицы.
+            $('#gridtable tbody').on('dblclick', 'tr', function () {
+                alert('В РАЗРАБОТКЕ');
+                //window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
+            });
+        });
+    </script>
 
     <script type="text/javascript">
         //Скрипт создания таблицы
@@ -239,36 +251,17 @@
                         }
                     },
                     "fnDrawCallback": function (settings) {
-                        ////Используем эту функцию для обновления внешних елементов.
-                        ////Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
-                        //var api = this.api();
-                        //var json = api.ajax.json();
-                        //var _cSum = json.sum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
                         $("#stFilter").html($('#hdStatusFilter').html());
-
-                        ////Инициализация таблицы проектов в плавающей панели---------
-                        //if (window._flag) {
-                        //    //Заполнение массива проектов для таблицы в плавающей панели
-                        //    _prjIDs = JSON.parse(json.prjlist)
-                        //    var pTable = $('#prgtable').DataTable();
-                        //    pTable.destroy();
-                        //    prgTableCrate();
-                        //    $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
-                        //    window._flag = false;
-                        //};
-
                     },
                     "ajax": {
                         "url": "/Feedback/LoadComments",
                         "type": "POST",
                         "datatype": "json",
-                        "data": function (d) {
-                            d.filterPrjIDs = window.filterPrjIDs;
-                        },
                         "dataSrc": function (d) {
-                            if (d.data.length === 0) {
-                                if (d.errormessage != "") {
-                                    alert(d.errormessage);
+                            if (!d.result) {
+                                if (d.message != null) {
+                                    alert(d.message);
+                                    return false;
                                 }
                             }
                             return d.data;
@@ -291,23 +284,20 @@
                             return urlStr;
                         }
                     },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "context-menu-one" },
                     {
                         "data": "DateOfApproved", "name": "DateOfApproved", "autoWidth": true,
                         "type": "date ",
                         "render": function (value) { return formatDate(value); },
-                        "class": "app_dateCellf context-menu-one"
+                        "class": "appCellf context-menu-one"
                     },
                     { "data": "ApprovedUserFN", "name": "ApprovedUserFN", "autoWidth": true, "class": "app_UserCellf context-menu-one" },
                     { "data": "Status", "name": "Status", "autoWidth": false, "class": "" },
 
                     ],
                     "columnDefs": [
-                        {
-                            "targets": [6],
-                            "visible": false,
-                            "searchable": false
-                        }
+                        {"targets": [5], "visible": false, "searchable": false },
+                        { "targets": [1], orderable: false },
+                        { "targets": [2], orderable: false }
                     ],
                     "createdRow": function (row, data, rowIndex) {
                         $(row).attr('data-objid', data.FeedbackId);
@@ -364,11 +354,7 @@
     <script>
         $('body').on('click', '.stBadge', function () {
             var statusCode = $(this).data('status');
-            $("#gridtable")
-            .on('preXhr.dt', function (e, settings, data) {
-                data.columns[6].search.value = statusCode;
-            })
-            .DataTable().draw();
+            $("#gridtable").DataTable().columns(5).search(statusCode).draw();
         })
     </script>
 
@@ -379,7 +365,7 @@
                 $(this).val('');
                 table.column(colIdx).search('');
             });
-            table.draw();
+            table.columns(5).search('').draw();
         }
     </script>
 }
