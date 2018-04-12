@@ -16,6 +16,23 @@
         cursor: pointer;
         padding: .8em;
     }
+
+    .context-menu-icon-review {
+        background-color: rgba(64, 128, 200, 0.3);
+    }
+
+    .context-menu-icon-accept {
+        background-color:rgba(128, 200, 64, 0.3);
+    }
+
+    .context-menu-icon-reject {
+        background-color: rgba(255, 99, 132, 0.3);
+    }
+
+    #gridtable tbody tr:hover{
+        background-color:#eee !important;
+    }
+
 </style>
 
 <div id="loadingImg">
@@ -47,13 +64,14 @@
     </div>
 
     <div id="hdStatusFilter" hidden>
-        <span class="badge stBadge" data-status="1" style="border:1px solid #bbb; background-color:transparent;">Добавлен</span>
-        <span class="badge stBadge" data-status="4" style="background-color:rgba(64, 128, 200, 0.3)">Рассмотрение</span>
-        <span class="badge stBadge" data-status="8" style="background-color:rgba(128, 200, 64, 0.3)">Принят</span>
-        <span class="badge stBadge" data-status="12" style="background-color:rgba(255, 99, 132, 0.3)">Отклонен</span>
+        <span class="badge stBadge" data-status="0" style="border:1px solid #bbb; background-color:transparent;">Все</span>
+        <span class="badge stBadge" data-status="1" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1)">Добавлен</span>
+        <span class="badge stBadge" data-status="4" style="border: 1px solid rgba(64, 128, 200, 0.5); background-color:rgba(64, 128, 200, 0.3)">Рассмотрение</span>
+        <span class="badge stBadge" data-status="8" style="border: 1px solid rgba(128, 200, 64, 0.5); background-color:rgba(128, 200, 64, 0.3)">Принят</span>
+        <span class="badge stBadge" data-status="12" style="border: 1px solid rgba(255, 99, 132, 0.3); background-color:rgba(255, 99, 132, 0.3)">Отклонен</span>
     </div>
 
-    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+    <table class="table table table-bordered table-striped table-responsive gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" id="dateFlt" /></th>
@@ -140,6 +158,8 @@
                 selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
+                    var cmId = $(this).data('objid');
+                    console.log($(this).data('objid'));
                     switch (key) {
                         case 'add':
                             $('#addComment').trigger('click');
@@ -172,6 +192,16 @@
                                 break;
                             };
                             //-----------------------
+                        case 'review':
+                            commentAccept(4, cmId)
+                            break;
+                        case 'accept':
+                            commentAccept(8, cmId)
+                            break;
+                        case 'reject':
+                            commentAccept(12, cmId)
+                            break;
+                            //-----------------------
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -193,9 +223,21 @@
                         }
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
-                    "separator": "-----",
+                    "sep1": "-----",
+                    "check": {
+                        name: "Утверждение",
+                        icon: "check",
+                        items: {
+                            "review": { name: "На рассмотрение", icon: "review" },
+                            "sep11": "-----",
+                            "accept": { name: "Принять", icon: "accept" },
+                            "sep12": "-----",
+                            "reject": { name: "Отклонить", icon: "reject" }
+                        }
+                    },
+                    "sep2": "---------",
                     "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
-                    "sep": "---------",
+                    "sep3": "---------",
                     "add": { name: "Добавить отзыв", icon: "add" },
                     "details": {
                         name: "Подробно", icon: "details", disabled: function () {
@@ -295,7 +337,7 @@
 
                     ],
                     "columnDefs": [
-                        {"targets": [5], "visible": false, "searchable": false },
+                        { "targets": [5], "visible": false, "searchable": false },
                         { "targets": [1], orderable: false },
                         { "targets": [2], orderable: false }
                     ],
@@ -305,6 +347,7 @@
                         switch (data.Status) {
                             case 1:
                                 // Добавлен
+                                $(row).css('background-color', 'rgba(255, 208, 115, 0.1)');
                                 break;
                             case 4:
                                 // На рассмотрении

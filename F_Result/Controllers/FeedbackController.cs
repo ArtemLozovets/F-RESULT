@@ -183,6 +183,26 @@ namespace F_Result.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult CommentAccept(string State, int? CommentId)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+            if (string.IsNullOrEmpty(State) || CommentId == null)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса! Отсутствует необходимый параметр." }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                return Json(new { data = "", result = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса! "+ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

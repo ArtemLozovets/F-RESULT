@@ -20,6 +20,9 @@ $('#hidePanel').on('click', function () {
 });
 
 $('#sendComment').on('click', function () {
+    var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
+    console.log(_url);
+
     if ($('#commentText').val().length == 0) {
         alert('Введите текст отзыва');
         return false;
@@ -30,7 +33,7 @@ $('#sendComment').on('click', function () {
     var _cmUrl = $('#cmUrl').val();
 
     $.ajax({
-        url: "../Feedback/CommentsCreate",
+        url: _url,
         type: "POST",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -52,6 +55,30 @@ $('#sendComment').on('click', function () {
         }
     });
 });
+
+function commentAccept(status, cmId) {
+    alert(cmId);
+    $('#loadingImg').show();
+    $.ajax({
+        url: "../Feedback/CommentAccept",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            CommentId: cmId,
+            State: status
+        }),
+        success: function (data) {
+            if (!data.result) {
+                $('#loadingImg').hide(function () {
+                    alert(data.message);
+                });
+                return false;
+            }
+            $('#loadingImg').hide();
+        }
+    });
+}
 
 //Скрипт отображения количества оставшихся символов при вводе отзыва
 function DisplayCount(elem, maxCount) {

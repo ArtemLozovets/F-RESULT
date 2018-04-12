@@ -83,6 +83,22 @@
   content: "\F1C3";
 }
 
+.context-menu-icon-check:before {
+  content: "\F058";
+}
+
+.context-menu-icon-review:before {
+  content: "\F06E";
+}
+
+.context-menu-icon-accept:before {
+  content: "\F00C";
+}
+
+.context-menu-icon-reject:before {
+  content: "\F05E";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;
