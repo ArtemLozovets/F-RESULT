@@ -21,8 +21,7 @@ $('#hidePanel').on('click', function () {
 
 $('#sendComment').on('click', function () {
     var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
-    console.log(_url);
-
+    
     if ($('#commentText').val().length == 0) {
         alert('Введите текст отзыва');
         return false;
@@ -57,7 +56,6 @@ $('#sendComment').on('click', function () {
 });
 
 function commentAccept(status, cmId) {
-    alert(cmId);
     $('#loadingImg').show();
     $.ajax({
         url: "../Feedback/CommentAccept",
@@ -76,6 +74,7 @@ function commentAccept(status, cmId) {
                 return false;
             }
             $('#loadingImg').hide();
+            $('#gridtable').DataTable().draw();
         }
     });
 }

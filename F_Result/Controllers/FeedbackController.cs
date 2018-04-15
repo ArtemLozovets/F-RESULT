@@ -5,7 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using F_Result.Models;
 using Microsoft.AspNet.Identity;
-using System.Linq.Dynamic; //!=====!
+using System.Linq.Dynamic;
+using System.Data.Entity; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -184,17 +185,39 @@ namespace F_Result.Controllers
         }
 
         [HttpPost]
-        public ActionResult CommentAccept(string State, int? CommentId)
+        public ActionResult CommentAccept(int? State, int? CommentId)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-            if (string.IsNullOrEmpty(State) || CommentId == null)
+            if (State == null || CommentId == null)
             {
                 return Json(new { result = false, message = "Ошибка выполнения запроса! Отсутствует необходимый параметр." }, JsonRequestBehavior.AllowGet);
             }
 
+
             try
             {
+                Feedback.StateEnum _state = (Feedback.StateEnum) State;
+
+                Feedback _fb = db.Feedback.FirstOrDefault(x => x.FeedbackId == CommentId);
+                if (_fb == null)
+                {
+                    return Json(new { result = false, message = "Ошибка выполнения запроса! Указанный комментарий не найден." }, JsonRequestBehavior.AllowGet);
+                }
+
+                _fb.Status = _state;
+                _fb.DateOfApproved = DateTime.Now;
+                
+                //Получаем идентификатор текущего пользователя
+                using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                {
+                    var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                    _fb.ApprovedUserId = user;
+                }
+
+                db.Entry(_fb).State = EntityState.Modified;
+                db.SaveChanges();
+
                 return Json(new { data = "", result = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

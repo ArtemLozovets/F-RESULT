@@ -22,17 +22,30 @@
     }
 
     .context-menu-icon-accept {
-        background-color:rgba(128, 200, 64, 0.3);
+        background-color: rgba(128, 200, 64, 0.3);
     }
 
     .context-menu-icon-reject {
         background-color: rgba(255, 99, 132, 0.3);
     }
 
-    #gridtable tbody tr:hover{
-        background-color:#eee !important;
+    #gridtable tbody tr:hover {
+        background-color: #eee !important;
     }
 
+    .breakAll {
+        -ms-word-break: break-all;
+        word-break: break-all;
+    }
+
+    .urlFl {
+        max-width:140px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        -ms-text-overflow: ellipsis !important;
+        -o-text-overflow: ellipsis !important; 
+        text-overflow: ellipsis !important;
+    }
 </style>
 
 <div id="loadingImg">
@@ -158,8 +171,7 @@
                 selector: '.dataTables_empty, td.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
-                    var cmId = $(this).data('objid');
-                    console.log($(this).data('objid'));
+                    var cmId = $(this).closest('tr').data('objid');
                     switch (key) {
                         case 'add':
                             $('#addComment').trigger('click');
@@ -253,7 +265,7 @@
             //Двойной щелчек по строке таблицы.
             $('#gridtable tbody').on('dblclick', 'tr', function () {
                 alert('В РАЗРАБОТКЕ');
-                //window.location.href = "/PlanCredits/PCEdit/" + $(this).data('objid');
+                //window.location.href = "/Controller/Action/" + $(this).data('objid');
             });
         });
     </script>
@@ -318,9 +330,9 @@
                         "class": "dateCellf context-menu-one"
                     },
 
-                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "context-menu-one" },
+                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "breakAll context-menu-one" },
                     {
-                        "data": "SbUrl", "name": "SbUrl", "autoWidth": true, "class": "context-menu-one",
+                        "data": "SbUrl", "name": "SbUrl", "autoWidth": false, "class": "urlFl context-menu-one",
                         render: function (data, type, row, meta) {
                             var urlStr = '<a href=' + data + ' target="_blank">' + data + '</a>';
                             return urlStr;
@@ -342,7 +354,8 @@
                         { "targets": [2], orderable: false }
                     ],
                     "createdRow": function (row, data, rowIndex) {
-                        $(row).attr('data-objid', data.FeedbackId);
+                        //$(row).attr('data-objid', data.FeedbackId);
+                        $(row).closest('tr').data('objid', data.FeedbackId);
                         // Скрипт цветового выделения строк в зависимости от статуса
                         switch (data.Status) {
                             case 1:
@@ -365,8 +378,7 @@
                                 break;
                         }
 
-                        //var TitleStr = 'TITLE';
-                        //$('.prgCellf', $(row)).attr('title', prgTitleStr);
+                        $('.urlFl', $(row)).attr('title', data.SbUrl);
                     }
                 });
 
