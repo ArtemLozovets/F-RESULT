@@ -77,19 +77,25 @@ namespace F_Result.Controllers
                 Int32.TryParse(_statusTXT, out _status);
                 Feedback.StateEnum _state = (Feedback.StateEnum)_status;
 
-                string curr_user = "";
+                string curr_user = string.Empty;
+
                 //Получаем идентификатор текущего пользователя
                 using (ApplicationDbContext aspdb = new ApplicationDbContext())
                 {
                     curr_user = System.Web.HttpContext.Current.User.Identity.GetUserId();
                 }
 
+                bool isAcceptor = false;
+                bool isAdmin = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                if (isAdmin || isChief) { isAcceptor = true; }
+
                 var _cm = (from comment in db.Feedback
                            join usr in db.IdentityUsers on comment.UserId equals usr.Id into usrtmp
                            from usr in usrtmp.DefaultIfEmpty()
                            join app_usr in db.IdentityUsers on comment.ApprovedUserId equals app_usr.Id into appusrtmp
                            from app_usr in appusrtmp.DefaultIfEmpty()
-                           where (comment.UserId == curr_user
+                           where ((isAcceptor || (comment.UserId == curr_user))
                                     && (_status == 0 || comment.Status == _state)
                                     && (comment.DateOfCreation >= _startdate && comment.DateOfCreation <= _enddate || string.IsNullOrEmpty(_dateTXT)) //Дата создания
                                     && ((string.IsNullOrEmpty(_appDateTXT)) 
@@ -139,7 +145,7 @@ namespace F_Result.Controllers
                 totalRecords = _cm.Count();
                 var data = _cm.Skip(skip).Take(pageSize);
 
-                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, result = true }, JsonRequestBehavior.AllowGet);
+                return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data, acceptor = isAcceptor, result = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -197,6 +203,12 @@ namespace F_Result.Controllers
 
             try
             {
+                bool isAdmin = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                if (!(isAdmin || isChief)) {
+                    return Json(new { result = false, message = "Ошибка выполнения запроса! Отсутствуют полномочия." }, JsonRequestBehavior.AllowGet);
+                }
+
                 Feedback.StateEnum _state = (Feedback.StateEnum) State;
 
                 Feedback _fb = db.Feedback.FirstOrDefault(x => x.FeedbackId == CommentId);

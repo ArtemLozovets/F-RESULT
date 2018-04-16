@@ -1,4 +1,5 @@
 ﻿$(function () {
+    //Инициализация панели добавления отзыва
     var navbarHeight = $('#mainNavbar').height();
     $('#draggable').css('top', navbarHeight + 10).css('left', 10);
     $('#draggable').draggable({
@@ -10,15 +11,19 @@
     });
 });
 
+//Отображение панели добавления отзыва
 $('#addComment').on('click', function (e) {
     e.preventDefault();
     $('#draggable').fadeIn(500);
 });
 
+//Скрытие панели добавления отзыва
 $('#hidePanel').on('click', function () {
     $('#draggable').fadeOut(500);
 });
 
+
+//Добавление отзыва
 $('#sendComment').on('click', function () {
     var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
     
@@ -55,6 +60,7 @@ $('#sendComment').on('click', function () {
     });
 });
 
+//Утверждение отзыва
 function commentAccept(status, cmId) {
     $('#loadingImg').show();
     $.ajax({

@@ -34,17 +34,29 @@
     }
 
     .breakAll {
+        cursor:pointer;
+        max-width:600px;
         -ms-word-break: break-all;
         word-break: break-all;
     }
 
-    .urlFl {
-        max-width:140px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        -ms-text-overflow: ellipsis !important;
-        -o-text-overflow: ellipsis !important; 
-        text-overflow: ellipsis !important;
+    .commNarrow{
+        cursor:pointer;
+        max-width:600px;
+        white-space: nowrap;
+        overflow: hidden;
+        -ms-text-overflow:ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow:ellipsis;
+    }
+
+    .urlCellf {
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
     }
 </style>
 
@@ -84,12 +96,14 @@
         <span class="badge stBadge" data-status="12" style="border: 1px solid rgba(255, 99, 132, 0.3); background-color:rgba(255, 99, 132, 0.3)">Отклонен</span>
     </div>
 
+    @Html.Hidden("acceptor", false)
+
     <table class="table table table-bordered table-striped table-responsive gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Отзыв" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Ссылка" /></th>
+                <th><input type="text" class="form-control input-sm sb urlFlt" style="width: 100%" placeholder="Ссылка" /></th>
                 <th><input type="text" class="form-control input-sm dff app_dateFlt" readonly style="width: 100%" placeholder="Рассмотрен" id="appDateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb app_UserFlt" style="width: 100%" placeholder="Рассмотрел" /></th>
             </tr>
@@ -173,17 +187,15 @@
                     var fClass = $(this).attr('class');
                     var cmId = $(this).closest('tr').data('objid');
                     switch (key) {
-                        case 'add':
-                            $('#addComment').trigger('click');
-                            break;
-                        case 'details':
-                            window.location.href = "/PlanCredits/PCDetails/" + $(this).closest('tr').data('objid');
-                            break;
-                            //-----------------------------
                         case 'filter':
                             if (fClass.indexOf("dateCellf") >= 0) {
                                 var dateStr = $(this).text() + ' - ' + $(this).text();
                                 $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("urlCellf") >= 0) {
+                                var urlFlt = $(this).text();
+                                $('.urlFlt').val(urlFlt).trigger('change');
                                 break;
                             };
                             if (fClass.indexOf("appCellf") >= 0) {
@@ -239,6 +251,12 @@
                     "check": {
                         name: "Утверждение",
                         icon: "check",
+                        disabled: function () {
+                            if ($('#acceptor').val() === 'True') {
+                                return false;
+                            }
+                            return true;
+                        },
                         items: {
                             "review": { name: "На рассмотрение", icon: "review" },
                             "sep11": "-----",
@@ -249,23 +267,7 @@
                     },
                     "sep2": "---------",
                     "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
-                    "sep3": "---------",
-                    "add": { name: "Добавить отзыв", icon: "add" },
-                    "details": {
-                        name: "Подробно", icon: "details", disabled: function () {
-                            return true; //--------------------!!!!!----------------------
-                            var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0) { return true };
-                            return false;
-                        }
-                    },
                 }
-            });
-
-            //Двойной щелчек по строке таблицы.
-            $('#gridtable tbody').on('dblclick', 'tr', function () {
-                alert('В РАЗРАБОТКЕ');
-                //window.location.href = "/Controller/Action/" + $(this).data('objid');
             });
         });
     </script>
@@ -284,7 +286,7 @@
                     "serverSide": true,
                     "filter": true,
                     "orderMulti": true,
-                    "responsive": true,
+                    "responsive": false,
                     "pageLength": 25, // Количество записей в таблице по умолчанию
                     "pagingType": "simple_numbers",
                     "dom": "<'row'<'col-sm-3'l><'#stFilter.col-sm-9 text-right'B>>" +
@@ -318,7 +320,10 @@
                                     return false;
                                 }
                             }
-                            return d.data;
+                            else {
+                                if (d.acceptor) { $('#acceptor').val('True'); }
+                                return d.data;
+                            }
                         },
                     },
                     "order": [[0, "desc"]],
@@ -330,9 +335,9 @@
                         "class": "dateCellf context-menu-one"
                     },
 
-                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "breakAll context-menu-one" },
+                    { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "commNarrow context-menu-one" },
                     {
-                        "data": "SbUrl", "name": "SbUrl", "autoWidth": false, "class": "urlFl context-menu-one",
+                        "data": "SbUrl", "name": "SbUrl", "autoWidth": false, "class": "urlCellf context-menu-one",
                         render: function (data, type, row, meta) {
                             var urlStr = '<a href=' + data + ' target="_blank">' + data + '</a>';
                             return urlStr;
@@ -378,7 +383,7 @@
                                 break;
                         }
 
-                        $('.urlFl', $(row)).attr('title', data.SbUrl);
+                        $('.urlCellf', $(row)).attr('title', data.SbUrl);
                     }
                 });
 
@@ -394,6 +399,7 @@
 
         });
 
+        //Форматирование дат
         function formatDate(value) {
             if (value === null) return "";
             var pattern = /Date\(([^)]+)\)/;
@@ -407,13 +413,25 @@
     </script>
 
     <script>
+        //Фильтрация списка отзывов по статусу
         $('body').on('click', '.stBadge', function () {
             var statusCode = $(this).data('status');
             $("#gridtable").DataTable().columns(5).search(statusCode).draw();
         })
+
+        //Разворачиваем/сворачиваем текст отзыва
+        $('body').on('click', '.commNarrow', function () {
+            $(this).removeClass("commNarrow").addClass("breakAll");
+        });
+
+        $('body').on('click', '.breakAll', function () {
+            $(this).removeClass("breakAll").addClass("commNarrow");
+        });
     </script>
 
+    
     <script>
+    //Сброс фильтра
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
