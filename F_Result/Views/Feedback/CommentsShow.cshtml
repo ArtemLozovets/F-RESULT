@@ -35,14 +35,14 @@
 
     .breakAll {
         cursor:pointer;
-        max-width:600px;
+        max-width:500px;
         -ms-word-break: break-all;
         word-break: break-all;
     }
 
     .commNarrow{
         cursor:pointer;
-        max-width:600px;
+        max-width:500px;
         white-space: nowrap;
         overflow: hidden;
         -ms-text-overflow:ellipsis;
@@ -102,6 +102,7 @@
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" id="dateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb usrFlt" style="width: 100%" placeholder="Автор" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Отзыв" /></th>
                 <th><input type="text" class="form-control input-sm sb urlFlt" style="width: 100%" placeholder="Ссылка" /></th>
                 <th><input type="text" class="form-control input-sm dff app_dateFlt" readonly style="width: 100%" placeholder="Рассмотрен" id="appDateFlt" /></th>
@@ -109,6 +110,7 @@
             </tr>
             <tr role="row">
                 <th>Дата</th>
+                <th>Автор</th>
                 <th>Отзыв</th>
                 <th>Ссылка</th>
                 <th>Рассмотрен</th>
@@ -210,8 +212,13 @@
                                 $('.app_dateFlt').val(dateStr).trigger('change');
                                 break;
                             };
+                            if (fClass.indexOf("usrCellf") >= 0) {
+                                var usrStr = $(this).text().split(' ')[0];
+                                $('.usrFlt').val(usrStr).trigger('change');
+                                break;
+                            };
                             if (fClass.indexOf("app_UserCellf") >= 0) {
-                                var dateStr = $(this).text();
+                                var dateStr = $(this).text().split(' ')[0];
                                 $('.app_UserFlt').val(dateStr).trigger('change');
                                 break;
                             };
@@ -334,7 +341,7 @@
                         "render": function (value) { return formatDate(value); },
                         "class": "dateCellf context-menu-one"
                     },
-
+                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
                     { "data": "Comment", "name": "Comment", "autoWidth": true, "class": "commNarrow context-menu-one" },
                     {
                         "data": "SbUrl", "name": "SbUrl", "autoWidth": false, "class": "urlCellf context-menu-one",
@@ -354,9 +361,9 @@
 
                     ],
                     "columnDefs": [
-                        { "targets": [5], "visible": false, "searchable": false },
-                        { "targets": [1], orderable: false },
-                        { "targets": [2], orderable: false }
+                        { "targets": [6], "visible": false, "searchable": false },
+                        { "targets": [2], orderable: false },
+                        { "targets": [3], orderable: false }
                     ],
                     "createdRow": function (row, data, rowIndex) {
                         //$(row).attr('data-objid', data.FeedbackId);
@@ -416,7 +423,7 @@
         //Фильтрация списка отзывов по статусу
         $('body').on('click', '.stBadge', function () {
             var statusCode = $(this).data('status');
-            $("#gridtable").DataTable().columns(5).search(statusCode).draw();
+            $("#gridtable").DataTable().columns(6).search(statusCode).draw();
         })
 
         //Разворачиваем/сворачиваем текст отзыва
@@ -438,7 +445,7 @@
                 $(this).val('');
                 table.column(colIdx).search('');
             });
-            table.columns(5).search('').draw();
+            table.columns(6).search('').draw();
         }
     </script>
 }

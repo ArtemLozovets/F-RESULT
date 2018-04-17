@@ -15,12 +15,14 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
+        //Отзывы
         public ActionResult CommentsShow()
         {
             return View();
         }
 
-        //Список отзывов
+        #region ------------- Список отзывов --------------
+
         [HttpPost]
         public ActionResult LoadComments()
         {
@@ -39,16 +41,17 @@ namespace F_Result.Controllers
                 int totalRecords = 0;
 
                 string _dateTXT = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _commentTXT = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _linkTXT = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _appDateTXT = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _appUserTXT = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _statusTXT = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _userTXT = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _commentTXT = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _linkTXT = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _appDateTXT = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _appUserTXT = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _statusTXT = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
 
                 // Парсинг диапазона дат из DateRangePicker (Дата создания)
                 DateTime? _startdate = null;
                 DateTime? _enddate = null;
-                if (!string.IsNullOrEmpty(_dateTXT ))
+                if (!string.IsNullOrEmpty(_dateTXT))
                 {
                     _dateTXT = _dateTXT.Trim();
                     int _length = (_dateTXT.Length) - (_dateTXT.IndexOf('-') + 2);
@@ -98,10 +101,11 @@ namespace F_Result.Controllers
                            where ((isAcceptor || (comment.UserId == curr_user))
                                     && (_status == 0 || comment.Status == _state)
                                     && (comment.DateOfCreation >= _startdate && comment.DateOfCreation <= _enddate || string.IsNullOrEmpty(_dateTXT)) //Дата создания
-                                    && ((string.IsNullOrEmpty(_appDateTXT)) 
+                                    && ((string.IsNullOrEmpty(_appDateTXT))
                                             || (comment.DateOfApproved >= _app_startdate && comment.DateOfApproved <= _app_enddate)
-                                            || (_appDateTXT == "Нерассмотренные" && comment.DateOfApproved == null)    
+                                            || (_appDateTXT == "Нерассмотренные" && comment.DateOfApproved == null)
                                         ) //Дата рассмотрения
+                                    && (string.IsNullOrEmpty(_userTXT) || usr.LastName.Contains(_userTXT))
                                     && (string.IsNullOrEmpty(_commentTXT) || comment.Comment.Contains(_commentTXT))
                                     && (string.IsNullOrEmpty(_linkTXT) || comment.SbUrl.Contains(_linkTXT))
                                     && (string.IsNullOrEmpty(_appUserTXT) || app_usr.LastName.Contains(_appUserTXT))
@@ -155,6 +159,10 @@ namespace F_Result.Controllers
             }
         }
 
+        #endregion
+
+        #region ----------- Добавление отзыва -------------
+
         [HttpPost]
         public ActionResult CommentsCreate(string cmText, string cmUrl)
         {
@@ -189,6 +197,9 @@ namespace F_Result.Controllers
                 return Json(new { result = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
+
+        #region ----------- Утверждение отзыва ------------
 
         [HttpPost]
         public ActionResult CommentAccept(int? State, int? CommentId)
@@ -200,16 +211,16 @@ namespace F_Result.Controllers
                 return Json(new { result = false, message = "Ошибка выполнения запроса! Отсутствует необходимый параметр." }, JsonRequestBehavior.AllowGet);
             }
 
-
             try
             {
                 bool isAdmin = System.Web.HttpContext.Current.User.IsInRole("Administrator");
                 bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
-                if (!(isAdmin || isChief)) {
+                if (!(isAdmin || isChief))
+                {
                     return Json(new { result = false, message = "Ошибка выполнения запроса! Отсутствуют полномочия." }, JsonRequestBehavior.AllowGet);
                 }
 
-                Feedback.StateEnum _state = (Feedback.StateEnum) State;
+                Feedback.StateEnum _state = (Feedback.StateEnum)State;
 
                 Feedback _fb = db.Feedback.FirstOrDefault(x => x.FeedbackId == CommentId);
                 if (_fb == null)
@@ -218,8 +229,8 @@ namespace F_Result.Controllers
                 }
 
                 _fb.Status = _state;
-                _fb.DateOfApproved = DateTime.Now;
-                
+                _fb.DateOfApproved = DateTime.Today;
+
                 //Получаем идентификатор текущего пользователя
                 using (ApplicationDbContext aspdb = new ApplicationDbContext())
                 {
@@ -234,9 +245,10 @@ namespace F_Result.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { result = false, message = "Ошибка выполнения запроса! "+ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { result = false, message = "Ошибка выполнения запроса! " + ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
         protected override void Dispose(bool disposing)
         {
