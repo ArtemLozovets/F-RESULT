@@ -47,6 +47,11 @@
             <p class="text-danger" id="MessageError">  @TempData["MessageError"]</p>
         </div>
     </div>
+
+    <div class = "hpbBlock" hidden>
+        <input type="text" class="form-control" readonly style="width: 100px;" placeholder="Дата" />
+    </div>
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
@@ -226,7 +231,7 @@
                 "responsive": true,
                 "pageLength": 25, // Количество записей в таблице по умолчанию
                 "pagingType": "simple_numbers",
-                "dom": "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'#sumSpan.col-sm-3'B>>" +
+                "dom": "<'row'<'col-sm-3'l><'#pBalance.col-sm-9 text-right'B>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "language": {
@@ -280,6 +285,36 @@
                     { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
 
                 ],
+                "fnDrawCallback": function (settings) {
+                    var controlStr = '<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" ';
+                    controlStr += 'id="pbDate" title="Дата для расчета планового остатка" class="form-control input-sm" value="" />';
+                    controlStr += '<span class="badge sum-block" title="Плановый остаток на счетах">145 253 14.23</span>';
+                    $("#pBalance").html(controlStr);
+                    $('#pbDate').dateRangePicker(
+                     {
+                         language: 'ru',
+                         startOfWeek: 'monday',
+                         format: 'DD/MM/YYYY',
+                         monthSelect: true,
+                         singleMonth: true,
+                         singleDate: true,
+                         yearSelect: true,
+                         autoClose: true,
+                         setValue: function (s) {
+                             $(this).val(s);
+                         },
+                         showShortcuts: false,
+                         time: {
+                             enabled: false
+                         },
+                     })
+                .bind('datepicker-open', function () {
+                    $(this).data('dateRangePicker').clear();
+                });
+                    var nowDT = new Date;
+                    var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                    $("#pbDate").val(nowDate);
+                },
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.AccountsBalanceId);
                     $(row).attr('data-accid', data.AccountId);
