@@ -48,9 +48,8 @@
         </div>
     </div>
 
-    <div class = "hpbBlock" hidden>
-        <input type="text" class="form-control" readonly style="width: 100px;" placeholder="Дата" />
-    </div>
+    @Html.Hidden("hdDate")
+    @Html.Hidden("hdpBalance")
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
@@ -287,9 +286,10 @@
                 ],
                 "fnDrawCallback": function (settings) {
                     var controlStr = '<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" ';
-                    controlStr += 'id="pbDate" title="Дата для расчета планового остатка" class="form-control input-sm" value="" />';
-                    controlStr += '<span class="badge sum-block" title="Плановый остаток на счетах">145 253 14.23</span>';
+                    controlStr += 'id="pbDate" title="Дата для расчета планового остатка" class="form-control input-sm" value="'+ $('#hdDate').val() +'" />';
+                    controlStr += '<span class="badge sum-block" id="pBadge" title="Плановый остаток на счетах">' + $('#hdpBalance').val() + '&#8372;</span>';
                     $("#pBalance").html(controlStr);
+
                     $('#pbDate').dateRangePicker(
                      {
                          language: 'ru',
@@ -308,13 +308,11 @@
                              enabled: false
                          },
                      })
-                .bind('datepicker-open', function () {
-                    $(this).data('dateRangePicker').clear();
+                .bind('datepicker-close', function (event, obj) {
+                    getPBalance($(this).val());
                 });
-                    var nowDT = new Date;
-                    var nowDate = moment(nowDT).format('DD/MM/YYYY');
-                    $("#pbDate").val(nowDate);
                 },
+
                 "createdRow": function (row, data, rowIndex) {
                     $(row).attr('data-objid', data.AccountsBalanceId);
                     $(row).attr('data-accid', data.AccountId);
@@ -332,7 +330,6 @@
             });
 
         });
-
     </script>
 
     <script>
@@ -343,6 +340,41 @@
                 table.column(colIdx).search('');
             });
             table.draw();
+        }
+    </script>
+
+    <script>
+        $(function () {
+            var nowDT = new Date;
+            var nowDate = moment(nowDT).format('DD/MM/YYYY');
+            $('#hdDate').val(nowDate);
+            getPBalance(nowDate);
+        });
+
+        //Получение планового остатка на дату
+        function getPBalance(_date) {
+            $('#loadingImg').show();
+            $.ajax({
+                url: '../AccountsBalances/getPBalance',
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ Date: _date }),
+                success: function (data) {
+                    if (!data.Result) {
+                        $('#loadingImg').hide(function () {
+                            alert(message);
+                        });
+                    }
+                    else {
+                        var _res = data.data.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
+                        $('#hdpBalance').val(_res);
+                        $('#pBadge').html($('#hdpBalance').val() + '&#8372;');
+                        $('#hdDate').val(_date);
+                        $('#loadingImg').hide();
+                    }
+                }
+            });
         }
     </script>
 

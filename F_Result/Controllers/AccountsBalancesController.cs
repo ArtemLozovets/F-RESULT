@@ -114,7 +114,7 @@ namespace F_Result.Controllers
                                 UserFN = x.UserFN
                             }).ToList();
 
-                _ads = _ads.Where(x => ((x.Balance.ToString().Contains(_balance)) || string.IsNullOrEmpty(_balance) ) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
+                _ads = _ads.Where(x => ((x.Balance.ToString().Contains(_balance)) || string.IsNullOrEmpty(_balance)) && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _ads.Select(x => x.AccountsBalanceId).ToList();
@@ -127,7 +127,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x=>x.AccountsBalanceId).ToList();
+                    _ads = _ads.OrderByDescending(x => x.Date).ThenByDescending(x => x.AccountsBalanceId).ToList();
                 }
 
                 var fSum = _ads.Sum(x => x.Balance);
@@ -135,15 +135,26 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { fsum = fSum
-                    , draw = draw
-                    , recordsFiltered = totalRecords
-                    , recordsTotal = totalRecords
-                    , data = data
-                    , idslist = _IDsListJson
-                    , sortcolumn = sortColumn
-                    , sortdir = sortColumnDir
-                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    fsum = fSum
+                    ,
+                    draw = draw
+                    ,
+                    recordsFiltered = totalRecords
+                    ,
+                    recordsTotal = totalRecords
+                    ,
+                    data = data
+                    ,
+                    idslist = _IDsListJson
+                    ,
+                    sortcolumn = sortColumn
+                    ,
+                    sortdir = sortColumnDir
+                    ,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -404,6 +415,23 @@ namespace F_Result.Controllers
                 return Json(new { Result = false, Message = "Ошибка выполнения запроса! " + ex.Message + ex.StackTrace }, JsonRequestBehavior.AllowGet);
             }
 
+        }
+
+        public ActionResult getPBalance(DateTime? Date)
+        {
+            try
+            {
+                Random rnd = new Random();
+                var data = rnd.NextDouble()*10000000;
+                return Json(new { Result = true, data = data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErMes = ex.Message;
+                ViewBag.ErStack = ex.StackTrace;
+                ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                return Json(new { Result = false, Message = "Ошибка выполнения запроса! " + ex.Message + ex.StackTrace }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         protected override void Dispose(bool disposing)
