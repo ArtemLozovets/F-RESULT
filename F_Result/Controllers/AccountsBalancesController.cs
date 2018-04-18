@@ -347,7 +347,6 @@ namespace F_Result.Controllers
             return View(_acc.ToList());
         }
 
-
         //Пакетное добавление остатков на счетах 
         //Запись в БД
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
@@ -403,7 +402,6 @@ namespace F_Result.Controllers
                 db.AccountsBalances.AddRange(_balancelist);
                 db.SaveChanges();
 
-
                 return Json(new { Result = true, Message = "Информация добавлена " }, JsonRequestBehavior.AllowGet);
             }
 
@@ -414,16 +412,17 @@ namespace F_Result.Controllers
                 ViewBag.ErInner = ex.InnerException.InnerException.Message;
                 return Json(new { Result = false, Message = "Ошибка выполнения запроса! " + ex.Message + ex.StackTrace }, JsonRequestBehavior.AllowGet);
             }
-
         }
 
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
+        [HttpPost]
         public ActionResult getPBalance(DateTime? Date)
         {
             try
             {
-                Random rnd = new Random();
-                var data = rnd.NextDouble()*10000000;
-                return Json(new { Result = true, data = data }, JsonRequestBehavior.AllowGet);
+                decimal _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPDateBalance('2000-01-01') as PlanningBalance").FirstOrDefault();
+
+                return Json(new { Result = true, data = _PlanningBalance }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

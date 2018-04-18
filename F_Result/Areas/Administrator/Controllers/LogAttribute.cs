@@ -16,7 +16,6 @@ public class LoginAuditAttribute : ActionFilterAttribute
         if ((string)filterContext.Controller.TempData["LoginResult"] == "Success") _resbool = true;
         if ((string)filterContext.Controller.TempData["LoginResult"] == "Failure") _resbool = false;
 
-
         AspVisitor visitor = new AspVisitor()
         {
             Login = filterContext.Controller.TempData["LoginName"].ToString(),
