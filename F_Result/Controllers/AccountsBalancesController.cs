@@ -416,11 +416,16 @@ namespace F_Result.Controllers
 
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         [HttpPost]
-        public ActionResult getPBalance(DateTime? Date)
+        public ActionResult getPBalance(DateTime Date)
         {
             try
             {
-                decimal _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPDateBalance('2000-01-01') as PlanningBalance").FirstOrDefault();
+                if (Date == null)
+                {
+                    return Json(new { Result = false, Message = "Ошибка выполнения запроса! Не указана дата."}, JsonRequestBehavior.AllowGet);
+                }
+
+                decimal _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPDateBalance('"+ Date.ToString("yyyy.MM.dd")+"') as PlanningBalance").FirstOrDefault();
 
                 return Json(new { Result = true, data = _PlanningBalance }, JsonRequestBehavior.AllowGet);
             }
