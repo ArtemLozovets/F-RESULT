@@ -131,25 +131,6 @@
                                 </li>
                             </ul>
                         </li>
-
-                        <!-- If current user is Administrator -->
-                        @if (this.User.IsInRole("Administrator"))
-                        {
-                            <li id="admin" class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Управление"><i class="fa fa-cog"></i> <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li id="usersblock">
-                                        <a href="@Url.Action("ShowUsers", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-lock" style="margin-right:10px;"></i>&nbsp;Пользователи</a>
-                                    </li>
-                                    <li id="auditblock">
-                                        <a href="@Url.Action("LoginAudit", "UsersManagement", new { Area = "Administrator" })"><i class="glyphicon glyphicon-calendar" style="margin-right:10px;"></i>&nbsp;Аудит входа</a>
-                                    </li>
-                                    <li id="settingslock">
-                                        <a href="@Url.Action("ShowSettings", "Settings", new { Area = "" })"><i class="glyphicon glyphicon-wrench" style="margin-right:10px;"></i>&nbsp;Настройки</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        }
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -191,5 +172,20 @@
     <script src="~/Scripts/messageClear.js"></script>
     <script src="~/Scripts/FRScripts/feedbackPanel.js"></script>
     @RenderSection("scripts", required: false)
+
+    <script>
+        //Скрипт для работы с субменю пунков основного меню
+        (function ($) {
+            $(document).ready(function () {
+                $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $(this).parent().siblings().removeClass('open');
+                    $(this).parent().toggleClass('open');
+                });
+            });
+        })(jQuery);
+    </script>
+
 </body>
 </html>

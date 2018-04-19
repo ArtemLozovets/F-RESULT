@@ -131,6 +131,50 @@ footer {
 }
 
 
+/*Navbar submenus styles MR*/
+.dropdown-submenu {
+    position: relative;
+}
+
+    .dropdown-submenu > .dropdown-menu {
+        top: 0;
+        right: 100%;
+        margin-top: -6px;
+        margin-left: -1px;
+        -webkit-border-radius: 6px 0 0 6px;  
+        -moz-border-radius: 6px 0 0 6px; 
+        border-radius: 6px 0 0 6px;
+    }
+
+    .dropdown-submenu > a:after {
+        display: block;
+        content: "";
+        float: right;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 5px 0 5px 5px;
+        border-right-color: #cccccc;
+        margin-top: 5px;
+        margin-top:5px;margin-right:-10px;
+        border-left-color: #aaa;
+    }
+
+    .dropdown-submenu.sbm.open a.asbm{
+        background-color:rgba(68, 110, 155, 0.61);
+    }
+
+    .dropdown-submenu.sbm.open a.asbm:after{
+        border-left-color: #fff;
+    }
+
+    .dropdown-submenu.sbm > a.asbm:focus:after{
+        border-left-color: #fff;
+    }
+
+/*#endregion */
+
 /*Блок стилей для кнопки "НАВЕРХ"*/
 .scrollup1 {
     width: 40px;
@@ -440,7 +484,7 @@ input[type=checkbox]#isAllTimes {
 
 /* ----------------RESPONSIVE---------------*/
 @media (max-width: 767px) {
-    .carousel; {
+    .carousel {
         height: 70%;
         /* increases the carousel height so it looks good on phones */
     }

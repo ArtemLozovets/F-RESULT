@@ -20,7 +20,7 @@
     }
 </style>
 
-<div id="loadingImg">
+<div id="loadingImg" hidden>
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
     </div>
@@ -217,107 +217,119 @@
     <script>
         $(function () {
             $('#loadingImg').hide();
-            var table = $('#gridtable').DataTable({
-                "fixedHeader": {
-                    "header": true,
-                    "headerOffset": $('#mainNavbar').height()
-                },
-                "processing": true,
-                "serverSide": true,
-                "filter": true,
-                "stateSave": false,
-                "orderMulti": false,
-                "responsive": true,
-                "pageLength": 25, // Количество записей в таблице по умолчанию
-                "pagingType": "simple_numbers",
-                "dom": "<'row'<'col-sm-3'l><'#pBalance.col-sm-9 text-right'B>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "language": {
-                    "lengthMenu": "Записей: _MENU_",
-                    "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск",
-                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    "sInfoThousands": " ",
-                    "oPaginate": {
-                        "sNext": ">",
-                        "sPrevious": "<"
-                    }
-                },
-                "ajax": {
-                    "url": "/AccountsBalances/LoadAB",
-                    "type": "POST",
-                    "datatype": "json",
-                    "dataSrc": function (d) {
-                        if (d.data.length === 0) {
-                            if (d.errormessage != "") {
-                                alert(d.errormessage);
-                            }
+            var table = $('#gridtable')
+                 .on('preXhr.dt', function (e, settings, data) {
+                     //Инициализация скрытого елемента "hdDate" и получение планового остатка на указанную дату
+                     if ($('#hdDate').val() === '') {
+                         var nowDT = new Date;
+                         var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                         $('#hdDate').val(nowDate);
+                         getPBalance($('#hdDate').val());
+                     }
+                 })
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "stateSave": false,
+                    "orderMulti": false,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'#pBalance.col-sm-9 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
                         }
-                        return d.data;
+                    },
+                    "ajax": {
+                        "url": "/AccountsBalances/LoadAB",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (d.data.length === 0) {
+                                if (d.errormessage != "") {
+                                    alert(d.errormessage);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[5, "desc"]],
+                    "columns": [
+                        { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "prgCellf context-menu-one" },
+                        { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "bankCellf context-menu-one" },
+                        { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "Note", "name": "Note", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
+                         {
+                             "data": "Date", "name": "Date", "autoWidth": true,
+                             "type": "date ",
+                             "render": function (value) {
+                                 if (value === null) return "";
+                                 var pattern = /Date\(([^)]+)\)/;
+                                 var results = pattern.exec(value);
+                                 var dt = new Date(parseFloat(results[1]));
+                                 var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                                 var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                                 return _d + "/" + _m + "/" + dt.getFullYear();
+                             },
+                             "class": "dateCellf context-menu-one"
+                         },
+                        { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
+
+                    ],
+                    "fnDrawCallback": function (settings) {
+                        var controlStr = '<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" ';
+                        controlStr += 'id="pbDate" title="Дата для расчета планового остатка" class="form-control input-sm" value="' + $('#hdDate').val() + '" />';
+                        controlStr += '<span class="badge sum-block" id="pBadge" title="Плановый остаток на счетах">' + $('#hdpBalance').val() + '&#8372;</span>';
+                        $("#pBalance").html(controlStr);
+
+                        //Инициализация компонента выбора даты
+                        $('#pbDate').dateRangePicker(
+                         {
+                             language: 'ru',
+                             startOfWeek: 'monday',
+                             format: 'DD/MM/YYYY',
+                             monthSelect: true,
+                             singleMonth: true,
+                             singleDate: true,
+                             yearSelect: true,
+                             autoClose: true,
+                             setValue: function (s) {
+                                 $(this).val(s);
+                             },
+                             showShortcuts: false,
+                             time: {
+                                 enabled: false
+                             },
+                         })
+                    .bind('datepicker-close', function (event, obj) {
+                        getPBalance($(this).val());
+                    });
+
+                    },
+
+                    "createdRow": function (row, data, rowIndex) {
+                        $(row).attr('data-objid', data.AccountsBalanceId);
+                        $(row).attr('data-accid', data.AccountId);
                     }
-                },
-                "order": [[5, "desc"]],
-                "columns": [
-                    { "data": "OrganizationName", "name": "OrganizationName", "autoWidth": true, "class": "prgCellf context-menu-one" },
-                    { "data": "BankName", "name": "BankName", "autoWidth": true, "class": "bankCellf context-menu-one" },
-                    { "data": "AccountNumber", "name": "AccountNumber", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "Note", "name": "Note", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "UserFN", "name": "UserFN", "autoWidth": true, "class": "usrCellf context-menu-one" },
-                     {
-                         "data": "Date", "name": "Date", "autoWidth": true,
-                         "type": "date ",
-                         "render": function (value) {
-                             if (value === null) return "";
-                             var pattern = /Date\(([^)]+)\)/;
-                             var results = pattern.exec(value);
-                             var dt = new Date(parseFloat(results[1]));
-                             var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-                             var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-                             return _d + "/" + _m + "/" + dt.getFullYear();
-                         },
-                         "class": "dateCellf context-menu-one"
-                     },
-                    { "data": "Balance", "name": "Balance", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" }
-
-                ],
-                "fnDrawCallback": function (settings) {
-                    var controlStr = '<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" ';
-                    controlStr += 'id="pbDate" title="Дата для расчета планового остатка" class="form-control input-sm" value="'+ $('#hdDate').val() +'" />';
-                    controlStr += '<span class="badge sum-block" id="pBadge" title="Плановый остаток на счетах">' + $('#hdpBalance').val() + '&#8372;</span>';
-                    $("#pBalance").html(controlStr);
-
-                    $('#pbDate').dateRangePicker(
-                     {
-                         language: 'ru',
-                         startOfWeek: 'monday',
-                         format: 'DD/MM/YYYY',
-                         monthSelect: true,
-                         singleMonth: true,
-                         singleDate: true,
-                         yearSelect: true,
-                         autoClose: true,
-                         setValue: function (s) {
-                             $(this).val(s);
-                         },
-                         showShortcuts: false,
-                         time: {
-                             enabled: false
-                         },
-                     })
-                .bind('datepicker-close', function (event, obj) {
-                    getPBalance($(this).val());
                 });
-                },
-
-                "createdRow": function (row, data, rowIndex) {
-                    $(row).attr('data-objid', data.AccountsBalanceId);
-                    $(row).attr('data-accid', data.AccountId);
-                }
-            });
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
@@ -344,13 +356,6 @@
     </script>
 
     <script>
-        $(function () {
-            var nowDT = new Date;
-            var nowDate = moment(nowDT).format('DD/MM/YYYY');
-            $('#hdDate').val(nowDate);
-            getPBalance(nowDate);
-        });
-
         //Получение планового остатка на дату
         function getPBalance(_date) {
             $('#loadingImg').show();
