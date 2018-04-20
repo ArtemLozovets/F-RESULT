@@ -74,7 +74,7 @@ namespace F_Result.Areas.Administrator.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-              //  fUserName = string.IsNullOrEmpty(fUserName)? fUserName.ToUpper() : "";
+                //  fUserName = string.IsNullOrEmpty(fUserName)? fUserName.ToUpper() : "";
 
                 users = db.Users.Where(x => x.FirstName.ToUpper().Contains(fUserName.ToUpper())
                                         || x.LastName.ToUpper().Contains(fUserName.ToUpper())
@@ -145,20 +145,109 @@ namespace F_Result.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult LoginAudit(String SearchDate)
         {
+            return View();
+        }
 
-            if (!String.IsNullOrEmpty(SearchDate))
+        [HttpPost]
+        public ActionResult GetLogins()
+        {
+            try
             {
-                ViewData["SearchDate"] = SearchDate;
+                using (FRModel visitorcontext = new FRModel())
+                {
+                    visitorcontext.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                    var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                    var start = Request.Form.GetValues("start").FirstOrDefault();
+                    var length = Request.Form.GetValues("length").FirstOrDefault();
+                    var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                    var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                    int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                    int skip = start != null ? Convert.ToInt32(start) : 0;
+                    int totalRecords = 0;
+
+                    string _login = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                    string _ip = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                    string _url = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                    string _resulttext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+
+                    bool _result = true;
+                    bool.TryParse(_resulttext, out _result);
+
+                    // Парсинг диапазона дат из DateRangePicker
+                    DateTime? _startdate = null;
+                    DateTime? _enddate = null;
+                    string _datetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                    if (!string.IsNullOrEmpty(_datetext))
+                    {
+                        _datetext = _datetext.Trim();
+                        int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
+                        string _startagrdatetext = _datetext.Substring(0, _datetext.IndexOf('-')).Trim();
+                        string _endagrdatetext = _datetext.Substring(_datetext.IndexOf('-') + 2, _length).Trim();
+                        _startdate = DateTime.Parse(_startagrdatetext);
+                        _enddate = DateTime.Parse(_endagrdatetext);
+                        _enddate = _enddate.Value.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    }
+                    //--------------------------
+
+                    var _la = (from visitor in visitorcontext.AspVisitors
+                               where (
+                                    (string.IsNullOrEmpty(_login) || visitor.Login.Contains(_login))
+                                    && (string.IsNullOrEmpty(_ip) || visitor.Ip.Contains(_ip))
+                                    && (string.IsNullOrEmpty(_url) || visitor.Url.Contains(_url))
+                                    && (string.IsNullOrEmpty(_ip) || visitor.Ip.Contains(_ip))
+                                    && (string.IsNullOrEmpty(_resulttext) || visitor.Result == _result)
+                                    && (string.IsNullOrEmpty(_datetext) || visitor.Date >= _startdate && visitor.Date <= _enddate) //Диапазон дат
+                               )
+                               select new
+                               {
+                                   Id = visitor.Id,
+                                   Login = visitor.Login,
+                                   Password = visitor.Password,
+                                   Ip = visitor.Ip,
+                                   Url = visitor.Url,
+                                   Result = visitor.Result,
+                                   Date = visitor.Date
+                               }).AsEnumerable().Select(x => new AspVisitor
+                               {
+                                   Id = x.Id,
+                                   Login = x.Login,
+                                   Password = x.Password,
+                                   Ip = x.Ip,
+                                   Url = x.Url,
+                                   Result = x.Result,
+                                   Date = x.Date
+                               }).ToList();
+
+                    if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                    {
+                        _la = _la.OrderBy(sortColumn + " " + sortColumnDir + ", Id desc").ToList();
+                    }
+                    else
+                    {
+                        _la = _la.OrderByDescending(x => x.Date).ThenByDescending(x => x.Id).ToList();
+                    }
+
+                    totalRecords = _la.Count();
+                    var data = _la.Skip(skip).Take(pageSize);
+
+                    return Json(new
+                    {
+                        result = true,
+                        draw = draw,
+                        recordsFiltered = totalRecords,
+                        recordsTotal = totalRecords,
+                        data = data
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса! " + ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
-            DateTime _date;
-            DateTime.TryParse(SearchDate, out _date);
-
-            using (FRModel visitorcontext = new FRModel())
-            {
-                var VisitorList = visitorcontext.AspVisitors.Where(x => DbFunctions.TruncateTime(x.Date) == _date || String.IsNullOrEmpty(SearchDate)).OrderByDescending(x => x.Date).Take(100).ToList();
-                return View(VisitorList);
-            }
         }
 
         #endregion

@@ -1,26 +1,20 @@
-﻿@model IEnumerable<F_Result.Models.AspVisitor>
-@{
+﻿@{
     ViewBag.Title = "Аудит входа";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/Content/jquery.datetimepicker.min.css" rel="stylesheet" />
-<style>
-    #cleardate:hover {
-        color: #d9534f;
-    }
 
-    #cleardate {
-        cursor: pointer;
-    }
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
-    .gridtable > tbody > tr > th {
-        text-align: center;
-    }
-
-    .gridtable > tbody > tr:first-child {
-        background-color: #eee;
-    }
-</style>
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
 
 <div class="container">
     <div class="row">
@@ -37,124 +31,247 @@
             </ol>
         </div>
     </div>
-    <div class="row">
-        @using (Html.BeginForm("LoginAudit", "UsersManagement", FormMethod.Get, new { @id = "auditform" }))
-        {
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon" id="cleardate"><i class="fa fa-calendar"></i></span>
-                        <input type="text"
-                               class="form-control"
-                               id="SearchDate"
-                               name="SearchDate"
-                               placeholder="Дата"
-                               style="width:150px; text-align:center;"
-                               value="@ViewData["SearchDate"]">
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-    <table class="table table table-bordered table-striped table-responsive table-hover gridtable">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Login)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ip)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Url)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Result)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-        </tr>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Login)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ip)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Url)
-                </td>
 
-                @if (item.Result ?? false)
-                {
-                    <td style="color:#5cb85c; text-align:center;">
-                        <i class="fa fa-check"></i>
-                    </td>
-                }
-                else
-                {
-                    <td style="color:#d9534f;text-align:center; ">
-                        <i class="fa fa-exclamation-triangle"></i>
-                    </td>
-                }
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb loginFlt" style="width: 100%" placeholder="Логин" /></th>
+                <th><input type="text" class="form-control input-sm sb ipFlt" style="width: 100%" placeholder="IP" /></th>
+                <th><input type="text" class="form-control input-sm sb urlFlt" style="width: 100%" placeholder="Маршрут" /></th>
+                <th>
+                    <select class="form-control input-sm sb" id="resultList" style="width: 100%">
+                        <option value="">Все</option>
+                        <option value="true">Вход</option>
+                        <option value="false">Отказ</option>
+                    </select>
+                </th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата/Время" /></th>
             </tr>
-        }
+
+            <tr role="row">
+                <th>Логин</th>
+                <th>IP</th>
+                <th>Маршрут</th>
+                <th>Результат</th>
+                <th>Дата/Время</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     </table>
 
-    <a href="#" class="scrollup1">Наверх</a>
-
-    <div>
-        <a class="btn btn-primary" href='@Url.Action("ShowUsers", "UsersManagement", new {Area = "Administrator" }, null)'><span class="glyphicon glyphicon-circle-arrow-left"> Назад</span></a>
-    </div>
 </div>
 
+<a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
 
-    @*Блок скриптов для работы с DateTimePicker*@
-    <script src="~/Scripts/jquery.datetimepicker.full.min.js"></script>
-    <script type="text/javascript">
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('.dff').each(function () {
+                $(this).dateRangePicker(
+                     {
+                         language: 'ru',
+                         startOfWeek: 'monday',
+                         separator: ' - ',
+                         format: 'DD/MM/YYYY',
+                         autoClose: false,
+                         monthSelect: true,
+                         yearSelect: true,
+                         setValue: function (s) {
+                             $(this).val(s);
+                         },
+                         customOpenAnimation: function (cb) {
+                             $(this).fadeIn(300, cb);
+                         },
+                         customCloseAnimation: function (cb) {
+                             $(this).fadeOut(300, cb);
+                         },
+                         showShortcuts: false,
+                         time: {
+                             enabled: false
+                         },
+                         extraClass: 'date-range-pickerM'
+                     })
+                .bind('datepicker-closed', function (event, obj) {
+                    $(this).attr('title', $(this).val()).trigger('change');
+                })
+                .bind('datepicker-open', function () {
+                    $(this).data('dateRangePicker').clear();
+                });
 
-        $.datetimepicker.setLocale('ru');
-
-        // <![CDATA[
-        jQuery(function () {
-            jQuery('#SearchDate').datetimepicker({
-                format: 'd/m/Y',
-                formatDate: 'd/m/Y',
-                timepicker: false
             });
         });
-        // ]]>
-
-        $.validator.methods.date = function (value, element) {
-            if (value) {
-                try {
-                    $.datepicker.parseDate('dd/MM/yy', value);
-                } catch (ex) {
-                    return false;
-                }
-            }
-            return true;
-        };
     </script>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
-            $('#cleardate').on('click', function (e) {
-                $('#SearchDate').val("");
-                $('#auditform').submit();
+            $('#loadingImg').hide();
+
+            //Контекстное меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'filter':
+                            if (fClass.indexOf("loginCellf") >= 0) {
+                                $('.loginFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("ipCellf") >= 0) {
+                                $('.ipFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("urlCellf") >= 0) {
+                                $('.urlFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                }
             });
-            $('#SearchDate').on('change', function (e) {
-                $('#auditform').submit();
+
+            //Таблица с данными
+            var table = $('#gridtable')
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "stateSave": false,
+                    "orderMulti": false,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'#pBalance.col-sm-9 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='/Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "ajax": {
+                        "url": "/Administrator/UsersManagement/GetLogins",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (!d.result) {
+                                if (d.message != null) {
+                                    alert(d.message);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[4, "desc"]],
+                    "columns": [
+                        { "data": "Login", "name": "Login", "autoWidth": true, "class": "loginCellf context-menu-one" },
+                        { "data": "Ip", "name": "Ip", "autoWidth": true, "class": "ipCellf context-menu-one" },
+                        { "data": "Url", "name": "Url", "autoWidth": true, "class": "urlCellf context-menu-one" },
+                        {
+                            "data": "Result", "name": "Result", "sWidth": 20,
+                            "render": function (value) {
+
+                                if (value === true) {
+                                    resStr = '<i style="color:#5cb85c;" class="fa fa-check"></i>';
+                                }
+                                else {
+                                    resStr = '<i style="color:#d9534f;" class="fa fa-exclamation-triangle"></i>';
+                                }
+                                return (value === true) ? '<i style="color:#5cb85c;" class="fa fa-check"></i>' : '<i style="color:#d9534f;" class="fa fa-exclamation-triangle"></i>';
+
+                            },
+                            "class": "context-menu-one text-center"
+                        },
+                         {
+                             "data": "Date", "name": "Date", "sWidth": 50,
+                             "type": "date ",
+                             "render": function (value) {
+                                 if (value === null) return "";
+                                 var pattern = /Date\(([^)]+)\)/;
+                                 var results = pattern.exec(value);
+                                 var dt = new Date(parseFloat(results[1]));
+                                 var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                                 var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                                 var _H = (dt.getHours()) < 10 ? "0" + (dt.getHours()) : (dt.getHours());
+                                 var _Mn = (dt.getMinutes()) < 10 ? "0" + (dt.getMinutes()) : (dt.getMinutes());
+                                 return _d + "/" + _m + "/" + dt.getFullYear() + "&nbsp;" + _H + ":" + _Mn;
+                             },
+                             "class": "dateCellf context-menu-one"
+                         },
+                    ]
+                });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
             });
         });
+    </script>
+
+    <script>
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+            $('#statusList').val('all');
+        }
     </script>
 }
