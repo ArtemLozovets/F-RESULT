@@ -214,6 +214,10 @@
     <Compile Include="Migrations\201709101928333_Soder.Designer.cs">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804211812286_ProjectsChange.cs" />
+    <Compile Include="Migrations\201804211812286_ProjectsChange.Designer.cs">
+      <DependentUpon>201804211812286_ProjectsChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -233,6 +237,7 @@
     <Compile Include="Models\DUsers.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\UsrWksRelation.cs" />
+    <Compile Include="Models\VAspUsers.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\Workers.cs">
       <SubType>Code</SubType>
@@ -595,6 +600,7 @@
     <Content Include="Areas\Administrator\Views\UsersManagement\UsrWksRelation.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsersPartial.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\LoginAudit.cshtml" />
+    <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsers1.cshtml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
@@ -736,6 +742,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709101928333_Soder.resx">
       <DependentUpon>201709101928333_Soder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804211812286_ProjectsChange.resx">
+      <DependentUpon>201804211812286_ProjectsChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

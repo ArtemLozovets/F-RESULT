@@ -61,7 +61,7 @@ namespace F_Result.Areas.Administrator.Controllers
             return View();
         }
 
-        // GET: UsersManagement
+         //GET: UsersManagement
         public ActionResult ShowUsersPartial(string fUserName)
         {
             List<ApplicationUser> users = new List<ApplicationUser>();
@@ -139,6 +139,101 @@ namespace F_Result.Areas.Administrator.Controllers
                 return View("Error");
             }
         }
+        #endregion
+
+        #region ShowUsers Новый Метод генерации списка пользователей-----------------------------------------------------
+
+        // GET: UsersManagement
+        public ActionResult ShowUsers1(string result)
+        {
+            if (!string.IsNullOrEmpty(result) && result == "success")
+            {
+                TempData["MessageOk"] = "Операция завершена успешно";
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult GetUsers()
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                string _login = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _ip = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _url = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _resulttext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+
+                var _usr = (from useritem in dbModel.VAspUsers
+                            where (true)
+                            select new
+                           {
+                               Id = useritem.UId,
+                               UserName = useritem.UUserName,
+                               Email = useritem.UEmail,
+                               FirstName = useritem.UFirstName,
+                               LastName = useritem.ULastName,
+                               MiddleName = useritem.UMiddleName,
+                               FullName = useritem.UFullName,
+                               Post = useritem.UPost,
+                               RoleName = useritem.URoleName,
+                               RoleDesc = useritem.URoleDesc,
+                               Workers = useritem.UWorkers
+                           }).AsEnumerable().Select(x => new VAspUsers
+                           {
+                               UId = x.Id,
+                               UUserName = x.UserName,
+                               UEmail = x.Email,
+                               UFirstName = x.FirstName,
+                               ULastName = x.LastName,
+                               UMiddleName = x.MiddleName,
+                               UFullName = x.LastName + " " + x.FirstName + " " + x.MiddleName,
+                               UPost = x.Post,
+                               URoleDesc = x.RoleDesc,
+                               URoleName = x.RoleName,
+                               UWorkers = x.Workers
+                           }).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _usr = _usr.OrderBy(sortColumn + " " + sortColumnDir + ", UId desc").ToList();
+                }
+                else
+                {
+                    _usr = _usr.OrderBy(x => x.UUserName).ToList();
+                }
+
+                totalRecords = _usr.Count();
+                var data = _usr.Skip(skip).Take(pageSize);
+
+                return Json(new
+                {
+                    result = true,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса! " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         #endregion
 
         #region Метод генерации таблицы аудита входа пользователей --------------------------------------------

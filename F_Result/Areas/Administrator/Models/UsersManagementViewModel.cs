@@ -36,9 +36,6 @@ namespace F_Result.Models
 
         [Display(Name = "Роль")]
         public string URole { get; set; }
-
-
-
     }
 
     public class UpdateUserInfoesViewModel

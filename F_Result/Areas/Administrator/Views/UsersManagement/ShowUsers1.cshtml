@@ -1,0 +1,173 @@
+﻿@model IEnumerable<F_Result.Models.UsRoleViewModel>
+@{
+    ViewBag.Title = "Пользователи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @ViewBag.Title
+                <small>Список пользователей</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    @Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)
+                </li>
+                <li>
+                    Управление
+                </li>
+                <li class="active">Пользователи</li>
+            </ol>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="text-success" id="resultOk"> @TempData["MessageOk"]</p>
+            <p class="text-danger" id="resultError"> @TempData["MessageError"]</p>
+        </div>
+    </div>
+
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ФИО" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Логин" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Email" /></th>
+                <th><input type="text" class="form-control input-sm sb postFlt" style="width: 100%" placeholder="Должность" /></th>
+                <th>
+                    <select class="form-control input-sm sb" id="resultList" style="width: 100%">
+                        <option value="">Все</option>
+                        <option value="Administrator">Администратор</option>
+                        <option value="Chief">Руководитель</option>
+                        <option value="ProjectManager">Руководитель проекта</option>
+                        <option value="Accountant">Бухгалтер</option>
+                        <option value="Financier">Финансист</option>
+                        <option value="Blockeduser">Заблокирован</option>
+                    </select>
+                </th>
+            </tr>
+
+            <tr role="row">
+                <th>ФИО</th>
+                <th>Логин</th>
+                <th>Email</th>
+                <th>Должность</th>
+                <th>Роль</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+
+<a href="#" class="scrollup1">Наверх</a>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    <script>
+        $(function () {
+            $('#loadingImg').hide();
+
+            //Таблица с данными
+            var table = $('#gridtable')
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "stateSave": false,
+                    "orderMulti": false,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'#pBalance.col-sm-9 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='/Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "ajax": {
+                        "url": "/Administrator/UsersManagement/GetUsers",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (!d.result) {
+                                if (d.message != null) {
+                                    alert(d.message);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        { "data": "UFullName", "name": "UFullName", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UUserName", "name": "UUserName", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UEmail", "name": "UEmail", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UPost", "name": "UPost", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "URoleDesc", "name": "URoleDesc", "autoWidth": true, "class": "context-menu-one" },
+                    ]
+                });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+            });
+
+        });
+    </script>
+
+<script>
+    function ClearFilter() {
+        var table = $('#gridtable').DataTable();
+        $(".sb, .dff").each(function (colIdx) {
+            $(this).val('');
+            table.column(colIdx).search('');
+        });
+        table.draw();
+        $('#statusList').val('all');
+    }
+</script>
+
+}
