@@ -11,6 +11,11 @@
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
+<style>
+    body{
+    }
+</style>
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -242,7 +247,7 @@
 
                         //Выделяем цветом заблокированного пользователя
                         if (data.URoleName == 'Blockeduser') {
-                            $(row).css({ 'background-color': '#d9534f;', 'color': '#fff' });
+                            $(row).css({ 'background-color': 'rgba(217, 83, 79, 0.5)', 'color': '#555' });
                         }
 
                         //Выводим всплывающую подсказку со списком связанных сотрудников
