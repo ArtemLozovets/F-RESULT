@@ -4,23 +4,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<style>
-    .gridtable > tbody > tr > th {
-        text-align: center;
-    }
-
-    .gridtable > tbody > tr:first-child {
-        background-color: #eee;
-    }
-
-    #clearfilter:hover, #applyfilter:hover {
-        color: #d9534f;
-    }
-
-    #clearfilter, #applyfilter {
-        cursor: pointer;
-    }
-</style>
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -53,51 +42,239 @@
         </div>
     </div>
 
-    <div class="form-inline" style="margin-bottom:10px;">
-        @using (Ajax.BeginForm("ShowUsersPartial", "UsersManagement", new AjaxOptions { UpdateTargetId = "usersBlock", LoadingElementId = "loadingImg" }, new { @id = "userFilterForm" }))
-        {
-            <a title="Статистика событий авторизации в приложении" class="btn btn-primary" href="~/Administrator/UsersManagement/LoginAudit">Аудит входа</a>
-            <a title="Создание новой учетной записи" class="btn btn-primary" href="~/Administrator/UsersManagement/Register">Добавить пользователя</a>
-            <div class="input-group pull-right">
-                <span class="input-group-addon" id="clearfilter" title="Сброс фильтра"><i class="fa fa-refresh"></i></span>
-                @Html.TextBox("fUserName", null,
-                new
-                {
-                    @style = "width:260px;",
-                    @type = "text",
-                    @class = "form-control",
-                    @placeholder = "Пользователь",
-                    @title = "ФИО пользователя, логин",
-                })
-                <span class="input-group-addon" id="applyfilter" title="Применить фильтр"><i class="fa fa-check-circle"></i></span>
-            </div>
-        }
-    </div>
+    <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+        <thead>
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="ФИО" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Логин" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Email" /></th>
+                <th><input type="text" class="form-control input-sm sb postFlt" style="width: 100%" placeholder="Должность" /></th>
+                <th>
+                    <select class="form-control input-sm sb roleFlt" style="width: 100%">
+                        <option value="">Все</option>
+                        <option value="Administrator">Администратор</option>
+                        <option value="Chief">Руководитель</option>
+                        <option value="ProjectManager">Руководитель проекта</option>
+                        <option value="Accountant">Бухгалтер</option>
+                        <option value="Financier">Финансист</option>
+                        <option value="Blockeduser">Заблокирован</option>
+                    </select>
+                </th>
+            </tr>
 
-    <div id="usersBlock">
-        @Html.Action("ShowUsersPartial", "UsersManagement", new { @fUserName = "" })
-    </div>
+            <tr role="row">
+                <th>ФИО</th>
+                <th>Логин</th>
+                <th>Email</th>
+                <th>Должность</th>
+                <th>Роль</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
 </div>
 
 <a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script>
         $(function () {
-
             $('#loadingImg').hide();
 
-            $('#clearfilter').on('click', function () {
-                $('#fUserName').val("");
-                $('#userFilterForm').submit();
+            //Контекстное меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                build: function ($trigger) {
+                    var _tr = $trigger.closest('tr').attr('data-roleName');
+                    var options = {
+                        callback: function (key, options) {
+                            var fClass = $(this).attr('class');
+                            switch (key) {
+                                case 'add':
+                                    window.location.href = "/Administrator/UsersManagement/Register";
+                                    break;
+                                case 'edit':
+                                    window.location.href = "/Administrator/UsersManagement/UpdateUserInfoes?UserId=" + $(this).closest('tr').attr('data-userId');
+                                    break;
+                                case 'wksrelation':
+                                    window.location.href = "/Administrator/UsersManagement/UsrWksRelation?UserId=" + $(this).closest('tr').attr('data-userId') + "&amp;Mode=Edit";
+                                    break;
+                                case 'ublock':
+                                    if (_tr === "Blockeduser") {
+                                        window.location.href = "/Administrator/UsersManagement/UnblockUser?UserId=" + $(this).closest('tr').attr('data-userId');
+                                    }
+                                    else {
+                                        window.location.href = "/Administrator/UsersManagement/BlockUser?UserId=" + $(this).closest('tr').attr('data-userId');
+                                    }
+                                    break;
+                                case 'chpass':
+                                    window.location.href = "/Administrator/UsersManagement/ChangePassword?UserID=" + $(this).closest('tr').attr('data-userId');
+                                    break;
+                                    //--------------------
+                                case 'filter':
+                                    if (fClass.indexOf("postCellf") >= 0) {
+                                        $('.postFlt').val($(this).text()).trigger('change');
+                                        break;
+                                    };
+                                    if (fClass.indexOf("roleCellf") >= 0) {
+                                        var _rnStr = "option[value= " + $(this).closest('tr').attr('data-roleName') + "]";
+                                        $(".roleFlt " + _rnStr).attr('selected', 'selected').change();
+                                        break;
+                                    };
+                                    //-----------------------
+                                case 'refresh':
+                                    ClearFilter();
+                                    break;
+                                default:
+                                    return;
+                            }
+                        },
+                        items: {
+                            "filter": {
+                                name: "Фильтр по значению",
+                                icon: "filter",
+                                disabled: function () {
+                                    var fClass = $(this).attr('class');
+                                    if (fClass.indexOf("Cellf") >= 0) { return false };
+                                    return true;
+                                }
+                            },
+                            "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                            "sep": "---------",
+                            "add": { name: "Создать", icon: "add" },
+                            "edit": { name: "Редактировать", icon: "edit" },
+                            "wksrelation": { name: "Сопоставление пользователей", icon: "wksrelation" },
+                            "ublock": {
+                                name: function () {
+                                    if (_tr === 'Blockeduser') {
+                                        return 'Разблокировать';
+                                    }
+                                    return 'Заблокировать';
+                                },
+                                icon: function () {
+                                    if (_tr === 'Blockeduser') {
+                                        return 'context-menu-icon context-menu-icon-uunblock';
+                                    }
+                                    return 'context-menu-icon context-menu-icon-ublock';
+                                }
+                            },
+                            "chpass": { name: "Смена пароля", icon: "chpass" }
+                        },
+
+                    };
+
+                    return options;
+                }
+
             });
 
-            $('body').on('click', '#applyfilter', function (e) {
-                $('#userFilterForm').submit();
+            //Таблица с данными
+            var table = $('#gridtable')
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "stateSave": false,
+                    "orderMulti": false,
+                    "responsive": true,
+                    "pageLength": 25, // Количество записей в таблице по умолчанию
+                    "pagingType": "simple_numbers",
+                    "dom": "<'row'<'col-sm-3'l><'#pBtn.col-sm-9 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    "language": {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='/Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
+                        }
+                    },
+                    "ajax": {
+                        "url": "/Administrator/UsersManagement/GetUsers",
+                        "type": "POST",
+                        "datatype": "json",
+                        "dataSrc": function (d) {
+                            if (!d.result) {
+                                if (d.message != null) {
+                                    alert(d.message);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        { "data": "UFullName", "name": "UFullName", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UUserName", "name": "UUserName", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UEmail", "name": "UEmail", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "UPost", "name": "UPost", "autoWidth": true, "class": "postCellf context-menu-one" },
+                        { "data": "URoleDesc", "name": "URoleDesc", "autoWidth": true, "class": "roleCellf context-menu-one" },
+                    ],
+                    "fnDrawCallback": function (settings) {
+                        var btnStr = '<a title="Статистика событий авторизации в приложении" class="btn btn-primary btn-sm" href="/Administrator/UsersManagement/LoginAudit">Аудит входа</a>';
+                        btnStr += '<a title="Создание новой учетной записи" class="btn btn-primary btn-sm" style="margin-left:.4em;" href="/Administrator/UsersManagement/Register">Добавить пользователя</a>';
+                        $("#pBtn").html(btnStr);
+                    },
+                    "createdRow": function (row, data, rowIndex) {
+                        //Сохраняем Id пользователя и имя роли пользователя в data атрибут
+                        $(row).attr('data-roleName', data.URoleName);
+                        $(row).attr('data-userId', data.UId);
+
+                        //Выделяем цветом заблокированного пользователя
+                        if (data.URoleName == 'Blockeduser') {
+                            $(row).css({ 'background-color': '#d9534f;', 'color': '#fff' });
+                        }
+
+                        //Выводим всплывающую подсказку со списком связанных сотрудников
+                        if (data.UWorkers !== null) {
+                            var titleStr = "Связанные сотрудники: \x0A " + data.UWorkers.replace(/;/g, "\x0A");
+                            $(row).attr('title', titleStr);
+                        }
+                    },
+                });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
             });
+
         });
+    </script>
+
+    <script>
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+            $('.roleFlt').val('');
+        }
     </script>
 }

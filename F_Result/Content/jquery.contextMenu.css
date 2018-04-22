@@ -99,6 +99,22 @@
   content: "\F05E";
 }
 
+.context-menu-icon-wksrelation:before {
+  content: "\F2BD";
+}
+
+.context-menu-icon-ublock:before {
+  content: "\F070";
+}
+
+.context-menu-icon-uunblock:before {
+  content: "\F06E";
+}
+
+.context-menu-icon-chpass:before {
+  content: "\F084";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;

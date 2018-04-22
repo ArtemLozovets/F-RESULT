@@ -51,7 +51,7 @@ namespace F_Result.Areas.Administrator.Controllers
         #region ShowUsers Метод генерации списка пользователей-----------------------------------------------------
 
         // GET: UsersManagement
-        public ActionResult ShowUsers(string result)
+        public ActionResult ShowUsers1(string result)
         {
             if (!string.IsNullOrEmpty(result) && result == "success")
             {
@@ -61,7 +61,7 @@ namespace F_Result.Areas.Administrator.Controllers
             return View();
         }
 
-         //GET: UsersManagement
+        //GET: UsersManagement
         public ActionResult ShowUsersPartial(string fUserName)
         {
             List<ApplicationUser> users = new List<ApplicationUser>();
@@ -144,7 +144,7 @@ namespace F_Result.Areas.Administrator.Controllers
         #region ShowUsers Новый Метод генерации списка пользователей-----------------------------------------------------
 
         // GET: UsersManagement
-        public ActionResult ShowUsers1(string result)
+        public ActionResult ShowUsers(string result)
         {
             if (!string.IsNullOrEmpty(result) && result == "success")
             {
@@ -172,13 +172,23 @@ namespace F_Result.Areas.Administrator.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
-                string _login = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
-                string _ip = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _url = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _resulttext = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _fio = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _login = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _email = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _post = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _role = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
 
                 var _usr = (from useritem in dbModel.VAspUsers
-                            where (true)
+                            where (
+                                    (string.IsNullOrEmpty(_fio)
+                                        || useritem.UFirstName.Contains(_fio)
+                                        || useritem.ULastName.Contains(_fio)
+                                        || useritem.UMiddleName.Contains(_fio))
+                                    && (string.IsNullOrEmpty(_login) || useritem.UUserName.Contains(_login))
+                                    && (string.IsNullOrEmpty(_email) || useritem.UEmail.Contains(_email))
+                                    && (string.IsNullOrEmpty(_post) || useritem.UPost.Contains(_post))
+                                    && (string.IsNullOrEmpty(_role) || useritem.URoleName.Contains(_role))
+                            )
                             select new
                            {
                                Id = useritem.UId,
@@ -472,7 +482,7 @@ namespace F_Result.Areas.Administrator.Controllers
                     };
                     return View(currentuser);
                 }
-                ViewBag.ErMes = "Пользователь с Id " + UserId + " не нейден";
+                ViewBag.ErMes = "Пользователь с Id " + UserId + " не найден";
                 ViewBag.ErStack = "";
                 return View("Error");
             }
