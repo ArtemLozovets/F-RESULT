@@ -490,7 +490,6 @@
     <Content Include="Areas\Administrator\Views\UsersManagement\Register.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\SelfBlockError.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\SelfPasswordChange.cshtml" />
-    <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsers1.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\UpdateUserInfoes.cshtml" />
     <Content Include="Areas\Administrator\Views\_ViewStart.cshtml" />
     <Content Include="CodeTemplates\MvcControllerWithContext\Controller.cs.t4" />
