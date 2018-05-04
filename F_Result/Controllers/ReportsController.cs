@@ -511,7 +511,14 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    if (sortColumn == "ProjectName")
+                    {
+                        _ads = _ads.OrderBy("IPA " + sortColumnDir).ToList();
+                    }
+                    else
+                    {
+                        _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    }
                 }
 
                 totalRecords = _ads.Count();
@@ -619,7 +626,11 @@ namespace F_Result.Controllers
 
                 };
 
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                if (sortColumn == "ProjectName")
+                {
+                    _ads = _ads.OrderBy("IPA " + sortColumnDir).ToList();
+                }
+                else
                 {
                     _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }

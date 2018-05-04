@@ -28,6 +28,7 @@ namespace F_Result.Models
         public decimal planExpand { get; set; }
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }
+        public DateTime? IPA { get; set; }
     }
 
     [NotMapped]
@@ -68,6 +69,7 @@ namespace F_Result.Models
         public decimal IncomeF1 { get; set; }
         public decimal IncomeF2 { get; set; }
         public decimal IncomeTotal { get; set; }
+        public DateTime? IPA { get; set; }
     }
 
     [NotMapped]

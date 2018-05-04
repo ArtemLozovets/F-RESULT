@@ -80,13 +80,11 @@
                     <th class="smallTH">Прибыль&nbsp;<sub>Ф1</sub></th>
                     <th class="smallTH">Прибыль&nbsp;<sub>Ф2</sub></th>
                     <th class="smallTH">Прибыльность</th>
-                    <th>ID</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr class="tright">
                     <th>Итого</th>
-                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -260,14 +258,7 @@
                             }
                         },
                     },
-                    order: [10, "desc"],
-                    columnDefs: [
-                        {
-                            "targets": [10],
-                            "visible": false,
-                            "searchable": false
-                        }
-                    ],
+                    order: [0, "desc"],
                     columns: [
                                 { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
                                 { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
@@ -279,12 +270,16 @@
                                 { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "prj", sWidth: '0%', bSortable: true, name: "prj", "class": "context-menu-one" }
                     ],
 
                     fnCreatedRow: function (row, data, rowIndex) {
                         //Выводим всплывающую подсказку с подробной информацией о проекте
-                        var prgTitleStr = 'Руководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                        var _IPA = 'Платежи отсутствуют';
+                        if (data.IPA !== null) {
+                            _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
+                        }
+                        var prgTitleStr = 'Индекс активности: ' + _IPA;
+                        prgTitleStr += '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
                         // Выделение цветом дельта-ячеек
@@ -335,17 +330,6 @@
                         if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
                         else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                        //    if (json.Result) {
-                        //        if (this.fnSettings().fnRecordsTotal() === 0 && json.isAllTimes) {
-                        //            $('#alrt').html('Отчетный период: <span class="badge sum-block">За весь период</span>');
-                        //        }
-                        //        else {
-                        //            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
-                        //            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
-                        //            $('#alrt').html('Отчетный период: <span class="badge sum-block">' + startDate + ' - ' + endDate + '</span>');
-                        //        }
-                        //    };
-
                         //Инициализация таблицы проектов в плавающей панели
                         if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
@@ -357,10 +341,6 @@
                             window._flag = false;
                         };
 
-                        //if (json.planningbalance != null) {
-                        //    var _pbSum = json.planningbalance.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1&nbsp;");
-                        //    $("#plBalance").html('Плановый остаток на счетах: <span class="badge sum-block">' + _pbSum + '&#8372;</span>');
-                        //}
                     }
                 });
 
