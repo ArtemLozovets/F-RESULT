@@ -36,12 +36,12 @@
     <div class="row form-inline">
         @Html.DropDownList("year", years, new
            {
-               @class = "form-control form-inline",
+               @class = "form-control form-inline input-sm",
                style = "margin:2px; width:100px; display:inline-block;",
                id = "YDDL",
            })
 
-        <select id="chartType" class="form-control" style="width:140px;">
+        <select id="chartType" class="form-control input-sm" style="width:140px;">
             <option value="bar">Графбар</option>
             <option value="line">Линейная</option>
         </select>
