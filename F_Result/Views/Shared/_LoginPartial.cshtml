@@ -16,6 +16,10 @@
                         <a href="@Url.Action("CommentsShow", "Feedback", new { Area = "" })"><i class="fa fa-comments" style="margin-right:10px;"></i>&nbsp;Отзывы</a>
                     </li>
                     <li class="divider"></li>
+                    <li>
+                        <a href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "" })"><i class="fa fa-line-chart" style="margin-right:10px;"></i>&nbsp;Мой ААО</a>
+                    </li>
+                    <li class="divider"></li>
                     <!-- If current user is Administrator -->
                     @if (this.User.IsInRole("Administrator"))
                     {
@@ -35,7 +39,7 @@
                         </li>
                         <li class="divider"></li>
                     }
-                    
+
                     <li>
                         <a href="@Url.Action("SelfPasswordChange", "UsersManagement", new {Area = "Administrator" })"><i class="fa fa-key" style="margin-right:10px;"></i>&nbsp;Смена пароля</a>
                     </li>

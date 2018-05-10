@@ -717,6 +717,7 @@
     <Content Include="Views\Directum\ShowActualDebitsF2.cshtml" />
     <Content Include="Views\Reports\AnalysisOfTheProjectProfitability.cshtml" />
     <Content Include="Views\Feedback\CommentsShow.cshtml" />
+    <Content Include="Views\Reports\AlternativeAdvance.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

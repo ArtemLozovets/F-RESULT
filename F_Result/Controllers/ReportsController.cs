@@ -309,11 +309,11 @@ namespace F_Result.Controllers
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
-                _ads = _ads.Where(x => 
+                _ads = _ads.Where(x =>
                             (filterPrjIDs == null
                             || filterPrjIDs.Length == 0
                             || filterPrjIDs.Contains(x.prj))
-                            &&(WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
@@ -436,7 +436,7 @@ namespace F_Result.Controllers
 
                 APPTableReportTotal total = new APPTableReportTotal
                 {
-                    FactCreditF1Total= _ads.Sum(x => x.FactCreditF1),
+                    FactCreditF1Total = _ads.Sum(x => x.FactCreditF1),
                     FactCreditF2Total = _ads.Sum(x => x.FactCreditF2),
                     FCF1F2Total = _ads.Sum(x => x.FCTotalF1F2),
                     FactDebitF1Total = _ads.Sum(x => x.FactDebitF1),
@@ -480,6 +480,31 @@ namespace F_Result.Controllers
                 return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
+
+
+        //Отчет по Ф2 "Альтернативный авансовый отчет" GET
+        [Authorize]
+        public ActionResult AlternativeAdvance()
+        {
+            return View();
+        }
+
+        //Получение данных для построения отчета  по Ф2 "Альтернативный авансовый отчет" POST
+        [Authorize]
+        public JsonResult GetAAR()
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try
+            {
+                
+                return Json(new { data = "1" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса! " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         protected override void Dispose(bool disposing)
         {
