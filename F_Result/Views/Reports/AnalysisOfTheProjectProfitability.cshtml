@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
-                Прибильность
+                Прибыльность
                 <small>Анализ прибыльности проектов</small>
             </h1>
             <ol class="breadcrumb">
@@ -137,6 +137,7 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     <script>
         $(function () {
@@ -159,6 +160,9 @@
                         case 'refresh':
                             ClearFilter();
                             break;
+                        case 'epexport':
+                            APPExport2Excel('../Export/ExportAPPReport');
+                            break;
                         default:
                             return;
                     }
@@ -173,7 +177,24 @@
                             return true;
                         }
                     },
-                    "refresh": { name: "Сброс фильтра", icon: "refresh" }
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep1": "---------",
+                    "expand": {
+                        name: "Расшифровка",
+                        icon: "expand",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if ((fClass.indexOf("dfExp") >= 0
+                                    || fClass.indexOf("cfExp") >= 0
+                                    || (fClass.indexOf("dpExp") >= 0 && !$('#isAllTimes').is(':checked'))
+                                    || (fClass.indexOf("cpExp") >= 0 && !$('#isAllTimes').is(':checked')))
+                                    && $(this).text() != '0,00') { return false };
+                            return true;
+                        }
+                    },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" },
+
                 }
             });
 
@@ -263,13 +284,13 @@
                                 { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
                                 { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
                                 { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
                                 { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
                     ],
 
                     fnCreatedRow: function (row, data, rowIndex) {
@@ -298,10 +319,10 @@
                         }
 
                         if (data.IncomeTotal > 0) {
-                            $('td:eq(9)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                            $('td:eq(9)', row).css('color', '#006400');
                         }
                         else if (data.IncomeTotal < 0) {
-                            $('td:eq(9)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                            $('td:eq(9)', row).css('color', '#b22222');
                         }
                     },
 
@@ -327,8 +348,8 @@
                         if (json.total.IncomeF2Total * 1 > 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
                         else if (json.total.IncomeF2Total * 1 < 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                        if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                        else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                        if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#006400'); }
+                        else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#b22222'); }
 
                         //Инициализация таблицы проектов в плавающей панели
                         if (window._flag) {

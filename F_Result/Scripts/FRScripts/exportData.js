@@ -1,4 +1,4 @@
-﻿// #region Функция експорта данных в Excel данных базовых таблиц
+﻿// #region Функция експорта в Excel данных базовых таблиц
 
 function Export2Excel(controllerName) {
     var api = $('#gridtable').dataTable().api();
@@ -39,6 +39,37 @@ function APBExport2Excel(controllerName) {
 console.log(paramStr);
 
 fnExport2Excel(controllerName, paramStr);
+};
+
+// #endregion
+
+
+// #region Функция експорта данных отчета "Прибыльность" в Excel
+
+function APPExport2Excel(controllerName) {
+    var api = $('#gridtable').dataTable().api();
+    var json = api.ajax.json();
+
+    var idsArray = new Array();
+    var arr_from_json = JSON.parse(json.prjlist);
+
+    for (var i = 0; i < arr_from_json.length; i++) {
+        idsArray.push(arr_from_json[i].PrjId);
+    }
+
+    var baseDate = json.baseDate;
+
+    var paramStr = JSON.stringify({
+        IDs: idsArray //!!!-Список проектов-!!!
+            , sortColumn: json.sortcolumn
+            , sortColumnDir: json.sortdir
+            , repDate: json.repDate
+            , ProjectName: json.ProjectName
+    });
+
+    console.log(paramStr);
+
+    fnExport2Excel(controllerName, paramStr);
 };
 
 // #endregion

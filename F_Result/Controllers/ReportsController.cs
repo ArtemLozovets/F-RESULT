@@ -391,7 +391,7 @@ namespace F_Result.Controllers
             return View();
         }
 
-        //Получение данных для построения отчета "Бюджетирование" POST
+        //Получение данных для построения отчета "Прибыльность проектов" POST
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public JsonResult GetAPP(DateTime? RepDate, int[] filterPrjIDs, string ProjectName)
         {
