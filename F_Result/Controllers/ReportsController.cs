@@ -469,6 +469,7 @@ namespace F_Result.Controllers
                     data = data,
                     total = total,
                     prjlist = _prjListJson,
+                    repDate = repdt,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }

@@ -63,7 +63,7 @@ function APPExport2Excel(controllerName) {
         IDs: idsArray //!!!-Список проектов-!!!
             , sortColumn: json.sortcolumn
             , sortColumnDir: json.sortdir
-            , repDate: json.repDate
+            , repDate: moment(json.repDate).format('YYYYMMDD')
             , ProjectName: json.ProjectName
     });
 
