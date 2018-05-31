@@ -1537,7 +1537,6 @@ namespace F_Result.Controllers
         public ActionResult ExportAPPReport(int[] IDs
             , string sortColumn
             , string sortColumnDir
-            , string ProjectName
             , string repDate)
         {
             try
@@ -1546,7 +1545,7 @@ namespace F_Result.Controllers
 
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repDate, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repDate, "")).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
@@ -1571,6 +1570,10 @@ namespace F_Result.Controllers
                 ExcelPackage pck = new ExcelPackage();
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Прибыльность");
 
+                ws.Cells[string.Format("B{0}:C{0}", 1)].Merge = true;
+                ws.Cells[string.Format("B{0}:C{0}", 2)].Merge = true;
+                ws.Cells[string.Format("B{0}:C{0}", 3)].Merge = true;
+
                 ws.Cells["A1"].Value = "Название отчета:";
                 ws.Cells["B1"].Value = "\"АНАЛИЗ ПРИБЫЛЬНОСТИ ПРОЕКТОВ\"";
                 ws.Cells["A2"].Value = "Дата формирования:";
@@ -1583,20 +1586,20 @@ namespace F_Result.Controllers
                 ws.Cells["B1:B4"].Style.Font.Bold = true;
                 ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                ws.Cells["A6"].Value = "Проект";
-                ws.Cells["B6"].Value = "Доходы Ф1";
-                ws.Cells["C6"].Value = "Доходы Ф2";
-                ws.Cells["D6"].Value = "\u0394 дох.";
-                ws.Cells["E6"].Value = "Расходы Ф1";
-                ws.Cells["F6"].Value = "Расходы Ф2";
-                ws.Cells["G6"].Value = "\u0394 расх.";
-                ws.Cells["H6"].Value = "Прибыль Ф1";
-                ws.Cells["I6"].Value = "Прибыль Ф2";
-                ws.Cells["J6"].Value = "Прибыльность";
+                ws.Cells["A5"].Value = "Проект";
+                ws.Cells["B5"].Value = "Доходы Ф1";
+                ws.Cells["C5"].Value = "Доходы Ф2";
+                ws.Cells["D5"].Value = "\u03A3 дох.";
+                ws.Cells["E5"].Value = "Расходы Ф1";
+                ws.Cells["F5"].Value = "Расходы Ф2";
+                ws.Cells["G5"].Value = "\u03A3 расх.";
+                ws.Cells["H5"].Value = "Прибыль Ф1";
+                ws.Cells["I5"].Value = "Прибыль Ф2";
+                ws.Cells["J5"].Value = "Прибыльность";
 
-                ws.Cells["A6:J6"].AutoFilter = true;
+                ws.Cells["A5:J5"].AutoFilter = true;
 
-                using (ExcelRange col = ws.Cells[6, 1, 6, 11])
+                using (ExcelRange col = ws.Cells[5, 1, 5, 11])
                 {
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     col.Style.Font.Size = 12;
@@ -1604,7 +1607,7 @@ namespace F_Result.Controllers
                     col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
                 }
 
-                int row = 7;
+                int row = 6;
 
                 foreach (var item in _ads)
                 {
@@ -1614,81 +1617,102 @@ namespace F_Result.Controllers
                     ws.Cells[string.Format("D{0}", row)].Formula = string.Format("B{0}+C{0}", row);
                     ws.Cells[string.Format("E{0}", row)].Value = item.FactDebitF1;
                     ws.Cells[string.Format("F{0}", row)].Value = item.FactDebitF2;
-                    ws.Cells[string.Format("G{0}", row)].Formula = string.Format("E{0}-F{0}", row);
+                    ws.Cells[string.Format("G{0}", row)].Formula = string.Format("E{0}+F{0}", row);
                     ws.Cells[string.Format("H{0}", row)].Formula = string.Format("B{0}-E{0}", row);
                     ws.Cells[string.Format("I{0}", row)].Formula = string.Format("C{0}-F{0}", row);
                     ws.Cells[string.Format("J{0}", row)].Formula = string.Format("H{0}+I{0}", row);
                     row++;
                 }
 
-                //// Условное форматирование итоговых и дельта-ячеек
-                //var cfRule1_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("B7:B{0}", row)]);
-                //cfRule1_1.Formula = "0";
-                //cfRule1_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+                // Условное форматирование итоговых и дельта-ячеек
+                var cfRule1_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("H6:H{0}", row)]);
+                cfRule1_1.Formula = "0";
+                cfRule1_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
 
-                //var cfRule1_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("B7:B{0}", row)]);
-                //cfRule1_2.Formula = "0";
-                //cfRule1_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+                var cfRule1_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("H6:H{0}", row)]);
+                cfRule1_2.Formula = "0";
+                cfRule1_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
 
-                //var cfRule2_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("E7:E{0}", row)]);
-                //cfRule2_1.Formula = "0";
-                //cfRule2_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+                var cfRule2_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("I6:I{0}", row)]);
+                cfRule2_1.Formula = "0";
+                cfRule2_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
 
-                //var cfRule2_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("E7:E{0}", row)]);
-                //cfRule2_2.Formula = "0";
-                //cfRule2_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+                var cfRule2_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("I6:I{0}", row)]);
+                cfRule2_2.Formula = "0";
+                cfRule2_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
 
-                //var cfRule3_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("H7:H{0}", row)]);
-                //cfRule3_1.Formula = "0";
-                //cfRule3_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+                var cfRule3_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("J6:J{0}", row)]);
+                cfRule3_1.Formula = "0";
+                cfRule3_1.Style.Font.Color.Color = ColorTranslator.FromHtml("#006400");
 
-                //var cfRule3_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("H7:H{0}", row)]);
-                //cfRule3_2.Formula = "0";
-                //cfRule3_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+                var cfRule3_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("J6:J{0}", row)]);
+                cfRule3_2.Formula = "0";
+                cfRule3_2.Style.Font.Color.Color = ColorTranslator.FromHtml("#b22222");
 
+                //Итоги
+                ws.Cells[string.Format("A{0}", row)].Value = "Итого";
+                ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
+                ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
+                ws.Cells[string.Format("B{0}", row)].Formula = string.Format("SUM(B5:B{0})", row - 1);
+                ws.Cells[string.Format("C{0}", row)].Formula = string.Format("SUM(C5:C{0})", row - 1);
+                ws.Cells[string.Format("D{0}", row)].Formula = string.Format("SUM(D5:D{0})", row - 1);
+                ws.Cells[string.Format("E{0}", row)].Formula = string.Format("SUM(E5:E{0})", row - 1);
+                ws.Cells[string.Format("F{0}", row)].Formula = string.Format("SUM(F5:F{0})", row - 1);
+                ws.Cells[string.Format("G{0}", row)].Formula = string.Format("SUM(G5:G{0})", row - 1);
+                ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
+                ws.Cells[string.Format("I{0}", row)].Formula = string.Format("SUM(I5:I{0})", row - 1);
+                ws.Cells[string.Format("J{0}", row)].Formula = string.Format("SUM(J5:J{0})", row - 1);
 
-                ////Итоги
-                //ws.Cells[string.Format("A{0}:B{0}", row)].Merge = true;
-                //ws.Cells[string.Format("A{0}", row)].Value = "Итого";
-                //ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
-                //ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                using (ExcelRange col = ws.Cells[6, 4, row, 4])
+                {
+                    col.Style.Font.Bold = true;
+                }
 
-                //ws.Cells[string.Format("C{0}", row)].Formula = string.Format("SUM(C5:C{0})", row - 1);
-                //ws.Cells[string.Format("D{0}", row)].Formula = string.Format("SUM(D5:D{0})", row - 1);
-                //ws.Cells[string.Format("E{0}", row)].Formula = string.Format("SUM(E5:E{0})", row - 1);
-                //ws.Cells[string.Format("F{0}", row)].Formula = string.Format("SUM(F5:F{0})", row - 1);
-                //ws.Cells[string.Format("G{0}", row)].Formula = string.Format("SUM(G5:G{0})", row - 1);
-                //ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
+                using (ExcelRange col = ws.Cells[6, 7, row, 7])
+                {
+                    col.Style.Font.Bold = true;
+                }
 
-                //using (ExcelRange col = ws.Cells[row, 3, row, 8])
-                //{
-                //    col.Style.Numberformat.Format = "#,##0.00";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //    col.Style.Font.Bold = true;
-                //}
+                using (ExcelRange col = ws.Cells[6, 10, row, 10])
+                {
+                    col.Style.Font.Bold = true;
+                }
 
-                //using (ExcelRange col = ws.Cells[7, 2, row, 8])
-                //{
-                //    col.Style.Numberformat.Format = "#,##0.00";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //}
+                using (ExcelRange col = ws.Cells[row, 2, row, 10])
+                {
+                    col.Style.Numberformat.Format = "#,##0.00";
+                    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                    col.Style.Font.Bold = true;
+                }
 
-                //using (ExcelRange col = ws.Cells[6, 1, row, 8])
-                //{
-                //    col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                //    col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                //    col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                //    col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                //}
+                using (ExcelRange col = ws.Cells[6, 2, row, 10])
+                {
+                    col.Style.Numberformat.Format = "#,##0.00";
+                    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                }
+
+                using (ExcelRange col = ws.Cells[5, 1, row, 10])
+                {
+                    col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
 
                 ws.Cells["A:AZ"].Style.Indent = 1;
                 ws.Cells["B6"].Style.WrapText = true;
                 ws.Row(6).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 ws.Cells["A:AZ"].AutoFitColumns();
-                ws.Column(2).Width = 23;
+                ws.Column(2).Width = 20;
+                ws.Column(3).Width = 20;
+                ws.Column(4).Width = 20;
                 ws.Column(5).Width = 20;
+                ws.Column(6).Width = 20;
+                ws.Column(7).Width = 20;
                 ws.Column(8).Width = 20;
+                ws.Column(9).Width = 20;
+                ws.Column(10).Width = 20;
 
                 string path = Server.MapPath("~/DownloadRPT/");
                 string repName = "APBReport_" + DateTime.Now.Ticks + ".xlsx";

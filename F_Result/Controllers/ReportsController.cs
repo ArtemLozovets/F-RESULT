@@ -466,6 +466,8 @@ namespace F_Result.Controllers
                     draw = draw,
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
                     data = data,
                     total = total,
                     prjlist = _prjListJson,

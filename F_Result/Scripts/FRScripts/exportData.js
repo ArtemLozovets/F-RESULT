@@ -36,8 +36,6 @@ function APBExport2Excel(controllerName) {
             , isAllTimes: json.isAllTimes
 });
 
-console.log(paramStr);
-
 fnExport2Excel(controllerName, paramStr);
 };
 
@@ -57,17 +55,14 @@ function APPExport2Excel(controllerName) {
         idsArray.push(arr_from_json[i].PrjId);
     }
 
-    var baseDate = json.baseDate;
-
     var paramStr = JSON.stringify({
         IDs: idsArray //!!!-Список проектов-!!!
             , sortColumn: json.sortcolumn
             , sortColumnDir: json.sortdir
             , repDate: moment(json.repDate).format('YYYYMMDD')
-            , ProjectName: json.ProjectName
     });
 
-    console.log(paramStr);
+//    console.log(paramStr);
 
     fnExport2Excel(controllerName, paramStr);
 };
