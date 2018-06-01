@@ -215,5 +215,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.Settings> Settings { get; set; }
         public DbSet<F_Result.Models.Feedback> Feedback { get; set; }
         public DbSet<F_Result.Models.VAspUsers> VAspUsers { get; set; }
+        public DbSet<F_Result.Models.ActivityIndex> ActivityIndexes { get; set; }
+
     }
 }

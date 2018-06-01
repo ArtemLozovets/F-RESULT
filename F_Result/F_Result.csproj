@@ -225,6 +225,7 @@
     <Compile Include="Models\DirectoryOfArticles.cs" />
     <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\FRModel.cs" />
+    <Compile Include="Models\ActivityIndexes.cs" />
     <Compile Include="Models\Organizations.cs" />
     <Compile Include="Models\PayModelF2.cs" />
     <Compile Include="Models\Payments.cs" />

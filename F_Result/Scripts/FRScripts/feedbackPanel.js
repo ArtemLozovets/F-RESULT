@@ -15,6 +15,7 @@
 $('#addComment').on('click', function (e) {
     e.preventDefault();
     $('#draggable').fadeIn(500);
+    $('#commentText').focus();
 });
 
 //Скрытие панели добавления отзыва
