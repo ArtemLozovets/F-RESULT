@@ -143,11 +143,29 @@ namespace F_Result.Controllers
                                     || filterPrjIDs.Contains(x.ProjectId)))).ToList();
 
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.Project).First() }).ToList();
+
+                List<APBFilterIDs> _prjList1 = (from payment in db.Payments
+                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
+                                 from ipa in ipatmp.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     PrjId = payment.ProjectId,
+                                     ProjectName = payment.Project,
+                                     IPA = ipa.IPAValue
+                                 }).Distinct().OrderByDescending(x=>x.IPA).AsEnumerable().Select(x => new APBFilterIDs
+                                 {
+                                     PrjId = x.PrjId,
+                                     ProjectName = x.ProjectName,
+                                     IPA = x.IPA
+                                 }).ToList();
+               
+
+
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
-                var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _prjListJson = jsonSerialiser.Serialize(_prjList1);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

@@ -12,7 +12,7 @@ namespace F_Result.Models
         public int ProjectId { get; set; }
 
         [Display(Name = "Индекс активности проекта")]
-        public DateTime IPAValue { get; set; }
+        public DateTime? IPAValue { get; set; }
 
     }
 }

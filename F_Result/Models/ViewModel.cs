@@ -47,6 +47,7 @@ namespace F_Result.Models
     {
         public int PrjId { get; set; }
         public string ProjectName { get; set; }
+        public DateTime? IPA { get; set; }
     }
 
     #endregion ----------------------------------------------------------
