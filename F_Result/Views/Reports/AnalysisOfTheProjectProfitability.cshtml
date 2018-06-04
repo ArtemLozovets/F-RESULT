@@ -114,6 +114,7 @@
                id="prgtable">
             <thead>
                 <tr>
+                    <th>IPA</th>
                     <th>ID</th>
                     <th>Проект</th>
                     <th><input id="allPrgCHB" checked type="checkbox"></th>
@@ -304,20 +305,6 @@
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
                         // Выделение цветом дельта-ячеек
-                        if (data.IncomeF1 > 0) {
-                            $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                        }
-                        else if (data.IncomeF1 < 0) {
-                            $('td:eq(7)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                        }
-
-                        if (data.IncomeF2 > 0) {
-                            $('td:eq(8)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
-                        }
-                        else if (data.IncomeF2 < 0) {
-                            $('td:eq(8)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
-                        }
-
                         if (data.IncomeTotal > 0) {
                             $('td:eq(9)', row).css('color', '#006400');
                         }
@@ -341,12 +328,6 @@
                         $(api.column(7).footer()).html(numFormat(json.total.IncomeF1Total));
                         $(api.column(8).footer()).html(numFormat(json.total.IncomeF2Total));
                         $(api.column(9).footer()).html(numFormat(json.total.IncomeTotal));
-
-                        if (json.total.IncomeF1Total * 1 > 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                        else if (json.total.IncomeF1Total * 1 < 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-
-                        if (json.total.IncomeF2Total * 1 > 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                        else if (json.total.IncomeF2Total * 1 < 0) { $('tr:eq(0) th:eq(8)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
                         if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#006400'); }
                         else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#b22222'); }

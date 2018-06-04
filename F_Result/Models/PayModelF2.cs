@@ -61,6 +61,8 @@ namespace F_Result.Models
         [Display(Name = "Тип проекта")]
         public string ProjectType { get; set; }
 
+        public DateTime? IPA { get; set; }
+
         [NotMapped]
         [Display(Name = "Менеджер")]
         public string ProjectManagerName { get; set; }

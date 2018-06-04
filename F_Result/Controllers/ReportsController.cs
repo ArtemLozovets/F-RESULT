@@ -316,7 +316,12 @@ namespace F_Result.Controllers
                             && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderBy(x => x.ProjectName).ToList();
+                List<APBFilterIDs> _prjList = _ads
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.prj,
+                        ProjectName = x.ProjectName,
+                        IPA = x.IPA
+                    }).OrderBy(x => x.ProjectName).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
@@ -430,7 +435,13 @@ namespace F_Result.Controllers
                             && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.Select(x => new APBFilterIDs { PrjId = x.prj, ProjectName = x.ProjectName }).OrderByDescending(x => x.PrjId).ToList();
+                List<APBFilterIDs> _prjList = _ads
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.prj,
+                        ProjectName = x.ProjectName,
+                        IPA = x.IPA
+                    }).OrderByDescending(x => x.PrjId).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
 

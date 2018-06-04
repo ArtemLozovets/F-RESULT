@@ -79,6 +79,8 @@ namespace F_Result.Controllers
 
                 var _ads = (from actualdebit in db.ActualDebit
                             join prg in db.Projects on actualdebit.ProjectId equals prg.id
+                            join ipa in db.ActivityIndexes on actualdebit.ProjectId equals ipa.ProjectId into ipatmp
+                            from ipa in ipatmp.DefaultIfEmpty()
                             join org in db.Organizations on actualdebit.OrganizationId equals org.id
                             join usr in db.IdentityUsers on actualdebit.UserId equals usr.Id into usrtmp
                             from usr in usrtmp.DefaultIfEmpty()
@@ -94,6 +96,7 @@ namespace F_Result.Controllers
                                 Date = actualdebit.Date,
                                 Sum = actualdebit.Sum,
                                 ProjectId = actualdebit.ProjectId,
+                                ipa = ipa.IPAValue,
                                 OrgId = org.id,
                                 Appointment = actualdebit.Appointment,
                                 DocNumber = actualdebit.DocNumber,
@@ -114,6 +117,7 @@ namespace F_Result.Controllers
                                 Date = x.Date,
                                 Sum = x.Sum,
                                 ProjectId = x.ProjectId,
+                                IPA = x.ipa,
                                 ProjectName = x.ProjectName,
                                 ProjectType = x.ProjectType,
                                 ChiefName = x.ChiefName,
@@ -137,7 +141,13 @@ namespace F_Result.Controllers
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _ads.Select(x => x.ActualDebitId).ToList();
 
-                List<APBFilterIDs> _prjList = _ads.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+                List<APBFilterIDs> _prjList = _ads.GroupBy(x => x.ProjectId)
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.Select(z => z.ProjectId).First(),
+                        ProjectName = x.Select(z => z.ProjectName).First(),
+                        IPA = x.Select(z => z.IPA).First()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);

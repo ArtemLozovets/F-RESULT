@@ -105,7 +105,7 @@ function prgTableCrate() {
             { 'orderData': [0], 'targets': [2] }
         ],
         columns: [
-             { data: 'IPA', bSortable: true, visible: false, searchable: false },
+            { data: 'IPA', bSortable: true, visible: false, searchable: false },
             { data: 'PrjId', bSortable: true, visible: false, searchable: false },
             { data: 'ProjectName', bSortable: true, sWidth: '80%' },
             {

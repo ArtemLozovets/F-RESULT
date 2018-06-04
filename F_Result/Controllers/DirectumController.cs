@@ -80,6 +80,8 @@ namespace F_Result.Controllers
 
                 var _payments = (from payment in db.Payments
                                  join prg in db.Projects on payment.ProjectId equals prg.id
+                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
+                                 from ipa in ipatmp.DefaultIfEmpty()
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
                                         && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
@@ -91,6 +93,7 @@ namespace F_Result.Controllers
                                  select new
                                  {
                                      id = payment.id,
+                                     ipa = ipa.IPAValue,
                                      Project = payment.Project,
                                      Chief = payment.Chief,
                                      Manager = payment.Manager,
@@ -114,6 +117,7 @@ namespace F_Result.Controllers
                                  }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
+                                     IPA = x.ipa,
                                      Project = x.Project,
                                      ProjectId = x.ProjectId,
                                      Chief = x.Chief,
@@ -142,30 +146,18 @@ namespace F_Result.Controllers
                                     || filterPrjIDs.Length == 0
                                     || filterPrjIDs.Contains(x.ProjectId)))).ToList();
 
-                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.Project).First() }).ToList();
-
-                List<APBFilterIDs> _prjList1 = (from payment in db.Payments
-                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
-                                 from ipa in ipatmp.DefaultIfEmpty()
-                                 select new
-                                 {
-                                     PrjId = payment.ProjectId,
-                                     ProjectName = payment.Project,
-                                     IPA = ipa.IPAValue
-                                 }).Distinct().OrderByDescending(x=>x.IPA).AsEnumerable().Select(x => new APBFilterIDs
-                                 {
-                                     PrjId = x.PrjId,
-                                     ProjectName = x.ProjectName,
-                                     IPA = x.IPA
-                                 }).ToList();
-               
-
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.Select(z => z.ProjectId).First(),
+                        ProjectName = x.Select(z => z.Project).First(),
+                        IPA  = x.Select(z=>z.IPA).First()
+                    }).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
-                var _prjListJson = jsonSerialiser.Serialize(_prjList1);
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -273,6 +265,8 @@ namespace F_Result.Controllers
 
                 var _payments = (from payment in db.PaymentsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id
+                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
+                                 from ipa in ipatmp.DefaultIfEmpty()
                                  where ((payment.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
                                         && (payment.DocumentNumber.Contains(_docnum) || string.IsNullOrEmpty(_docnum))
                                         && (payment.DocumentDate >= _startpaymentdate && payment.DocumentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
@@ -287,6 +281,7 @@ namespace F_Result.Controllers
                                  select new
                                  {
                                      id = payment.id,
+                                     ipa = ipa.IPAValue,
                                      WorkerID = payment.WorkerId,
                                      WorkerName = payment.WorkerName,
                                      DocumentNumber = payment.DocumentNumber,
@@ -309,6 +304,7 @@ namespace F_Result.Controllers
                                  }).AsEnumerable().Select(x => new PaymentsF2
                                  {
                                      id = x.id,
+                                     IPA = x.ipa,
                                      WorkerId = x.WorkerID,
                                      WorkerName = x.WorkerName,
                                      DocumentNumber = x.DocumentNumber,
@@ -336,7 +332,14 @@ namespace F_Result.Controllers
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
-                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.Select(z => z.ProjectId).First(),
+                        ProjectName = x.Select(z => z.ProjectName).First(),
+                        IPA = x.Select(z => z.IPA).First()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
@@ -444,6 +447,8 @@ namespace F_Result.Controllers
 
                 var _payments = (from payment in db.ActualDebitsF2
                                  join prg in db.Projects on payment.ProjectId equals prg.id
+                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
+                                 from ipa in ipatmp.DefaultIfEmpty()
                                  where ((payment.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
                                         && (payment.DocumentNumber.Contains(_docnum) || string.IsNullOrEmpty(_docnum))
                                         && (payment.DocumentDate >= _startpaymentdate && payment.DocumentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
@@ -458,6 +463,7 @@ namespace F_Result.Controllers
                                  select new
                                  {
                                      id = payment.id,
+                                     ipa = ipa.IPAValue,
                                      WorkerID = payment.WorkerId,
                                      WorkerName = payment.WorkerName,
                                      DocumentNumber = payment.DocumentNumber,
@@ -480,6 +486,7 @@ namespace F_Result.Controllers
                                  }).AsEnumerable().Select(x => new ActualDebitsF2
                                  {
                                      id = x.id,
+                                     IPA = x.ipa,
                                      WorkerId = x.WorkerID,
                                      WorkerName = x.WorkerName,
                                      DocumentNumber = x.DocumentNumber,
@@ -507,7 +514,14 @@ namespace F_Result.Controllers
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
-                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId).Select(x => new APBFilterIDs { PrjId = x.Select(z => z.ProjectId).First(), ProjectName = x.Select(z => z.ProjectName).First() }).ToList();
+
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
+                    .Select(x => new APBFilterIDs {
+                        PrjId = x.Select(z => z.ProjectId).First(),
+                        ProjectName = x.Select(z => z.ProjectName).First(),
+                        IPA = x.Select(z => z.IPA).First()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);

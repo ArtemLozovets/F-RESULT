@@ -61,6 +61,8 @@ namespace F_Result.Models
     [NotMapped]
     public class PaymentsView : Payments
     {
+        public DateTime? IPA { get; set; }
+
         [Display(Name = "Тип проекта")]
         public string ProjectType { get; set; }
 
