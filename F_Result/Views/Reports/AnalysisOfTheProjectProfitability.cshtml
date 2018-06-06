@@ -158,6 +158,39 @@
                                 table.draw();
                             }
                             break;
+
+                        case 'expand':
+                            var table = $("#gridtable").DataTable();
+                            var json = table.ajax.json();
+                            var prj = table.row(this).data().prj;
+                            var startDate = moment(json.repDate).format('DD/MM/YYYY');
+                            var endDate = moment(json.repDate).format('DD/MM/YYYY');
+
+                            if (fClass.indexOf("fcF1") >= 0) {
+                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fcF2") >= 0) {
+                                var url = '@Url.Action("ShowPaymentsF2", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fdF1") >= 0) {
+                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fdF2") >= 0) {
+                                var url = '@Url.Action("ShowActualDebitsF2", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+                            break;
+
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -185,11 +218,10 @@
                         icon: "expand",
                         disabled: function () {
                             var fClass = $(this).attr('class');
-                            if ((fClass.indexOf("dfExp") >= 0
-                                    || fClass.indexOf("cfExp") >= 0
-                                    || (fClass.indexOf("dpExp") >= 0 && !$('#isAllTimes').is(':checked'))
-                                    || (fClass.indexOf("cpExp") >= 0 && !$('#isAllTimes').is(':checked')))
-                                    && $(this).text() != '0,00') { return false };
+                            if ((fClass.indexOf("fcF1") >= 0 || fClass.indexOf("fcF2") >= 0 || fClass.indexOf("fdF1") >= 0 || fClass.indexOf("fdF2") >= 0)
+                                    && $(this).text() != '0,00') {
+                                return false
+                            };
                             return true;
                         }
                     },
@@ -283,11 +315,11 @@
                     order: [0, "desc"],
                     columns: [
                                 { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                                { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fcF1" },
+                                { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fcF2" },
                                 { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
-                                { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                                { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fdF1" },
+                                { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fdF2" },
                                 { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
                                 { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                                 { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },

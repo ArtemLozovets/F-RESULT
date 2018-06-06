@@ -8,6 +8,7 @@ using F_Result.Models;
 using F_Result.Methods;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using System.Globalization;
 
 namespace F_Result.Controllers
 {
@@ -17,7 +18,7 @@ namespace F_Result.Controllers
         private FRModel db = new FRModel();
 
         #region Входящие платежи Ф1
-        public ActionResult ShowPayments(int? ProjectId, string startDate, string endDate)
+        public ActionResult ShowPayments(int? ProjectId, string startDate, string endDate, bool? firstPay)
         {
             if (ProjectId != null)
             {
@@ -27,6 +28,14 @@ namespace F_Result.Controllers
 
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
+                if (firstPay??false)
+                {
+                    startDate = Convert.ToDateTime(db.Payments
+                            .Where(x => x.ProjectId == ProjectId)
+                            .OrderBy(x => x.PaymentDate)
+                            .Select(x => x.PaymentDate)
+                            .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
@@ -202,7 +211,7 @@ namespace F_Result.Controllers
         #endregion
 
         #region Входящие платежи Ф2
-        public ActionResult ShowPaymentsF2(int? ProjectId, string startDate, string endDate)
+        public ActionResult ShowPaymentsF2(int? ProjectId, string startDate, string endDate, bool? firstPay)
         {
             if (ProjectId != null)
             {
@@ -212,6 +221,15 @@ namespace F_Result.Controllers
 
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
+                if (firstPay ?? false)
+                {
+                    startDate = Convert.ToDateTime(db.PaymentsF2
+                            .Where(x => x.ProjectId == ProjectId)
+                            .OrderBy(x => x.DocumentDate)
+                            .Select(x => x.DocumentDate)
+                            .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
+
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
@@ -384,7 +402,7 @@ namespace F_Result.Controllers
         #endregion
 
         #region Исходящие платежи Ф2
-        public ActionResult ShowActualDebitsF2(int? ProjectId, string startDate, string endDate)
+        public ActionResult ShowActualDebitsF2(int? ProjectId, string startDate, string endDate, bool? firstPay)
         {
             if (ProjectId != null)
             {
@@ -394,6 +412,15 @@ namespace F_Result.Controllers
 
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
+                if (firstPay ?? false)
+                {
+                    startDate = Convert.ToDateTime(db.ActualDebitsF2
+                            .Where(x => x.ProjectId == ProjectId)
+                            .OrderBy(x => x.DocumentDate)
+                            .Select(x => x.DocumentDate)
+                            .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
+
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 

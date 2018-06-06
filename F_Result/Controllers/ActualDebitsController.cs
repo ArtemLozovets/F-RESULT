@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using System.Linq.Dynamic; //!=====!
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using System.Globalization;
 
 namespace F_Result.Controllers
 {
@@ -18,7 +19,7 @@ namespace F_Result.Controllers
 
         // Исходящие платежи
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public ActionResult ADShow(int? ProjectId, string startDate, string endDate)
+        public ActionResult ADShow(int? ProjectId, string startDate, string endDate, bool? firstPay)
         {
             if (ProjectId != null)
             {
@@ -28,6 +29,15 @@ namespace F_Result.Controllers
 
             if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
             {
+                if (firstPay ?? false)
+                {
+                    startDate = Convert.ToDateTime(db.ActualDebit
+                            .Where(x => x.ProjectId == ProjectId)
+                            .OrderBy(x => x.Date)
+                            .Select(x => x.Date)
+                            .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
+
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
