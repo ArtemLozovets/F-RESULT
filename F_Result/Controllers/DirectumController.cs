@@ -689,6 +689,8 @@ namespace F_Result.Controllers
                 //--------------------------
 
                 var _projects = (from project in db.Projects
+                                 join ipa in db.ActivityIndexes on project.id equals ipa.ProjectId into ipatmp
+                                 from ipa in ipatmp.DefaultIfEmpty()
                                  where (project.FullName.Contains(_fullname) || string.IsNullOrEmpty(_fullname))
                                         && (project.ShortName.Contains(_shortname) || string.IsNullOrEmpty(_shortname))
                                         && (project.Desc.Contains(_desc) || string.IsNullOrEmpty(_desc))
@@ -701,6 +703,7 @@ namespace F_Result.Controllers
                                  select new
                                  {
                                      id = project.id,
+                                     ipa = ipa.IPAValue,
                                      FullName = project.FullName,
                                      Name = project.ShortName,
                                      ChiefName = project.ChiefName,
@@ -718,6 +721,7 @@ namespace F_Result.Controllers
                                  }).AsEnumerable().Select(x => new Projects
                                  {
                                      id = x.id,
+                                     IPA = x.ipa,
                                      FullName = x.FullName,
                                      ShortName = x.Name,
                                      ChiefName = x.ChiefName,
