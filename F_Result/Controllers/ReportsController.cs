@@ -23,7 +23,7 @@ namespace F_Result.Controllers
         }
 
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public JsonResult GetAOP(int? Year)
+        public JsonResult GetAOP(int? Year, int[] filterPrjIDs)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
 
@@ -32,10 +32,25 @@ namespace F_Result.Controllers
                 Year = DateTime.Today.Year;
             }
 
+            var flt = filterPrjIDs ?? Enumerable.Empty<int>(); //!---IF 'filterPrjIDs' is null 'filterPrjIDs.Contains(inpay.ProjectId)' raise exception 
+
             // График входящих платежей -------------------------------------------
-            var _inpaylist = (from t in db.Payments
-                              group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
-                              where g.Key.Year == Year
+            var _inPayments = (from inpay in db.Payments
+                                        join prg in db.Projects on inpay.ProjectId equals prg.id
+                                        join ipa in db.ActivityIndexes on inpay.ProjectId equals ipa.ProjectId into ipatmp
+                                        from ipa in ipatmp.DefaultIfEmpty()
+                                        where (inpay.PaymentDate.Value.Year == Year) && (filterPrjIDs == null || flt.Contains(inpay.ProjectId))
+                                select new {
+                                        PaymentDate = inpay.PaymentDate,
+                                        Payment = inpay.Payment,
+                                        ProjectId = prg.id,
+                                        Project = prg.ShortName,
+                                        IPA = ipa.IPAValue
+                                }).ToList();
+
+            var  _inpaylist = (from t in _inPayments
+                             group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
+                              where (g.Key.Year == Year)
                               select new
                               {
                                   Month = g.Key.Month,
@@ -53,7 +68,21 @@ namespace F_Result.Controllers
             }
 
             // График исходящих платежей -------------------------------------------
-            var _outpaylist = (from t in db.ActualDebit
+            var _outPayments = (from outpay in db.ActualDebit
+                                join prg in db.Projects on outpay.ProjectId equals prg.id
+                                join ipa in db.ActivityIndexes on outpay.ProjectId equals ipa.ProjectId into ipatmp
+                                from ipa in ipatmp.DefaultIfEmpty()
+                                where (outpay.Date.Year == Year) && (filterPrjIDs == null || flt.Contains(outpay.ProjectId))
+                                select new
+                                {
+                                   Date = outpay.Date,
+                                   Sum = outpay.Sum,
+                                   ProjectId = prg.id,
+                                   Project = prg.ShortName,
+                                   IPA = ipa.IPAValue
+                                }).ToList();
+
+            var _outpaylist = (from t in _outPayments
                                group t by new { t.Date.Year, t.Date.Month } into g
                                where g.Key.Year == Year
                                select new
@@ -82,6 +111,30 @@ namespace F_Result.Controllers
             var _outMin = _outsum.Min(x => x.Value);
             var _outMax = _outsum.Max(x => x.Value);
 
+            List<APBFilterIDs> _prjList = _inPayments
+                   .GroupBy(x => x.ProjectId)
+                   .Select(x => new APBFilterIDs
+                   {
+                       PrjId = x.Select(z => z.ProjectId).First(),
+                       ProjectName = x.Select(z => z.Project).First(),
+                       IPA = x.Select(z => z.IPA).First()
+                   })
+                   .OrderBy(x => x.IPA).ToList();
+
+            List<APBFilterIDs> _prjList1 = _outPayments
+                   .GroupBy(x => x.ProjectId)
+                   .Select(x => new APBFilterIDs
+                   {
+                       PrjId = x.Select(z => z.ProjectId).First(),
+                       ProjectName = x.Select(z => z.Project).First(),
+                       IPA = x.Select(z => z.IPA).First()
+                   })
+                   .OrderBy(x => x.IPA).ToList();
+
+            _prjList.Union(_prjList1);
+
+            var jsonSerialiser = new JavaScriptSerializer();
+            var _prjListJson = jsonSerialiser.Serialize(_prjList);
 
             return Json(new
             {
@@ -95,7 +148,8 @@ namespace F_Result.Controllers
                 outmin = _outMin,
                 outmax = _outMax,
                 ChartData = _insum,
-                ChartDataA = _outsum
+                ChartDataA = _outsum,
+                prjlist = _prjListJson
             }, JsonRequestBehavior.AllowGet);
 
         }
