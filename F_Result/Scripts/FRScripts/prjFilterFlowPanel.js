@@ -41,8 +41,14 @@ $(function () {
             };
         });
         if (window.filterPrjIDs.length > 0) {
-            var table = $("#gridtable").DataTable();
-            table.draw();
+            if ($('#flowPanel').data('mode') === 'chart') {
+                var _Year = $('#YDDL').val();
+                var chartType = $("#chartType").val();
+                GetChart(_Year, chartType);
+            }
+            else {
+                $("#gridtable").DataTable().draw();
+            }
         };
     });
 
@@ -64,8 +70,14 @@ $(function () {
             $('#allPrgCHB').prop('checked', false);
         }
         if (window.filterPrjIDs.length > 0) {
-            var table = $("#gridtable").DataTable();
-            table.draw();
+            if ($('#flowPanel').data('mode') === 'chart') {
+                var _Year = $('#YDDL').val();
+                var chartType = $("#chartType").val();
+                GetChart(_Year, chartType);
+            }
+            else {
+                $("#gridtable").DataTable().draw();
+            }
         };
     });
 
@@ -77,8 +89,14 @@ function globalVarsClear() {
     window.filterPrjIDs = [];
     window._flag = true;
     $('#allPrgCHB').prop('checked', 'checked');
-    var table = $("#gridtable").DataTable();
-    table.draw();
+    if ($('#flowPanel').data('mode') === 'chart') {
+        var _Year = $('#YDDL').val();
+        var chartType = $("#chartType").val();
+        GetChart(_Year, chartType);
+    }
+    else {
+        $("#gridtable").DataTable().draw();
+    }
 }
 
 //-----------------------------------------------------------------

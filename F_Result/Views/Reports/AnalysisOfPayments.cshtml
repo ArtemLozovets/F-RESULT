@@ -56,16 +56,18 @@
 
     <div class="row form-inline">
         @Html.DropDownList("year", years, new
-   {
-       @class = "form-control form-inline input-sm",
-       style = "margin:2px; width:100px; display:inline-block;",
-       id = "YDDL",
-   })
+         {
+            @class = "form-control form-inline input-sm",
+            style = "margin:2px; width:100px; display:inline-block;",
+            id = "YDDL"
+        })
 
         <select id="chartType" class="form-control input-sm" style="width:140px;">
             <option value="bar">Графбар</option>
             <option value="line">Линейная</option>
         </select>
+
+        <button class="btn btn-sm btn-primary" title="Сброс фильтра проектов" id="chartRefresh"><i class="glyphicon glyphicon-refresh"></i></button>
 
     </div>
 
@@ -80,7 +82,7 @@
     </div>
 
     <!-- #Плавающая панель -->
-    <div id="flowPanel">
+    <div id="flowPanel" data-mode = "chart">
         <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
             <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
@@ -104,6 +106,7 @@
     </div>
     <!-- #endregion -->
 
+    <a href="#" class="scrollup1">Наверх</a>
 </div>
 
 @section Scripts {
@@ -115,6 +118,7 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
     <script src="~/Scripts/Chart.js"></script>
+    <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script>
         $(function () {
             $('#loadingImg').hide();
@@ -123,14 +127,23 @@
             GetChart(_Year, chartType);
         });
 
+        $('body').on('click', '#chartRefresh', function () {
+            globalVarsClear();
+        });
 
         $('body').on('change', '#YDDL', function (e) {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             GetChart(_Year, chartType);
         });
 
         $('body').on('change', '#chartType', function (e) {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             GetChart(_Year, chartType);
@@ -138,11 +151,10 @@
 
         function GetChart(_Year, chartType) {
             $('#loadingImg').show();
-            console.clear();
-            console.log('IDs: ', window.filterPrjIDs);
+            console.log($('#flowPanel').data('mode'));
             $.get('/Reports/GetAOP', {
-                'Year': _Year,
-                'filterPrjIDs[]': window.filterPrjIDs
+                Year: _Year, 
+                filterPrjIDs: JSON.stringify(filterPrjIDs)
             },
                     function (data) {
                         $('#loadingImg').hide();
@@ -172,11 +184,14 @@
 
                             //Инициализация таблицы проектов в плавающей панели
                             //Заполнение массива проектов для таблицы в плавающей панели
-                            _prjIDs = JSON.parse(data.prjlist);
-                            var pTable = $('#prgtable').DataTable();
-                            pTable.destroy();
-                            prgTableCrate();
-                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            if (window._flag) {
+                                _prjIDs = JSON.parse(data.prjlist);
+                                var pTable = $('#prgtable').DataTable();
+                                pTable.destroy();
+                                prgTableCrate();
+                                $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                                window._flag = false;
+                            };
                         }
                         else {
                             alert(data.Message);

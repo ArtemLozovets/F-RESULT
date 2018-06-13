@@ -87,10 +87,10 @@ namespace F_Result.Controllers
 
                 string _paymenttxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
+                DateTime dt = DateTime.Now;
+
                 var _payments = (from payment in db.Payments
                                  join prg in db.Projects on payment.ProjectId equals prg.id
-                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
-                                 from ipa in ipatmp.DefaultIfEmpty()
                                  where (payment.Project.Contains(_project) || string.IsNullOrEmpty(_project))
                                         && (payment.Chief.Contains(_chief) || string.IsNullOrEmpty(_chief))
                                         && (payment.Client.Contains(_client) || string.IsNullOrEmpty(_client))
@@ -102,7 +102,7 @@ namespace F_Result.Controllers
                                  select new
                                  {
                                      id = payment.id,
-                                     ipa = ipa.IPAValue,
+                                     IPA = prg.IPA,
                                      Project = payment.Project,
                                      Chief = payment.Chief,
                                      Manager = payment.Manager,
@@ -126,7 +126,7 @@ namespace F_Result.Controllers
                                  }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
-                                     IPA = x.ipa,
+                                     IPA = x.IPA,
                                      Project = x.Project,
                                      ProjectId = x.ProjectId,
                                      Chief = x.Chief,

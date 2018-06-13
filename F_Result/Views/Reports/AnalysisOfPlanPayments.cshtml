@@ -11,6 +11,27 @@
     });
 }
 
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    .dataTables_scrollHeadInner {
+        background-color: #eee;
+    }
+
+    #flowPanel div.dataTables_wrapper div.dataTables_filter {
+        text-align: center !important;
+        margin-top: 10px;
+    }
+
+    #flowPanel #prgtable_filter input {
+        width: 300px !important;
+        margin-right: 8px;
+    }
+</style>
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -32,29 +53,51 @@
         </div>
     </div>
 
-    <!-- #region Блок диаграммы -->
-    <div id="chartReport">
-        <div class="row form-inline">
-            @Html.DropDownList("year", years, new
-       {
-           @class = "form-control form-inline input-sm",
-           style = "margin:2px; width:100px; display:inline-block;",
-           id = "YDDL",
-       })
-            <select id="chartType" class="form-control input-sm" style="width:140px;">
-                <option value="bar">Графбар</option>
-                <option value="line">Линейная</option>
-            </select>
+    <div class="row form-inline">
+        @Html.DropDownList("year", years, new
+   {
+       @class = "form-control form-inline input-sm",
+       style = "margin:2px; width:100px; display:inline-block;",
+       id = "YDDL"
+   })
+        <select id="chartType" class="form-control input-sm" style="width:140px;">
+            <option value="bar">Графбар</option>
+            <option value="line">Линейная</option>
+        </select>
+        <button class="btn btn-sm btn-primary" title="Сброс фильтра проектов" id="chartRefresh"><i class="glyphicon glyphicon-refresh"></i></button>
+    </div>
+
+    <div class="row chartRow">
+        <div class="chartContainer" id="cnvdiv">
+            <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+        <div class="chartInfoes">
+            <span id="pcsum" class="inStat">ДОХОДЫ</span>
+            <span id="pdsum" class="outStat">РАСХОДЫ</span>
+        </div>
+    </div>
+
+    <!-- #Плавающая панель -->
+    <div id="flowPanel" data-mode="chart">
+        <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
         </div>
 
-        <div class="row chartRow">
-            <div class="chartContainer" id="cnvdiv">
-                <canvas id="myChart" width="800" height="400"></canvas>
-            </div>
-            <div class="chartInfoes">
-                <span id="pcsum" class="inStat">ДОХОДЫ</span>
-                <span id="pdsum" class="outStat">РАСХОДЫ</span>
-            </div>
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="prgtable">
+                <thead>
+                    <tr>
+                        <th>IPA</th>
+                        <th>ID</th>
+                        <th>Проект</th>
+                        <th><input id="allPrgCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
     <!-- #endregion -->
@@ -64,6 +107,13 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/Chart.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/Chart.js"></script>
     <script>
@@ -74,14 +124,23 @@
             GetChart(_Year, chartType);
         });
 
+        $('body').on('click', '#chartRefresh', function () {
+            globalVarsClear();
+        });
 
         $('body').on('change', '#YDDL', function (e) {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             GetChart(_Year, chartType);
         });
 
         $('body').on('change', '#chartType', function (e) {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             GetChart(_Year, chartType);
@@ -91,6 +150,7 @@
             $('#loadingImg').show();
             $.get('/Reports/GetPlanData', {
                 Year: _Year,
+                filterPrjIDs: JSON.stringify(filterPrjIDs)
             },
                     function (data) {
                         $('#loadingImg').hide();
@@ -117,6 +177,17 @@
                                 + '<dt>MIN:&nbsp;</dt><dd class="text-right">' + pdmin + '</dd>'
                                 + '<dt>MAX:&nbsp;</dt><dd class="text-right">' + pdmax + '</dd></dl></tt>');
                             DrawChart(data.Mode, data.ChartData, data.ChartDataA, chartType, _Year);
+
+                            //Инициализация таблицы проектов в плавающей панели
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            if (window._flag) {
+                                _prjIDs = JSON.parse(data.prjlist);
+                                var pTable = $('#prgtable').DataTable();
+                                pTable.destroy();
+                                prgTableCrate();
+                                $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                                window._flag = false;
+                            };
                         }
                         else {
                             alert(data.Message);

@@ -55,16 +55,17 @@ namespace F_Result.Models
 
         [Display(Name = "Тип оплаты")]
         public string PaymentDesc { get; set; }
+
     }
 
     //Модель представления для сущности "Входящие платежи"
     [NotMapped]
     public class PaymentsView : Payments
     {
-        public DateTime? IPA { get; set; }
-
         [Display(Name = "Тип проекта")]
         public string ProjectType { get; set; }
+
+        public DateTime? IPA { get; set; }
 
         [MaxLength(512)]
         [Display(Name = "Руководитель проекта")]

@@ -57,7 +57,6 @@ namespace F_Result.Models
         [Display(Name = "План расходов")]
         public decimal planExpand { get; set; }
 
-        [NotMapped]
         public DateTime? IPA { get; set; }
     }
 }
