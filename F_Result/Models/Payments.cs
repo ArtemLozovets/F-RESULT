@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace F_Result.Models
 {
-
     public partial class Payments
     {
         [Key]

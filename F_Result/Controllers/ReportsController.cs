@@ -7,6 +7,7 @@ using System.Linq.Dynamic;
 using System.Web.Script.Serialization;
 using F_Result.Methods; //!=====!
 using Newtonsoft.Json;
+using Microsoft.AspNet.Identity;
 
 namespace F_Result.Controllers
 {
@@ -38,20 +39,21 @@ namespace F_Result.Controllers
 
             // График входящих платежей -------------------------------------------
             var _inPayments = (from inpay in db.Payments
-                                        join prg in db.Projects on inpay.ProjectId equals prg.id
-                                        join ipa in db.ActivityIndexes on inpay.ProjectId equals ipa.ProjectId into ipatmp
-                                        from ipa in ipatmp.DefaultIfEmpty()
-                                        where (inpay.PaymentDate.Value.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(inpay.ProjectId))
-                                select new {
-                                        PaymentDate = inpay.PaymentDate,
-                                        Payment = inpay.Payment,
-                                        ProjectId = prg.id,
-                                        Project = prg.ShortName,
-                                        IPA = ipa.IPAValue
-                                }).ToList();
+                               join prg in db.Projects on inpay.ProjectId equals prg.id
+                               join ipa in db.ActivityIndexes on inpay.ProjectId equals ipa.ProjectId into ipatmp
+                               from ipa in ipatmp.DefaultIfEmpty()
+                               where (inpay.PaymentDate.Value.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(inpay.ProjectId))
+                               select new
+                               {
+                                   PaymentDate = inpay.PaymentDate,
+                                   Payment = inpay.Payment,
+                                   ProjectId = prg.id,
+                                   Project = prg.ShortName,
+                                   IPA = ipa.IPAValue
+                               }).ToList();
 
-            var  _inpaylist = (from t in _inPayments
-                             group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
+            var _inpaylist = (from t in _inPayments
+                              group t by new { t.PaymentDate.Value.Year, t.PaymentDate.Value.Month } into g
                               where (g.Key.Year == Year)
                               select new
                               {
@@ -77,11 +79,11 @@ namespace F_Result.Controllers
                                 where (outpay.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(outpay.ProjectId))
                                 select new
                                 {
-                                   Date = outpay.Date,
-                                   Sum = outpay.Sum,
-                                   ProjectId = prg.id,
-                                   Project = prg.ShortName,
-                                   IPA = ipa.IPAValue
+                                    Date = outpay.Date,
+                                    Sum = outpay.Sum,
+                                    ProjectId = prg.id,
+                                    Project = prg.ShortName,
+                                    IPA = ipa.IPAValue
                                 }).ToList();
 
             var _outpaylist = (from t in _outPayments
@@ -180,18 +182,18 @@ namespace F_Result.Controllers
             // График плановых доходов -------------------------------------------
 
             var _planCredits = (from pc in db.PlanCredits
-                               join prg in db.Projects on pc.ProjectId equals prg.id
-                               join ipa in db.ActivityIndexes on pc.ProjectId equals ipa.ProjectId into ipatmp
-                               from ipa in ipatmp.DefaultIfEmpty()
-                               where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId))
-                               select new
-                               {
-                                   Date = pc.Date,
-                                   Sum = pc.Sum,
-                                   ProjectId = prg.id,
-                                   Project = prg.ShortName,
-                                   IPA = ipa.IPAValue
-                               }).ToList();
+                                join prg in db.Projects on pc.ProjectId equals prg.id
+                                join ipa in db.ActivityIndexes on pc.ProjectId equals ipa.ProjectId into ipatmp
+                                from ipa in ipatmp.DefaultIfEmpty()
+                                where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId))
+                                select new
+                                {
+                                    Date = pc.Date,
+                                    Sum = pc.Sum,
+                                    ProjectId = prg.id,
+                                    Project = prg.ShortName,
+                                    IPA = ipa.IPAValue
+                                }).ToList();
 
             var _pclist = (from t in _planCredits
                            group t by new { t.Date.Year, t.Date.Month } into g
@@ -215,18 +217,18 @@ namespace F_Result.Controllers
             // График плановых расходов -------------------------------------------
 
             var _planDebits = (from pd in db.PlanDebits
-                                join prg in db.Projects on pd.ProjectId equals prg.id
-                                join ipa in db.ActivityIndexes on pd.ProjectId equals ipa.ProjectId into ipatmp
-                                from ipa in ipatmp.DefaultIfEmpty()
-                                where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId))
-                                select new
-                                {
-                                    Date = pd.Date,
-                                    Sum = pd.Sum,
-                                    ProjectId = prg.id,
-                                    Project = prg.ShortName,
-                                    IPA = ipa.IPAValue
-                                }).ToList();
+                               join prg in db.Projects on pd.ProjectId equals prg.id
+                               join ipa in db.ActivityIndexes on pd.ProjectId equals ipa.ProjectId into ipatmp
+                               from ipa in ipatmp.DefaultIfEmpty()
+                               where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId))
+                               select new
+                               {
+                                   Date = pd.Date,
+                                   Sum = pd.Sum,
+                                   ProjectId = prg.id,
+                                   Project = prg.ShortName,
+                                   IPA = ipa.IPAValue
+                               }).ToList();
 
             var _pdlist = (from t in _planDebits
                            group t by new { t.Date.Year, t.Date.Month } into g
@@ -432,7 +434,8 @@ namespace F_Result.Controllers
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
-                    .Select(x => new APBFilterIDs {
+                    .Select(x => new APBFilterIDs
+                    {
                         PrjId = x.prj,
                         ProjectName = x.ProjectName,
                         IPA = x.IPA
@@ -551,7 +554,8 @@ namespace F_Result.Controllers
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
-                    .Select(x => new APBFilterIDs {
+                    .Select(x => new APBFilterIDs
+                    {
                         PrjId = x.prj,
                         ProjectName = x.ProjectName,
                         IPA = x.IPA
@@ -611,6 +615,8 @@ namespace F_Result.Controllers
         }
 
 
+        #region -------------- Отчет по Ф2 "Альтернативный авансовый отчет" -------------
+
         //Отчет по Ф2 "Альтернативный авансовый отчет" GET
         [Authorize]
         public ActionResult AlternativeAdvance()
@@ -625,15 +631,115 @@ namespace F_Result.Controllers
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
             {
-                
-                return Json(new { data = "1" }, JsonRequestBehavior.AllowGet);
+                // Проверяем принадлежность текущего пользователя к ролям "Руководитель", "Финансист", "Администратор"
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+
+                //Список связанных сотрудников
+                List<int> WorkerIdsList = new List<int>() { -1 };
+
+                if (!isChief && !isFinancier && !isAdministrator)
+                {
+                    //Получаем идентификатор текущего пользователя
+                    var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                    //Получаем список связанных сотрудников
+                    WorkerIdsList = db.UsrWksRelations.Where(x => x.UserId == user).Select(x => x.WorkerId).ToList();
+                }
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startpaymentdate = null;
+                DateTime? _endpaymentdate = null;
+                string _paymentdatetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                if (!string.IsNullOrEmpty(_paymentdatetext))
+                {
+                    _paymentdatetext = _paymentdatetext.Trim();
+                    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
+                    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
+                    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
+                    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                }
+                //--------------------------
+                string _docNum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _operation = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _counteragent = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _currency = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+
+                var _aao = (from aaoRep in db.AAOReports
+                            where (
+                                 (aaoRep.Date >= _startpaymentdate && aaoRep.Date <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат                                   
+                            )
+                            select new
+                            {
+                                ID = aaoRep.ID,
+                                WorkerID = aaoRep.WorkerID,
+                                Date = aaoRep.Date,
+                                DocNumber = aaoRep.DocNumber,
+                                Operation = aaoRep.Operation,
+                                Counteragent = aaoRep.Counteragent,
+                                Payed = aaoRep.Payed,
+                                Received = aaoRep.Received,
+                                Currency = aaoRep.Currency
+                            }).AsEnumerable().Select(x => new AAOReport
+                                 {
+                                     ID = x.ID,
+                                     WorkerID = x.WorkerID,
+                                     Date = x.Date,
+                                     DocNumber = x.DocNumber,
+                                     Operation = x.Operation,
+                                     Counteragent = x.Counteragent,
+                                     Payed = x.Payed,
+                                     Received = x.Received,
+                                     Currency = x.Currency
+                                 }).ToList();
+
+                _aao = _aao.Where(x => (x.Payed == null || x.Payed.ToString().Contains(_payed) || (x.Received == null || x.Received.ToString().Contains(_received)))).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir + ", ID desc").ToList();
+                }
+                else
+                {
+                    _aao = _aao.OrderByDescending(x => x.Date).ThenByDescending(x => x.ID).ToList();
+                }
+
+                totalRecords = _aao.Count();
+                var data = _aao.Skip(skip).Take(pageSize).ToList();
+
+
+                return Json(new
+                {
+                    draw = draw,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    result = true
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new { result = false, message = "Ошибка выполнения запроса! " + ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { result = false, message = "Ошибка выполнения запроса!\n\r" + ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
 
+        #endregion
 
         protected override void Dispose(bool disposing)
         {

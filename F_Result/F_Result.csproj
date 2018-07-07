@@ -226,9 +226,22 @@
     <Compile Include="Migrations\201806131336369_ProjectsChange2.Designer.cs">
       <DependentUpon>201806131336369_ProjectsChange2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807071639161_ProjectsChange3.cs" />
+    <Compile Include="Migrations\201807071639161_ProjectsChange3.Designer.cs">
+      <DependentUpon>201807071639161_ProjectsChange3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807071801339_ProjectsChange4.cs" />
+    <Compile Include="Migrations\201807071801339_ProjectsChange4.Designer.cs">
+      <DependentUpon>201807071801339_ProjectsChange4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807071804159_ProjectsChange5.cs" />
+    <Compile Include="Migrations\201807071804159_ProjectsChange5.Designer.cs">
+      <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
+    <Compile Include="Models\AAOReport.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
     <Compile Include="Models\DirectoryOfArticles.cs" />
     <Compile Include="Models\Feedback.cs" />
@@ -760,6 +773,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806131336369_ProjectsChange2.resx">
       <DependentUpon>201806131336369_ProjectsChange2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807071639161_ProjectsChange3.resx">
+      <DependentUpon>201807071639161_ProjectsChange3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807071801339_ProjectsChange4.resx">
+      <DependentUpon>201807071801339_ProjectsChange4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807071804159_ProjectsChange5.resx">
+      <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

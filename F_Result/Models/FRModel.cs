@@ -76,6 +76,10 @@ namespace F_Result.Models
                 .HasKey(t => t.id)
                 .ToTable("Organizations");
 
+            modelBuilder.Entity<AAOReport>()
+                .HasKey(t => t.ID)
+                .ToTable("AaoReport");
+
             modelBuilder.Entity<ActualDebit>().Property(p => p.Sum)
                  .HasPrecision(12, 2);
             modelBuilder.Entity<PlanCredit>().Property(p => p.Sum)
@@ -216,6 +220,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.Feedback> Feedback { get; set; }
         public DbSet<F_Result.Models.VAspUsers> VAspUsers { get; set; }
         public DbSet<F_Result.Models.ActivityIndex> ActivityIndexes { get; set; }
+        public DbSet<F_Result.Models.AAOReport> AAOReports { get; set; }
 
     }
 }
