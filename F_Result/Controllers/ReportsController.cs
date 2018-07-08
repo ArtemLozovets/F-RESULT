@@ -672,25 +672,34 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext);
                 }
                 //--------------------------
-                string _docNum = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _operation = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _counteragent = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _payed = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _received = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _currency = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _docNum = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _operation = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _counteragent = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _currency = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 var _aao = (from aaoRep in db.AAOReports
                             where (
-                                 (aaoRep.Date >= _startpaymentdate && aaoRep.Date <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат                                   
+                                 (aaoRep.Date >= _startpaymentdate && aaoRep.Date <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат   
+                                 && (aaoRep.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
+                                 && (aaoRep.DocNumber.Contains(_docNum) || string.IsNullOrEmpty(_docNum))
+                                 && (aaoRep.Operation.Contains(_operation) || string.IsNullOrEmpty(_operation))
+                                 && (string.IsNullOrEmpty(_counteragent) ||  aaoRep.CounteragentName.ToString().Contains(_counteragent))
+                                 && (aaoRep.Currency.Contains(_currency) || string.IsNullOrEmpty(_currency))
+                                 && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(aaoRep.WorkerID)) //Фильтрация записей по связанным сотрудникам
                             )
                             select new
                             {
                                 ID = aaoRep.ID,
                                 WorkerID = aaoRep.WorkerID,
+                                WorkerName = aaoRep.WorkerName,
                                 Date = aaoRep.Date,
                                 DocNumber = aaoRep.DocNumber,
                                 Operation = aaoRep.Operation,
                                 Counteragent = aaoRep.Counteragent,
+                                CounteragentName = aaoRep.CounteragentName,
                                 Payed = aaoRep.Payed,
                                 Received = aaoRep.Received,
                                 Currency = aaoRep.Currency
@@ -698,16 +707,21 @@ namespace F_Result.Controllers
                                  {
                                      ID = x.ID,
                                      WorkerID = x.WorkerID,
+                                     WorkerName = x.WorkerName,
                                      Date = x.Date,
                                      DocNumber = x.DocNumber,
                                      Operation = x.Operation,
                                      Counteragent = x.Counteragent,
+                                     CounteragentName = x.CounteragentName,
                                      Payed = x.Payed,
                                      Received = x.Received,
                                      Currency = x.Currency
                                  }).ToList();
 
-                _aao = _aao.Where(x => (x.Payed == null || x.Payed.ToString().Contains(_payed) || (x.Received == null || x.Received.ToString().Contains(_received)))).ToList();
+                _aao = _aao.Where(x => (
+                                      (string.IsNullOrEmpty(_payed) || x.Payed.ToString().Contains(_payed)) 
+                                   && (string.IsNullOrEmpty(_received) || x.Received.ToString().Contains(_received))
+                                  )).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {

@@ -238,6 +238,10 @@
     <Compile Include="Migrations\201807071804159_ProjectsChange5.Designer.cs">
       <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807081704409_ProjectsChange6.cs" />
+    <Compile Include="Migrations\201807081704409_ProjectsChange6.Designer.cs">
+      <DependentUpon>201807081704409_ProjectsChange6.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
     <Compile Include="Models\ActualDebit.cs" />
@@ -782,6 +786,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807071804159_ProjectsChange5.resx">
       <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807081704409_ProjectsChange6.resx">
+      <DependentUpon>201807081704409_ProjectsChange6.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
