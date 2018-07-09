@@ -112,6 +112,75 @@
         });
     </script>
 
+<script type="text/javascript">
+        $(function () {
+            //Скрипт работы с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'filter':
+                            if (fClass.indexOf("wksCellf") >= 0) {
+                                $('.wksFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("docCellf") >= 0) {
+                                $('.docFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("operCellf") >= 0) {
+                                $('.operFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("contrCellf") >= 0) {
+                                $('.contrFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("currCellf") >= 0) {
+                                $('.currFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+
+                            if (fClass.indexOf("dateCellf") >= 0) {
+                                var dateStr = $(this).text() + ' - ' + $(this).text();
+                                $('.dateFlt').val(dateStr).trigger('change');
+                                break;
+                            };
+                            //-----------------------
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        case 'epexport':
+                            Export2Excel('../Export/ExportPlanDebitsF1');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
+                }
+            });
+
+        });
+</script>
+
     <script>
         //-----------Функция создания таблицы отчета------------
         $(function () {
@@ -203,6 +272,15 @@
             });
 
         });
+
+        function ClearFilter() {
+            var table = $('#gridtable').DataTable();
+            $(".sb, .dff").each(function (colIdx) {
+                $(this).val('');
+                table.column(colIdx).search('');
+            });
+            table.draw();
+        }
 
         function formatDate(value) {
             if (value === null) return "";
