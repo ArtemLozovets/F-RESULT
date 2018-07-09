@@ -13,7 +13,6 @@ namespace F_Result.Controllers
 {
     public class ReportsController : Controller
     {
-
         private FRModel db = new FRModel();
 
         // GET: Reports

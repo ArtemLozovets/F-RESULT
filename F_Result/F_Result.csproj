@@ -610,6 +610,7 @@
     <Content Include="Scripts\DateRangePicker\jquery.daterangepicker.min.js" />
     <Content Include="Scripts\FRScripts\exportData.js" />
     <Content Include="Scripts\FRScripts\feedbackPanel.js" />
+    <Content Include="Scripts\FRScripts\wksFilterFlowPanel.js" />
     <Content Include="Scripts\html5shiv.js" />
     <Content Include="Content\font\context-menu-icons.eot" />
     <Content Include="Content\font\context-menu-icons.ttf" />

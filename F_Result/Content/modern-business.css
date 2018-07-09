@@ -428,7 +428,7 @@ input[type=checkbox]#isAllTimes {
     box-shadow: -5px 0 10px rgba(0,0,0,0.3);
 }
 
-#showButton {
+#showButton, #showButtonW {
     float: left;
     cursor: pointer;
     display: block;
@@ -443,9 +443,13 @@ input[type=checkbox]#isAllTimes {
     box-shadow: -5px 0 8px rgba(0,0,0,0.3);
 }
 
-    #showButton:hover {
+    #showButton:hover, #showButtonW:hover {
         color: #fff;
     }
+
+#showButtonW{
+    height:160px;
+}
 
 #revText {
     margin-top: 8px;
