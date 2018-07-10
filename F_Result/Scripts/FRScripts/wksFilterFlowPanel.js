@@ -27,6 +27,44 @@ $(function () {
     }).on('click', '#flowPanel', function (e) {
         e.stopPropagation();
     });
+
+
+    //Сброс/Установка всех чекбоксов выбора проекта
+    $('#allPrgCHB').on('change', function () {
+        window.filterWksIDs = [];
+        $('input:checkbox.prgSelectCHB').each(function () {
+            $(this).prop('checked', $('#allPrgCHB').prop('checked'));
+            if ($(this).is(":checked")) {
+                window.filterWksIDs.push($(this).data('prjid'));
+            };
+        });
+        if (window.filterWksIDs.length > 0) {
+                $("#gridtable").DataTable().draw();
+        }
+    });
+
+    //Проверка состояния всех чекбоксов таблицы
+    $('body').on('change', 'input:checkbox.prgSelectCHB', function () {
+        var allChecked = true;
+        window.filterWksIDs = [];
+        $('input:checkbox.prgSelectCHB').each(function () {
+            if (!$(this).is(":checked")) {
+                allChecked = false;
+            } else if ($(this).is(":checked")) {
+                window.filterWksIDs.push($(this).data('prjid'));
+            };
+        });
+        if (allChecked) {
+            $('#allPrgCHB').prop('checked', 'checked');
+        }
+        else if (!allChecked) {
+            $('#allPrgCHB').prop('checked', false);
+        }
+        if (window.filterPrjIDs.length > 0) {
+                $("#gridtable").DataTable().draw();
+        };
+    });
+
 });
 
 //-----------------------------------------------------------------
@@ -48,10 +86,7 @@ function wksTableCrate() {
         processing: false,
         serverSide: false,
         data: _wksIDs,
-        order: [[0, "desc"]],
-        'columnDefs': [
-            { 'orderData': [1], 'targets': [1] }
-        ],
+        order: [[1, "asc"]],
         columns: [
             { data: 'WorkerId', bSortable: true, sWidth: '20%' },
             { data: 'WorkerName', bSortable: true, sWidth: '60%' },

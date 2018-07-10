@@ -731,6 +731,16 @@ namespace F_Result.Controllers
                     _aao = _aao.OrderByDescending(x => x.Date).ThenByDescending(x => x.ID).ToList();
                 }
 
+                var _wksList = _aao
+                    .Select(x => new 
+                    {
+                        WorkerId = x.WorkerID,
+                        WorkerName = x.WorkerName,
+                    }).Distinct().ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _wksListJson = jsonSerialiser.Serialize(_wksList);
+
                 totalRecords = _aao.Count();
                 var data = _aao.Skip(skip).Take(pageSize).ToList();
 
@@ -742,6 +752,7 @@ namespace F_Result.Controllers
                     sortdir = sortColumnDir,
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
+                    wkslist = _wksListJson,
                     data = data,
                     result = true
                 }, JsonRequestBehavior.AllowGet);

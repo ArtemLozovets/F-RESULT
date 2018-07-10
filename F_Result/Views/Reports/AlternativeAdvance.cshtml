@@ -17,7 +17,7 @@
 
     #flowPanel div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
-        margin-top: 10px;
+        margin-top: 20px;
     }
 
     #flowPanel #prgtable_filter input {
@@ -79,12 +79,12 @@
 <!-- #Плавающая панель -->
 <div id="flowPanel">
     <i class="fa fa-arrow-left" id="showButtonW">&nbsp;<span id="revText">СОТРУДНИКИ</span></i>
-    <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+    <div style="width:100%; margin:26px auto; color:#eee" class="text-center">
         <span style="font-size:1.5em;"><i class="glyphicon glyphicon-user"></i>&nbsp;СОТРУДНИКИ</span>
     </div>
 
     <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
-        <table style="background-color:white; width:100%; margin-top:0 !important;"
+        <table style="background-color:white; width:100%; margin-top: 0 !important"
                class="table table-bordered table-striped table-responsive table-hover gridtable"
                id="prgtable">
             <thead>
@@ -302,10 +302,12 @@
                     ],
 
                     fnDrawCallback: function (settings) {
+                        var api = this.api();
+                        var json = api.ajax.json();
                         //Инициализация таблицы проектов в плавающей панели
                         if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
-                            //  _wksIDs = JSON.parse(json.prjlist)
+                            _wksIDs = JSON.parse(json.wkslist)
                             var pTable = $('#prgtable').DataTable();
                             pTable.destroy();
                             wksTableCrate();

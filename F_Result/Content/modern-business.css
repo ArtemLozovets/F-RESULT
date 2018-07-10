@@ -448,7 +448,8 @@ input[type=checkbox]#isAllTimes {
     }
 
 #showButtonW{
-    height:160px;
+    height:144px;
+    font-size:small !important;
 }
 
 #revText {
