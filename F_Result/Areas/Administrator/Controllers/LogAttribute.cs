@@ -16,24 +16,24 @@ public class LoginAuditAttribute : ActionFilterAttribute
         if ((string)filterContext.Controller.TempData["LoginResult"] == "Success") _resbool = true;
         if ((string)filterContext.Controller.TempData["LoginResult"] == "Failure") _resbool = false;
 
-        AspVisitor visitor = new AspVisitor()
-        {
-            Login = filterContext.Controller.TempData["LoginName"].ToString(),
-            Ip = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress,
-            Url = filterContext.Controller.TempData["ReturnUrl"].ToString(),
-            Password = filterContext.Controller.TempData["Password"].ToString(),
-            Result = _resbool,
-            Date = DateTime.Now,
-        };
-
         using (FRModel db = new FRModel())
         {
             try
             {
+                AspVisitor visitor = new AspVisitor()
+                {
+                    Login = filterContext.Controller.TempData["LoginName"].ToString(),
+                    Ip = request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? request.UserHostAddress,
+                    Url = filterContext.Controller.TempData["ReturnUrl"].ToString(),
+                    Password = filterContext.Controller.TempData["Password"].ToString(),
+                    Result = _resbool,
+                    Date = DateTime.Now,
+                };
+
                 db.AspVisitors.Add(visitor);
                 db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return;               
             }
