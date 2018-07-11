@@ -3,7 +3,7 @@ $(function () {
     //Объявление глобальных переменных
     window._flag = true;
     window._wksIDs = []; //Массив сотрудников таблицы отчета
-    window.filterWksIDs = []; //Массив выбранных ID сотрудников в плавающей панели
+    window.filterWksIds = []; //Массив выбранных ID сотрудников в плавающей панели
 
     //Обработчик ввода в поле фильтра таблицы
     $('body').on('keyup change', '#prgtable_filter>label>input[type="search"]', function () {
@@ -35,7 +35,8 @@ $(function () {
         $('input:checkbox.prgSelectCHB').each(function () {
             $(this).prop('checked', $('#allPrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
-                window.filterWksIDs.push($(this).data('prjid'));
+                window.filterWksIDs.push($(this).data('wksid'));
+                console.log(window.filterWksIds);
             };
         });
         if (window.filterWksIDs.length > 0) {
@@ -51,7 +52,7 @@ $(function () {
             if (!$(this).is(":checked")) {
                 allChecked = false;
             } else if ($(this).is(":checked")) {
-                window.filterWksIDs.push($(this).data('prjid'));
+                window.filterWksIDs.push($(this).data('wksid'));
             };
         });
         if (allChecked) {
@@ -60,7 +61,8 @@ $(function () {
         else if (!allChecked) {
             $('#allPrgCHB').prop('checked', false);
         }
-        if (window.filterPrjIDs.length > 0) {
+        if (window.filterWksIDs.length > 0) {
+            console.log(window.filterWksIDs);
                 $("#gridtable").DataTable().draw();
         };
     });
@@ -94,7 +96,7 @@ function wksTableCrate() {
                 data: null, sWidth: '20%',
                 bSortable: false,
                 render: function (data, type, row, meta) {
-                    var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                    var chkStr = '<div style="width:100%; text-align:center;"><input data-wksid="' + row['WorkerId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
                     return chkStr;
                 }
             }

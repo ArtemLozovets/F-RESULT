@@ -625,7 +625,7 @@ namespace F_Result.Controllers
 
         //Получение данных для построения отчета  по Ф2 "Альтернативный авансовый отчет" POST
         [Authorize]
-        public JsonResult GetAAR()
+        public JsonResult GetAAR(int[] filterWksIDs)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
@@ -720,6 +720,7 @@ namespace F_Result.Controllers
                 _aao = _aao.Where(x => (
                                       (string.IsNullOrEmpty(_payed) || x.Payed.ToString().Contains(_payed)) 
                                    && (string.IsNullOrEmpty(_received) || x.Received.ToString().Contains(_received))
+                                   && (filterWksIDs == null || filterWksIDs.Length == 0 || filterWksIDs.Contains(x.WorkerID))
                                   )).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
