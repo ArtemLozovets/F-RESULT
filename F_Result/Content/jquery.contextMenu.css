@@ -99,6 +99,10 @@
   content: "\F05E";
 }
 
+.context-menu-icon-completed:before {
+  content: "\F1D8";
+}
+
 .context-menu-icon-wksrelation:before {
   content: "\F2BD";
 }

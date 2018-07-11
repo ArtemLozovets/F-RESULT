@@ -29,25 +29,30 @@
         background-color: rgba(255, 99, 132, 0.3);
     }
 
+    .context-menu-icon-completed {
+        background-color: rgba(255, 208, 115, 0.3);
+        text-decoration: line-through;
+    }
+
     #gridtable tbody tr:hover {
         background-color: #eee !important;
     }
 
     .breakAll {
-        cursor:pointer;
-        max-width:500px;
+        cursor: pointer;
+        max-width: 500px;
         -ms-word-break: break-all;
         word-break: break-all;
     }
 
-    .commNarrow{
-        cursor:pointer;
-        max-width:500px;
+    .commNarrow {
+        cursor: pointer;
+        max-width: 500px;
         white-space: nowrap;
         overflow: hidden;
-        -ms-text-overflow:ellipsis;
+        -ms-text-overflow: ellipsis;
         -o-text-overflow: ellipsis;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
     }
 
     .urlCellf {
@@ -90,6 +95,7 @@
 
     <div id="hdStatusFilter" hidden>
         <span class="badge stBadge" data-status="0" style="border:1px solid #bbb; background-color:transparent;">Все</span>
+        <span class="badge stBadge" data-status="16" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1); text-decoration:line-through">Выполнен</span>
         <span class="badge stBadge" data-status="1" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1)">Добавлен</span>
         <span class="badge stBadge" data-status="4" style="border: 1px solid rgba(64, 128, 200, 0.5); background-color:rgba(64, 128, 200, 0.3)">Рассмотрение</span>
         <span class="badge stBadge" data-status="8" style="border: 1px solid rgba(128, 200, 64, 0.5); background-color:rgba(128, 200, 64, 0.3)">Принят</span>
@@ -232,6 +238,9 @@
                         case 'reject':
                             commentAccept(12, cmId)
                             break;
+                        case 'completed':
+                            commentAccept(16, cmId)
+                            break;
                             //-----------------------
                         case 'refresh':
                             ClearFilter();
@@ -269,7 +278,9 @@
                             "sep11": "-----",
                             "accept": { name: "Принять", icon: "accept" },
                             "sep12": "-----",
-                            "reject": { name: "Отклонить", icon: "reject" }
+                            "reject": { name: "Отклонить", icon: "reject" },
+                            "sep13": "-----",
+                            "completed": { name: "Выполнен", icon: "completed" }
                         }
                     },
                     "sep2": "---------",
@@ -386,6 +397,11 @@
                                 // Отклонен
                                 $(row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                                 break;
+                            case 16:
+                                // Выполнен
+                                $(row).css('background-color', 'rgba(255, 208, 115, 0.3)');
+                                $(row).css('text-decoration', 'line-through');
+                                break;
                             default:
                                 break;
                         }
@@ -436,7 +452,7 @@
         });
     </script>
 
-    
+
     <script>
     //Сброс фильтра
         function ClearFilter() {
