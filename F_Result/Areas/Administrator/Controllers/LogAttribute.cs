@@ -33,7 +33,7 @@ public class LoginAuditAttribute : ActionFilterAttribute
                 db.AspVisitors.Add(visitor);
                 db.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;               
             }

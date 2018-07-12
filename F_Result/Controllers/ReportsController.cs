@@ -739,8 +739,14 @@ namespace F_Result.Controllers
                         WorkerName = x.WorkerName,
                     }).Distinct().ToList();
 
+                var currTotal = _aao.GroupBy(x => x.Currency).Select(x=>new {
+                    Currency = x.Select(z=>z.Currency).FirstOrDefault(),
+                    Payed = x.Sum(z => z.Payed),
+                    Received = x.Sum(z=>z.Received)}).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
+                var _currTotalJson = jsonSerialiser.Serialize(currTotal);
 
                 totalRecords = _aao.Count();
                 var data = _aao.Skip(skip).Take(pageSize).ToList();
@@ -755,6 +761,7 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     wkslist = _wksListJson,
                     data = data,
+                    currTotal = _currTotalJson,
                     result = true
                 }, JsonRequestBehavior.AllowGet);
             }

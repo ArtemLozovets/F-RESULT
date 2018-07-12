@@ -36,11 +36,10 @@ $(function () {
             $(this).prop('checked', $('#allPrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
                 window.filterWksIDs.push($(this).data('wksid'));
-                console.log(window.filterWksIds);
             };
         });
         if (window.filterWksIDs.length > 0) {
-                $("#gridtable").DataTable().draw();
+            $("#gridtable").DataTable().draw();
         }
     });
 
@@ -62,8 +61,7 @@ $(function () {
             $('#allPrgCHB').prop('checked', false);
         }
         if (window.filterWksIDs.length > 0) {
-            console.log(window.filterWksIDs);
-                $("#gridtable").DataTable().draw();
+            $("#gridtable").DataTable().draw();
         };
     });
 
@@ -81,7 +79,7 @@ function wksTableCrate() {
             zeroRecords: "Записи отсутствуют",
             infoEmpty: "Записи отсутствуют",
             search: "",
-            searchPlaceholder: "Проект...",
+            searchPlaceholder: "Сотрудник...",
         },
         autoWidth: true,
         paging: false,

@@ -24,6 +24,12 @@
         width: 300px !important;
         margin-right: 8px;
     }
+    
+    .ftAdd th{
+        font-size:smaller;
+        max-height:5px !important;
+        padding:0;
+    }
 </style>
 
 <div id="loadingImg">
@@ -72,6 +78,14 @@
                 </tr>
             </thead>
             <tbody></tbody>
+            <tfoot>
+                <tr class="ftAdd">
+                    <th colspan="5" style="text-align:right;">Итого:</th>
+                    <th style="text-align:right;"></th>            
+                    <th style="text-align:right;"></th>            
+                    <th></th>            
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -305,6 +319,7 @@
                     fnDrawCallback: function (settings) {
                         var api = this.api();
                         var json = api.ajax.json();
+
                         //Инициализация таблицы проектов в плавающей панели
                         if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
@@ -314,6 +329,36 @@
                             wksTableCrate();
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
+                        };
+                    },
+                    footerCallback: function (row, data, start, end, display) {
+                        var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+
+                        var api = this.api();
+                        var json = api.ajax.json();
+
+                        var _total = JSON.parse(json.currTotal);
+
+                        $('.apnd').remove(); //Удаляем все добавленные строки в футере
+
+                        // Заполняем первую строку футера
+                        $(api.column(5).footer()).html(numFormat(_total[0].Payed));
+                        $(api.column(6).footer()).html(numFormat(_total[0].Received));
+                        $(api.column(7).footer()).html(numFormat(_total[0].Currency));
+
+                        // Если в массиве итогов в разрезе валют больше одного елемента - добавляем в футер строку и заполняем ячейки значениями для каждого елемента массива
+                        if (_total.length > 1) {
+                            var appStr = '<tr class="ftAdd apnd"><th colspan="5" style="text-align:right;">>></th>';
+                            appStr += '<th style="text-align:right;"></th><th style="text-align:right;"></th><th></th></tr>';
+
+                            _total.forEach(function (item, i) {
+                                if (i > 0) {
+                                    $("#gridtable").find('tfoot').append(appStr);
+                                    $('tr:eq(' + i + ') th:eq(1)', table.table().footer()).html(numFormat(item.Payed));
+                                    $('tr:eq(' + i + ') th:eq(2)', table.table().footer()).html(numFormat(item.Received));
+                                    $('tr:eq(' + i + ') th:eq(3)', table.table().footer()).html(item.Currency);
+                                }
+                            });
                         };
                     }
                 });
@@ -328,7 +373,6 @@
                 });
 
             });
-
         });
 
         function ClearFilter() {

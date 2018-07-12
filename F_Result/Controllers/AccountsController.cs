@@ -83,7 +83,7 @@ namespace F_Result.Controllers
                                 Note = account.Note,
                                 UserId = account.UserId,
                                 UserFN = usr.LastName + " " + usr.FirstName.Substring(0,1) + "." + usr.MiddleName.Substring(0,1)+".",
-                                Balance = acb.Balance != null ? acb.Balance : 0,
+                                Balance = acb.Balance,
                                 BalanceDate = acb.Date != null ? acb.Date : DateTime.Today
                             }).Distinct().AsEnumerable().Select(x => new Account
                             {
