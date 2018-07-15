@@ -63,6 +63,10 @@
         -o-text-overflow: ellipsis;
         text-overflow: ellipsis;
     }
+
+    .bUnCheck {
+        box-shadow: 2px 2px 5px grey;
+    }
 </style>
 
 <div id="loadingImg">
@@ -94,8 +98,8 @@
     </div>
 
     <div id="hdStatusFilter" hidden>
-        <span class="badge stBadge" data-status="0" style="border:1px solid #bbb; background-color:transparent;">Все</span>
-        <span class="badge stBadge" data-status="16" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1); text-decoration:line-through">Выполнен</span>
+        @*<span class="badge stBadge bUnCheck" data-status="0" style="border:1px solid #bbb; background-color:transparent;">Все</span>*@
+        <span class="badge stBadge bUnCheck" data-status="16" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1); text-decoration:line-through">Выполнен</span>
         <span class="badge stBadge" data-status="1" style="border: 1px solid rgba(255, 208, 115, 0.5); background-color:rgba(255, 208, 115, 0.1)">Добавлен</span>
         <span class="badge stBadge" data-status="4" style="border: 1px solid rgba(64, 128, 200, 0.5); background-color:rgba(64, 128, 200, 0.3)">Рассмотрение</span>
         <span class="badge stBadge" data-status="8" style="border: 1px solid rgba(128, 200, 64, 0.5); background-color:rgba(128, 200, 64, 0.3)">Принят</span>
@@ -167,12 +171,6 @@
                          time: {
                              enabled: false
                          },
-                         customValueLabel: 'Шаблон:',
-                         showCustomValues: true,
-                         customValues:
-                    		[
-			                    { name: 'Нерассмотренные', value: 'Нерассмотренные' }
-                    		],
                          extraClass: 'date-range-pickerM'
                      })
                 .bind('datepicker-closed', function (event, obj) {
@@ -291,10 +289,15 @@
     </script>
 
     <script type="text/javascript">
+        //Инициализация массива статусов для фильтрации списка (все кроме выполненых)
+        window.statusArr = JSON.stringify([1,4,8,12]);
         //Скрипт создания таблицы
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+                    data.columns[6].search.value = window.statusArr; //Показать невыполненные задания
+                })
                 .DataTable({
                     "fixedHeader": {
                         "header": true,
@@ -438,9 +441,23 @@
     <script>
         //Фильтрация списка отзывов по статусу
         $('body').on('click', '.stBadge', function () {
-            var statusCode = $(this).data('status');
-            $("#gridtable").DataTable().columns(6).search(statusCode).draw();
-        })
+            $(this).toggleClass('bUnCheck');
+            $('#hdStatusFilter').html($('#stFilter').html());
+
+            var _sts = []; //Массив кодов статусов для фильтрации
+            $('.stBadge', '#stFilter').not('.bUnCheck').each(function () {
+                _sts.push($(this).data('status'));
+            });
+
+            if (_sts.length > 0) {
+                window.statusArr = JSON.stringify(_sts);
+            }
+            else {
+                window.statusArr = JSON.stringify([-1]);
+            }
+
+            $("#gridtable").DataTable().columns(6).search(window.statusArr).draw();
+        });
 
         //Разворачиваем/сворачиваем текст отзыва
         $('body').on('click', '.commNarrow', function () {
@@ -454,7 +471,7 @@
 
 
     <script>
-    //Сброс фильтра
+        //Сброс фильтра
         function ClearFilter() {
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {

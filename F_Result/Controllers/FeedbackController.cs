@@ -6,7 +6,8 @@ using System.Web.Mvc;
 using F_Result.Models;
 using Microsoft.AspNet.Identity;
 using System.Linq.Dynamic;
-using System.Data.Entity; //!=====!
+using System.Data.Entity;
+using Newtonsoft.Json; //!=====!
 
 namespace F_Result.Controllers
 {
@@ -76,10 +77,14 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                int _status;
-                Int32.TryParse(_statusTXT, out _status);
-                Feedback.StateEnum _state = (Feedback.StateEnum)_status;
-
+                //Получаем массив статусов для фильтрации
+                List<int> _jsonStatus = new List<int>();
+                List<Feedback.StateEnum> _statusArr = new List<Feedback.StateEnum>();
+                if (!string.IsNullOrEmpty(_statusTXT))
+                {
+                    _jsonStatus = JsonConvert.DeserializeObject<int[]>(_statusTXT).ToList();
+                    _statusArr = _jsonStatus.Cast<Feedback.StateEnum>().ToList();
+                }
                 string curr_user = string.Empty;
 
                 //Получаем идентификатор текущего пользователя
@@ -99,12 +104,10 @@ namespace F_Result.Controllers
                            join app_usr in db.IdentityUsers on comment.ApprovedUserId equals app_usr.Id into appusrtmp
                            from app_usr in appusrtmp.DefaultIfEmpty()
                            where ((isAcceptor || (comment.UserId == curr_user))
-                                    && (_status == 0 || comment.Status == _state)
+                                    && (string.IsNullOrEmpty(_statusTXT) || _statusArr.Contains(comment.Status))
                                     && (comment.DateOfCreation >= _startdate && comment.DateOfCreation <= _enddate || string.IsNullOrEmpty(_dateTXT)) //Дата создания
                                     && ((string.IsNullOrEmpty(_appDateTXT))
-                                            || (comment.DateOfApproved >= _app_startdate && comment.DateOfApproved <= _app_enddate)
-                                            || (_appDateTXT == "Нерассмотренные" && comment.DateOfApproved == null)
-                                        ) //Дата рассмотрения
+                                            || (comment.DateOfApproved >= _app_startdate && comment.DateOfApproved <= _app_enddate)) //Дата рассмотрения
                                     && (string.IsNullOrEmpty(_userTXT) || usr.LastName.Contains(_userTXT))
                                     && (string.IsNullOrEmpty(_commentTXT) || comment.Comment.Contains(_commentTXT))
                                     && (string.IsNullOrEmpty(_linkTXT) || comment.SbUrl.Contains(_linkTXT))
