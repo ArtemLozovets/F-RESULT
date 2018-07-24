@@ -627,9 +627,6 @@
     <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsersPartial.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\LoginAudit.cshtml" />
     <Content Include="Areas\Administrator\Views\UsersManagement\ShowUsers.cshtml" />
-    <Content Include="Scripts\DataTables\dataTables.buttons.min.js.map">
-      <DependentUpon>dataTables.buttons.min.js</DependentUpon>
-    </Content>
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />

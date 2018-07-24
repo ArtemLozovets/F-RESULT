@@ -237,6 +237,12 @@
     </script>
 
     <script>
+        $('body').on('click', '#modeBtn', function () {
+            alert('CLICK');
+        })
+    </script>
+
+    <script>
         //-----------Функция создания таблицы отчета------------
         $(function () {
             $('#loadingImg').hide();
@@ -261,7 +267,7 @@
                     ],
                     pageLength: 25, // Количество записей в таблице по умолчанию
                     pagingType: "simple_numbers",
-                    dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'#repDT.col-sm-3 text-right'B>>" +
+                    dom: "<'row'<'col-sm-3'l><'col-sm-6'><'#repMode.col-sm-3 text-right'B>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                     language: {
@@ -312,17 +318,18 @@
                                 { data: "CounteragentName", "autoWidth": true, bSortable: true, name: "CounteragentName", "class": "contrCellf context-menu-one" },
                                 { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Received", name: "Received", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
-                                { data: "Currency", name: "Currency", "autoWidth": true, "class": "currCellf context-menu-one" }
+                                { data: "Currency", name: "Currency", "sWidth": 24, "class": "currCellf context-menu-one" }
                     ],
 
                     fnDrawCallback: function (settings) {
+                        $('#repMode').html('<input id="modeBtn" type="button" class="btn btn-sm btn-primary" value="Помесячно" title = "Сводный авансовый отчет"/>');
+
                         var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
                         var api = this.api();
                         var json = api.ajax.json();
 
                         //Создаем объект с массивом итоговых значений для каждой валюты
                         var _total = JSON.parse(json.currTotal);
-
                         var _payed = '';
                         var _received = '';
                         var _currency = '';

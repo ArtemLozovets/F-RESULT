@@ -36,7 +36,7 @@ $(function () {
             $(this).prop('checked', $('#allPrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
                 window.filterWksIDs.push($(this).data('wksid'));
-            };
+            }
         });
         if (window.filterWksIDs.length > 0) {
             $("#gridtable").DataTable().draw();
@@ -52,7 +52,7 @@ $(function () {
                 allChecked = false;
             } else if ($(this).is(":checked")) {
                 window.filterWksIDs.push($(this).data('wksid'));
-            };
+            }
         });
         if (allChecked) {
             $('#allPrgCHB').prop('checked', 'checked');
@@ -62,7 +62,7 @@ $(function () {
         }
         if (window.filterWksIDs.length > 0) {
             $("#gridtable").DataTable().draw();
-        };
+        }
     });
 
 });
@@ -79,7 +79,7 @@ function wksTableCrate() {
             zeroRecords: "Записи отсутствуют",
             infoEmpty: "Записи отсутствуют",
             search: "",
-            searchPlaceholder: "Сотрудник...",
+            searchPlaceholder: "Сотрудник..."
         },
         autoWidth: true,
         paging: false,
@@ -103,5 +103,4 @@ function wksTableCrate() {
             $('#flowPanel').show();
         }
     });
-
-};
+}
