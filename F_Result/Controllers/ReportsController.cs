@@ -773,6 +773,151 @@ namespace F_Result.Controllers
 
         #endregion
 
+        #region -------------- Сводный отчет по Ф2 "Альтернативный авансовый отчет" -------------
+
+        //Отчет по Ф2 "Альтернативный авансовый отчет" GET
+        [Authorize]
+        public ActionResult AlternativeAdvanceConsolidated()
+        {
+            return View();
+        }
+
+        //Получение данных для построения отчета  по Ф2 "Альтернативный авансовый отчет" POST
+        [Authorize]
+        public JsonResult GetAARCons(int[] filterWksIDs)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try
+            {
+                // Проверяем принадлежность текущего пользователя к ролям "Руководитель", "Финансист", "Администратор"
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+
+                //Список связанных сотрудников
+                List<int> WorkerIdsList = new List<int>() { -1 };
+
+                if (!isChief && !isFinancier && !isAdministrator)
+                {
+                    //Получаем идентификатор текущего пользователя
+                    var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                    //Получаем список связанных сотрудников
+                    WorkerIdsList = db.UsrWksRelations.Where(x => x.UserId == user).Select(x => x.WorkerId).ToList();
+                }
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startpaymentdate = null;
+                DateTime? _endpaymentdate = null;
+                string _paymentdatetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                if (!string.IsNullOrEmpty(_paymentdatetext))
+                {
+                    _paymentdatetext = _paymentdatetext.Trim();
+                    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
+                    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
+                    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
+                    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                }
+                //--------------------------
+                string _worker = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
+                string _currency = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+
+                var _aao = (from aaoRep in db.AAOReportCons
+                            where ((aaoRep.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
+                                 && (aaoRep.Currency.Contains(_currency) || string.IsNullOrEmpty(_currency))
+                                 && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(aaoRep.WorkerID)) //Фильтрация записей по связанным сотрудникам
+                            )
+                            select new
+                            {
+                                YDate = aaoRep.YDate,
+                                MDate = aaoRep.MDate,
+                                WorkerID = aaoRep.WorkerID,
+                                WorkerName = aaoRep.WorkerName,
+                                Payed = aaoRep.Payed,
+                                Received = aaoRep.Received,
+                                Currency = aaoRep.Currency
+                            }).AsEnumerable().Select(x => new AAOReportCons
+                            {
+                                YDate = x.YDate,
+                                MDate = x.MDate,
+                                WorkerID = x.WorkerID,
+                                WorkerName = x.WorkerName,
+                                Payed = x.Payed,
+                                Received = x.Received,
+                                Currency = x.Currency
+                            }).ToList();
+
+                _aao = _aao.Where(x => (
+                                      (string.IsNullOrEmpty(_payed) || x.Payed.ToString().Contains(_payed))
+                                   && (string.IsNullOrEmpty(_received) || x.Received.ToString().Contains(_received))
+                                   && (filterWksIDs == null || filterWksIDs.Length == 0 || filterWksIDs.Contains(x.WorkerID))
+                                  )).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+                else
+                {
+                    _aao = _aao.OrderByDescending(x => x.YDate).ThenByDescending(x => x.MDate).ToList();
+                }
+
+                var _wksList = _aao
+                    .Select(x => new
+                    {
+                        WorkerId = x.WorkerID,
+                        WorkerName = x.WorkerName,
+                    }).Distinct().ToList();
+
+                var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
+                {
+                    Currency = x.Select(z => z.Currency).FirstOrDefault(),
+                    Payed = x.Sum(z => z.Payed),
+                    Received = x.Sum(z => z.Received)
+                }).ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _wksListJson = jsonSerialiser.Serialize(_wksList);
+                var _currTotalJson = jsonSerialiser.Serialize(currTotal);
+
+                totalRecords = _aao.Count();
+                var data = _aao.Skip(skip).Take(pageSize).ToList();
+
+
+                return Json(new
+                {
+                    draw = draw,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    wkslist = _wksListJson,
+                    data = data,
+                    currTotal = _currTotalJson,
+                    result = true
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса!\n\r" + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

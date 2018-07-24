@@ -4,11 +4,5 @@
     "inputFiles": [
       "Content/jquery.contextMenu.css"
     ]
-  },
-  {
-    "outputFileName": "Scripts/DataTables/dataTables.buttons.min.min.js",
-    "inputFiles": [
-      "Scripts/DataTables/dataTables.buttons.min.js"
-    ]
   }
 ]

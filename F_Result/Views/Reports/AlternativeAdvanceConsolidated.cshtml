@@ -42,7 +42,7 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 ОТЧЕТЫ
-                <small>Альтернативный авансовый отчет (подробно)</small>
+                <small>Альтернативный авансовый отчет (помесячно)</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
@@ -56,21 +56,17 @@
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
                 <tr role="row" id="search-row" style="background-color:#ddddff">
-                    <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Год" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Месяц" /></th>
                     <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
-                    <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Документ" /></th>
-                    <th><input type="text" class="form-control input-sm sb operFlt" style="width: 100%" placeholder="Операция" /></th>
-                    <th><input type="text" class="form-control input-sm sb contrFlt" style="width: 100%" placeholder="Контрагент" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Передано" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
                 <tr role="row">
-                    <th>Дата</th>
+                    <th>Год</th>
+                    <th>Месяц</th>
                     <th>Сотрудник</th>
-                    <th>Документ</th>
-                    <th>Операция</th>
-                    <th>Контрагент</th>
                     <th>Передано</th>
                     <th>Получено</th>
                     <th>&#8372</th>
@@ -79,7 +75,7 @@
             <tbody></tbody>
             <tfoot>
                 <tr class="ftAdd">
-                    <th colspan="5" style="text-align:right; vertical-align:top !important;">Итого:</th>
+                    <th colspan="3" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:center;"></th>
@@ -238,10 +234,9 @@
 
     <script>
         $('body').on('click', '#modeBtn', function () {
-            window.location.href = './Reports/AlternativeAdvanceConsolidated/';
+            window.location.href = './Reports/AlternativeAdvance/';
         })
     </script>
-
 
     <script>
         //-----------Функция создания таблицы отчета------------
@@ -288,7 +283,7 @@
                     },
                     ajax: {
                         type: 'POST',
-                        url: '/Reports/GetAAR/',
+                        url: '/Reports/GetAARCons/',
                         datatype: "json",
                         data: function (d) {
                             d.filterWksIDs = window.filterWksIDs;
@@ -305,25 +300,17 @@
                         },
                     },
                     order: [0, "desc"],
-                    columns: [
-                                {
-                                    "data": "Date", "name": "Date", "autoWidth": true, "type": "date ",
-                                    "render": function (value) {
-                                        return formatDate(value);
-                                    },
-                                    "class": "dateCellf context-menu-one"
-                                },
+                    columns: [                              
+                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one" },
+                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one" },
                                 { data: "WorkerName", "autoWidth": true, bSortable: true, name: "WorkerName", "class": " wksCellf context-menu-one" },
-                                { data: "DocNumber", "autoWidth": true, bSortable: true, name: "DocNumber", "class": "docCellf context-menu-one " },
-                                { data: "Operation", "autoWidth": true, bSortable: true, name: "Operation", "class": "operCellf context-menu-one" },
-                                { data: "CounteragentName", "autoWidth": true, bSortable: true, name: "CounteragentName", "class": "contrCellf context-menu-one" },
                                 { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Received", name: "Received", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Currency", name: "Currency", "sWidth": 24, "class": "currCellf context-menu-one" }
                     ],
 
                     fnDrawCallback: function (settings) {
-                        $('#repMode').html('<input id="modeBtn" type="button" class="btn btn-sm btn-primary" value="Помесячно" title = "Сводный авансовый отчет"/>');
+                        $('#repMode').html('<input id="modeBtn" type="button" class="btn btn-sm btn-primary" value="Подробно" title = "Подробный авансовый отчет"/>');
 
                         var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
                         var api = this.api();
@@ -350,9 +337,9 @@
                         });
 
                         // Заполняем футер
-                        $(api.column(5).footer()).html(_payed);
-                        $(api.column(6).footer()).html(_received);
-                        $(api.column(7).footer()).html(_currency);
+                        $(api.column(3).footer()).html(_payed);
+                        $(api.column(4).footer()).html(_received);
+                        $(api.column(5).footer()).html(_currency);
 
                         //---------------------------------------------------------------------
 

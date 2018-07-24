@@ -221,6 +221,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.VAspUsers> VAspUsers { get; set; }
         public DbSet<F_Result.Models.ActivityIndex> ActivityIndexes { get; set; }
         public DbSet<F_Result.Models.AAOReport> AAOReports { get; set; }
+        public DbSet<F_Result.Models.AAOReportCons> AAOReportCons { get; set; }
 
     }
 }
