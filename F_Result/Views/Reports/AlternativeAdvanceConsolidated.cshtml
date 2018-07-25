@@ -56,15 +56,17 @@
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
                 <tr role="row" id="search-row" style="background-color:#ddddff">
-                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Год" /></th>
-                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Месяц" /></th>
+                    <th></th>
+                    <th></th>
+                    <th><input type="text" class="form-control input-sm" style="width: 100%" disabled></th>
                     <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Передано" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
                 <tr role="row">
-                    <th>Год</th>
+                    <th>СК</th>
+                    <th>СК</th>
                     <th>Месяц</th>
                     <th>Сотрудник</th>
                     <th>Передано</th>
@@ -75,7 +77,7 @@
             <tbody></tbody>
             <tfoot>
                 <tr class="ftAdd">
-                    <th colspan="3" style="text-align:right; vertical-align:top !important;">Итого:</th>
+                    <th colspan="4" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:center;"></th>
@@ -234,7 +236,7 @@
 
     <script>
         $('body').on('click', '#modeBtn', function () {
-            window.location.href = './Reports/AlternativeAdvance/';
+            window.location.href = '/Reports/AlternativeAdvance';
         })
     </script>
 
@@ -274,7 +276,7 @@
                         infoFiltered: "(Отфильтровано из _MAX_ записей)",
                         search: "",
                         searchPlaceholder: "Проект...",
-                        processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        processing: "<div id='loadingImg'><div id='preloadImg'><img src='/Content/Images/loader.gif' /></div></div>",
                         sInfoThousands: " ",
                         oPaginate: {
                             sNext: ">",
@@ -299,10 +301,26 @@
                             }
                         },
                     },
-                    order: [0, "desc"],
-                    columns: [                              
-                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one" },
-                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one" },
+                    columnDefs: [
+                                {   orderData: [ 0 ],
+                                    "targets": [0],
+                                    "visible": false,
+                                },
+                                {
+                                    orderData: [2],
+                                    "targets": [1],
+                                    "visible": false
+                                }
+                    ],
+                    columns: [
+                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one"},
+                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one"},
+                                {
+                                    data: null, "sWidth": 100, bSortable: false, name: "DT", "class": "context-menu-one",
+                                    render: function (data) {
+                                        return getMonth(data.YDate, data.MDate);
+                                    }
+                                },
                                 { data: "WorkerName", "autoWidth": true, bSortable: true, name: "WorkerName", "class": " wksCellf context-menu-one" },
                                 { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Received", name: "Received", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
@@ -337,9 +355,9 @@
                         });
 
                         // Заполняем футер
-                        $(api.column(3).footer()).html(_payed);
-                        $(api.column(4).footer()).html(_received);
-                        $(api.column(5).footer()).html(_currency);
+                        $(api.column(4).footer()).html(_payed);
+                        $(api.column(5).footer()).html(_received);
+                        $(api.column(6).footer()).html(_currency);
 
                         //---------------------------------------------------------------------
 
@@ -367,6 +385,53 @@
 
             });
         });
+            
+
+        function getMonth(_yDate, _mDate) {
+            var resStr = '';
+            switch (_mDate) {
+                case 1:
+                    resStr = 'Январь ' + _yDate;
+                    break;
+                case 2:
+                    resStr = 'Февраль ' + _yDate;
+                    break;
+                case 3:
+                    resStr = 'Март ' + _yDate;
+                    break;
+                case 4:
+                    resStr = 'Апрель ' + _yDate;
+                    break;
+                case 5:
+                    resStr = 'Май ' + _yDate;
+                    break;
+                case 6:
+                    resStr = 'Июнь ' + _yDate;
+                    break;
+                case 7:
+                    resStr = 'Июль ' + _yDate;
+                    break;
+                case 8:
+                    resStr = 'Август ' + _yDate;
+                    break;
+                case 9:
+                    resStr = 'Сентябрь ' + _yDate;
+                    break;
+                case 10:
+                    resStr = 'Октябрь ' + _yDate;
+                    break;
+                case 11:
+                    resStr = 'Ноябрь ' + _yDate;
+                    break;
+                case 12:
+                    resStr = 'Декабрь ' + _yDate;
+                    break;
+                default: 
+                    resStr = 'NaN';
+                    break;
+            }
+            return resStr;
+        }
 
         function ClearFilter() {
             var table = $('#gridtable').DataTable();

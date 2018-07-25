@@ -830,10 +830,10 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext);
                 }
                 //--------------------------
-                string _worker = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _payed = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _received = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _currency = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _currency = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
 
                 var _aao = (from aaoRep in db.AAOReportCons
                             where ((aaoRep.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))

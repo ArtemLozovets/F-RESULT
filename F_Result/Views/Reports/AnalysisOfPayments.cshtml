@@ -151,7 +151,6 @@
 
         function GetChart(_Year, chartType) {
             $('#loadingImg').show();
-            console.log($('#flowPanel').data('mode'));
             $.get('/Reports/GetAOP', {
                 Year: _Year, 
                 filterPrjIDs: JSON.stringify(filterPrjIDs)
