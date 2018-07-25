@@ -256,7 +256,7 @@
                     processing: true,
                     serverSide: true,
                     filter: false,
-                    orderMulti: false,
+                    orderMulti: true,
                     responsive: false,
                     searching: true,
                     lengthMenu: [
@@ -301,20 +301,18 @@
                             }
                         },
                     },
+                    order: [[1, 'desc'], [0, 'desc']],
                     columnDefs: [
-                                {   orderData: [ 0 ],
-                                    "targets": [0],
-                                    "visible": false,
+                                {
+                                    "targets": [0], "visible": false
                                 },
                                 {
-                                    orderData: [2],
-                                    "targets": [1],
-                                    "visible": false
+                                    "targets": [1], "visible": false
                                 }
                     ],
                     columns: [
-                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one"},
-                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one"},
+                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one" },
+                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one" },
                                 {
                                     data: null, "sWidth": 100, bSortable: false, name: "DT", "class": "context-menu-one",
                                     render: function (data) {

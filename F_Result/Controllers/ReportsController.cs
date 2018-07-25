@@ -810,6 +810,8 @@ namespace F_Result.Controllers
                 var length = Request.Form.GetValues("length").FirstOrDefault();
                 var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+                var sortColumn_2 = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[1][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir_2 = Request.Form.GetValues("order[1][dir]").FirstOrDefault();
 
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -868,7 +870,7 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir, sortColumn_2 + " " + sortColumnDir_2).ToList();
                 }
                 else
                 {
