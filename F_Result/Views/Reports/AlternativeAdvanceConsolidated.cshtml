@@ -32,10 +32,9 @@
     
     tr.group,  tr.group:hover {
         font-weight:bold;
-        color: rgba(255, 100, 120, 0.8);
         text-align:center;
+        color: rgba(85, 119, 169, 1);
         background-color: rgba(128, 200, 64, 0.3) !important;
-
     }
 </style>
 
@@ -63,7 +62,7 @@
     <div class="row">
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
-                <tr role="row" id="search-row" style="background-color:#ddddff">
+                <tr role="row" id="search-row" style="background-color:#ddddff" class="context-menu-one">
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" /></th>
                     <th><input type="text" class="form-control input-sm sb" disabled style="width: 100%" /></th>
                     <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
@@ -71,7 +70,7 @@
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
-                <tr role="row">
+                <tr role="row" class="context-menu-one">
                     <th>Дата</th>
                     <th>Месяц</th>
                     <th>Сотрудник</th>
@@ -82,7 +81,7 @@
             </thead>
             <tbody></tbody>
             <tfoot>
-                <tr class="ftAdd">
+                <tr class="ftAdd context-menu-one">
                     <th colspan="3" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
@@ -130,52 +129,12 @@
     <script src="~/Scripts/FRScripts/wksFilterFlowPanel.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
 
-    @*Блок скриптов для работы с DateRangePicker*@
-    <script src="~/Scripts/moment.min.js"></script>
-    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
-    <script>
-        $(function () {
-            $('.dff').each(function () {
-                $(this).dateRangePicker(
-                     {
-                         language: 'ru',
-                         startOfWeek: 'monday',
-                         separator: ' - ',
-                         format: 'DD/MM/YYYY',
-                         autoClose: true,
-                         monthSelect: true,
-                         yearSelect: true,
-                         setValue: function (s) {
-                             $(this).val(s);
-                         },
-                         customOpenAnimation: function (cb) {
-                             $(this).fadeIn(300, cb);
-                         },
-                         customCloseAnimation: function (cb) {
-                             $(this).fadeOut(300, cb);
-                         },
-                         showShortcuts: false,
-                         time: {
-                             enabled: false
-                         },
-                         extraClass: 'date-range-pickerM'
-                     })
-                .bind('datepicker-closed', function (event, obj) {
-                    $(this).attr('title', $(this).val()).trigger('change');
-                })
-                .bind('datepicker-open', function () {
-                    $(this).data('dateRangePicker').clear();
-                });
-
-            });
-        });
-    </script>
 
     <script type="text/javascript">
         $(function () {
             //Скрипт работы с контекстным меню
             $.contextMenu({
-                selector: '.dataTables_empty, td.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one, tr.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
                     switch (key) {
@@ -185,32 +144,29 @@
                                 break;
                             };
 
-                            if (fClass.indexOf("docCellf") >= 0) {
-                                $('.docFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-
-                            if (fClass.indexOf("operCellf") >= 0) {
-                                $('.operFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-
-                            if (fClass.indexOf("contrCellf") >= 0) {
-                                $('.contrFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-
                             if (fClass.indexOf("currCellf") >= 0) {
                                 $('.currFlt').val($(this).text()).trigger('change');
                                 break;
                             };
+                        case 'expand':
+                            var table = $("#gridtable").DataTable();
+                            var json = table.ajax.json();
+                            var wks = table.row(this).data().WorkerID;
+                            
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(table.row(this).data().CDate);
+                            var dt = new Date(parseFloat(results[1]));
+                            console.log(dt);
 
-                            if (fClass.indexOf("dateCellf") >= 0) {
-                                var dateStr = $(this).text() + ' - ' + $(this).text();
-                                $('.dateFlt').val(dateStr).trigger('change');
-                                break;
-                            };
-                            //-----------------------
+                            @*var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
+                            var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
+
+                            if (fClass.indexOf("cpExp") >= 0) {
+                                var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }*@
+                            break;
                         case 'refresh':
                             ClearFilter();
                             break;
@@ -231,6 +187,17 @@
                             return true;
                         }
                     },
+                    "sep1": "---------",
+                    "expand": {
+                        name: "Расшифровка",
+                        icon: "expand",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("cExp") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "separator": "-----",
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "separator": "-----",
                     "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
@@ -312,15 +279,15 @@
                     columns: [
                                 {"data": "CDate", "name": "CDate", "autoWidth": false},
                                 {
-                                    data: null, "sWidth": 100, bSortable: true, iDataSort: 0, name: "DT", "class": "context-menu-one",
+                                    data: null, "sWidth": 100, bSortable: true, iDataSort: 0, name: "DT", "class": "context-menu-one cExp",
                                     render: function (data) {
                                         return getMonth(data.CDate);
                                     }
                                 },
-                                { data: "WorkerName", "autoWidth": true, bSortable: true, name: "WorkerName", "class": " wksCellf context-menu-one" },
-                                { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
-                                { data: "Received", name: "Received", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
-                                { data: "Currency", name: "Currency", "sWidth": 24, "class": "currCellf context-menu-one" }
+                                { data: "WorkerName", "autoWidth": true, bSortable: true, name: "WorkerName", "class": " wksCellf context-menu-one cExp" },
+                                { data: "Payed", name: "Payed", sWidth: 24, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one cExp" },
+                                { data: "Received", name: "Received", sWidth: 24, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one cExp" },
+                                { data: "Currency", name: "Currency", sWidth: 24, "class": "currCellf context-menu-one cExp" }
                     ],
 
                     fnDrawCallback: function (settings) {
@@ -330,14 +297,14 @@
                         var api = this.api();
                         var json = api.ajax.json();
 
+                        //Группировка записей по месяцам
                         var rows = api.rows({ page: 'current' }).nodes();
                         var last = null;
-
                         api.column(0, { page: 'current' }).data().each(function (group, i) {
                             if (last !== group) {
                                 var groupStr = getMonth(group);
                                 $(rows).eq(i).before(
-                                    '<tr class="group"><td colspan="5">' + groupStr + '</td></tr>'
+                                    '<tr class="group"><td colspan="5" class="context-menu-one">' + groupStr + '</td></tr>'
                                 );
                                 last = group;
                             }

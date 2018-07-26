@@ -55,7 +55,7 @@
     <div class="row">
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
-                <tr role="row" id="search-row" style="background-color:#ddddff">
+                <tr role="row" id="search-row" style="background-color:#ddddff" class="context-menu-one">
                     <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
                     <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
                     <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Документ" /></th>
@@ -65,7 +65,7 @@
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
-                <tr role="row">
+                <tr role="row" class="context-menu-one">
                     <th>Дата</th>
                     <th>Сотрудник</th>
                     <th>Документ</th>
@@ -78,7 +78,7 @@
             </thead>
             <tbody></tbody>
             <tfoot>
-                <tr class="ftAdd">
+                <tr class="ftAdd context-menu-one">
                     <th colspan="5" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
@@ -171,7 +171,7 @@
         $(function () {
             //Скрипт работы с контекстным меню
             $.contextMenu({
-                selector: '.dataTables_empty, td.context-menu-one',
+                selector: '.dataTables_empty, td.context-menu-one, tr.context-menu-one',
                 callback: function (key, options) {
                     var fClass = $(this).attr('class');
                     switch (key) {
