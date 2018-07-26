@@ -29,6 +29,14 @@
         font-size: smaller;
         padding: 0;
     }
+    
+    tr.group,  tr.group:hover {
+        font-weight:bold;
+        color: rgba(255, 100, 120, 0.8);
+        text-align:center;
+        background-color: rgba(128, 200, 64, 0.3) !important;
+
+    }
 </style>
 
 <div id="loadingImg">
@@ -56,17 +64,15 @@
         <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
             <thead>
                 <tr role="row" id="search-row" style="background-color:#ddddff">
-                    <th></th>
-                    <th></th>
-                    <th><input type="text" class="form-control input-sm" style="width: 100%" disabled></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" /></th>
+                    <th><input type="text" class="form-control input-sm sb" disabled style="width: 100%" /></th>
                     <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Передано" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
                 <tr role="row">
-                    <th>СК</th>
-                    <th>СК</th>
+                    <th>Дата</th>
                     <th>Месяц</th>
                     <th>Сотрудник</th>
                     <th>Передано</th>
@@ -77,7 +83,7 @@
             <tbody></tbody>
             <tfoot>
                 <tr class="ftAdd">
-                    <th colspan="4" style="text-align:right; vertical-align:top !important;">Итого:</th>
+                    <th colspan="3" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:center;"></th>
@@ -256,7 +262,7 @@
                     processing: true,
                     serverSide: true,
                     filter: false,
-                    orderMulti: true,
+                    orderMulti: false,
                     responsive: false,
                     searching: true,
                     lengthMenu: [
@@ -301,22 +307,14 @@
                             }
                         },
                     },
-                    order: [[1, 'desc'], [0, 'desc']],
-                    columnDefs: [
-                                {
-                                    "targets": [0], "visible": false
-                                },
-                                {
-                                    "targets": [1], "visible": false
-                                }
-                    ],
+                    order:[0, 'desc'],
+                    columnDefs: [ {"targets": [0], "visible": false} ],
                     columns: [
-                                { data: "YDate", "autoWidth": true, bSortable: true, name: "YDate", "class": "context-menu-one" },
-                                { data: "MDate", "autoWidth": true, bSortable: true, name: "MDate", "class": "context-menu-one" },
+                                {"data": "CDate", "name": "CDate", "autoWidth": false},
                                 {
-                                    data: null, "sWidth": 100, bSortable: false, name: "DT", "class": "context-menu-one",
+                                    data: null, "sWidth": 100, bSortable: true, iDataSort: 0, name: "DT", "class": "context-menu-one",
                                     render: function (data) {
-                                        return getMonth(data.YDate, data.MDate);
+                                        return getMonth(data.CDate);
                                     }
                                 },
                                 { data: "WorkerName", "autoWidth": true, bSortable: true, name: "WorkerName", "class": " wksCellf context-menu-one" },
@@ -331,6 +329,19 @@
                         var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
                         var api = this.api();
                         var json = api.ajax.json();
+
+                        var rows = api.rows({ page: 'current' }).nodes();
+                        var last = null;
+
+                        api.column(0, { page: 'current' }).data().each(function (group, i) {
+                            if (last !== group) {
+                                var groupStr = getMonth(group);
+                                $(rows).eq(i).before(
+                                    '<tr class="group"><td colspan="5">' + groupStr + '</td></tr>'
+                                );
+                                last = group;
+                            }
+                        });
 
                         //Создаем объект с массивом итоговых значений для каждой валюты
                         var _total = JSON.parse(json.currTotal);
@@ -353,9 +364,9 @@
                         });
 
                         // Заполняем футер
-                        $(api.column(4).footer()).html(_payed);
-                        $(api.column(5).footer()).html(_received);
-                        $(api.column(6).footer()).html(_currency);
+                        $(api.column(3).footer()).html(_payed);
+                        $(api.column(4).footer()).html(_received);
+                        $(api.column(5).footer()).html(_currency);
 
                         //---------------------------------------------------------------------
 
@@ -385,8 +396,15 @@
         });
             
 
-        function getMonth(_yDate, _mDate) {
+        function getMonth(_cDate) {
+
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(_cDate);
+            var dt = new Date(parseFloat(results[1]));
+            var _yDate = dt.getFullYear();
+            var _mDate = dt.getMonth() + 1;
             var resStr = '';
+
             switch (_mDate) {
                 case 1:
                     resStr = 'Январь ' + _yDate;
@@ -439,16 +457,6 @@
             });
             table.draw();
         }
-
-        function formatDate(value) {
-            if (value === null) return "";
-            var pattern = /Date\(([^)]+)\)/;
-            var results = pattern.exec(value);
-            var dt = new Date(parseFloat(results[1]));
-            var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
-            var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
-            return _d + "/" + _m + "/" + dt.getFullYear();
-        };
 
     </script>
 }

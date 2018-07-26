@@ -7,15 +7,12 @@ namespace F_Result.Models
     public partial class AAOReportCons
     {
         [Key, Column(Order = 0)]
-        [Display(Name = "Год")]
-        public int YDate { get; set; }
+        [Display(Name = "Дата")]
+        public DateTime CDate { get; set; }
 
         [Key, Column(Order = 1)]
-        [Display(Name = "Месяц")]
-        public int MDate { get; set; }
-
-        [Key, Column(Order = 2)]
         [Display(Name = "ID сотрудника")]
+
         public int WorkerID { get; set; }
 
         [Display(Name = "Сотрудник")]

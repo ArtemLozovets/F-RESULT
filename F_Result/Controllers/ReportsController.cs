@@ -810,8 +810,6 @@ namespace F_Result.Controllers
                 var length = Request.Form.GetValues("length").FirstOrDefault();
                 var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
-                var sortColumn_2 = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[1][column]").FirstOrDefault() + "][name]").FirstOrDefault();
-                var sortColumnDir_2 = Request.Form.GetValues("order[1][dir]").FirstOrDefault();
 
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
@@ -844,8 +842,7 @@ namespace F_Result.Controllers
                             )
                             select new
                             {
-                                YDate = aaoRep.YDate,
-                                MDate = aaoRep.MDate,
+                                CDate = aaoRep.CDate,
                                 WorkerID = aaoRep.WorkerID,
                                 WorkerName = aaoRep.WorkerName,
                                 Payed = aaoRep.Payed,
@@ -853,8 +850,7 @@ namespace F_Result.Controllers
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReportCons
                             {
-                                YDate = x.YDate,
-                                MDate = x.MDate,
+                                CDate = x.CDate,
                                 WorkerID = x.WorkerID,
                                 WorkerName = x.WorkerName,
                                 Payed = x.Payed,
@@ -870,11 +866,11 @@ namespace F_Result.Controllers
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
                 {
-                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir, sortColumn_2 + " " + sortColumnDir_2).ToList();
+                    _aao = _aao.OrderBy(sortColumn + " " + sortColumnDir).ToList();
                 }
                 else
                 {
-                    _aao = _aao.OrderByDescending(x => x.YDate).ThenByDescending(x => x.MDate).ToList();
+                    _aao = _aao.OrderByDescending(x=>x.CDate).ToList();
                 }
 
                 var _wksList = _aao

@@ -246,6 +246,18 @@
     <Compile Include="Migrations\201807241713172_ProjectsChange7.Designer.cs">
       <DependentUpon>201807241713172_ProjectsChange7.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807261019314_ProjectsChange8.cs" />
+    <Compile Include="Migrations\201807261019314_ProjectsChange8.Designer.cs">
+      <DependentUpon>201807261019314_ProjectsChange8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807261024068_ProjectsChange9.cs" />
+    <Compile Include="Migrations\201807261024068_ProjectsChange9.Designer.cs">
+      <DependentUpon>201807261024068_ProjectsChange9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807261218154_ProjectsChange10.cs" />
+    <Compile Include="Migrations\201807261218154_ProjectsChange10.Designer.cs">
+      <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\AAOReportCons.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
@@ -799,6 +811,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807241713172_ProjectsChange7.resx">
       <DependentUpon>201807241713172_ProjectsChange7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807261019314_ProjectsChange8.resx">
+      <DependentUpon>201807261019314_ProjectsChange8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807261024068_ProjectsChange9.resx">
+      <DependentUpon>201807261024068_ProjectsChange9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807261218154_ProjectsChange10.resx">
+      <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
