@@ -300,13 +300,26 @@
                         //Группировка записей по месяцам
                         var rows = api.rows({ page: 'current' }).nodes();
                         var last = null;
+
+                        var _payedSum = 0;
+                        var _receivedSum = 0;
+
                         api.column(0, { page: 'current' }).data().each(function (group, i) {
+                
+                            _payedSum += json.data[i].Payed;
+                            _receivedSum += json.data[i].Received;
+
                             if (last !== group) {
                                 var groupStr = getMonth(group);
+                                
+
+                                var _curr = 'UAH'
                                 $(rows).eq(i).before(
-                                    '<tr class="group"><td colspan="5" class="context-menu-one">' + groupStr + '</td></tr>'
+                                    '<tr class="group"><td colspan="2" class="context-menu-one">' + groupStr + '</td><td>' + _payedSum + '</td><td>' + _receivedSum + '</td><td>' + _curr + '</td></tr>'
                                 );
                                 last = group;
+                                _payedSum = 0;
+                                _receivedSum = 0;
                             }
                         });
 
@@ -364,7 +377,6 @@
             
 
         function getMonth(_cDate) {
-
             var pattern = /Date\(([^)]+)\)/;
             var results = pattern.exec(_cDate);
             var dt = new Date(parseFloat(results[1]));
