@@ -29,10 +29,10 @@
         font-size: smaller;
         padding: 0;
     }
-    
-    tr.group,  tr.group:hover {
-        font-weight:bold;
-        text-align:center;
+
+    tr.group, tr.group:hover {
+        font-weight: bold;
+        text-align: center;
         color: rgba(85, 119, 169, 1);
         background-color: rgba(128, 200, 64, 0.3) !important;
     }
@@ -128,6 +128,8 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/wksFilterFlowPanel.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    @*--------------------------------------------------------------------------------------------------------*@
+    <script src="~/Scripts/moment.min.js"></script>
 
 
     <script type="text/javascript">
@@ -152,20 +154,21 @@
                             var table = $("#gridtable").DataTable();
                             var json = table.ajax.json();
                             var wks = table.row(this).data().WorkerID;
-                            
+
                             var pattern = /Date\(([^)]+)\)/;
                             var results = pattern.exec(table.row(this).data().CDate);
                             var dt = new Date(parseFloat(results[1]));
-                            console.log(dt);
 
-                            @*var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
+                            var startDate = moment(json.StartPeriod).format('DD/MM/YYYY');
                             var endDate = moment(json.EndPeriod).format('DD/MM/YYYY');
 
-                            if (fClass.indexOf("cpExp") >= 0) {
-                                var url = '@Url.Action("PCShow", "PlanCredits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                            console.log(startDate);
+
+                            if (fClass.indexOf("cExp") >= 0) {
+                                var url = '@Url.Action("AlternativeAdvance", "Reports", new { WorkerID = "_wks_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                url = url.replace('_wks_', wks).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
-                            }*@
+                            }
                             break;
                         case 'refresh':
                             ClearFilter();
@@ -274,10 +277,10 @@
                             }
                         },
                     },
-                    order:[0, 'desc'],
-                    columnDefs: [ {"targets": [0], "visible": false} ],
+                    order: [0, 'desc'],
+                    columnDefs: [{ "targets": [0], "visible": false }],
                     columns: [
-                                {"data": "CDate", "name": "CDate", "autoWidth": false},
+                                { "data": "CDate", "name": "CDate", "autoWidth": false },
                                 {
                                     data: null, "sWidth": 100, bSortable: true, iDataSort: 0, name: "DT", "class": "context-menu-one cExp",
                                     render: function (data) {
@@ -305,13 +308,13 @@
                         var _receivedSum = 0;
 
                         api.column(0, { page: 'current' }).data().each(function (group, i) {
-                
+
                             _payedSum += json.data[i].Payed;
                             _receivedSum += json.data[i].Received;
 
                             if (last !== group) {
                                 var groupStr = getMonth(group);
-                                
+
 
                                 var _curr = 'UAH'
                                 $(rows).eq(i).before(
@@ -374,7 +377,7 @@
 
             });
         });
-            
+
 
         function getMonth(_cDate) {
             var pattern = /Date\(([^)]+)\)/;
@@ -421,7 +424,7 @@
                 case 12:
                     resStr = 'Декабрь ' + _yDate;
                     break;
-                default: 
+                default:
                     resStr = 'NaN';
                     break;
             }

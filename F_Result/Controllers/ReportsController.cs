@@ -618,8 +618,19 @@ namespace F_Result.Controllers
 
         //Отчет по Ф2 "Альтернативный авансовый отчет" GET
         [Authorize]
-        public ActionResult AlternativeAdvance()
+        public ActionResult AlternativeAdvance(int? WorkerID, string startDate, string endDate)
         {
+            if (WorkerID != null)
+            {
+                string WorkerName = db.Workers.FirstOrDefault(x => x.id == WorkerID).ShortName.ToString();
+                ViewData["WorkerName"] = WorkerName;
+            }
+
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+            {
+                ViewData["Period"] = startDate + " - " + endDate;
+            }
+            
             return View();
         }
 
