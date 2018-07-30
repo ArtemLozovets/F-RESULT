@@ -57,7 +57,7 @@
             <thead>
                 <tr role="row" id="search-row" style="background-color:#ddddff" class="context-menu-one">
                     <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
-                    <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" value="@ViewData["WorkerName"]" /></th>
+                    <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" value="@ViewData["WorkerName"]" id="wksFlt" /></th>
                     <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Документ" /></th>
                     <th><input type="text" class="form-control input-sm sb operFlt" style="width: 100%" placeholder="Операция" /></th>
                     <th><input type="text" class="form-control input-sm sb contrFlt" style="width: 100%" placeholder="Контрагент" /></th>
@@ -248,6 +248,11 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+
+                    data.columns[0].search.value = $('#dateFlt').val();
+                    data.columns[1].search.value = $('#wksFlt').val();
+                })
                 .DataTable({
                     "fixedHeader": {
                         "header": true,
