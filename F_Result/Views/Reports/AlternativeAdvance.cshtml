@@ -77,14 +77,14 @@
                 </tr>
             </thead>
             <tbody></tbody>
-            <tfoot>
+            @*<tfoot>
                 <tr class="ftAdd context-menu-one">
                     <th colspan="5" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:center;"></th>
                 </tr>
-            </tfoot>
+            </tfoot>*@
         </table>
     </div>
 </div>
@@ -334,30 +334,31 @@
                         var api = this.api();
                         var json = api.ajax.json();
 
-                        //Создаем объект с массивом итоговых значений для каждой валюты
-                        var _total = JSON.parse(json.currTotal);
-                        var _payed = '';
-                        var _received = '';
-                        var _currency = '';
+                        // ---------------------- Итоги ---------------------------
+                        ////Создаем объект с массивом итоговых значений для каждой валюты
+                        //var _total = JSON.parse(json.currTotal);
+                        //var _payed = '';
+                        //var _received = '';
+                        //var _currency = '';
 
-                        // Формируем содержимое итоговых ячеек для каждой валюты.
-                        _total.forEach(function (item, i) {
-                            if (i == 0) {
-                                _payed = numFormat(item.Payed);
-                                _received = numFormat(item.Received);
-                                _currency = item.Currency;
-                            }
-                            else {
-                                _payed += '<br />' + numFormat(item.Payed);
-                                _received += '<br />' + numFormat(item.Received);
-                                _currency += '<br />' + item.Currency;
-                            }
-                        });
+                        //// Формируем содержимое итоговых ячеек для каждой валюты.
+                        //_total.forEach(function (item, i) {
+                        //    if (i == 0) {
+                        //        _payed = numFormat(item.Payed);
+                        //        _received = numFormat(item.Received);
+                        //        _currency = item.Currency;
+                        //    }
+                        //    else {
+                        //        _payed += '<br />' + numFormat(item.Payed);
+                        //        _received += '<br />' + numFormat(item.Received);
+                        //        _currency += '<br />' + item.Currency;
+                        //    }
+                        //});
 
-                        // Заполняем футер
-                        $(api.column(5).footer()).html(_payed);
-                        $(api.column(6).footer()).html(_received);
-                        $(api.column(7).footer()).html(_currency);
+                        //// Заполняем футер
+                        //$(api.column(5).footer()).html(_payed);
+                        //$(api.column(6).footer()).html(_received);
+                        //$(api.column(7).footer()).html(_currency);
 
                         //---------------------------------------------------------------------
 
