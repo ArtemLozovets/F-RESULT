@@ -686,8 +686,8 @@ namespace F_Result.Controllers
                 string _docNum = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
                 string _operation = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 string _counteragent = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
-                string _payed = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _received = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 string _currency = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 var _aao = (from aaoRep in db.AAOReports
@@ -710,8 +710,8 @@ namespace F_Result.Controllers
                                 Operation = aaoRep.Operation,
                                 Counteragent = aaoRep.Counteragent,
                                 CounteragentName = aaoRep.CounteragentName,
-                                Payed = aaoRep.Payed,
                                 Received = aaoRep.Received,
+                                Payed = aaoRep.Payed,
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReport
                                  {
@@ -723,8 +723,8 @@ namespace F_Result.Controllers
                                      Operation = x.Operation,
                                      Counteragent = x.Counteragent,
                                      CounteragentName = x.CounteragentName,
-                                     Payed = x.Payed,
                                      Received = x.Received,
+                                     Payed = x.Payed,
                                      Currency = x.Currency
                                  }).ToList();
 
@@ -750,17 +750,21 @@ namespace F_Result.Controllers
                         WorkerName = x.WorkerName,
                     }).Distinct().ToList();
 
-                //var currTotal = _aao.GroupBy(x => x.Currency).Select(x=>new {
-                //    Currency = x.Select(z=>z.Currency).FirstOrDefault(),
-                //    Payed = x.Sum(z => z.Payed),
-                //    Received = x.Sum(z=>z.Received)}).ToList();
+                var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
+                {
+                    Currency = x.Select(z => z.Currency).FirstOrDefault(),
+                    Received = x.Sum(z => z.Received),
+                    Payed = x.Sum(z => z.Payed),
+                }).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
-                //var _currTotalJson = jsonSerialiser.Serialize(currTotal);
+                var _currTotalJson = jsonSerialiser.Serialize(currTotal);
 
                 totalRecords = _aao.Count();
                 var data = _aao.Skip(skip).Take(pageSize).ToList();
+
+                int _curTotalFlag = _aao.GroupBy(x => x.WorkerID).Count();
 
 
                 return Json(new
@@ -772,7 +776,8 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     wkslist = _wksListJson,
                     data = data,
-                    //currTotal = _currTotalJson,
+                    currTotal = _currTotalJson,
+                    curTotalFlag = _curTotalFlag,
                     result = true
                 }, JsonRequestBehavior.AllowGet);
             }
@@ -842,8 +847,8 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
                 string _worker = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _payed = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _received = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
+                string _received = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _payed = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 string _currency = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
 
                 var _aao = (from aaoRep in db.AAOReportCons
@@ -856,16 +861,16 @@ namespace F_Result.Controllers
                                 CDate = aaoRep.CDate,
                                 WorkerID = aaoRep.WorkerID,
                                 WorkerName = aaoRep.WorkerName,
-                                Payed = aaoRep.Payed,
                                 Received = aaoRep.Received,
+                                Payed = aaoRep.Payed,
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReportCons
                             {
                                 CDate = x.CDate,
                                 WorkerID = x.WorkerID,
                                 WorkerName = x.WorkerName,
-                                Payed = x.Payed,
                                 Received = x.Received,
+                                Payed = x.Payed,
                                 Currency = x.Currency
                             }).ToList();
 
@@ -891,20 +896,19 @@ namespace F_Result.Controllers
                         WorkerName = x.WorkerName,
                     }).Distinct().ToList();
 
-                var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
-                {
-                    Currency = x.Select(z => z.Currency).FirstOrDefault(),
-                    Payed = x.Sum(z => z.Payed),
-                    Received = x.Sum(z => z.Received)
-                }).ToList();
+                //var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
+                //{
+                //    Currency = x.Select(z => z.Currency).FirstOrDefault(),
+                //    Received = x.Sum(z => z.Received),
+                //    Payed = x.Sum(z => z.Payed)
+                //}).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
-                var _currTotalJson = jsonSerialiser.Serialize(currTotal);
+                //var _currTotalJson = jsonSerialiser.Serialize(currTotal);
 
                 totalRecords = _aao.Count();
                 var data = _aao.Skip(skip).Take(pageSize).ToList();
-
 
                 return Json(new
                 {
@@ -915,7 +919,7 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     wkslist = _wksListJson,
                     data = data,
-                    currTotal = _currTotalJson,
+                    //currTotal = _currTotalJson,
                     result = true
                 }, JsonRequestBehavior.AllowGet);
             }

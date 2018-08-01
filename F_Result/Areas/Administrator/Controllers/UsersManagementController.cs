@@ -612,7 +612,8 @@ namespace F_Result.Areas.Administrator.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.UserName.ToLowerInvariant(), model.Password, model.RememberMe, shouldLockout: true);
+            //var result = await SignInManager.PasswordSignInAsync(model.UserName.ToLowerInvariant(), model.Password, model.RememberMe, shouldLockout: true);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName.ToLowerInvariant(), model.Password, false, shouldLockout: true);
 
             TempData["LoginName"] = model.UserName;
             TempData["ReturnUrl"] = "/" + returnUrl;

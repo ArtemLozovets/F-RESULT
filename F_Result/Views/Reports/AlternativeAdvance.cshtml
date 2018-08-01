@@ -61,8 +61,8 @@
                     <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Документ" /></th>
                     <th><input type="text" class="form-control input-sm sb operFlt" style="width: 100%" placeholder="Операция" /></th>
                     <th><input type="text" class="form-control input-sm sb contrFlt" style="width: 100%" placeholder="Контрагент" /></th>
-                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Передано" /></th>
                     <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Получено" /></th>
+                    <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Передано" /></th>
                     <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
                 </tr>
                 <tr role="row" class="context-menu-one">
@@ -71,20 +71,20 @@
                     <th>Документ</th>
                     <th>Операция</th>
                     <th>Контрагент</th>
-                    <th>Передано</th>
                     <th>Получено</th>
+                    <th>Передано</th>
                     <th>&#8372</th>
                 </tr>
             </thead>
             <tbody></tbody>
-            @*<tfoot>
+            <tfoot id="tblFooter">
                 <tr class="ftAdd context-menu-one">
                     <th colspan="5" style="text-align:right; vertical-align:top !important;">Итого:</th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:right;"></th>
                     <th style="text-align:center;"></th>
                 </tr>
-            </tfoot>*@
+            </tfoot>
         </table>
     </div>
 </div>
@@ -322,8 +322,8 @@
                                 { data: "DocNumber", "autoWidth": true, bSortable: true, name: "DocNumber", "class": "docCellf context-menu-one " },
                                 { data: "Operation", "autoWidth": true, bSortable: true, name: "Operation", "class": "operCellf context-menu-one" },
                                 { data: "CounteragentName", "autoWidth": true, bSortable: true, name: "CounteragentName", "class": "contrCellf context-menu-one" },
-                                { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Received", name: "Received", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
+                                { data: "Payed", name: "Payed", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: true, "class": "text-right context-menu-one" },
                                 { data: "Currency", name: "Currency", "sWidth": 24, "class": "currCellf context-menu-one" }
                     ],
 
@@ -334,35 +334,43 @@
                         var api = this.api();
                         var json = api.ajax.json();
 
-                        // ---------------------- Итоги ---------------------------
-                        ////Создаем объект с массивом итоговых значений для каждой валюты
-                        //var _total = JSON.parse(json.currTotal);
-                        //var _payed = '';
-                        //var _received = '';
-                        //var _currency = '';
+                        //---------------------- Итоги ---------------------------
+                        if (json.curTotalFlag === 1) {
 
-                        //// Формируем содержимое итоговых ячеек для каждой валюты.
-                        //_total.forEach(function (item, i) {
-                        //    if (i == 0) {
-                        //        _payed = numFormat(item.Payed);
-                        //        _received = numFormat(item.Received);
-                        //        _currency = item.Currency;
-                        //    }
-                        //    else {
-                        //        _payed += '<br />' + numFormat(item.Payed);
-                        //        _received += '<br />' + numFormat(item.Received);
-                        //        _currency += '<br />' + item.Currency;
-                        //    }
-                        //});
+                            $('#tblFooter').show();
 
-                        //// Заполняем футер
-                        //$(api.column(5).footer()).html(_payed);
-                        //$(api.column(6).footer()).html(_received);
-                        //$(api.column(7).footer()).html(_currency);
+                            //Создаем объект с массивом итоговых значений для каждой валюты
+                            var _total = JSON.parse(json.currTotal);
+                            var _received = '';
+                            var _payed = '';
+                            var _currency = '';
 
+                            // Формируем содержимое итоговых ячеек для каждой валюты.
+                            _total.forEach(function (item, i) {
+                                if (i == 0) {
+                                    _received = numFormat(item.Received);
+                                    _payed = numFormat(item.Payed);
+                                    _currency = item.Currency;
+                                }
+                                else {
+                                    _received += '<br />' + numFormat(item.Received);
+                                    _payed += '<br />' + numFormat(item.Payed);
+                                    _currency += '<br />' + item.Currency;
+                                }
+                            });
+
+                            // Заполняем футер
+                            $(api.column(5).footer()).html(_received);
+                            $(api.column(6).footer()).html(_payed);
+                            $(api.column(7).footer()).html(_currency);
+                        }
+                        else {
+                            $('#tblFooter').hide();
+                        }
                         //---------------------------------------------------------------------
 
-                        //Инициализация таблицы проектов в плавающей панели
+                        //Инициализация таблицы проектов в плавающей 
+
                         if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
                             _wksIDs = JSON.parse(json.wkslist)
