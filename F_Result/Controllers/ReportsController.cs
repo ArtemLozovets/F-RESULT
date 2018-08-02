@@ -761,11 +761,11 @@ namespace F_Result.Controllers
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
                 var _currTotalJson = jsonSerialiser.Serialize(currTotal);
 
-                totalRecords = _aao.Count();
-                var data = _aao.Skip(skip).Take(pageSize).ToList();
-
+                //Количество сотрудников в данных отчета
                 int _curTotalFlag = _aao.GroupBy(x => x.WorkerID).Count();
 
+                totalRecords = _aao.Count();
+                var data = _aao.Skip(skip).Take(pageSize).ToList();
 
                 return Json(new
                 {
@@ -896,16 +896,19 @@ namespace F_Result.Controllers
                         WorkerName = x.WorkerName,
                     }).Distinct().ToList();
 
-                //var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
-                //{
-                //    Currency = x.Select(z => z.Currency).FirstOrDefault(),
-                //    Received = x.Sum(z => z.Received),
-                //    Payed = x.Sum(z => z.Payed)
-                //}).ToList();
+                var currTotal = _aao.GroupBy(x => x.Currency).Select(x => new
+                {
+                    Currency = x.Select(z => z.Currency).FirstOrDefault(),
+                    Received = x.Sum(z => z.Received),
+                    Payed = x.Sum(z => z.Payed)
+                }).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
-                //var _currTotalJson = jsonSerialiser.Serialize(currTotal);
+                var _currTotalJson = jsonSerialiser.Serialize(currTotal);
+
+                //Количество сотрудников в данных отчета
+                int _curTotalFlag = _aao.GroupBy(x => x.WorkerID).Count();
 
                 totalRecords = _aao.Count();
                 var data = _aao.Skip(skip).Take(pageSize).ToList();
@@ -919,7 +922,8 @@ namespace F_Result.Controllers
                     recordsTotal = totalRecords,
                     wkslist = _wksListJson,
                     data = data,
-                    //currTotal = _currTotalJson,
+                    currTotal = _currTotalJson,
+                    curTotalFlag = _curTotalFlag,
                     result = true
                 }, JsonRequestBehavior.AllowGet);
             }

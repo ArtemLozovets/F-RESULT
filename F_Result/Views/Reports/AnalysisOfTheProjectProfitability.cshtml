@@ -432,9 +432,9 @@
                  },
                  extraClass: 'date-range-pickerM'
              })
-        .bind('datepicker-apply', function (event, obj) {
-            globalVarsClear();
-        });
+            .bind('datepicker-closed', function (event, obj) {
+                globalVarsClear();
+            });
         };
 
         $('body').on('change', '#startDate', function () {
