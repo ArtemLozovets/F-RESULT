@@ -72,10 +72,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/11/2018 02:42:39</publishTime>
     </File>
     <File Include="bin/F_Result.dll">
-      <publishTime>08/01/2018 23:08:26</publishTime>
+      <publishTime>08/02/2018 20:30:19</publishTime>
     </File>
     <File Include="bin/F_Result.pdb">
-      <publishTime>08/01/2018 23:08:26</publishTime>
+      <publishTime>08/02/2018 20:30:19</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>03/17/2017 19:54:00</publishTime>
@@ -1530,10 +1530,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Reports/AlternativeAdvance.cshtml">
-      <publishTime>08/01/2018 23:06:53</publishTime>
+      <publishTime>08/01/2018 23:27:06</publishTime>
     </File>
     <File Include="Views/Reports/AlternativeAdvanceConsolidated.cshtml">
-      <publishTime>08/01/2018 22:40:01</publishTime>
+      <publishTime>08/02/2018 18:37:21</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfPayments.cshtml">
       <publishTime>07/25/2018 22:24:11</publishTime>
@@ -1542,10 +1542,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/07/2018 12:00:07</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectBudget.cshtml">
-      <publishTime>07/15/2018 20:28:45</publishTime>
+      <publishTime>08/02/2018 18:37:21</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectProfitability.cshtml">
-      <publishTime>07/15/2018 20:31:10</publishTime>
+      <publishTime>08/02/2018 18:37:21</publishTime>
     </File>
     <File Include="Views/Settings/ShowSettings.cshtml">
       <publishTime>03/05/2018 19:33:44</publishTime>
@@ -1575,7 +1575,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:32:00</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>08/01/2018 23:08:56</publishTime>
+      <publishTime>08/02/2018 21:09:02</publishTime>
     </File>
   </ItemGroup>
 </Project>

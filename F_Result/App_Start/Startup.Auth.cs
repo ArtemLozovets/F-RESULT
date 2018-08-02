@@ -31,7 +31,7 @@ namespace F_Result
                 },
                 CookieName = "System_CK",
                 SlidingExpiration = true,
-                ExpireTimeSpan = TimeSpan.FromMinutes(15)
+                ExpireTimeSpan = TimeSpan.FromMinutes(30)
             });            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
