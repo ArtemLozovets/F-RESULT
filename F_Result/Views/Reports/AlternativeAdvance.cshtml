@@ -31,6 +31,8 @@
     }
 </style>
 
+@Html.Hidden("Mode", ViewData["Mode"]);
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -238,7 +240,7 @@
 
     <script>
         $('body').on('click', '#modeBtn', function () {
-            window.location.href = '/Reports/AlternativeAdvanceConsolidated';
+            window.location.href = '/Reports/AlternativeAdvanceConsolidated?Mode=' + $('#Mode').val();
         })
     </script>
 
@@ -296,7 +298,8 @@
                         url: '/Reports/GetAAR/',
                         datatype: "json",
                         data: function (d) {
-                            d.filterWksIDs = window.filterWksIDs;
+                            d.filterWksIDs = window.filterWksIDs,
+                            d.mode = $('#Mode').val()
                         },
                         dataSrc: function (d) {
                             $('#loadingImg').hide();

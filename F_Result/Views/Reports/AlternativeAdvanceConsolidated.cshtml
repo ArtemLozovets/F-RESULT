@@ -38,6 +38,8 @@
     }
 </style>
 
+@Html.Hidden("Mode", ViewData["Mode"]);
+
 <div id="loadingImg">
     <div id="preloadImg">
         <img src="~/Content/Images/loader.gif" />
@@ -164,7 +166,7 @@
                             var endDate = moment(dt).add(1, 'months').date(0).format('DD/MM/YYYY');
 
                             if (fClass.indexOf("cExp") >= 0) {
-                                var url = '@Url.Action("AlternativeAdvance", "Reports", new { WorkerID = "_wks_", startDate = "_startDate_", endDate = "_endDate_"})';
+                                var url = '@Url.Action("AlternativeAdvance", "Reports", new { WorkerID = "_wks_", startDate = "_startDate_", endDate = "_endDate_", Mode = "All"})';
                                 url = url.replace('_wks_', wks).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
                             }
@@ -211,7 +213,7 @@
 
     <script>
         $('body').on('click', '#modeBtn', function () {
-            window.location.href = '/Reports/AlternativeAdvance';
+            window.location.href = '/Reports/AlternativeAdvance?Mode=' + $('#Mode').val();
         })
     </script>
 
@@ -263,7 +265,8 @@
                         url: '/Reports/GetAARCons/',
                         datatype: "json",
                         data: function (d) {
-                            d.filterWksIDs = window.filterWksIDs;
+                            d.filterWksIDs = window.filterWksIDs,
+                            d.mode = $('#Mode').val()
                         },
                         dataSrc: function (d) {
                             $('#loadingImg').hide();

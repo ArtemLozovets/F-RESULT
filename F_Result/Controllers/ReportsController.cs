@@ -618,7 +618,7 @@ namespace F_Result.Controllers
 
         //Отчет по Ф2 "Альтернативный авансовый отчет" GET
         [Authorize]
-        public ActionResult AlternativeAdvance(int? WorkerID, string startDate, string endDate)
+        public ActionResult AlternativeAdvance(int? WorkerID, string startDate, string endDate, string Mode)
         {
             if (WorkerID != null)
             {
@@ -630,13 +630,15 @@ namespace F_Result.Controllers
             {
                 ViewData["Period"] = startDate + " - " + endDate;
             }
-            
+
+            ViewData["Mode"] = string.IsNullOrEmpty(Mode) ? "" : Mode;
+
             return View();
         }
 
         //Получение данных для построения отчета  по Ф2 "Альтернативный авансовый отчет" POST
         [Authorize]
-        public JsonResult GetAAR(int[] filterWksIDs)
+        public JsonResult GetAAR(int[] filterWksIDs, string mode)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
@@ -647,9 +649,12 @@ namespace F_Result.Controllers
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
 
                 //Список связанных сотрудников
-                List<int> WorkerIdsList = new List<int>() { -1 };
-
-                if (!isChief && !isFinancier && !isAdministrator)
+                List<int> WorkerIdsList = new List<int>();
+                if ((isChief || isAdministrator || isFinancier) && mode == "All")
+                {
+                    WorkerIdsList.Add(-1);
+                }
+                else
                 {
                     //Получаем идентификатор текущего пользователя
                     var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
@@ -793,14 +798,16 @@ namespace F_Result.Controllers
 
         //Отчет по Ф2 "Альтернативный авансовый отчет" GET
         [Authorize]
-        public ActionResult AlternativeAdvanceConsolidated()
+        public ActionResult AlternativeAdvanceConsolidated(string Mode)
         {
+            ViewData["Mode"] = string.IsNullOrEmpty(Mode) ? "" : Mode;
+
             return View();
         }
 
         //Получение данных для построения отчета  по Ф2 "Альтернативный авансовый отчет" POST
         [Authorize]
-        public JsonResult GetAARCons(int[] filterWksIDs)
+        public JsonResult GetAARCons(int[] filterWksIDs, string mode)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
             try
@@ -811,9 +818,12 @@ namespace F_Result.Controllers
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
 
                 //Список связанных сотрудников
-                List<int> WorkerIdsList = new List<int>() { -1 };
-
-                if (!isChief && !isFinancier && !isAdministrator)
+                List<int> WorkerIdsList = new List<int>();
+                if ((isChief || isAdministrator || isFinancier) && mode == "All")
+                {
+                    WorkerIdsList.Add(-1);
+                }
+                else
                 {
                     //Получаем идентификатор текущего пользователя
                     var user = System.Web.HttpContext.Current.User.Identity.GetUserId();

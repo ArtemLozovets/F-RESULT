@@ -5,7 +5,6 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using F_Result.Models;
-using Microsoft.Owin.Security;
 
 namespace F_Result
 {
