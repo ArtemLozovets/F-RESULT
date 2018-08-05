@@ -166,7 +166,7 @@
                             var endDate = moment(dt).add(1, 'months').date(0).format('DD/MM/YYYY');
 
                             if (fClass.indexOf("cExp") >= 0) {
-                                var url = '@Url.Action("AlternativeAdvance", "Reports", new { WorkerID = "_wks_", startDate = "_startDate_", endDate = "_endDate_", Mode = "All"})';
+                                var url = '@Url.Action("AlternativeAdvance", "Reports", new { WorkerID = "_wks_", startDate = "_startDate_", endDate = "_endDate_", Mode = "Exp"})';
                                 url = url.replace('_wks_', wks).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
                                 window.open(url, '_blank');
                             }

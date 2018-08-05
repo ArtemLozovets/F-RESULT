@@ -650,7 +650,7 @@ namespace F_Result.Controllers
 
                 //Список связанных сотрудников
                 List<int> WorkerIdsList = new List<int>();
-                if ((isChief || isAdministrator || isFinancier) && mode == "All")
+                if ((isChief || isAdministrator || isFinancier) && (mode == "All" || mode == "Exp"))
                 {
                     WorkerIdsList.Add(-1);
                 }
