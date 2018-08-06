@@ -32,6 +32,9 @@ $(function () {
     //Сброс/Установка всех чекбоксов выбора проекта
     $('#allPrgCHB').on('change', function () {
         window.filterWksIDs = [];
+        //Удаляем массив сотрудников из SessionStorage
+        sessionStorage.removeItem('AAOWksIDsArray');
+
         $('input:checkbox.prgSelectCHB').each(function () {
             $(this).prop('checked', $('#allPrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
@@ -47,6 +50,9 @@ $(function () {
     $('body').on('change', 'input:checkbox.prgSelectCHB', function () {
         var allChecked = true;
         window.filterWksIDs = [];
+        //Удаляем массив сотрудников из SessionStorage
+        sessionStorage.removeItem('AAOWksIDsArray');
+
         $('input:checkbox.prgSelectCHB').each(function () {
             if (!$(this).is(":checked")) {
                 allChecked = false;
@@ -74,7 +80,8 @@ function wksTableCrate() {
         "scrollY": "360px",
         "scrollCollapse": true,
         scrollX: '100%',
-        dom: "<<'col-sm-12'f>><'row'<'col-sm-12'tr>>",
+        dom: "<'row'<'col-sm-10 custRow'f><'#cBt.col-sm-2'>><'row'<'col-sm-12'tr>>",
+
         language: {
             zeroRecords: "Записи отсутствуют",
             infoEmpty: "Записи отсутствуют",
@@ -100,7 +107,15 @@ function wksTableCrate() {
             }
         ],
         fnDrawCallback: function (settings) {
+            $('#cBt').html('<a href="#" id="clBtn" style="margin-top:20px;" class="btn btn-sm btn-primary" title = "Очистить список сотрудников"><i class="fa fa-refresh"></i></a>');
             $('#flowPanel').show();
         }
+    });
+
+    $('body').on('click', '#cBt', function () {
+        window.filterWksIDs = [];
+        window._flag = true;
+        sessionStorage.removeItem("AAOWksIDsArray");
+        $("#gridtable").DataTable().draw();
     });
 }

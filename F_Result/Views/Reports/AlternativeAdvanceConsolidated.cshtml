@@ -20,8 +20,13 @@
         margin-top: 20px;
     }
 
+    /*Переопределяем длину поля ввода (media (min-width: 768px))*/
+    #flowPanel .custRow{
+        max-width:280px !important;
+    }
+
     #flowPanel #prgtable_filter input {
-        width: 300px !important;
+        width: 260px !important;
         margin-right: 8px;
     }
 
@@ -213,6 +218,11 @@
 
     <script>
         $('body').on('click', '#modeBtn', function () {
+            //Запись массива сотрудников из плавающей панели в SessionStorage
+            if (window.filterWksIDs !== undefined) {
+                sessionStorage.setItem('AAOWksIDsArray', JSON.stringify(window.filterWksIDs));
+            }
+
             window.location.href = '/Reports/AlternativeAdvance?Mode=' + $('#Mode').val();
         })
     </script>
@@ -265,8 +275,14 @@
                         url: '/Reports/GetAARCons/',
                         datatype: "json",
                         data: function (d) {
-                            d.filterWksIDs = window.filterWksIDs,
-                            d.mode = $('#Mode').val()
+                            //Читаем массив сотрудников из SessionStorage
+                            if (sessionStorage.getItem("AAOWksIDsArray") !== null) {
+                                d.filterWksIDs = JSON.parse(sessionStorage.getItem("AAOWksIDsArray"));
+                            }
+                            else {
+                                d.filterWksIDs = window.filterWksIDs
+                            }
+                            d.mode = $('#Mode').val();
                         },
                         dataSrc: function (d) {
                             $('#loadingImg').hide();
