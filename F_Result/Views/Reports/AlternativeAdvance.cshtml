@@ -393,14 +393,19 @@
                         //Инициализация таблицы проектов в плавающей 
 
                         if (window._flag) {
-                            //Заполнение массива проектов для таблицы в плавающей панели
-                            _wksIDs = JSON.parse(json.wkslist)
-                            var pTable = $('#prgtable').DataTable();
-                            pTable.destroy();
-                            wksTableCrate();
-                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            if ($('#Mode').val() !== 'Exp') {
+                                //Заполнение массива проектов для таблицы в плавающей панели
+                                _wksIDs = JSON.parse(json.wkslist)
+                                var pTable = $('#prgtable').DataTable();
+                                pTable.destroy();
+                                wksTableCrate();
+                                $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
 
-                            window._flag = false;
+                                window._flag = false;
+                            }
+                            else {
+                                $('#flowPanel').hide();
+                            }
                         };
                     }
                 });
