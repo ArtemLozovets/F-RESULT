@@ -100,5 +100,66 @@ namespace F_Result.Models
 
     }
 
+    public partial class ActualDebitsF1
+    {
+        [Key]
+        public int id { get; set; }
+
+        [Display(Name = "Код")]
+        public string DocumentNumber { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Дата документа")]
+        [DataType(DataType.Date)]
+        public DateTime? DocumentDate { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Дата платежа")]
+        [DataType(DataType.Date)]
+        public DateTime? PaymentDate { get; set; }
+
+        //[Display(Name = "ID сотрудника")]
+        //public int WorkerId { get; set; }
+
+        [Display(Name = "Сотрудник")]
+        public string WorkerName { get; set; }
+
+        [Display(Name = "Контрагент")]
+        public string Counteragent { get; set; }
+
+        [Display(Name = "Организация")]
+        public string Organization { get; set; }
+
+        [Display(Name = "Контракт ID")]
+        public int? ContractId { get; set; }
+
+        [Display(Name = "Контракт")]
+        public string ContractDescr { get; set; }
+
+        [Display(Name = "ID проекта")]
+        public int? ProjectId { get; set; }
+
+        [Display(Name = "Проект")]
+        public string ProjectName { get; set; }
+
+        [RegularExpression("(^\\d{1,10}(\\,\\d{1,2})?$)", ErrorMessage = "Проверьте правильность ввода суммы")]
+        [Display(Name = "Сумма")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? ItemSum { get; set; }
+
+        [Display(Name = "Статья расходов")]
+        public string ExpenditureId { get; set; }
+
+        [Display(Name = "Статус")]
+        public string StageName { get; set; }
+
+        [Display(Name = "Примечание")]
+        public string DocumentDescr { get; set; }
+
+        //==============================================
+        [NotMapped]
+        public DateTime? IPA { get; set; }
+
+    }
 
 }

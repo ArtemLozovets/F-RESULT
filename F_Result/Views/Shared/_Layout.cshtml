@@ -50,6 +50,10 @@
                                 <li>
                                     <a href="@Url.Action("ADShow", "ActualDebits", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Исходящие платежи Ф1</a>
                                 </li>
+                                <li>
+                                    <a href="@Url.Action("ShowActualDebitsF1", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-thumbs-down" style="margin-right:10px;"></i>&nbsp;Исходящие платежи Ф1 (Directum)</a>
+                                    @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="fa fa-plus-square" style="margin-right:10px;"></i>&nbsp;Анализ прибыльности проекта</a>*@
+                                </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="@Url.Action("ShowPaymentsF2", "Directum", new {Area = "" })"><i class="glyphicon glyphicon-triangle-top" style="margin-right:10px;"></i>&nbsp;Входящие платежи Ф2</a>
@@ -100,7 +104,6 @@
                                 </li>
                                 <li id="repPrjProfitability">
                                     <a href="@Url.Action("AnalysisOfTheProjectProfitability", "Reports", new {Area = "" })"><i class="fa fa-pie-chart" style="margin-right:14px;"></i>&nbsp;Анализ прибыльности</a>
-                                    @*<a href="@Url.Action("InDeveloping", "Home", new {Area = "" })"><i class="fa fa-plus-square" style="margin-right:10px;"></i>&nbsp;Анализ прибыльности проекта</a>*@
                                 </li>
                                 <!-- If current user is Administrator -->
                                 @if (this.User.IsInRole("Administrator") || this.User.IsInRole("Chief") || this.User.IsInRole("Financier"))

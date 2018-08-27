@@ -258,6 +258,14 @@
     <Compile Include="Migrations\201807261218154_ProjectsChange10.Designer.cs">
       <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808270804236_ProjectsChange11.cs" />
+    <Compile Include="Migrations\201808270804236_ProjectsChange11.Designer.cs">
+      <DependentUpon>201808270804236_ProjectsChange11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808271202228_ProjectsChange12.cs" />
+    <Compile Include="Migrations\201808271202228_ProjectsChange12.Designer.cs">
+      <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\AAOReportCons.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
@@ -763,6 +771,7 @@
     <Content Include="Views\Feedback\CommentsShow.cshtml" />
     <Content Include="Views\Reports\AlternativeAdvance.cshtml" />
     <Content Include="Views\Reports\AlternativeAdvanceConsolidated.cshtml" />
+    <Content Include="Views\Directum\ShowActualDebitsF1.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -820,6 +829,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807261218154_ProjectsChange10.resx">
       <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808270804236_ProjectsChange11.resx">
+      <DependentUpon>201808270804236_ProjectsChange11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808271202228_ProjectsChange12.resx">
+      <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
