@@ -34,11 +34,11 @@ namespace F_Result.Models
 
         [Display(Name = "Получено")]
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
-        public decimal Received { get; set; }
+        public decimal? Received { get; set; }
 
         [Display(Name = "Передано")]
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
-        public decimal Payed { get; set; }
+        public decimal? Payed { get; set; }
         
         [Display(Name = "Валюта")]
         public string Currency { get; set; }

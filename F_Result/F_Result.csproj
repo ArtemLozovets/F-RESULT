@@ -266,6 +266,10 @@
     <Compile Include="Migrations\201808271202228_ProjectsChange12.Designer.cs">
       <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810151629523_ProjectsChange13.cs" />
+    <Compile Include="Migrations\201810151629523_ProjectsChange13.Designer.cs">
+      <DependentUpon>201810151629523_ProjectsChange13.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\AAOReportCons.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountsBalance.cs" />
@@ -835,6 +839,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808271202228_ProjectsChange12.resx">
       <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810151629523_ProjectsChange13.resx">
+      <DependentUpon>201810151629523_ProjectsChange13.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

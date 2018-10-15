@@ -715,8 +715,8 @@ namespace F_Result.Controllers
                                 Operation = aaoRep.Operation,
                                 Counteragent = aaoRep.Counteragent,
                                 CounteragentName = aaoRep.CounteragentName,
-                                Received = aaoRep.Received,
-                                Payed = aaoRep.Payed,
+                                Received = aaoRep.Received ?? 0, // Чижику привет!
+                                Payed = aaoRep.Payed ?? 0, //Из того же материала! :)
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReport
                                  {
