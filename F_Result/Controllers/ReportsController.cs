@@ -614,6 +614,320 @@ namespace F_Result.Controllers
         }
 
 
+        #region ==============================Гибридные отчеты "Бюджетирование" и "Анализ прибыльности проектов"=====================================
+        //Отчет "Бюджетирование" GET
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public ActionResult AnalysisOfTheProjectBudgetHb()
+        {
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
+            return View();
+        }
+
+
+        //Получение данных для построения отчета "Бюджетирование" POST
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public JsonResult GetAPBHb(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs, string ProjectName)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try
+            {
+                if (Period == null || BaseDate == null)
+                {
+                    return Json(new { Result = false, data = "", errormessage = "Неверные параметры запроса" }, JsonRequestBehavior.AllowGet);
+                }
+
+                string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
+
+                DateTime StartPeriod = DateTime.Now;
+                DateTime EndPeriod = DateTime.Now;
+
+                if (!IsAllTimes)
+                {
+
+                    int Year = BaseDate.Value.Year;
+                    int Month = BaseDate.Value.Month;
+                    int WeekDay = (Convert.ToInt32(BaseDate.Value.DayOfWeek) == 0) ? 7 : Convert.ToInt32(BaseDate.Value.DayOfWeek);
+
+                    switch (PeriodName)
+                    {
+                        case "Год":
+                            StartPeriod = new DateTime(Year, 1, 1);
+                            EndPeriod = new DateTime(Year, 12, 31);
+                            break;
+
+                        case "Месяц":
+                            StartPeriod = new DateTime(Year, Month, 1);
+                            EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+                            break;
+
+                        case "Неделя":
+                            StartPeriod = BaseDate.Value.AddDays(1 - WeekDay);
+                            EndPeriod = BaseDate.Value.AddDays(7 - WeekDay);
+                            break;
+
+                        case "Квартал":
+                            int qNum = (BaseDate.Value.Month + 2) / 3;
+                            switch (qNum)
+                            {
+                                case 1:
+                                    StartPeriod = new DateTime(Year, 1, 1);
+                                    EndPeriod = new DateTime(Year, 3, 31);
+                                    break;
+
+                                case 2:
+                                    StartPeriod = new DateTime(Year, 4, 1);
+                                    EndPeriod = new DateTime(Year, 6, 30);
+                                    break;
+
+                                case 3:
+                                    StartPeriod = new DateTime(Year, 7, 1);
+                                    EndPeriod = new DateTime(Year, 9, 30);
+                                    break;
+
+                                default:
+                                    StartPeriod = new DateTime(Year, 10, 1);
+                                    EndPeriod = new DateTime(Year, 12, 31);
+                                    break;
+                            }
+                            break;
+
+                        default:
+                            StartPeriod = new DateTime(Year, Month, 1);
+                            EndPeriod = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+                            break;
+                    }
+                }
+                else
+                {
+                    StartPeriod = new DateTime(1900, 1, 1);
+                    EndPeriod = new DateTime(2100, 12, 31);
+                }
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                DateTime _stmp = Convert.ToDateTime(StartPeriod.ToString());
+                string _startPeriod = _stmp.ToString("yyyyMMdd");
+                DateTime _etmp = Convert.ToDateTime(EndPeriod.ToString());
+                string _endPeriod = _etmp.ToString("yyyyMMdd");
+
+                var _isAllTimes = IsAllTimes ? 1 : 0;
+
+
+                //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReportHb('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+
+                //Проверяем роль пользователя
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isAccountant = System.Web.HttpContext.Current.User.IsInRole("Accountant");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                decimal? _PlanningBalance = null;
+                if (isAdministrator || isChief || isAccountant || isFinancier)
+                {
+                    //Запрос вызывает пользовательскую функцию "ufnPlanningBalance" хранящуюся на SQL-сервере.
+                    _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPlanningBalance() as PlanningBalance").FirstOrDefault();
+                }
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+
+                _ads = _ads.Where(x =>
+                            (filterPrjIDs == null
+                            || filterPrjIDs.Length == 0
+                            || filterPrjIDs.Contains(x.prj))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+                List<APBFilterIDs> _prjList = _ads
+                    .Select(x => new APBFilterIDs
+                    {
+                        PrjId = x.prj,
+                        ProjectName = x.ProjectName,
+                        IPA = x.IPA
+                    }).OrderBy(x => x.ProjectName).ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
+
+                APBTableReportTotal total = new APBTableReportTotal
+                {
+                    DebitPlanTotal = _ads.Sum(x => x.debitplan),
+                    DebitFactTotal = _ads.Sum(x => x.debitfact),
+                    dDeltaTotal = _ads.Sum(x => x.ddelta),
+                    CreditPlanTotal = _ads.Sum(x => x.creditplan),
+                    CreditFactTotal = _ads.Sum(x => x.creditfact),
+                    cDeltaTotal = _ads.Sum(x => x.cdelta)
+                };
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    if (sortColumn == "ProjectName")
+                    {
+                        _ads = _ads.OrderBy("IPA " + sortColumnDir).ToList();
+                    }
+                    else
+                    {
+                        _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                    }
+                }
+
+                totalRecords = _ads.Count();
+                var data = _ads.Skip(skip).Take(pageSize);
+
+                if (IsAllTimes && _ads.Count > 0)
+                {
+                    StartPeriod = _ads.Min(x => x.MinDate);
+                    EndPeriod = _ads.Max(x => x.MaxDate);
+                }
+
+                var _startDate = StartPeriod.ToString("yyyyMMdd");
+                var _endDate = EndPeriod.ToString("yyyyMMdd");
+
+                return Json(new
+                {
+                    Result = true,
+                    StartPeriod = _startDate,
+                    EndPeriod = _endDate,
+                    isAllTimes = IsAllTimes,
+                    Period = Period,
+                    ProjectName = ProjectName,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    total = total,
+                    planningbalance = _PlanningBalance,
+                    prjlist = _prjListJson,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        //Отчет "Прибыльность проектов" GET
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public ActionResult AnalysisOfTheProjectProfitabilityHb()
+        {
+            return View();
+        }
+
+        //Получение данных для построения отчета "Прибыльность проектов" POST
+        [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
+        public JsonResult GetAPPHb(DateTime? RepDate, int[] filterPrjIDs, string ProjectName)
+        {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+            try
+            {
+
+                if (RepDate == null)
+                {
+                    return Json(new { Result = false, data = "", errormessage = "Неверные параметры запроса" }, JsonRequestBehavior.AllowGet);
+                }
+
+                var draw = Request.Form.GetValues("draw").FirstOrDefault();
+                var start = Request.Form.GetValues("start").FirstOrDefault();
+                var length = Request.Form.GetValues("length").FirstOrDefault();
+                var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+                var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int totalRecords = 0;
+
+                List<APPTableReport> RepList = new List<APPTableReport>();
+
+                string repdt = RepDate.Value.ToString("yyyyMMdd");
+
+                //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+
+                _ads = _ads.Where(x =>
+                            (filterPrjIDs == null
+                            || filterPrjIDs.Length == 0
+                            || filterPrjIDs.Contains(x.prj))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+                List<APBFilterIDs> _prjList = _ads
+                    .Select(x => new APBFilterIDs
+                    {
+                        PrjId = x.prj,
+                        ProjectName = x.ProjectName,
+                        IPA = x.IPA
+                    }).OrderByDescending(x => x.PrjId).ToList();
+
+                var jsonSerialiser = new JavaScriptSerializer();
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
+
+                APPTableReportTotal total = new APPTableReportTotal
+                {
+                    FactCreditF1Total = _ads.Sum(x => x.FactCreditF1),
+                    FactCreditF2Total = _ads.Sum(x => x.FactCreditF2),
+                    FCF1F2Total = _ads.Sum(x => x.FCTotalF1F2),
+                    FactDebitF1Total = _ads.Sum(x => x.FactDebitF1),
+                    FactDebitF2Total = _ads.Sum(x => x.FactDebitF2),
+                    FDF1F2Total = _ads.Sum(x => x.FDTotalF1F2),
+                    IncomeF1Total = _ads.Sum(x => x.IncomeF1),
+                    IncomeF2Total = _ads.Sum(x => x.IncomeF2),
+                    IncomeTotal = _ads.Sum(x => x.IncomeTotal)
+
+                };
+
+                if (sortColumn == "ProjectName")
+                {
+                    _ads = _ads.OrderBy("IPA " + sortColumnDir).ToList();
+                }
+                else
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+
+                totalRecords = _ads.Count();
+                var data = _ads.Skip(skip).Take(pageSize);
+
+                return Json(new
+                {
+                    Result = true,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    data = data,
+                    total = total,
+                    prjlist = _prjListJson,
+                    repDate = repdt,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            catch (Exception ex)
+            {
+                var errormessage = "Ошибка выполнения запроса!\n\r" + ex.Message + "\n\r" + ex.StackTrace;
+                var data = "";
+                return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         #region -------------- Отчет по Ф2 "Альтернативный авансовый отчет" -------------
 
         //Отчет по Ф2 "Альтернативный авансовый отчет" GET

@@ -776,6 +776,8 @@
     <Content Include="Views\Reports\AlternativeAdvance.cshtml" />
     <Content Include="Views\Reports\AlternativeAdvanceConsolidated.cshtml" />
     <Content Include="Views\Directum\ShowActualDebitsF1.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectBudgetHb.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectProfitabilityHb.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

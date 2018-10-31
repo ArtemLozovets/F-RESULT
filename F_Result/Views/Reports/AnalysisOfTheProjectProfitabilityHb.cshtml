@@ -1,0 +1,452 @@
+﻿@{
+    ViewBag.Title = "Прибыльность";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<style>
+    .dataTables_scrollHeadInner {
+        background-color: #eee;
+    }
+
+    #flowPanel div.dataTables_wrapper div.dataTables_filter {
+        text-align: center !important;
+        margin-top: 10px;
+    }
+
+    #flowPanel #prgtable_filter input {
+        width: 300px !important;
+        margin-right: 8px;
+    }
+
+    #repDT {
+        padding-right: .8em;
+    }
+</style>
+
+<input type="hidden" id="hRepDate" value="" />
+<input type="text" value="" id="gridtable_filter" hidden />
+
+<div id="loadingImg">
+    <div id="preloadImg">
+        <img src="~/Content/Images/loader.gif" />
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                Прибыльность
+                <small>Анализ прибыльности проектов <span class="text-danger text-bold">(В РАЗРАБОТКЕ)</span></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
+                <li>Отчеты</li>
+                <li class="active">Прибыльность</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-inline pull-left" style="display:inline-block; margin-top:.4em;" id="plBalance"></div>
+    </div>
+
+    <div class="row">
+        <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
+            <thead>
+                @*<tr>
+                        <th rowspan="2">Проект</th>
+                            <th colspan="3">Доходы</th>
+                            <th colspan="3">Расходы</th>
+                            <th colspan="2">Прибыль</th>
+                            <th rowspan="2">Прибыльность</th>
+                            <th rowspan="2">ID</th>
+                    </tr>*@
+                <tr>
+                    <th>Проект</th>
+                    <th class="smallTH">Доходы&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Доходы&nbsp;<sub>Ф2</sub></th>
+                    <th class="smallTH">&#8721;&nbsp;<sub>дох.</sub></th>
+                    <th class="smallTH">Расходы&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Расходы&nbsp;<sub>Ф2</sub></th>
+                    <th class="smallTH">&#8721;&nbsp;<sub>расх.</sub></th>
+                    <th class="smallTH">Прибыль&nbsp;<sub>Ф1</sub></th>
+                    <th class="smallTH">Прибыль&nbsp;<sub>Ф2</sub></th>
+                    <th class="smallTH">Прибыльность</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr class="tright">
+                    <th>Итого</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- #Плавающая панель -->
+<div id="flowPanel" hidden>
+    <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
+    <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+        <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
+    </div>
+
+    <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+        <table style="background-color:white; width:100%; margin-top:0 !important;"
+               class="table table-bordered table-striped table-responsive table-hover gridtable"
+               id="prgtable">
+            <thead>
+                <tr>
+                    <th>IPA</th>
+                    <th>ID</th>
+                    <th>Проект</th>
+                    <th><input id="allPrgCHB" checked type="checkbox"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<!-- #endregion -->
+<a href="#" class="scrollup1">Наверх</a>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
+    <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    <script src="~/Scripts/FRScripts/prjFilterFlowPanel.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
+
+    <script>
+        $(function () {
+            var nowDate = moment(new Date).format('DD/MM/YYYY');
+            $('#hRepDate').val(nowDate);
+
+            //Скрипт для работы с контекстным меню
+            $.contextMenu({
+                selector: '.dataTables_empty, td.context-menu-one',
+                callback: function (key, options) {
+                    var fClass = $(this).attr('class');
+                    switch (key) {
+                        case 'filter':
+                            if (fClass.indexOf("prgCellf") >= 0) {
+                                $('#gridtable_filter').val($(this).text());
+                                var table = $("#gridtable").DataTable();
+                                table.draw();
+                            }
+                            break;
+
+                        case 'expand':
+                            var table = $("#gridtable").DataTable();
+                            var json = table.ajax.json();
+                            var prj = table.row(this).data().prj;
+                            var startDate = moment(json.repDate).format('DD/MM/YYYY');
+                            var endDate = moment(json.repDate).format('DD/MM/YYYY');
+
+                            if (fClass.indexOf("fcF1") >= 0) {
+                                var url = '@Url.Action("ShowPayments", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true})';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fcF2") >= 0) {
+                                var url = '@Url.Action("ShowPaymentsF2", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fdF1") >= 0) {
+                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+
+                            if (fClass.indexOf("fdF2") >= 0) {
+                                var url = '@Url.Action("ShowActualDebitsF2", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
+                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                window.open(url, '_blank');
+                            }
+                            break;
+
+                        case 'refresh':
+                            ClearFilter();
+                            break;
+                        case 'epexport':
+                            APPExport2Excel('../Export/ExportAPPReport');
+                            break;
+                        default:
+                            return;
+                    }
+                },
+                items: {
+                    "filter": {
+                        name: "Фильтр по значению",
+                        icon: "filter",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                            return true;
+                        }
+                    },
+                    "refresh": { name: "Сброс фильтра", icon: "refresh" },
+                    "sep1": "---------",
+                    "expand": {
+                        name: "Расшифровка",
+                        icon: "expand",
+                        disabled: function () {
+                            var fClass = $(this).attr('class');
+                            if ((fClass.indexOf("fcF1") >= 0 || fClass.indexOf("fcF2") >= 0 || fClass.indexOf("fdF1") >= 0 || fClass.indexOf("fdF2") >= 0)
+                                    && $(this).text() != '0,00') {
+                                return false
+                            };
+                            return true;
+                        }
+                    },
+                    "separator": "-----",
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" },
+
+                }
+            });
+
+            //Создание таблицы отчета
+            createGrid();
+        });
+
+        //--------------------------------------F U N C T I O N S----------------------------------
+
+        //Функция сброса фильтра проектов
+        function ClearFilter() {
+            $('#gridtable_filter').val('');
+            var table = $("#gridtable").DataTable();
+            table.draw();
+        }
+
+        //-------------------------------------------------------------
+        //Функция создания таблицы отчета
+        function createGrid() {
+            $('#loadingImg').hide();
+            var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+                    $('#repDT').html('<input type="text" style="width:10em;text-align:center; margin:0 0.4em;" id="startDate" title="Отчетная дата" class="form-control input-sm" value="" />');
+                    var repDate = $('#hRepDate').val();
+                    $("#startDate").val(repDate);
+                    DRPickerInit();
+                })
+                .DataTable({
+                    "fixedHeader": {
+                        "header": true,
+                        "footer": true,
+                        "headerOffset": $('#mainNavbar').height()
+                    },
+                    autoWidth: true,
+                    paging: true,
+                    processing: true,
+                    serverSide: true,
+                    filter: false,
+                    orderMulti: false,
+                    responsive: false,
+                    lengthMenu: [
+                                    [10, 25, 50, 100],
+                                    ['10', '25', '50', '100']
+                    ],
+                    pageLength: 25, // Количество записей в таблице по умолчанию
+                    pagingType: "simple_numbers",
+                    dom: "<'row'<'col-sm-3'l><'#alrt.col-sm-6 text-center'><'#repDT.col-sm-3 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    language: {
+                        lengthMenu: "Записей: _MENU_",
+                        zeroRecords: "Записи отсутствуют",
+                        info: "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        infoEmpty: "Записи отсутствуют",
+                        infoFiltered: "(Отфильтровано из _MAX_ записей)",
+                        search: "",
+                        searchPlaceholder: "Проект...",
+                        processing: "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        sInfoThousands: " ",
+                        oPaginate: {
+                            sNext: ">",
+                            sPrevious: "<"
+                        }
+                    },
+                    ajax: {
+                        type: 'POST',
+                        url: '/Reports/GetAPP/',
+                        datatype: "json",
+                        data: function (d) {
+                            d.ProjectName = $('#gridtable_filter').val();
+                            d.filterPrjIDs = window.filterPrjIDs;
+                            d.RepDate = $("#hRepDate").val();
+                        },
+                        dataSrc: function (d) {
+                            $('#loadingImg').hide();
+                            if (!d.Result) {
+                                alert(d.errormessage);
+                                return false;
+                            }
+                            else {
+                                return d.data;
+                            }
+                        },
+                    },
+                    order: [0, "desc"],
+                    columns: [
+                                { data: "ProjectName", sWidth: '26%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
+                                { data: "FactCreditF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fcF1" },
+                                { data: "FactCreditF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fcF2" },
+                                { data: "FCTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
+                                { data: "FactDebitF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fdF1" },
+                                { data: "FactDebitF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one fdF2" },
+                                { data: "FDTotalF1F2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
+                                { data: "IncomeF1", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeF2", sWidth: '8%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                                { data: "IncomeTotal", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one text-bold" },
+                    ],
+
+                    fnCreatedRow: function (row, data, rowIndex) {
+
+                        //Выводим всплывающую подсказку с подробной информацией о проекте
+                        var _datePlan = formatDate(data.StartDatePlan);
+                        var _dateFact = formatDate(data.StartDateFact);
+                        var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        var _IPA = 'Платежи отсутствуют';
+                        if (data.IPA !== null) {
+                            _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
+                        }
+                        var prgTitleStr = 'Индекс активности: ' + _IPA;
+                        prgTitleStr += '\r\nТип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
+                        prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
+                        prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
+                        $('.prgCellf', $(row)).attr('title', prgTitleStr);
+
+                        // Выделение цветом дельта-ячеек
+                        if (data.IncomeTotal > 0) {
+                            $('td:eq(9)', row).css('color', '#006400');
+                        }
+                        else if (data.IncomeTotal < 0) {
+                            $('td:eq(9)', row).css('color', '#b22222');
+                        }
+                    },
+
+                    fnDrawCallback: function (settings) {
+                        var api = this.api();
+                        var json = api.ajax.json();
+
+                        //Заполнение футера
+                        var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
+                        $(api.column(1).footer()).html(numFormat(json.total.FactCreditF1Total));
+                        $(api.column(2).footer()).html(numFormat(json.total.FactCreditF2Total));
+                        $(api.column(3).footer()).html(numFormat(json.total.FCF1F2Total));
+                        $(api.column(4).footer()).html(numFormat(json.total.FactDebitF1Total));
+                        $(api.column(5).footer()).html(numFormat(json.total.FactDebitF2Total));
+                        $(api.column(6).footer()).html(numFormat(json.total.FDF1F2Total));
+                        $(api.column(7).footer()).html(numFormat(json.total.IncomeF1Total));
+                        $(api.column(8).footer()).html(numFormat(json.total.IncomeF2Total));
+                        $(api.column(9).footer()).html(numFormat(json.total.IncomeTotal));
+
+                        if (json.total.IncomeTotal * 1 > 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#006400'); }
+                        else if (json.total.IncomeTotal * 1 < 0) { $('tr:eq(0) th:eq(9)', api.table().footer()).css('color', '#b22222'); }
+
+                        //Инициализация таблицы проектов в плавающей панели
+                        if (window._flag) {
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            _prjIDs = JSON.parse(json.prjlist)
+                            var pTable = $('#prgtable').DataTable();
+                            pTable.destroy();
+                            prgTableCrate();
+                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            window._flag = false;
+                        };
+                    }
+                });
+
+            function formatDate(value) {
+                if (value === null) return "";
+                var pattern = /Date\(([^)]+)\)/;
+                var results = pattern.exec(value);
+                var dt = new Date(parseFloat(results[1]));
+                var _d = dt.getDate() < 10 ? "0" + dt.getDate() : dt.getDate();
+                var _m = (dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : (dt.getMonth() + 1);
+                return _d + "/" + _m + "/" + dt.getFullYear();
+            };
+        };
+
+    </script>
+
+    @*Блок скриптов для работы с DateRangePicker*@
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/DateRangePicker/jquery.daterangepicker.min.js"></script>
+    <script>
+        function DRPickerInit() {
+            $('#startDate').dateRangePicker(
+             {
+                 customTopBar: 'Отчетная дата',
+                 showWeekNumbers: true,
+                 startOfWeek: 'monday',
+                 singleDate: true,
+                 singleMonth: true,
+                 language: 'ru',
+                 startOfWeek: 'monday',
+                 separator: ' - ',
+                 format: 'DD/MM/YYYY',
+                 autoClose: true,
+                 monthSelect: true,
+                 yearSelect: true,
+                 setValue: function (s) {
+                     $('#hRepDate').val(s);
+                     $(this).val(s);
+                 },
+                 customOpenAnimation: function (cb) {
+                     $(this).fadeIn(300, cb);
+                 },
+                 customCloseAnimation: function (cb) {
+                     $(this).fadeOut(300, cb);
+                 },
+                 showShortcuts: false,
+                 time: {
+                     enabled: false
+                 },
+                 extraClass: 'date-range-pickerM'
+             })
+            .bind('datepicker-closed', function (event, obj) {
+                globalVarsClear();
+            });
+        };
+
+        $('body').on('change', '#startDate', function () {
+            if ($(this).val() === '') {
+                var nowDT = new Date;
+                var nowDate = moment(nowDT).format('DD/MM/YYYY');
+                $('#hRepDate').val(nowDate);
+                $(this).val(nowDate);
+            };
+            globalVarsClear();
+        });
+
+    </script>
+
+}
