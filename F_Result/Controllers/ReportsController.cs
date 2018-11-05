@@ -855,7 +855,7 @@ namespace F_Result.Controllers
                 string repdt = RepDate.Value.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReportHb('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
