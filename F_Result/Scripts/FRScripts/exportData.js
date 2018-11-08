@@ -41,6 +41,37 @@ fnExport2Excel(controllerName, paramStr);
 
 // #endregion
 
+// #region Функция експорта данных отчета "Альтернативный авансовый отчет" в Excel
+
+function AAOExport2Excel(controllerName) {
+    var api = $('#gridtable').dataTable().api();
+    var json = api.ajax.json();
+
+    var idsArray = new Array();
+    var arr_from_json = JSON.parse(json.prjlist);
+    
+    for (var i = 0; i < arr_from_json.length; i++) {
+        idsArray.push(arr_from_json[i].PrjId);
+    }
+
+    var startPeriod = json.StartPeriod;
+    var endPeriod = json.EndPeriod;
+
+    var paramStr = JSON.stringify({
+        IDs: idsArray //!!!-Список проектов-!!!
+            , sortColumn: json.sortcolumn
+            , sortColumnDir: json.sortdir
+            , startPeriod: startPeriod
+            , endPeriod: endPeriod
+            , Period: json.Period
+            , ProjectName: json.ProjectName
+            , isAllTimes: json.isAllTimes
+});
+
+fnExport2Excel(controllerName, paramStr);
+};
+
+// #endregion
 
 // #region Функция експорта данных отчета "Прибыльность" в Excel
 

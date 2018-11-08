@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 using System.Linq.Dynamic;
 using F_Result.Methods;
 using System.Globalization;
-using OfficeOpenXml.ConditionalFormatting;
 using System.Drawing;
 
 namespace F_Result.Controllers
@@ -1398,7 +1397,7 @@ namespace F_Result.Controllers
                 ws.Cells["B2"].Value = DateTime.Now;
                 ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
-                
+
                 string _sd = DateTime.ParseExact(startPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                 string _ed = DateTime.ParseExact(endPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
 
@@ -1728,6 +1727,200 @@ namespace F_Result.Controllers
         }
         #endregion
 
+        #region Отчет "Альтернативный авансовый отчет"
+        public ActionResult ExportAlternativeAdvance(int[] IDs
+            , string sortColumn
+            , string sortColumnDir
+            , int Period
+            , string ProjectName
+            , bool isAllTimes
+            , string startPeriod
+            , string endPeriod)
+        {
+            try
+            {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+
+                var _isAllTimes = isAllTimes ? 1 : 0;
+                string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
+
+                //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+
+                //Проверяем роль пользователя
+                bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
+                bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
+                bool isAccountant = System.Web.HttpContext.Current.User.IsInRole("Accountant");
+                bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
+                decimal? _PlanningBalance = null;
+                if (isAdministrator || isChief || isAccountant || isFinancier)
+                {
+                    //Запрос вызывает пользовательскую функцию "ufnPlanningBalance" хранящуюся на SQL-сервере.
+                    _PlanningBalance = db.Database.SqlQuery<decimal>("Select dbo.ufnPlanningBalance() as PlanningBalance").FirstOrDefault();
+                }
+
+                List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+
+                _ads = _ads.Where(x =>
+                            (IDs == null
+                            || IDs.Length == 0
+                            || IDs.Contains(x.prj))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+                {
+                    _ads = _ads.OrderBy(sortColumn + " " + sortColumnDir).ToList();
+                }
+                else
+                {
+                    _ads = _ads.OrderByDescending(x => x.ProjectName).ToList();
+                }
+
+                //---------------------EXPORT----------------------//
+
+                ExcelPackage pck = new ExcelPackage();
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Бюджетирование");
+
+                ws.Cells["A1"].Value = "Название отчета:";
+                ws.Cells["B1"].Value = "\"КОНТРОЛЬ ВЫПОЛНЕНИЯ БЮДЖЕТОВ\"";
+                ws.Cells["A2"].Value = "Дата формирования:";
+                ws.Cells["B2"].Value = DateTime.Now;
+                ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+
+                string _sd = DateTime.ParseExact(startPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                string _ed = DateTime.ParseExact(endPeriod, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+
+                ws.Cells["A3"].Value = "Отчетный период:";
+                ws.Cells["B3"].Value = _sd + " - " + _ed;
+
+                if (_PlanningBalance != null)
+                {
+                    ws.Cells["A4"].Value = "Плановый остаток:";
+                    ws.Cells["B4"].Value = _PlanningBalance;
+                    ws.Cells["B4"].Style.Numberformat.Format = "#,##0.00";
+                }
+
+                ws.Cells["B1:B4"].Style.Font.Bold = true;
+                ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                ws.Cells["A6"].Value = "Проект";
+                ws.Cells["B6"].Value = "Финансовый результат";
+                ws.Cells["C6"].Value = "Доходы (план)";
+                ws.Cells["D6"].Value = "Доходы (факт)";
+                ws.Cells["E6"].Value = "\u0394 дох.";
+                ws.Cells["F6"].Value = "Расходы (план)";
+                ws.Cells["G6"].Value = "Расходы (факт)";
+                ws.Cells["H6"].Value = "\u0394 расх.";
+
+                ws.Cells["A6:H6"].AutoFilter = true;
+
+                using (ExcelRange col = ws.Cells[6, 1, 6, 8])
+                {
+                    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    col.Style.Font.Size = 12;
+                    col.Style.Font.Bold = true;
+                    col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+                }
+
+                int row = 7;
+
+                foreach (var item in _ads)
+                {
+                    ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
+                    ws.Cells[string.Format("B{0}", row)].Value = item.prjres;
+                    ws.Cells[string.Format("C{0}", row)].Value = item.debitplan;
+                    ws.Cells[string.Format("D{0}", row)].Value = item.debitfact;
+                    ws.Cells[string.Format("E{0}", row)].Formula = string.Format("D{0}-C{0}", row);
+                    ws.Cells[string.Format("F{0}", row)].Value = item.creditplan;
+                    ws.Cells[string.Format("G{0}", row)].Value = item.creditfact;
+                    ws.Cells[string.Format("H{0}", row)].Formula = string.Format("G{0}-F{0}", row);
+
+                    row++;
+                }
+
+                // Условное форматирование итоговых и дельта-ячеек
+                var cfRule1_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("B7:B{0}", row)]);
+                cfRule1_1.Formula = "0";
+                cfRule1_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+                var cfRule1_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("B7:B{0}", row)]);
+                cfRule1_2.Formula = "0";
+                cfRule1_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule2_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("E7:E{0}", row)]);
+                cfRule2_1.Formula = "0";
+                cfRule2_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+                var cfRule2_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("E7:E{0}", row)]);
+                cfRule2_2.Formula = "0";
+                cfRule2_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule3_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("H7:H{0}", row)]);
+                cfRule3_1.Formula = "0";
+                cfRule3_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
+
+                var cfRule3_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("H7:H{0}", row)]);
+                cfRule3_2.Formula = "0";
+                cfRule3_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+
+
+                //Итоги
+                ws.Cells[string.Format("A{0}:B{0}", row)].Merge = true;
+                ws.Cells[string.Format("A{0}", row)].Value = "Итого";
+                ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
+                ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                ws.Cells[string.Format("C{0}", row)].Formula = string.Format("SUM(C5:C{0})", row - 1);
+                ws.Cells[string.Format("D{0}", row)].Formula = string.Format("SUM(D5:D{0})", row - 1);
+                ws.Cells[string.Format("E{0}", row)].Formula = string.Format("SUM(E5:E{0})", row - 1);
+                ws.Cells[string.Format("F{0}", row)].Formula = string.Format("SUM(F5:F{0})", row - 1);
+                ws.Cells[string.Format("G{0}", row)].Formula = string.Format("SUM(G5:G{0})", row - 1);
+                ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
+
+                using (ExcelRange col = ws.Cells[row, 3, row, 8])
+                {
+                    col.Style.Numberformat.Format = "#,##0.00";
+                    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                    col.Style.Font.Bold = true;
+                }
+
+                using (ExcelRange col = ws.Cells[7, 2, row, 8])
+                {
+                    col.Style.Numberformat.Format = "#,##0.00";
+                    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                }
+
+                using (ExcelRange col = ws.Cells[6, 1, row, 8])
+                {
+                    col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+                ws.Cells["A:AZ"].Style.Indent = 1;
+                ws.Cells["B6"].Style.WrapText = true;
+                ws.Row(6).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells["A:AZ"].AutoFitColumns();
+                ws.Column(2).Width = 23;
+                ws.Column(5).Width = 20;
+                ws.Column(8).Width = 20;
+
+                string path = Server.MapPath("~/DownloadRPT/");
+                string repName = "AAOReport_" + DateTime.Now.Ticks + ".xlsx";
+                pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+                return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = "Ошибка выполнения запроса: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
         #endregion
 
         #region Оригинал. Экспорт в excel
@@ -1857,7 +2050,7 @@ namespace F_Result.Controllers
         }
         #endregion
 
-
+        #endregion
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -1866,5 +2059,6 @@ namespace F_Result.Controllers
             }
             base.Dispose(disposing);
         }
+
     }
 }

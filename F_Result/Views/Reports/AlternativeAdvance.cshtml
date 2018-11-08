@@ -132,6 +132,7 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/wksFilterFlowPanel.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
+    <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -218,7 +219,7 @@
                             ClearFilter();
                             break;
                         case 'epexport':
-                            Export2Excel('../Export/ExportPlanDebitsF1');
+                            Export2Excel('../Export/ExportAlternativeAdvance');
                             break;
                         default:
                             return;
@@ -236,7 +237,7 @@
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "separator": "-----",
-                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true },
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: false },
                 }
             });
 
