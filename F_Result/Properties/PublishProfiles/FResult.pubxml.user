@@ -72,10 +72,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/11/2018 02:42:39</publishTime>
     </File>
     <File Include="bin/F_Result.dll">
-      <publishTime>11/05/2018 22:02:18</publishTime>
+      <publishTime>11/24/2018 20:08:34</publishTime>
     </File>
     <File Include="bin/F_Result.pdb">
-      <publishTime>11/05/2018 22:02:18</publishTime>
+      <publishTime>11/24/2018 20:08:34</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>03/17/2017 19:54:00</publishTime>
@@ -1194,7 +1194,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/17/2017 08:42:26</publishTime>
     </File>
     <File Include="Scripts/FRScripts/exportData.js">
-      <publishTime>06/01/2018 20:19:50</publishTime>
+      <publishTime>11/24/2018 09:37:31</publishTime>
     </File>
     <File Include="Scripts/FRScripts/feedbackPanel.js">
       <publishTime>06/01/2018 20:19:50</publishTime>
@@ -1365,7 +1365,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/12/2017 08:27:32</publishTime>
     </File>
     <File Include="Views/Directum/ShowActualDebitsF1.cshtml">
-      <publishTime>08/27/2018 19:52:09</publishTime>
+      <publishTime>11/24/2018 19:56:30</publishTime>
     </File>
     <File Include="Views/Directum/ShowActualDebitsF2.cshtml">
       <publishTime>07/15/2018 20:25:42</publishTime>
@@ -1533,7 +1533,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/05/2018 19:33:44</publishTime>
     </File>
     <File Include="Views/Reports/AlternativeAdvance.cshtml">
-      <publishTime>08/27/2018 19:52:09</publishTime>
+      <publishTime>11/24/2018 09:37:31</publishTime>
     </File>
     <File Include="Views/Reports/AlternativeAdvanceConsolidated.cshtml">
       <publishTime>08/06/2018 20:08:13</publishTime>
@@ -1548,13 +1548,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/02/2018 18:37:21</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectBudgetHb.cshtml">
-      <publishTime>10/31/2018 22:05:57</publishTime>
+      <publishTime>11/24/2018 17:01:31</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectProfitability.cshtml">
       <publishTime>08/02/2018 18:37:21</publishTime>
     </File>
     <File Include="Views/Reports/AnalysisOfTheProjectProfitabilityHb.cshtml">
-      <publishTime>11/05/2018 21:56:39</publishTime>
+      <publishTime>11/24/2018 17:29:27</publishTime>
     </File>
     <File Include="Views/Settings/ShowSettings.cshtml">
       <publishTime>03/05/2018 19:33:44</publishTime>
@@ -1584,7 +1584,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/02/2017 08:32:00</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>11/05/2018 22:02:29</publishTime>
+      <publishTime>11/24/2018 20:08:37</publishTime>
     </File>
   </ItemGroup>
 </Project>

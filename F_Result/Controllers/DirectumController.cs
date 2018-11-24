@@ -402,8 +402,10 @@ namespace F_Result.Controllers
         #endregion
 
         #region Исходящие платежи Ф1
-        public ActionResult ShowActualDebitsF1(int? ProjectId, string startDate, string endDate, bool? firstPay)
+        public ActionResult ShowActualDebitsF1(int? ProjectId, string startDate, string endDate, bool? firstPay, string Status)
         {
+            db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
+
             if (ProjectId != null)
             {
                 string ProjectName = db.Projects.FirstOrDefault(x => x.id == ProjectId).ShortName.ToString();
@@ -415,7 +417,7 @@ namespace F_Result.Controllers
                 if (firstPay ?? false)
                 {
                     startDate = Convert.ToDateTime(db.ActualDebitsF1
-                            .Where(x => x.ProjectId == ProjectId)
+                            .Where(x => x.ProjectId == ProjectId && x.StageName == "Paid")
                             .OrderBy(x => x.PaymentDate)
                             .Select(x => x.PaymentDate)
                             .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
@@ -424,12 +426,17 @@ namespace F_Result.Controllers
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
+            if (!string.IsNullOrEmpty(Status)) 
+            {
+                ViewData["Status"] = Status;
+            }
+
             return View();
         }
 
-        //Список исходящих платежей Ф2
+        //Список исходящих платежей Ф1
         [HttpPost]
-        public ActionResult LoadActualDebitsF1(int[] filterPrjIDs)
+        public ActionResult LoadActualDebitsF1(int[] filterPrjIDs, string _period,  int? _projectId, string _status)
         {
             try
             {
@@ -455,30 +462,31 @@ namespace F_Result.Controllers
                 //string _docdescr = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 //string _receipt = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 //string _worker = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                //// Парсинг диапазона дат из DateRangePicker
-                //DateTime? _startpaymentdate = null;
-                //DateTime? _endpaymentdate = null;
+                // Парсинг диапазона дат из DateRangePicker
+                DateTime? _startpaymentdate = null;
+                DateTime? _endpaymentdate = null;
                 //string _paymentdatetext = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
-                //if (!string.IsNullOrEmpty(_paymentdatetext))
-                //{
-                //    _paymentdatetext = _paymentdatetext.Trim();
-                //    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
-                //    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
-                //    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
-                //    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
-                //    _endpaymentdate = DateTime.Parse(_endpaymenttext);
-                //}
+                string _paymentdatetext = _period;
+                if (!string.IsNullOrEmpty(_paymentdatetext))
+                {
+                    _paymentdatetext = _paymentdatetext.Trim();
+                    int _length = (_paymentdatetext.Length) - (_paymentdatetext.IndexOf('-') + 2);
+                    string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
+                    string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
+                    _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                }
                 ////--------------------------
                 //string _paymenttxt = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
                 //string _curr = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF1
                                  join prg in db.Projects on payment.ProjectId equals prg.id
-                                 join ipa in db.ActivityIndexes on payment.ProjectId equals ipa.ProjectId into ipatmp
-                                 from ipa in ipatmp.DefaultIfEmpty()
-                                 //where ((payment.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
+                                 where ( _projectId == null || prg.id == _projectId
+                                          && (string.IsNullOrEmpty(_paymentdatetext) || payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate) //Диапазон дат
+                                          && (string.IsNullOrEmpty(_status) || payment.StageName == _status)
+                                 //       && (payment.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
                                  //       && (payment.DocumentNumber.Contains(_docnum) || string.IsNullOrEmpty(_docnum))
-                                 //       && (payment.DocumentDate >= _startpaymentdate && payment.DocumentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                  //       && (payment.ItemDescr.Contains(_itemdescr) || string.IsNullOrEmpty(_itemdescr))
                                  //       && (payment.IncomeItemsName.Contains(_itemname) || string.IsNullOrEmpty(_itemname))
                                  //       && (payment.ProjectName.Contains(_project) || string.IsNullOrEmpty(_project))
@@ -486,11 +494,12 @@ namespace F_Result.Controllers
                                  //       && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
                                  //       && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
                                  //       && (payment.Currency.Contains(_curr) || string.IsNullOrEmpty(_curr))
-                                 //       && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
+                                 //       && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                 )
                                  select new
                                  {
                                      id = payment.id,
-                                     ipa = ipa.IPAValue,
+                                     ipa = prg.IPA,
                                      //WorkerID = payment.WorkerId,
                                      DocumentNumber = payment.DocumentNumber,
                                      DocumentDate = payment.DocumentDate,

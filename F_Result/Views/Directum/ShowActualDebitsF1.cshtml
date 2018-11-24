@@ -21,10 +21,6 @@
         overflow-wrap: break-word;
     }
 
-    .docCellf {
-        /*min-width: 5em;*/
-    }
-
     #flowPanel div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
         margin-top: 10px;
@@ -64,6 +60,10 @@
         </div>
     </div>
 
+    @Html.Hidden("Period")
+    @Html.Hidden("ProjectId")
+    @Html.Hidden("Status")
+
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             @*<tr role="row" id="search-row" style="background-color:#ddddff">
@@ -82,17 +82,13 @@
             </tr>*@
 
             <tr role="row">
-                <th>№ док.</th>
-                <th>Дата</th>
                 <th>Дата платежа</th>
                 <th>Сотрудник</th>
                 <th>Контрагент</th>
                 <th>Организация</th>
-                <th>Договор</th>
                 <th>Проект</th>
                 <th>Сумма</th>
                 <th>Статья</th>
-                <th>Ст.</th>
                 <th>Примечание</th>
             </tr>
         </thead>
@@ -236,15 +232,16 @@
                     "filter": {
                         name: "Фильтр по значению",
                         icon: "filter",
-                        disabled: function () {
-                            var fClass = $(this).attr('class');
-                            if (fClass.indexOf("Cellf") >= 0) { return false };
+                        disabled: 
+                            function () {
+                        //    var fClass = $(this).attr('class');
+                        //    if (fClass.indexOf("Cellf") >= 0) { return false };
                             return true;
                         }
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "separator": "-----",
-                    "epexport": { name: "Экспорт в Excel", icon: "export2excel" }
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled:true }
                 }
             });
         });
@@ -255,10 +252,10 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable')
-                .on('preXhr.dt', function (e, settings, data) {
-                    data.columns[0].search.value = $('#prjFlt').val();
-                    data.columns[8].search.value = $('#dateFlt').val();
-                })
+                //.on('preXhr.dt', function (e, settings, data) {
+                //    data.columns[0].search.value = $('#prjFlt').val();
+                //    data.columns[8].search.value = $('#dateFlt').val();
+                //})
                 .DataTable({
                     fixedHeader: {
                         "header": true,
@@ -314,6 +311,9 @@
                         datatype: "json",
                         data: function (d) {
                             d.filterPrjIDs = window.filterPrjIDs;
+                            d._period = $("#Period").val();
+                            d._projectId = $("#ProjectId").val();
+                            d._status = $("#Status").val();
                         },
                         dataSrc: function (d) {
                             if (d.data.length === 0) {
@@ -325,48 +325,42 @@
                         }
                     },
                     columns: [
-                        { "data": "DocumentNumber", "name": "DocumentNumber", "autoWidth": true, "class": "context-menu-one" },
-                        {
-                            "data": "DocumentDate", "name": "DocumentDate", "autoWidth": true, "type": "date ",
-                            "render": function (value) {
-                                return formatDate(value);
-                            },
-                            "class": "dateCellf context-menu-one"
-                        },
                         {
                             "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
                             "render": function (value) {
                                 return formatDate(value);
                             },
-                            "class": "dateCellf context-menu-one"
+                            "class": "dateCellf context-menu-one haveTitle"
                         },
                         { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "context-menu-one" },
                         { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one" },
                         { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "ContractDescr", "name": "ContractDescr", "autoWidth": true, "class": "context-menu-one" },
                         { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one" },
                         { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
                         { "data": "ExpenditureId", "name": "ExpenditureId", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "StageName", "name": "StageName", "autoWidth": true, "class": "context-menu-one" },
                         { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" }
                     ],
-                    //createdRow: function (row, data, rowIndex) {
-                    //    var _datePlan = formatDate(data.StartDatePlan);
-                    //    var _dateFact = formatDate(data.StartDateFact);
-                    //    var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    //    var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                    createdRow: function (row, data, rowIndex) {
+                        var _docNum = data.DocumentNumber;
+                        var _docDate = formatDate(data.DocumentDate);
+                        var _org = data.Organization;
+                        var _contract = '';
+                        if (data.ContractDescr !== null) {
+                            _contract = data.ContractDescr;
+                        }
+                        var _status = data.StageName;
+                        var _IPA = 'Платежи отсутствуют';
 
-                    //    var _IPA = 'Платежи отсутствуют';
-                    //    if (data.IPA !== null) {
-                    //        _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
-                    //    }
-                    //    var prgTitleStr = 'Индекс активности: ' + _IPA;
-                    //    prgTitleStr += '\r\nТип проекта: ' + data.ProjectType + '\r\nРуководитель: ' + data.ChiefName + '\r\nМенеджер: ' + data.ProjectManagerName;
-                    //    prgTitleStr += '\r\nДата начала (план): ' + _datePlan + '\r\nДата начала (факт): ' + _dateFact;
-                    //    prgTitleStr += '\r\nПлан доходов: ' + _planBenefit + '\r\nПлан расходов: ' + _planExpand;
-                    //    $('.prgCellf', $(row)).attr('title', prgTitleStr);
-                    //},
-                    order: [[1, "desc"]]
+                        if (data.IPA !== null) {
+                            _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
+                        }
+                        var prgTitleStr = 'Индекс активности: ' + _IPA;
+                        prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate;
+                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатус: ' + _status;
+
+                        $('.dateCellf', $(row)).attr('title', prgTitleStr);
+                    },
+                    order: [[0, "desc"]]
                 });
 
             table.columns().eq(0).each(function (colIdx) {
