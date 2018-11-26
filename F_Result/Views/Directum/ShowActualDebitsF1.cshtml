@@ -60,26 +60,20 @@
         </div>
     </div>
 
-    @Html.Hidden("Period")
-    @Html.Hidden("ProjectId")
     @Html.Hidden("Status")
 
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
-            @*<tr role="row" id="search-row" style="background-color:#ddddff">
+            <tr role="row" id="search-row" style="background-color:#ddddff">
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата платежа" value="@ViewData["Period"]" id="dateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сотрудник" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Контрагент" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Теги" /></th>
-                <th><input type="text" class="form-control input-sm sb docFlt" style="width: 100%" placeholder="Код" /></th>
-                <th><input type="text" class="form-control input-sm sb itemFlt" style="width: 100%" placeholder="Назначение" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Квитанция" /></th>
-                <th><input type="text" class="form-control input-sm sb wksFlt" style="width: 100%" placeholder="Сотрудник" /></th>
-                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата" value="@ViewData["Period"]" id="dateFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb currFlt" style="width: 100%" placeholder="&#8372" /></th>
-
-            </tr>*@
+                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+            </tr>
 
             <tr role="row">
                 <th>Дата платежа</th>
@@ -252,10 +246,10 @@
         $(function () {
             $('#loadingImg').hide();
             var table = $('#gridtable')
-                //.on('preXhr.dt', function (e, settings, data) {
-                //    data.columns[0].search.value = $('#prjFlt').val();
-                //    data.columns[8].search.value = $('#dateFlt').val();
-                //})
+                .on('preXhr.dt', function (e, settings, data) {
+                      data.columns[0].search.value = $('#dateFlt').val();
+                      data.columns[4].search.value = $('#prjFlt').val();
+                })
                 .DataTable({
                     fixedHeader: {
                         "header": true,
@@ -311,8 +305,6 @@
                         datatype: "json",
                         data: function (d) {
                             d.filterPrjIDs = window.filterPrjIDs;
-                            d._period = $("#Period").val();
-                            d._projectId = $("#ProjectId").val();
                             d._status = $("#Status").val();
                         },
                         dataSrc: function (d) {
