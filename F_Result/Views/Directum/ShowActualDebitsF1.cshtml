@@ -66,12 +66,12 @@
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
                 <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата платежа" value="@ViewData["Period"]" id="dateFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сотрудник" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Контрагент" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb wkFlt" style="width: 100%" placeholder="Сотрудник" /></th>
+                <th><input type="text" class="form-control input-sm sb cntFlt" style="width: 100%" placeholder="Контрагент" /></th>
+                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb itemCatFlt" style="width: 100%" placeholder="Статья" /></th>
+                <th><input type="text" class="form-control input-sm sb catFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
             </tr>
 
@@ -89,7 +89,7 @@
     </table>
 
     <!-- #Плавающая панель -->
-    <div id="flowPanel" hidden>
+    <div id="flowPanel">
         <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
             <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
@@ -178,37 +178,29 @@
                     var fClass = $(this).attr('class');
                     switch (key) {
                         case 'filter':
-                            if (fClass.indexOf("wksCellf") >= 0) {
-                                $('.wksFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-                            if (fClass.indexOf("docCellf") >= 0) {
-                                $('.docFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
                             if (fClass.indexOf("dateCellf") >= 0) {
                                 var dateStr = $(this).text() + ' - ' + $(this).text();
                                 $('.dateFlt').val(dateStr).trigger('change');
                                 break;
                             };
-                            if (fClass.indexOf("itemCellf") >= 0) {
-                                $('.itemFlt').val($(this).text()).trigger('change');
+                           if (fClass.indexOf("wkCellf") >= 0) {
+                                $('.wkFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-                            if (fClass.indexOf("itemCatCellf") >= 0) {
-                                $('.itemCatFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("cntCellf") >= 0) {
+                                $('.cntFlt').val($(this).text()).trigger('change');
+                                break;
+                            };
+                            if (fClass.indexOf("orgCellf") >= 0) {
+                                $('.orgFlt').val($(this).text()).trigger('change');
                                 break;
                             };
                             if (fClass.indexOf("prgCellf") >= 0) {
                                 $('.prgFlt').val($(this).text()).trigger('change');
                                 break;
                             };
-                            if (fClass.indexOf("tagsCellf") >= 0) {
-                                $('.tagsFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
-                            if (fClass.indexOf("currCellf") >= 0) {
-                                $('.currFlt').val($(this).text()).trigger('change');
+                            if (fClass.indexOf("catCellf") >= 0) {
+                                $('.catFlt').val($(this).text()).trigger('change');
                                 break;
                             };
                             break;
@@ -228,10 +220,12 @@
                         icon: "filter",
                         disabled: 
                             function () {
-                        //    var fClass = $(this).attr('class');
-                        //    if (fClass.indexOf("Cellf") >= 0) { return false };
-                            return true;
-                        }
+                               var fClass = $(this).attr('class');
+                               if (fClass.indexOf("Cellf") >= 0) {
+                                   return false
+                               };
+                                   return true;
+                           }
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "separator": "-----",
@@ -287,16 +281,16 @@
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
-                        ////Инициализация таблицы проектов в плавающей панели---------
-                        //if (window._flag) {
-                        //    //Заполнение массива проектов для таблицы в плавающей панели
-                        //    _prjIDs = JSON.parse(json.prjlist)
-                        //    var pTable = $('#prgtable').DataTable();
-                        //    pTable.destroy();
-                        //    prgTableCrate();
-                        //    $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
-                        //    window._flag = false;
-                        //};
+                        //Инициализация таблицы проектов в плавающей панели---------
+                        if (window._flag) {
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            _prjIDs = JSON.parse(json.prjlist)
+                            var pTable = $('#prgtable').DataTable();
+                            pTable.destroy();
+                            prgTableCrate();
+                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            window._flag = false;
+                        };
 
                     },
                     ajax: {
@@ -324,12 +318,12 @@
                             },
                             "class": "dateCellf context-menu-one haveTitle"
                         },
-                        { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one" },
-                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "context-menu-one wkCellf" },
+                        { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one cntCellf" },
+                        { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one orgCellf" },
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf" },
                         { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                        { "data": "ExpenditureId", "name": "ExpenditureId", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "ExpenditureId", "name": "ExpenditureId", "autoWidth": true, "class": "context-menu-one catCellf" },
                         { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" }
                     ],
                     createdRow: function (row, data, rowIndex) {

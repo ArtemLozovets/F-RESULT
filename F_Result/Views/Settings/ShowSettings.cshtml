@@ -58,8 +58,34 @@
                 &nbsp;<label for="PrjAccChb">Разрешить руководителям проектов доступ ко всем проектам</label>
             </div>
         </div>
+</div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Доступ к исходящим платежам Ф1 (до 01/09/2018) <span class="text-danger">(В РАЗРАБОТКЕ)</span></h3>
+                </div>
+                @{ //Читаем значение параметра из БД и устанавливаем состояние чекбокса
+                    var chkFlag1 = "";
+                    var _set1 = Model.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
+                    if (_set1 != null)
+                    {
+                        if (_set1.SettingValue.ToString() == "true") { chkFlag1 = "checked"; }
+                    }
+                }
+                <div class="panel-body form-inline">
+                    <input type="checkbox"
+                           name="acces_all_prj"
+                           value=""
+                           @chkFlag
+                           id="PrjAccChb"
+                           class="form-control" />
+                    &nbsp;<label for="PrjAccChb">
+                        Запретить добавление и редактирование данных по исходящим платежам Ф1 (до 01/09/2018)
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
 
 <a href="#" class="scrollup1">Наверх</a>

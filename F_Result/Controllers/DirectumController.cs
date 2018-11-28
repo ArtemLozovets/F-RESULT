@@ -465,7 +465,7 @@ namespace F_Result.Controllers
                     string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
                     string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
                     _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
-                    _endpaymentdate = DateTime.Parse(_endpaymenttext);
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext).AddHours(23).AddMinutes(59).AddSeconds(59); //Дл согласования с данными даты/времени платежа в Directum
                 }
                 //--------------------------
 
@@ -476,7 +476,6 @@ namespace F_Result.Controllers
                 string _paymenttxt = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
                 string _expenditureId = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 string _documentDescr = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
-                //string _curr = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF1
                                  join prg in db.Projects on payment.ProjectId equals prg.id
@@ -531,23 +530,21 @@ namespace F_Result.Controllers
                                  }).ToList();
 
                 _payments = _payments.Where(x => (x.ItemSum.Value.ToString().Contains(_paymenttxt))
-                //                               && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))
-                ).ToList();
-
+                                               && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId.Value))).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
 
-                //List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
-                //    .Select(x => new APBFilterIDs
-                //    {
-                //        PrjId = x.Select(z => z.ProjectId).First(),
-                //        ProjectName = x.Select(z => z.ProjectName).First(),
-                //        IPA = x.Select(z => z.IPA).First()
-                //    }).ToList();
+                List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
+                    .Select(x => new APBFilterIDs
+                    {
+                        PrjId = x.Select(z => z.ProjectId.Value).First(),
+                        ProjectName = x.Select(z => z.ProjectName).First(),
+                        IPA = x.Select(z => z.IPA).First()
+                    }).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
-               // var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -568,7 +565,7 @@ namespace F_Result.Controllers
                 {
                     fsum = fSum,
                     draw = draw,
-                 //   prjlist = _prjListJson,
+                    prjlist = _prjListJson,
                     idslist = _IDsListJson,
                     sortcolumn = sortColumn,
                     sortdir = sortColumnDir,
