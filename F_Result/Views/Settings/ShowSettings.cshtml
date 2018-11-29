@@ -25,7 +25,7 @@
         <div class="col-lg-12">
             <h1 class="page-header">
                 @ViewBag.Title
-                <small>Системные настойки приложения</small>
+                <small>Системные настройки приложения</small>
             </h1>
             <ol class="breadcrumb">
                 <li>@Html.ActionLink("Главная", "Index", "Home", new { Area = "" }, null)</li>
@@ -40,47 +40,54 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Доступ к проектам</h3>
             </div>
-            @{ //Читаем значение параметра из БД и устанавливаем состояние чекбокса
-                var chkFlag = "";
-                var _set = Model.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
-                if (_set != null)
-                {
-                    if (_set.SettingValue.ToString() == "true") { chkFlag = "checked"; }
-                }
-            }
+
             <div class="panel-body form-inline">
+                @{ //Читаем значение параметра из БД и устанавливаем состояние чекбокса
+                    var all_prg_chkFlag = "";
+                    var _set = Model.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
+                    if (_set != null)
+                    {
+                        if (_set.SettingValue.ToString() == "true") { all_prg_chkFlag = "checked"; }
+                    }
+
+                }
                 <input type="checkbox"
-                       name="acces_all_prj"
+                       data-pName="PM_access_all_projects"
+                       name="PrjAccChb"
                        value=""
-                       @chkFlag
+                       title='Данный параметр определяет будут ли пользователю в роли "Руководитель проекта" доступны данные по всем проектам или только по тем, в которых он является руководителем проекта'
+                       @all_prg_chkFlag
                        id="PrjAccChb"
-                       class="form-control" />
+                       class="form-control settingsChb" />
                 &nbsp;<label for="PrjAccChb">Разрешить руководителям проектов доступ ко всем проектам</label>
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Доступ к исходящим платежам Ф1 (до 01/09/2018) <span class="text-danger">(В РАЗРАБОТКЕ)</span></h3>
+                <h3 class="panel-title">Доступ к исходящим платежам Ф1 (до 01/09/2018)</h3>
             </div>
             @{ //Читаем значение параметра из БД и устанавливаем состояние чекбокса
-                var chkFlag1 = "";
-                var _set1 = Model.FirstOrDefault(x => x.SettingName == "PM_access_all_projects");
-                if (_set1 != null)
+                var ad_old_chkFlag = "";
+                var _ad_old_set = Model.FirstOrDefault(x => x.SettingName == "AD_old_access");
+                if (_ad_old_set != null)
                 {
-                    if (_set1.SettingValue.ToString() == "true") { chkFlag1 = "checked"; }
+                    if (_ad_old_set.SettingValue.ToString() == "true") { ad_old_chkFlag = "checked"; }
                 }
             }
             <div class="panel-body form-inline">
                 <input type="checkbox"
-                       name="acces_all_prj"
+                       data-pName="AD_old_access"
+                       title='Данный параметр РАЗРЕШАЕТ добавление, редактирование и удаление данных исходящих платежей Ф1, хранящихся в базе данных F-Result (использовались до 01/09/2018 года)'
+                       name="adOldChb"
                        value=""
-                       @chkFlag
-                       id="PrjAccChb"
-                       class="form-control" />
-                &nbsp;<label for="PrjAccChb">
-                    Запретить добавление и редактирование данных по исходящим платежам Ф1 (до 01/09/2018)
+                       @ad_old_chkFlag
+                       id="adOldChb"
+                       class="form-control settingsChb" />
+                &nbsp;<label for="adOldChb">
+                    Разрешить добавление, редактирование и удаление данных по исходящим платежам Ф1 (до 01/09/2018)
                 </label>
             </div>
         </div>
@@ -97,12 +104,11 @@
             $('#loadingImg').hide();
         });
 
-        $('#PrjAccChb').on('click', function (e) {
+        $('.settingsChb').on('click', function (e) {
             if (confirm("Изменить параметр?")) {
-                var _pName = 'PM_access_all_projects';
+                var _pName = $(this).attr("data-pName");
+                var _pNote = $(this).attr("title");
                 var _pValue = $(this).prop('checked');
-                var _pNote = 'Данный параметр определяет будут ли пользователю в роли "Руководитель проекта" доступны данные по всем проектам ';
-                _pNote += 'или только по тем, в которых он является руководителем проекта';
 
                 $.ajax({
                     type: "POST",
@@ -111,7 +117,7 @@
                     success: function (data) {
                         if (!data.Result) {
                             //Если произошла ошибка при сохранении значения параметра - возвращаем чекбокс в исходное состояние
-                            $('#PrjAccChb').prop('checked', !$('#PrjAccChb').prop('checked'));
+                            $(this).prop('checked', !$(this).prop('checked'));
                             alert(data.Message);
                         }
                         else {
@@ -126,7 +132,7 @@
             }
             else {
                 //Если пользователь выбрал "Отмена" - возвращаем чекбокс в исходное состояние
-                $('#PrjAccChb').prop('checked', !$('#PrjAccChb').prop('checked'));
+                $(this).prop('checked', !$(this).prop('checked'));
             }
         });
     </script>

@@ -41,6 +41,7 @@ namespace F_Result.Controllers
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
+            ViewData["AD_Access"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
             return View();
         }
 
@@ -74,7 +75,7 @@ namespace F_Result.Controllers
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
                 string _datetext = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                if (!String.IsNullOrEmpty(_datetext))
+                if (!string.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
                     int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
@@ -214,7 +215,7 @@ namespace F_Result.Controllers
 
             string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             actualDebit.OrganizationName = _orgName;
-
+            ViewData["AD_Access"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
             return View(actualDebit);
         }
 

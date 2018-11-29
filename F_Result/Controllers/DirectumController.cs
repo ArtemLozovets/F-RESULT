@@ -465,7 +465,7 @@ namespace F_Result.Controllers
                     string _startpaymenttetxt = _paymentdatetext.Substring(0, _paymentdatetext.IndexOf('-')).Trim();
                     string _endpaymenttext = _paymentdatetext.Substring(_paymentdatetext.IndexOf('-') + 2, _length).Trim();
                     _startpaymentdate = DateTime.Parse(_startpaymenttetxt);
-                    _endpaymentdate = DateTime.Parse(_endpaymenttext).AddHours(23).AddMinutes(59).AddSeconds(59); //Дл согласования с данными даты/времени платежа в Directum
+                    _endpaymentdate = DateTime.Parse(_endpaymenttext).AddHours(23).AddMinutes(59).AddSeconds(59); //Для согласования с данными даты/времени платежа в Directum
                 }
                 //--------------------------
 
