@@ -22,7 +22,7 @@
     }
 </style>
 
-@Html.Hidden("AD_Access")
+@Html.Hidden("AD_Access_Allow")
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -163,13 +163,14 @@
     <script type="text/javascript">
         //Скрипт для работы с контекстным меню
         $(function () {
-
-            var _ad_access_flag = $("#AD_Access").val();
-            var aFlag = Boolean(false);
-            if ($("#AD_Access").val().toLowerCase() === 'true') {
-                aFlag = Boolean(true);
+            // Учитываем значение системной настройки "Доступ к исходящим платежам Ф1 (до 01/09/2018)"
+            var aBlocked = Boolean(true);
+            if ( $("#AD_Access_Allow").val() === 'true') {
+                aBlocked = Boolean(false);
+            } else {
                 $("#AD_access_title").text('(ТОЛЬКО ЧТЕНИЕ)');
             }
+            //------------------------------------------------------
 
             $.contextMenu({
                 selector: '.dataTables_empty, td.context-menu-one',
@@ -245,14 +246,14 @@
                     "sep": "---------",
                     "add": {
                         name: "Создать", icon: "add", disabled: function () {
-                            if (aFlag) { return true };
+                            if (aBlocked) { return true };
                             return false;
                         }
                     },
                     "clone": {
                         name: "Клонировать", icon: "copy", disabled: function () {
                             var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0 || aFlag) { return true };
+                            if (rClass.indexOf("dataTables_empty") >= 0 || aBlocked) { return true };
                             return false;
                         }
                     },
@@ -266,14 +267,14 @@
                     "edit": {
                         name: "Редактировать", icon: "edit", disabled: function () {
                             var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0 || aFlag) { return true };
+                            if (rClass.indexOf("dataTables_empty") >= 0 || aBlocked) { return true };
                             return false;
                         }
                     },
                     "delete": {
                         name: "Удалить", icon: "delete", disabled: function () {
                             var rClass = $(this).attr('class');
-                            if (rClass.indexOf("dataTables_empty") >= 0 || aFlag) { return true };
+                            if (rClass.indexOf("dataTables_empty") >= 0 || aBlocked) { return true };
                             return false;
                         }
                     }

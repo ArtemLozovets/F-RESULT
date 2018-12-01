@@ -487,13 +487,12 @@ namespace F_Result.Controllers
                                           && (string.IsNullOrEmpty(_projectName) || payment.ProjectName.Contains(_projectName))
                                           && (string.IsNullOrEmpty(_expenditureId) || payment.ExpenditureId.Contains(_expenditureId))
                                           && (string.IsNullOrEmpty(_documentDescr) || payment.DocumentDescr.Contains(_documentDescr))
-                                 //       && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                          && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                                  )
                                  select new
                                  {
                                      id = payment.id,
                                      ipa = prg.IPA,
-                                     //WorkerID = payment.WorkerId,
                                      DocumentNumber = payment.DocumentNumber,
                                      DocumentDate = payment.DocumentDate,
                                      PaymentDate = payment.PaymentDate,
@@ -512,7 +511,6 @@ namespace F_Result.Controllers
                                  {
                                      id = x.id,
                                      IPA = x.ipa,
-                                     //WorkerID = payment.WorkerId,
                                      DocumentNumber = x.DocumentNumber,
                                      DocumentDate = x.DocumentDate,
                                      PaymentDate = x.PaymentDate,

@@ -1,10 +1,12 @@
 ﻿@model F_Result.Models.ActualDebit
 
 @{
-    
+
     ViewBag.Title = "Платежи Ф1";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@Html.Hidden("AD_Access_Allow")
 
 <div class="container">
     <div class="row">
@@ -77,6 +79,20 @@
     </div>
     <div class="form-actions no-color">
         <a class="btn btn-primary" href='@Url.Action("ADShow")'><span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Назад</a>
-        <a class="btn btn-primary" href='@Url.Action("ADEdit", new { id = Model.ActualDebitId })'><span class="glyphicon glyphicon-edit"></span>&nbsp;Редактировать</a>
+        <a class="btn btn-primary" id="adEditBtn" href='@Url.Action("ADEdit", new { id = Model.ActualDebitId })'><span class="glyphicon glyphicon-edit"></span>&nbsp;Редактировать</a>
     </div>
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            // Учитываем значение системной настройки "Доступ к исходящим платежам Ф1 (до 01/09/2018)"
+            if ($("#AD_Access_Allow").val() !== 'true') {
+                $('#adEditBtn').attr("disabled", true).on('click', function (e) {
+                    e.preventDefault();
+                }).attr('title', 'Редактирование запрещено! Обратитесь к администратору системы.');
+            }
+        });
+    </script>
+}

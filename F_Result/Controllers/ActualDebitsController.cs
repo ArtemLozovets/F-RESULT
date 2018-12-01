@@ -41,7 +41,7 @@ namespace F_Result.Controllers
                 ViewData["Period"] = startDate + " - " + endDate;
             }
 
-            ViewData["AD_Access"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
+            ViewData["AD_Access_Allow"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
             return View();
         }
 
@@ -145,7 +145,7 @@ namespace F_Result.Controllers
                                 planExpand = x.planExpand
                             }).ToList();
 
-                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum)) 
+                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum))
                             && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))
                             && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
 
@@ -153,7 +153,8 @@ namespace F_Result.Controllers
                 List<int> _IDsList = _ads.Select(x => x.ActualDebitId).ToList();
 
                 List<APBFilterIDs> _prjList = _ads.GroupBy(x => x.ProjectId)
-                    .Select(x => new APBFilterIDs {
+                    .Select(x => new APBFilterIDs
+                    {
                         PrjId = x.Select(z => z.ProjectId).First(),
                         ProjectName = x.Select(z => z.ProjectName).First(),
                         IPA = x.Select(z => z.IPA).First()
@@ -177,15 +178,27 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { sum = fSum, draw = draw
-                    , prjlist = _prjListJson
-                    , idslist = _IDsListJson
-                    , sortcolumn = sortColumn
-                    , sortdir = sortColumnDir
-                    , recordsFiltered = totalRecords
-                    , recordsTotal = totalRecords
-                    , data = data
-                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    sum = fSum,
+                    draw = draw
+                    ,
+                    prjlist = _prjListJson
+                    ,
+                    idslist = _IDsListJson
+                    ,
+                    sortcolumn = sortColumn
+                    ,
+                    sortdir = sortColumnDir
+                    ,
+                    recordsFiltered = totalRecords
+                    ,
+                    recordsTotal = totalRecords
+                    ,
+                    data = data
+                    ,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -215,7 +228,8 @@ namespace F_Result.Controllers
 
             string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             actualDebit.OrganizationName = _orgName;
-            ViewData["AD_Access"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
+
+            ViewData["AD_Access_Allow"] = db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString();
             return View(actualDebit);
         }
 
@@ -235,32 +249,38 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ADCreate([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber,ApplicationUser")] ActualDebit actualDebit)
         {
-            if (ModelState.IsValid)
+            bool AD_access_allow = Boolean.Parse(db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString());
+            if (AD_access_allow)
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    //Получаем идентификатор текущего пользователя
-                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    try
                     {
-                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
-                        actualDebit.UserId = user;
-                    }
+                        //Получаем идентификатор текущего пользователя
+                        using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                        {
+                            var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                            actualDebit.UserId = user;
+                        }
 
-                    db.ActualDebit.Add(actualDebit);
-                    db.SaveChanges();
-                    TempData["MessageOK"] = "Информация добавлена";
-                    return RedirectToAction("ADShow");
+                        db.ActualDebit.Add(actualDebit);
+                        db.SaveChanges();
+                        TempData["MessageOK"] = "Информация добавлена";
+                        return RedirectToAction("ADShow");
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.ErMes = ex.Message;
+                        ViewBag.ErStack = ex.StackTrace;
+                        ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                        return View("Error");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    ViewBag.ErMes = ex.Message;
-                    ViewBag.ErStack = ex.StackTrace;
-                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
-                    return View("Error");
-                }
+                TempData["MessageError"] = "Ошибка валидации модели";
+                return View(actualDebit);
             }
 
-            TempData["MessageError"] = "Ошибка валидации модели";
+            TempData["MessageError"] = "Добавление данных запрещено настройками системы";
             return View(actualDebit);
         }
 
@@ -303,38 +323,44 @@ namespace F_Result.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ADEdit([Bind(Include = "ActualDebitId,Date,Sum,ProjectId,OrganizationId,Appointment,DocNumber")] ActualDebit actualDebit)
         {
-
-            if (ModelState.IsValid)
+            bool AD_access_allow = Boolean.Parse(db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString());
+            if (AD_access_allow)
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    //Получаем идентификатор текущего пользователя
-                    using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                    try
                     {
-                        var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
-                        actualDebit.UserId = user;
+                        //Получаем идентификатор текущего пользователя
+                        using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                        {
+                            var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                            actualDebit.UserId = user;
+                        }
+
+                        db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+                        db.Entry(actualDebit).State = EntityState.Modified;
+                        db.SaveChanges();
+                        TempData["MessageOK"] = "Информация обновлена";
+                        return RedirectToAction("ADShow");
                     }
+                    catch (Exception ex)
+                    {
+                        ViewBag.ErMes = ex.Message;
+                        ViewBag.ErStack = ex.StackTrace;
+                        ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                        return View("Error");
+                    }
+                }
 
-                    db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
-                    db.Entry(actualDebit).State = EntityState.Modified;
-                    db.SaveChanges();
-                    TempData["MessageOK"] = "Информация обновлена";
-                    return RedirectToAction("ADShow");
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.ErMes = ex.Message;
-                    ViewBag.ErStack = ex.StackTrace;
-                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
-                    return View("Error");
-                }
+                TempData["MessageError"] = "Ошибка валидации модели";
+                ViewData["ProjectName"] = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+                ViewData["OrganizationName"] = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
+                return View(actualDebit);
+
             }
-
-            TempData["MessageError"] = "Ошибка валидации модели";
-            string _prgName = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
-            ViewData["ProjectName"] = _prgName;
-            string _orgName = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
-            ViewData["OrganizationName"] = _orgName;
+            TempData["MessageError"] = "Редактирование данных запрещено настройками системы";
+            ViewData["ProjectName"] = db.Projects.Where(x => x.id == actualDebit.ProjectId).Select(x => x.ShortName).FirstOrDefault().ToString();
+            ViewData["OrganizationName"] = db.Organizations.Where(x => x.id == actualDebit.OrganizationId).Select(x => x.Title).FirstOrDefault().ToString();
             return View(actualDebit);
         }
 
@@ -370,28 +396,33 @@ namespace F_Result.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
 
-            try
+            bool AD_access_allow = Boolean.Parse(db.Settings.FirstOrDefault(z => z.SettingName == "AD_old_access").SettingValue.ToString());
+            if (AD_access_allow)
             {
-                ActualDebit actualDebit = db.ActualDebit.FirstOrDefault(x => x.ActualDebitId == id);
-                if (actualDebit == null)
+                try
                 {
-                    TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
+                    ActualDebit actualDebit = db.ActualDebit.FirstOrDefault(x => x.ActualDebitId == id);
+                    if (actualDebit == null)
+                    {
+                        TempData["MessageError"] = "Удаляемый объект отсутствует в базе данных";
+                        return RedirectToAction("ADShow");
+                    }
+
+                    db.ActualDebit.Remove(actualDebit);
+                    db.SaveChanges();
+                    TempData["MessageOK"] = "Информация удалена";
                     return RedirectToAction("ADShow");
                 }
-
-                db.ActualDebit.Remove(actualDebit);
-                db.SaveChanges();
-                TempData["MessageOK"] = "Информация удалена";
-                return RedirectToAction("ADShow");
+                catch (Exception ex)
+                {
+                    ViewBag.ErMes = ex.Message;
+                    ViewBag.ErStack = ex.StackTrace;
+                    ViewBag.ErInner = ex.InnerException.InnerException.Message;
+                    return View("Error");
+                }
             }
-            catch (Exception ex)
-            {
-                ViewBag.ErMes = ex.Message;
-                ViewBag.ErStack = ex.StackTrace;
-                ViewBag.ErInner = ex.InnerException.InnerException.Message;
-                return View("Error");
-            }
-
+            TempData["MessageError"] = "Удаление данных запрещено настройками системы";
+            return RedirectToAction("ADShow");
         }
 
         protected override void Dispose(bool disposing)

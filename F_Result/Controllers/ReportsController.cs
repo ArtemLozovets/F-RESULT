@@ -301,6 +301,8 @@ namespace F_Result.Controllers
         }
 
 
+        #region ==============================Старые отчеты "Бюджетирование" и "Анализ прибыльности проектов"=====================================
+
         //Отчет "Бюджетирование" GET
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
         public ActionResult AnalysisOfTheProjectBudget()
@@ -308,7 +310,6 @@ namespace F_Result.Controllers
             ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
             return View();
         }
-
 
         //Получение данных для построения отчета "Бюджетирование" POST
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
@@ -409,7 +410,7 @@ namespace F_Result.Controllers
 
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReportOld('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -541,7 +542,7 @@ namespace F_Result.Controllers
                 string repdt = RepDate.Value.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReport('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReportOld('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
@@ -612,7 +613,7 @@ namespace F_Result.Controllers
                 return Json(new { Result = false, data = data, errormessage = errormessage }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        #endregion
 
         #region ==============================Гибридные отчеты "Бюджетирование" и "Анализ прибыльности проектов"=====================================
         //Отчет "Бюджетирование" GET
