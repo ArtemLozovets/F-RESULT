@@ -443,6 +443,7 @@ namespace F_Result.Controllers
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
+                List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().ToList();
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
@@ -570,6 +571,7 @@ namespace F_Result.Controllers
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     data = data,
+                    statuslist = StatusList,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
 

@@ -53,6 +53,33 @@
         </div>
     </div>
 
+    @* Панель фильтров --------------------------------- *@
+    <div class="panel-group" style="width:100%; min-width:680px; margin: 0 auto 10px !important;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse1"><span class="text-info"><i class="glyphicon glyphicon-filter"></i>&nbsp;Фильтр</span>&nbsp;<span class="text-danger">(В РАЗРАБОТКЕ)</span></a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div class="col-lg-12 form-inline text-left" style="margin:6px 0 0; ">
+                        <label for="statusDDL">Статус платежа</label>
+                        <select name="statusDDL" id="statusDDL" class="form-control input-sm">
+                            <option value="All" selected="selected">Все</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-inline text-center" style="margin-top:8px; margin-bottom:2px;">
+                        <button type="button" id="searchBtn" title="Искать" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-search"></i> Искать</button>
+                        @Html.Raw("&nbsp;")<button type="button" title="Обновить" class="btn btn-primary btn-sm" id="filterclear" onclick="ClearFilter()"><i class="glyphicon glyphicon-refresh"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* ----------------------------------------------- *@
+
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
             <p class="text-success" id="MessageOk"> @TempData["MessageOk"]</p>
@@ -183,7 +210,7 @@
                                 $('.dateFlt').val(dateStr).trigger('change');
                                 break;
                             };
-                           if (fClass.indexOf("wkCellf") >= 0) {
+                            if (fClass.indexOf("wkCellf") >= 0) {
                                 $('.wkFlt').val($(this).text()).trigger('change');
                                 break;
                             };
@@ -218,18 +245,18 @@
                     "filter": {
                         name: "Фильтр по значению",
                         icon: "filter",
-                        disabled: 
+                        disabled:
                             function () {
-                               var fClass = $(this).attr('class');
-                               if (fClass.indexOf("Cellf") >= 0) {
-                                   return false
-                               };
-                                   return true;
-                           }
+                                var fClass = $(this).attr('class');
+                                if (fClass.indexOf("Cellf") >= 0) {
+                                    return false
+                                };
+                                return true;
+                            }
                     },
                     "refresh": { name: "Сброс фильтра", icon: "refresh" },
                     "separator": "-----",
-                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled:true }
+                    "epexport": { name: "Экспорт в Excel", icon: "export2excel", disabled: true }
                 }
             });
         });
@@ -241,8 +268,8 @@
             $('#loadingImg').hide();
             var table = $('#gridtable')
                 .on('preXhr.dt', function (e, settings, data) {
-                      data.columns[0].search.value = $('#dateFlt').val();
-                      data.columns[4].search.value = $('#prjFlt').val();
+                    data.columns[0].search.value = $('#dateFlt').val();
+                    data.columns[4].search.value = $('#prjFlt').val();
                 })
                 .DataTable({
                     fixedHeader: {
@@ -256,7 +283,7 @@
                     responsive: false,
                     pageLength: 25, // Количество записей в таблице по умолчанию
                     pagingType: "simple_numbers",
-                    dom: "<'row'<'col-sm-3'l><'col-sm-3 text-center'B><'#sumSpan.col-sm-6'B>>" +
+                    dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#sumSpan.col-sm-6'B>>" +
                             "<'row'<'col-sm-12'tr>>" +
                             "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                     language: {
@@ -279,7 +306,13 @@
                         var api = this.api();
                         var json = api.ajax.json();
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        $("#sumSpan").html('<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+                        $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
+
+                        //Заполнение значений выпадающего списка статусов платежа в панели фильтров
+                        $('#statusDDL').find('option').remove().end().append('<option value="All">Все</option>').val('All');
+                        $.each(json.statuslist, function (text, text) {
+                            $('#statusDDL').append($('<option></option>').val(text).html(text))
+                        }); 
 
                         //Инициализация таблицы проектов в плавающей панели---------
                         if (window._flag) {
@@ -371,6 +404,22 @@
             return _d + "/" + _m + "/" + dt.getFullYear();
         };
 
+    </script>
+
+    <script>
+        //Обработчик нажатия кнопки "Данные F-Result"
+        $('body').on('click', '#ad_OldBtn', function () {
+            window.location.href = '/ActualDebits/ADShow';
+        })
+    </script>
+
+    <script>
+        //Скрипт для работы с панелью фильтров
+        $('body').on('click', '#searchBtn', function () {
+            alert($('#statusDDL').val());
+            var table = $('#gridtable').DataTable();
+            table.draw();
+        });
     </script>
 
     <script>

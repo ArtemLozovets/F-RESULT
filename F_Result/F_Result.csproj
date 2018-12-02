@@ -491,7 +491,9 @@
     <Content Include="Content\modern-business.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\Spacelab\bootstrap.css" />
-    <Content Include="Content\Spacelab\bootstrap.min.css" />
+    <Content Include="Content\Spacelab\bootstrap.min.css">
+      <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
     <Content Include="Content\Superhero\bootstrap.css" />
     <Content Include="Content\Superhero\bootstrap.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
