@@ -63,16 +63,24 @@
             </div>
             <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <div class="col-lg-12 form-inline text-left" style="margin:6px 0 0; ">
-                        <label for="statusDDL">Статус платежа</label>
-                        <select name="statusDDL" id="statusDDL" class="form-control input-sm">
-                            <option value="All" selected="selected">Все</option>
+                    <div class="col-sm-3 form-inline text-center" style="margin:6px 0 0; ">
+                        <input type="text" id="docDateFlt" class="form-control input-sm dff" readonly placeholder="Дата документа" title="Дата документа" />
+                    </div>
+                    <div class="col-sm-3 form-inline text-center" style="margin:6px 0 0; ">
+                        <input type="text" id="docNumFlt" class="form-control input-sm" style="width: 100%" placeholder="Номер документа" title="Номер документа (строгое соответствие)" />
+                    </div>
+                    <div class="col-sm-3 form-inline text-center" style="margin:6px 0 0; ">
+                        <input type="text" id="contractFlt" class="form-control input-sm" style="width: 100%" placeholder="Договор" title="Номер договора (строгое соответствие)" />
+                    </div>
+                    <div class="col-sm-3 form-inline text-center" style="margin:6px 0 0; ">
+                        <select name="stateDDL" id="stateDDL" class="form-control input-sm" title="Статус платежа">
+                            <option value="All" selected="selected">Все платежи</option>
                         </select>
                     </div>
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-inline text-center" style="margin-top:8px; margin-bottom:2px;">
+                    <div class="col-sm-12 form-inline text-center" style="margin-top:8px; margin-bottom:2px;">
                         <button type="button" id="searchBtn" title="Искать" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-search"></i> Искать</button>
-                        @Html.Raw("&nbsp;")<button type="button" title="Обновить" class="btn btn-primary btn-sm" id="filterclear" onclick="ClearFilter()"><i class="glyphicon glyphicon-refresh"></i></button>
+                        @Html.Raw("&nbsp;")<button type="button" title="Обновить" class="btn btn-primary btn-sm" id="filterclear"><i class="glyphicon glyphicon-refresh"></i></button>
                     </div>
                 </div>
             </div>
@@ -100,6 +108,10 @@
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
                 <th><input type="text" class="form-control input-sm sb catFlt" style="width: 100%" placeholder="Статья" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
             </tr>
 
             <tr role="row">
@@ -111,6 +123,10 @@
                 <th>Сумма</th>
                 <th>Статья</th>
                 <th>Примечание</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
     </table>
@@ -309,10 +325,13 @@
                         $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
                         //Заполнение значений выпадающего списка статусов платежа в панели фильтров
-                        $('#statusDDL').find('option').remove().end().append('<option value="All">Все</option>').val('All');
-                        $.each(json.statuslist, function (text, text) {
-                            $('#statusDDL').append($('<option></option>').val(text).html(text))
-                        }); 
+                        if ($('#stateDDL').attr('data-firstCall') !== 'true') {
+                            $('#stateDDL').attr('data-firstCall', true);
+                            $('#stateDDL').find('option').remove().end().append('<option value="All">Все платежи</option>').val('All');
+                            $.each(json.statuslist, function (text, text) {
+                                $('#stateDDL').append($('<option></option>').val(text).html(text))
+                            });
+                        }
 
                         //Инициализация таблицы проектов в плавающей панели---------
                         if (window._flag) {
@@ -324,7 +343,6 @@
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
                         };
-
                     },
                     ajax: {
                         url: "/Directum/LoadActualDebitsF1",
@@ -343,6 +361,28 @@
                             return d.data;
                         }
                     },
+                    columnDefs: [
+                       {
+                           "targets": [8],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [9],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [10],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [11],
+                           "visible": false,
+                           "searchable": true
+                       }
+                    ],
                     columns: [
                         {
                             "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
@@ -357,7 +397,11 @@
                         { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf" },
                         { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
                         { "data": "ExpenditureId", "name": "ExpenditureId", "autoWidth": true, "class": "context-menu-one catCellf" },
-                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" }
+                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
+                        { "data": "DocumentDate", "name": "DocumentDate" },
+                        { "data": "DocumentNumber", "name": "DocumentNumber" },
+                        { "data": "ContractDescr", "name": "ContractDescr" },
+                        { "data": "StageName", "name": "StageName" }
                     ],
                     createdRow: function (row, data, rowIndex) {
                         var _docNum = data.DocumentNumber;
@@ -416,9 +460,26 @@
     <script>
         //Скрипт для работы с панелью фильтров
         $('body').on('click', '#searchBtn', function () {
-            alert($('#statusDDL').val());
+            var _state = $('#stateDDL').val()
+            _state = _state === 'All' ? '' : _state;
+            var _docDate = $('#docDateFlt').val();
+            var _docNum = $('#docNumFlt').val();
+            var _contract = $('#contractFlt').val();
             var table = $('#gridtable').DataTable();
-            table.draw();
+            table.columns(8).search(_docDate)
+                .columns(9).search(_docNum)
+                .columns(10).search(_contract)
+                .columns(11).search(_state)
+                .draw();
+        });
+
+        //Сброс фильтрации из панели фильтров
+        $('body').on('click', '#filterclear', function () {
+            $('#docDateFlt').val('');
+            $('#docNumFlt').val('');
+            $('#contractFlt').val('');
+            $('#stateDDL').val('All');
+            ClearFilter();
         });
     </script>
 
@@ -427,9 +488,8 @@
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
-                table.column(colIdx).search('');
             });
-            table.draw();
+            table.columns().search('').draw();
         }
     </script>
 
