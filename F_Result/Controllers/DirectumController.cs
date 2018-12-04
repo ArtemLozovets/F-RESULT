@@ -452,9 +452,10 @@ namespace F_Result.Controllers
                 ViewData["Status"] = Status;
             }
 
-            //--Получаем список возможных статусов платежей-------
+            //--Получаем список возможных статусов платежей для панели фильтров-------
             List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().ToList();
             var jsonSerialiser = new JavaScriptSerializer();
+            ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
 
             return View();
@@ -468,8 +469,6 @@ namespace F_Result.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-                //--Получаем список возможных статусов платежей-------
-                List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().ToList();
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанного сотрудника для пользователя в роли "Руководитель проекта"
 
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
@@ -623,7 +622,6 @@ namespace F_Result.Controllers
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     data = data,
-                    statuslist = StatusList,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
 

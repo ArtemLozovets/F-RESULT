@@ -53,6 +53,8 @@
         </div>
     </div>
 
+    @Html.Hidden("StatusList")
+
     @* Панель фильтров --------------------------------- *@
     <div class="panel-group" style="width:100%; min-width:680px; margin: 0 auto 10px !important;">
         <div class="panel panel-default">
@@ -324,15 +326,6 @@
                         var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
-                        //Заполнение значений выпадающего списка статусов платежа в панели фильтров
-                        if ($('#stateDDL').attr('data-firstCall') !== 'true') {
-                            $('#stateDDL').attr('data-firstCall', true);
-                            $('#stateDDL').find('option').remove().end().append('<option value="All">Все платежи</option>').val('All');
-                            $.each(json.statuslist, function (text, text) {
-                                $('#stateDDL').append($('<option></option>').val(text).html(text))
-                            });
-                        }
-
                         //Инициализация таблицы проектов в плавающей панели---------
                         if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
@@ -458,6 +451,14 @@
     </script>
 
     <script>
+        $(function () {
+            //Заполняем выпадающий список статусов платежей
+            var statusArray = JSON.parse($('#StatusList').val());
+            $.each(statusArray, function (text, text) {
+                $('#stateDDL').append($('<option></option>').val(text).html(text))
+            });
+        });
+
         //Скрипт для работы с панелью фильтров
         $('body').on('click', '#searchBtn', function () {
             var _state = $('#stateDDL').val()
