@@ -481,10 +481,14 @@ namespace F_Result.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int totalRecords = 0;
 
+                string _projectName = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _organization = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
+                string _counteragent = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
+                string _documentDescr = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startpaymentdate = null;
                 DateTime? _endpaymentdate = null;
-                string _paymentdatetext = Request.Form.GetValues("columns[0][search][value]").FirstOrDefault().ToString();
+                string _paymentdatetext = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 if (!string.IsNullOrEmpty(_paymentdatetext))
                 {
                     _paymentdatetext = _paymentdatetext.Trim();
@@ -495,19 +499,12 @@ namespace F_Result.Controllers
                     _endpaymentdate = DateTime.Parse(_endpaymenttext).AddHours(23).AddMinutes(59).AddSeconds(59); //Для согласования с данными даты/времени платежа в Directum
                 }
                 //--------------------------
-
-                string _worker = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault().ToString();
-                string _counteragent = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault().ToString();
-                string _organization = Request.Form.GetValues("columns[3][search][value]").FirstOrDefault().ToString();
-                string _projectName = Request.Form.GetValues("columns[4][search][value]").FirstOrDefault().ToString();
                 string _paymenttxt = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                string _expenditureId = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
-                string _documentDescr = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
 
                 // Парсинг диапазона дат из DateRangePicker
                 DateTime? _startdocdate = null;
                 DateTime? _enddocdate = null;
-                string _docDateText = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                string _docDateText = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 if (!string.IsNullOrEmpty(_docDateText))
                 {
                     _docDateText = _docDateText.Trim();
@@ -519,25 +516,27 @@ namespace F_Result.Controllers
                 }
                 //--------------------------
 
-                string _docNum = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
-                string _contract = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
-                string _state = Request.Form.GetValues("columns[11][search][value]").FirstOrDefault().ToString();
+                string _docNum = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
+                string _contract = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
+                string _state = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
+                string _expenditureId = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[11][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF1
                                  join prg in db.Projects on payment.ProjectId equals prg.id
                                  where ((string.IsNullOrEmpty(_paymentdatetext) || payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate) //Диапазон дат
                                           && (string.IsNullOrEmpty(_status) || payment.StageName == _status)
-                                          && (string.IsNullOrEmpty(_worker) || payment.WorkerName.Contains(_worker))
                                           && (string.IsNullOrEmpty(_counteragent) || payment.Counteragent.Contains(_counteragent))
                                           && (string.IsNullOrEmpty(_organization) || payment.Organization.Contains(_organization))
                                           && (string.IsNullOrEmpty(_projectName) || payment.ProjectName.Contains(_projectName))
-                                          && (string.IsNullOrEmpty(_expenditureId) || payment.ExpenditureId.Contains(_expenditureId))
                                           && (string.IsNullOrEmpty(_documentDescr) || payment.DocumentDescr.Contains(_documentDescr))
                                           // Панель фильтров ------------
                                           && (string.IsNullOrEmpty(_docDateText) || payment.DocumentDate >= _startdocdate && payment.DocumentDate <= _enddocdate) //Диапазон дат документа
                                           && (string.IsNullOrEmpty(_docNum) || payment.DocumentNumber == _docNum)
                                           && (string.IsNullOrEmpty(_contract) || payment.ContractDescr == _contract)
                                           && (string.IsNullOrEmpty(_state) || payment.StageName == _state)
+                                          && (string.IsNullOrEmpty(_expenditureId) || payment.ExpenditureId.Contains(_expenditureId))
+                                          && (string.IsNullOrEmpty(_worker) || payment.WorkerName.Contains(_worker))
                                           //-------------------
                                           && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))//Фильтрация записей по проектам для руководителей проектов                                          
                                  )

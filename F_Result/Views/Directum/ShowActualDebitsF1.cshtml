@@ -97,14 +97,14 @@
     <table class="table table table-bordered table-striped table-responsive table-hover gridtable" id="gridtable" style="width:100%">
         <thead>
             <tr role="row" id="search-row" style="background-color:#ddddff">
-                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата платежа" value="@ViewData["Period"]" id="dateFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb wkFlt" style="width: 100%" placeholder="Сотрудник" /></th>
-                <th><input type="text" class="form-control input-sm sb cntFlt" style="width: 100%" placeholder="Контрагент" /></th>
-                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
                 <th><input type="text" class="form-control input-sm sb prgFlt" style="width: 100%" placeholder="Проект" value="@ViewData["ProjectName"]" id="prjFlt" /></th>
-                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
-                <th><input type="text" class="form-control input-sm sb catFlt" style="width: 100%" placeholder="Статья" /></th>
+                <th><input type="text" class="form-control input-sm sb orgFlt" style="width: 100%" placeholder="Организация" /></th>
+                <th><input type="text" class="form-control input-sm sb cntFlt" style="width: 100%" placeholder="Контрагент" /></th>
                 <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Примечание" /></th>
+                <th><input type="text" class="form-control input-sm dff dateFlt" readonly style="width: 100%" placeholder="Дата платежа" value="@ViewData["Period"]" id="dateFlt" /></th>
+                <th><input type="text" class="form-control input-sm sb" style="width: 100%" placeholder="Сумма" /></th>
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -112,14 +112,14 @@
             </tr>
 
             <tr role="row">
-                <th>Дата платежа</th>
-                <th>Сотрудник</th>
-                <th>Контрагент</th>
-                <th>Организация</th>
                 <th>Проект</th>
-                <th>Сумма</th>
-                <th>Статья</th>
+                <th>Организация</th>
+                <th>Контрагент</th>
                 <th>Примечание</th>
+                <th>Дата платежа</th>
+                <th>Сумма</th>
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -223,10 +223,6 @@
                                 $('.dateFlt').val(dateStr).trigger('change');
                                 break;
                             };
-                            if (fClass.indexOf("wkCellf") >= 0) {
-                                $('.wkFlt').val($(this).text()).trigger('change');
-                                break;
-                            };
                             if (fClass.indexOf("cntCellf") >= 0) {
                                 $('.cntFlt').val($(this).text()).trigger('change');
                                 break;
@@ -306,179 +302,189 @@
                 }
             });
 
-        $('body').on('keyup change', '.fCnt', function () {
-            var table = $('#gridtable').DataTable();
-            table.draw();
-        });
+            $('body').on('keyup change', '.fCnt', function () {
+                var table = $('#gridtable').DataTable();
+                table.draw();
+            });
 
-        //Сброс значений фильтров при сворачивании панели
-        $('#filterPanel').on('hidden.bs.collapse', function (e) {
-            filterPanelClear();
-        })
-
-        function filterPanelClear() {
-            //Сброс значений фильтров панели фильтрации
-            $('#docDateFlt').val('');
-            $('#docNumFlt').val('');
-            $('#contractFlt').val('');
-            $('#stateDDL').val('Paid');
-            ClearFilter();
-        }
-        // -END Filter Panel -------------------------------------------------------
-
-        //Скрипт создания таблицы --------------------------------------------------
-        var table = $('#gridtable')
-            .on('preXhr.dt', function (e, settings, data) {
-                data.columns[0].search.value = $('#dateFlt').val();
-                data.columns[4].search.value = $('#prjFlt').val();
-                data.columns[8].search.value = $('#docDateFlt').val();
-                data.columns[9].search.value = $('#docNumFlt').val();
-                data.columns[10].search.value = $('#contractFlt').val();
-                data.columns[11].search.value = function () {
-                    var _state = $('#stateDDL').val()
-                    _state = _state === 'All' ? '' : _state;
-                    return _state;
-                };
+            //Сброс значений фильтров при сворачивании панели
+            $('#filterPanel').on('hidden.bs.collapse', function (e) {
+                filterPanelClear();
             })
-            .DataTable({
-                fixedHeader: {
-                    "header": true,
-                    "headerOffset": $('#mainNavbar').height()
-                },
-                processing: true,
-                serverSide: true,
-                filter: true,
-                orderMulti: true,
-                responsive: false,
-                pageLength: 25, // Количество записей в таблице по умолчанию
-                pagingType: "simple_numbers",
-                dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#sumSpan.col-sm-6'B>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                language: {
-                    "lengthMenu": "Записей: _MENU_",
-                    "zeroRecords": "Записи отсутствуют",
-                    "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
-                    "infoEmpty": "Записи отсутствуют",
-                    "infoFiltered": "(Отфильтровано из _MAX_ записей)",
-                    "search": "Поиск",
-                    "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
-                    "sInfoThousands": " ",
-                    "oPaginate": {
-                        "sNext": ">",
-                        "sPrevious": "<"
-                    }
-                },
-                fnDrawCallback: function (settings) {
-                    //Используем эту функцию для обновления внешних елементов.
-                    //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
-                    var api = this.api();
-                    var json = api.ajax.json();
-                    var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                    $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
-                    //Инициализация таблицы проектов в плавающей панели---------
-                    if (window._flag) {
-                        //Заполнение массива проектов для таблицы в плавающей панели
-                        _prjIDs = JSON.parse(json.prjlist)
-                        var pTable = $('#prgtable').DataTable();
-                        pTable.destroy();
-                        prgTableCrate();
-                        $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
-                        window._flag = false;
+            function filterPanelClear() {
+                //Сброс значений фильтров панели фильтрации
+                $('#docDateFlt').val('');
+                $('#docNumFlt').val('');
+                $('#contractFlt').val('');
+                $('#stateDDL').val('Paid');
+                ClearFilter();
+            }
+            // -END Filter Panel -------------------------------------------------------
+
+            //Скрипт создания таблицы --------------------------------------------------
+            var table = $('#gridtable')
+                .on('preXhr.dt', function (e, settings, data) {
+                    data.columns[0].search.value = $('#prjFlt').val();
+                    data.columns[4].search.value = $('#dateFlt').val();
+                    data.columns[6].search.value = $('#docDateFlt').val();
+                    data.columns[7].search.value = $('#docNumFlt').val();
+                    data.columns[8].search.value = $('#contractFlt').val();
+                    data.columns[9].search.value = function () {
+                        var _state = $('#stateDDL').val()
+                        _state = _state === 'All' ? '' : _state;
+                        return _state;
                     };
-                },
-                ajax: {
-                    url: "/Directum/LoadActualDebitsF1",
-                    type: "POST",
-                    datatype: "json",
-                    data: function (d) {
-                        d.filterPrjIDs = window.filterPrjIDs;
-                        d._status = $("#Status").val();
+                })
+                .DataTable({
+                    fixedHeader: {
+                        "header": true,
+                        "headerOffset": $('#mainNavbar').height()
                     },
-                    dataSrc: function (d) {
-                        if (d.data.length === 0) {
-                            if (d.errormessage != "") {
-                                alert(d.errormessage);
-                            }
+                    processing: true,
+                    serverSide: true,
+                    filter: true,
+                    orderMulti: true,
+                    responsive: false,
+                    pageLength: 25, // Количество записей в таблице по умолчанию
+                    pagingType: "simple_numbers",
+                    dom: "<'row'<'col-sm-3'l><'col-sm-3 text-right'B><'#sumSpan.col-sm-6'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    language: {
+                        "lengthMenu": "Записей: _MENU_",
+                        "zeroRecords": "Записи отсутствуют",
+                        "info": "Страница _PAGE_ из _PAGES_. Записи _START_ - _END_ из _TOTAL_",
+                        "infoEmpty": "Записи отсутствуют",
+                        "infoFiltered": "(Отфильтровано из _MAX_ записей)",
+                        "search": "Поиск",
+                        "processing": "<div id='loadingImg'><div id='preloadImg'><img src='../Content/Images/loader.gif' /></div></div>",
+                        "sInfoThousands": " ",
+                        "oPaginate": {
+                            "sNext": ">",
+                            "sPrevious": "<"
                         }
-                        return d.data;
-                    }
-                },
-                columnDefs: [
-                   {
-                       "targets": [8],
-                       "visible": false,
-                       "searchable": true
-                   },
-                   {
-                       "targets": [9],
-                       "visible": false,
-                       "searchable": true
-                   },
-                   {
-                       "targets": [10],
-                       "visible": false,
-                       "searchable": true
-                   },
-                   {
-                       "targets": [11],
-                       "visible": false,
-                       "searchable": true
-                   }
-                ],
-                columns: [
-                    {
-                        "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
-                        "render": function (value) {
-                            return formatDate(value);
-                        },
-                        "class": "dateCellf context-menu-one haveTitle"
                     },
-                    { "data": "WorkerName", "name": "WorkerName", "autoWidth": true, "class": "context-menu-one wkCellf" },
-                    { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one cntCellf" },
-                    { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one orgCellf" },
-                    { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf" },
-                    { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
-                    { "data": "ExpenditureId", "name": "ExpenditureId", "autoWidth": true, "class": "context-menu-one catCellf" },
-                    { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
-                    { "data": "DocumentDate", "name": "DocumentDate" },
-                    { "data": "DocumentNumber", "name": "DocumentNumber" },
-                    { "data": "ContractDescr", "name": "ContractDescr" },
-                    { "data": "StageName", "name": "StageName" }
-                ],
-                createdRow: function (row, data, rowIndex) {
-                    var _docNum = data.DocumentNumber;
-                    var _docDate = formatDate(data.DocumentDate);
-                    var _org = data.Organization;
-                    var _contract = '';
-                    if (data.ContractDescr !== null) {
-                        _contract = data.ContractDescr;
-                    }
-                    var _status = data.StageName;
-                    var _IPA = 'Платежи отсутствуют';
+                    fnDrawCallback: function (settings) {
+                        //Используем эту функцию для обновления внешних елементов.
+                        //Использование "dataSrc" давало ошибки при частом обновлении таблицы в процессе фильтрации.
+                        var api = this.api();
+                        var json = api.ajax.json();
+                        var _fSum = json.fsum.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
+                        $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
-                    if (data.IPA !== null) {
-                        _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
-                    }
-                    var prgTitleStr = 'Индекс активности: ' + _IPA;
-                    prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate;
-                    prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатус: ' + _status;
+                        //Инициализация таблицы проектов в плавающей панели---------
+                        if (window._flag) {
+                            //Заполнение массива проектов для таблицы в плавающей панели
+                            _prjIDs = JSON.parse(json.prjlist)
+                            var pTable = $('#prgtable').DataTable();
+                            pTable.destroy();
+                            prgTableCrate();
+                            $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
+                            window._flag = false;
+                        };
+                    },
+                    ajax: {
+                        url: "/Directum/LoadActualDebitsF1",
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.filterPrjIDs = window.filterPrjIDs;
+                            d._status = $("#Status").val();
+                        },
+                        dataSrc: function (d) {
+                            if (d.data.length === 0) {
+                                if (d.errormessage != "") {
+                                    alert(d.errormessage);
+                                }
+                            }
+                            return d.data;
+                        }
+                    },
+                    columnDefs: [
+                       {
+                           "targets": [6],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [7],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [8],
+                           "visible": false,
+                           "searchable": true
+                       },
+                       {
+                           "targets": [9],
+                           "visible": false,
+                           "searchable": true
+                       },
+                        {
+                            "targets": [10],
+                            "visible": false,
+                            "searchable": true
+                        },
+                        {
+                            "targets": [11],
+                            "visible": false,
+                            "searchable": true
+                        }
+                    ],
+                    columns: [
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf" },
+                        { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one orgCellf" },
+                        { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one cntCellf" },
+                        { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
+                        {
+                            "data": "PaymentDate", "name": "PaymentDate", "autoWidth": true, "type": "date ",
+                            "render": function (value) {
+                                return formatDate(value);
+                            },
+                            "class": "dateCellf context-menu-one haveTitle"
+                        },
+                        { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
+                        { "data": "DocumentDate", "name": "DocumentDate" },
+                        { "data": "DocumentNumber", "name": "DocumentNumber" },
+                        { "data": "ContractDescr", "name": "ContractDescr" },
+                        { "data": "StageName", "name": "StageName" },
+                        { "data": "ExpenditureId", "name": "ExpenditureId" },
+                        { "data": "WorkerName", "name": "WorkerName" }
+                    ],
+                    createdRow: function (row, data, rowIndex) {
+                        var _docNum = data.DocumentNumber;
+                        var _docDate = formatDate(data.DocumentDate);
+                        var _org = data.Organization;
+                        var _contract = '';
+                        if (data.ContractDescr !== null) {
+                            _contract = data.ContractDescr;
+                        }
+                        var _status = data.StageName;
+                        var _IPA = 'Платежи отсутствуют';
 
-                    $('.dateCellf', $(row)).attr('title', prgTitleStr);
-                },
-                order: [[0, "desc"]]
+                        if (data.IPA !== null) {
+                            _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
+                        }
+                        var prgTitleStr = 'Индекс активности: ' + _IPA;
+                        prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate;
+                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатус: ' + _status;
+
+                        $('.dateCellf', $(row)).attr('title', prgTitleStr);
+                    },
+                    order: [[4, "desc"]]
+                });
+
+            table.columns().eq(0).each(function (colIdx) {
+                $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
+
+                $('.dff', $('th')[colIdx]).on('change', function () {
+                    table.column(colIdx).search(this.value).draw();
+                });
             });
-
-        table.columns().eq(0).each(function (colIdx) {
-            $('.sb', $('th')[colIdx]).on('keyup change', function () {
-                table.column(colIdx).search(this.value).draw();
-            });
-
-            $('.dff', $('th')[colIdx]).on('change', function () {
-                table.column(colIdx).search(this.value).draw();
-            });
-        });
 
         });
 
