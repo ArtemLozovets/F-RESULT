@@ -160,6 +160,8 @@ namespace F_Result.Models
         [NotMapped]
         public DateTime? IPA { get; set; }
 
+        public string ProjectManager { get; set; }
+
     }
 
 }

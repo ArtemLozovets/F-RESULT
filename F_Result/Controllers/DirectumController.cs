@@ -453,7 +453,7 @@ namespace F_Result.Controllers
             }
 
             //--Получаем список возможных статусов платежей для панели фильтров-------
-            List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().ToList();
+            List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().OrderBy(x=>x).ToList();
             var jsonSerialiser = new JavaScriptSerializer();
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
@@ -519,8 +519,8 @@ namespace F_Result.Controllers
                 string _docNum = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 string _contract = Request.Form.GetValues("columns[8][search][value]").FirstOrDefault().ToString();
                 string _state = Request.Form.GetValues("columns[9][search][value]").FirstOrDefault().ToString();
-                string _expenditureId = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
-                string _worker = Request.Form.GetValues("columns[11][search][value]").FirstOrDefault().ToString();
+                string _worker = Request.Form.GetValues("columns[10][search][value]").FirstOrDefault().ToString();
+                string _prjmanager = Request.Form.GetValues("columns[11][search][value]").FirstOrDefault().ToString();
 
                 var _payments = (from payment in db.ActualDebitsF1
                                  join prg in db.Projects on payment.ProjectId equals prg.id
@@ -535,8 +535,8 @@ namespace F_Result.Controllers
                                           && (string.IsNullOrEmpty(_docNum) || payment.DocumentNumber == _docNum)
                                           && (string.IsNullOrEmpty(_contract) || payment.ContractDescr == _contract)
                                           && (string.IsNullOrEmpty(_state) || payment.StageName == _state)
-                                          && (string.IsNullOrEmpty(_expenditureId) || payment.ExpenditureId.Contains(_expenditureId))
                                           && (string.IsNullOrEmpty(_worker) || payment.WorkerName.Contains(_worker))
+                                          && (string.IsNullOrEmpty(_prjmanager) || prg.ChiefName.Contains(_prjmanager))
                                           //-------------------
                                           && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))//Фильтрация записей по проектам для руководителей проектов                                          
                                  )
@@ -558,6 +558,7 @@ namespace F_Result.Controllers
                                      ExpenditureId = payment.ExpenditureId,
                                      StageName = payment.StageName,
                                      DocumentDescr = payment.DocumentDescr,
+                                     ProjectManager = prg.ChiefName
                                  }).AsEnumerable().Select(x => new ActualDebitsF1
                                  {
                                      id = x.id,
@@ -576,6 +577,7 @@ namespace F_Result.Controllers
                                      ExpenditureId = x.ExpenditureId,
                                      StageName = x.StageName,
                                      DocumentDescr = x.DocumentDescr,
+                                     ProjectManager = x.ProjectManager
                                  }).ToList();
 
                 _payments = _payments.Where(x => (x.ItemSum.Value.ToString().Contains(_paymenttxt))

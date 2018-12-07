@@ -65,19 +65,29 @@
             </div>
             <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body contextMenuFlt">
-                    <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
-                        <input type="text" id="docDateFlt" class="form-control input-sm dffFlt" readonly placeholder="Дата документа" title="Дата документа" />
+                    <div class="row">
+                        <div class="col-sm-3 form-inline text-left fCnt" style="margin:6px 0 0; ">
+                            <input type="text" style="min-width:16em; width:16em; text-align:center;" id="docDateFlt" class="form-control input-sm dffFlt" readonly placeholder="Дата документа" title="Дата документа" />
+                        </div>
+                        <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
+                            <input type="text" id="docNumFlt" class="form-control input-sm" style="width: 100%" placeholder="Номер документа" title="Номер документа (строгое соответствие)" />
+                        </div>
+                        <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
+                            <input type="text" id="contractFlt" class="form-control input-sm" style="width: 100%" placeholder="Договор" title="Номер договора (строгое соответствие)" />
+                        </div>
+                        <div class="col-sm-3 form-inline text-right fCnt" style="margin:6px 0 0; ">
+                            <select name="stateDDL" id="stateDDL" class="form-control input-sm" title="Статус платежа">
+                                <option value="All" selected="selected">Все платежи</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
-                        <input type="text" id="docNumFlt" class="form-control input-sm" style="width: 100%" placeholder="Номер документа" title="Номер документа (строгое соответствие)" />
-                    </div>
-                    <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
-                        <input type="text" id="contractFlt" class="form-control input-sm" style="width: 100%" placeholder="Договор" title="Номер договора (строгое соответствие)" />
-                    </div>
-                    <div class="col-sm-3 form-inline text-center fCnt" style="margin:6px 0 0; ">
-                        <select name="stateDDL" id="stateDDL" class="form-control input-sm" title="Статус платежа">
-                            <option value="All" selected="selected">Все платежи</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-sm-6 form-inline text-center fCnt" style="margin:6px 0 0; ">
+                            <input type="text" id="wrkFlt" class="form-control input-sm" style="width: 100%" placeholder="Сотрудник" title="ФИО сотрудника (любое вхождение)" />
+                        </div>
+                        <div class="col-sm-6 form-inline text-center fCnt" style="margin:6px 0 0; ">
+                            <input type="text" id="pmFlt" class="form-control input-sm" style="width: 100%" placeholder="Руководитель проекта" title="ФИО руководителя проекта (любое вхождение)" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -318,6 +328,8 @@
                 $('#docNumFlt').val('');
                 $('#contractFlt').val('');
                 $('#stateDDL').val('Paid');
+                $('#wrkFlt').val('');
+                $('#pmFlt').val('');
                 ClearFilter();
             }
             // -END Filter Panel -------------------------------------------------------
@@ -335,6 +347,8 @@
                         _state = _state === 'All' ? '' : _state;
                         return _state;
                     };
+                    data.columns[10].search.value = $('#wrkFlt').val();
+                    data.columns[11].search.value = $('#pmFlt').val();
                 })
                 .DataTable({
                     fixedHeader: {
@@ -402,39 +416,15 @@
                         }
                     },
                     columnDefs: [
-                       {
-                           "targets": [6],
-                           "visible": false,
-                           "searchable": true
-                       },
-                       {
-                           "targets": [7],
-                           "visible": false,
-                           "searchable": true
-                       },
-                       {
-                           "targets": [8],
-                           "visible": false,
-                           "searchable": true
-                       },
-                       {
-                           "targets": [9],
-                           "visible": false,
-                           "searchable": true
-                       },
-                        {
-                            "targets": [10],
-                            "visible": false,
-                            "searchable": true
-                        },
-                        {
-                            "targets": [11],
-                            "visible": false,
-                            "searchable": true
-                        }
+                       { "targets": [6], "visible": false, "searchable": true },
+                       { "targets": [7], "visible": false, "searchable": true },
+                       { "targets": [8], "visible": false, "searchable": true },
+                       { "targets": [9], "visible": false, "searchable": true },
+                       { "targets": [10], "visible": false, "searchable": true },
+                       { "targets": [11], "visible": false, "searchable": true }
                     ],
                     columns: [
-                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf" },
+                        { "data": "ProjectName", "name": "ProjectName", "autoWidth": true, "class": "context-menu-one prgCellf haveTitle" },
                         { "data": "Organization", "name": "Organization", "autoWidth": true, "class": "context-menu-one orgCellf" },
                         { "data": "Counteragent", "name": "Counteragent", "autoWidth": true, "class": "context-menu-one cntCellf" },
                         { "data": "DocumentDescr", "name": "DocumentDescr", "autoWidth": true, "class": "context-menu-one" },
@@ -443,35 +433,38 @@
                             "render": function (value) {
                                 return formatDate(value);
                             },
-                            "class": "dateCellf context-menu-one haveTitle"
+                            "class": "dateCellf context-menu-one"
                         },
                         { "data": "ItemSum", "name": "ItemSum", "autoWidth": true, render: $.fn.dataTable.render.number('&nbsp;', ',', 2), "class": "text-right context-menu-one" },
                         { "data": "DocumentDate", "name": "DocumentDate" },
                         { "data": "DocumentNumber", "name": "DocumentNumber" },
                         { "data": "ContractDescr", "name": "ContractDescr" },
                         { "data": "StageName", "name": "StageName" },
-                        { "data": "ExpenditureId", "name": "ExpenditureId" },
-                        { "data": "WorkerName", "name": "WorkerName" }
+                        { "data": "WorkerName", "name": "WorkerName" },
+                        { "data": "ProjectManager", "name": "ProjectManager" }
                     ],
                     createdRow: function (row, data, rowIndex) {
                         var _docNum = data.DocumentNumber;
                         var _docDate = formatDate(data.DocumentDate);
                         var _org = data.Organization;
                         var _contract = '';
+                        var _expId = data.ExpenditureId;
                         if (data.ContractDescr !== null) {
                             _contract = data.ContractDescr;
                         }
                         var _status = data.StageName;
+                        var _wrk = data.WorkerName;
+                        var _prjmanager = data.ProjectManager;
                         var _IPA = 'Платежи отсутствуют';
 
                         if (data.IPA !== null) {
                             _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');
                         }
                         var prgTitleStr = 'Индекс активности: ' + _IPA;
-                        prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate;
-                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатус: ' + _status;
+                        prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate + '\r\nСотрудник: ' + _wrk + '\r\nРуководитель проекта: ' + _prjmanager;
+                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатья: ' + _expId + '\r\nСтатус: ' + _status;
 
-                        $('.dateCellf', $(row)).attr('title', prgTitleStr);
+                        $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
                     order: [[4, "desc"]]
                 });
