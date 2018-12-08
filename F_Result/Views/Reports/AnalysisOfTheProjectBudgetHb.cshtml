@@ -55,16 +55,24 @@
             <label for="isAllPeriod" class="control-label">За весь период</label>
             @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
 
-            <input type="text" style="width:10em;text-align:center; margin:0 0.4em;"
-                   id="startDate" placeholder="Базовая дата"
-                   title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+            <div class="input-group" style="max-width:10em;">
+                <span class="input-group-btn">
+                    <button id="prevRepNav" class="btn btn-primary btn-sm repNavBtn" type="button" title="Предыдущий отчетный период"><</button>
+                </span>
+                <input type="text" style="width:10em;text-align:center; margin:0;"
+                       id="startDate" placeholder="Базовая дата"
+                       title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+                <span class="input-group-btn">
+                    <button id="nextRepNav" class="btn btn-primary btn-sm repNavBtn" type="button" title="Следующий отчетный период">></button>
+                </span>
+            </div>
 
             @Html.DropDownList("BudgetPeriodDDL", (SelectList)ViewData["periodItems"], null, new
        {
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-bottom:-1px; margin-right:1.3em; width:16em;"
+           style = "display:inline-block; margin-bottom:0; margin-right:1.3em; width:16em;"
        })
 
         </div>
@@ -207,7 +215,7 @@
 
                             if (fClass.indexOf("dfExp") >= 0) {
 
-                                if($('#isAllTimes').is(':checked')){
+                                if ($('#isAllTimes').is(':checked')) {
                                     var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_", Status = "_status_"})';
                                     url = url.replace('_prj_', prj).replace('_status_', 'Paid').replace(/amp;/g, '');
                                     window.open(url, '_blank');
@@ -296,6 +304,50 @@
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             globalVarsClear();
+        });
+
+        //Обработчик нажатия навигационных кнопок измененеия отчетного периода
+        $('.repNavBtn').on('click', function () {
+            var _stDate = moment($('#startDate').val(), 'DD/MM/YYYY').toDate();
+            var _period = $('#BudgetPeriodDDL option:selected').text();
+            switch (_period) {
+                case 'Неделя':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-7, 'days').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(7, 'days').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Месяц':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-1, 'months').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(1, 'months').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Квартал':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-3, 'months').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(3, 'months').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Год':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-1, 'year').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(1, 'year').format('DD/MM/YYYY');
+                    }
+                    break;
+                default:
+                    break;
+            }
+            $('#startDate').val(_stDate).trigger('change');
+
         });
 
         //Обработчик изменения состояния элемента "За весь период"

@@ -198,78 +198,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Methods\UsrWksMethods.cs" />
-    <Compile Include="Migrations\201706061834352_InitialMigration.cs" />
-    <Compile Include="Migrations\201706061834352_InitialMigration.Designer.cs">
-      <DependentUpon>201706061834352_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706241550073_prec.cs" />
-    <Compile Include="Migrations\201706241550073_prec.Designer.cs">
-      <DependentUpon>201706241550073_prec.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709031901324_AddChief.cs" />
-    <Compile Include="Migrations\201709031901324_AddChief.Designer.cs">
-      <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709101928333_Soder.cs" />
-    <Compile Include="Migrations\201709101928333_Soder.Designer.cs">
-      <DependentUpon>201709101928333_Soder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804211812286_ProjectsChange.cs" />
-    <Compile Include="Migrations\201804211812286_ProjectsChange.Designer.cs">
-      <DependentUpon>201804211812286_ProjectsChange.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201806040811360_ProjectsChange1.cs" />
-    <Compile Include="Migrations\201806040811360_ProjectsChange1.Designer.cs">
-      <DependentUpon>201806040811360_ProjectsChange1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201806131336369_ProjectsChange2.cs" />
-    <Compile Include="Migrations\201806131336369_ProjectsChange2.Designer.cs">
-      <DependentUpon>201806131336369_ProjectsChange2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807071639161_ProjectsChange3.cs" />
-    <Compile Include="Migrations\201807071639161_ProjectsChange3.Designer.cs">
-      <DependentUpon>201807071639161_ProjectsChange3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807071801339_ProjectsChange4.cs" />
-    <Compile Include="Migrations\201807071801339_ProjectsChange4.Designer.cs">
-      <DependentUpon>201807071801339_ProjectsChange4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807071804159_ProjectsChange5.cs" />
-    <Compile Include="Migrations\201807071804159_ProjectsChange5.Designer.cs">
-      <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807081704409_ProjectsChange6.cs" />
-    <Compile Include="Migrations\201807081704409_ProjectsChange6.Designer.cs">
-      <DependentUpon>201807081704409_ProjectsChange6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807241713172_ProjectsChange7.cs" />
-    <Compile Include="Migrations\201807241713172_ProjectsChange7.Designer.cs">
-      <DependentUpon>201807241713172_ProjectsChange7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807261019314_ProjectsChange8.cs" />
-    <Compile Include="Migrations\201807261019314_ProjectsChange8.Designer.cs">
-      <DependentUpon>201807261019314_ProjectsChange8.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807261024068_ProjectsChange9.cs" />
-    <Compile Include="Migrations\201807261024068_ProjectsChange9.Designer.cs">
-      <DependentUpon>201807261024068_ProjectsChange9.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807261218154_ProjectsChange10.cs" />
-    <Compile Include="Migrations\201807261218154_ProjectsChange10.Designer.cs">
-      <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201808270804236_ProjectsChange11.cs" />
-    <Compile Include="Migrations\201808270804236_ProjectsChange11.Designer.cs">
-      <DependentUpon>201808270804236_ProjectsChange11.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201808271202228_ProjectsChange12.cs" />
-    <Compile Include="Migrations\201808271202228_ProjectsChange12.Designer.cs">
-      <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201810151629523_ProjectsChange13.cs" />
-    <Compile Include="Migrations\201810151629523_ProjectsChange13.Designer.cs">
-      <DependentUpon>201810151629523_ProjectsChange13.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201812072010427_ProjectsChange14.cs" />
     <Compile Include="Migrations\201812072010427_ProjectsChange14.Designer.cs">
       <DependentUpon>201812072010427_ProjectsChange14.cs</DependentUpon>
@@ -797,60 +725,6 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201706061834352_InitialMigration.resx">
-      <DependentUpon>201706061834352_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706241550073_prec.resx">
-      <DependentUpon>201706241550073_prec.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709031901324_AddChief.resx">
-      <DependentUpon>201709031901324_AddChief.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709101928333_Soder.resx">
-      <DependentUpon>201709101928333_Soder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804211812286_ProjectsChange.resx">
-      <DependentUpon>201804211812286_ProjectsChange.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201806040811360_ProjectsChange1.resx">
-      <DependentUpon>201806040811360_ProjectsChange1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201806131336369_ProjectsChange2.resx">
-      <DependentUpon>201806131336369_ProjectsChange2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807071639161_ProjectsChange3.resx">
-      <DependentUpon>201807071639161_ProjectsChange3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807071801339_ProjectsChange4.resx">
-      <DependentUpon>201807071801339_ProjectsChange4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807071804159_ProjectsChange5.resx">
-      <DependentUpon>201807071804159_ProjectsChange5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807081704409_ProjectsChange6.resx">
-      <DependentUpon>201807081704409_ProjectsChange6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807241713172_ProjectsChange7.resx">
-      <DependentUpon>201807241713172_ProjectsChange7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807261019314_ProjectsChange8.resx">
-      <DependentUpon>201807261019314_ProjectsChange8.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807261024068_ProjectsChange9.resx">
-      <DependentUpon>201807261024068_ProjectsChange9.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807261218154_ProjectsChange10.resx">
-      <DependentUpon>201807261218154_ProjectsChange10.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201808270804236_ProjectsChange11.resx">
-      <DependentUpon>201808270804236_ProjectsChange11.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201808271202228_ProjectsChange12.resx">
-      <DependentUpon>201808271202228_ProjectsChange12.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201810151629523_ProjectsChange13.resx">
-      <DependentUpon>201810151629523_ProjectsChange13.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201812072010427_ProjectsChange14.resx">
       <DependentUpon>201812072010427_ProjectsChange14.cs</DependentUpon>
     </EmbeddedResource>
