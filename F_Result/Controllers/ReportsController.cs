@@ -15,6 +15,7 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
+        #region ======================================Отчет "Анализ платежей"======================================
         // GET: Reports
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult AnalysisOfPayments()
@@ -70,20 +71,40 @@ namespace F_Result.Controllers
                 else _insum.Add(0);
             }
 
+            var RDate = new DateTime(2018, 09, 1); //Дата для построения гибридного отчета.
             // График исходящих платежей -------------------------------------------
-            var _outPayments = (from outpay in db.ActualDebit
-                                join prg in db.Projects on outpay.ProjectId equals prg.id
-                                join ipa in db.ActivityIndexes on outpay.ProjectId equals ipa.ProjectId into ipatmp
-                                from ipa in ipatmp.DefaultIfEmpty()
-                                where (outpay.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(outpay.ProjectId))
-                                select new
-                                {
-                                    Date = outpay.Date,
-                                    Sum = outpay.Sum,
-                                    ProjectId = prg.id,
-                                    Project = prg.ShortName,
-                                    IPA = ipa.IPAValue
-                                }).ToList();
+            var _outPaymentsOld = (from outpay in db.ActualDebit
+                                   join prg in db.Projects on outpay.ProjectId equals prg.id
+                                   where (outpay.Date.Year == Year)
+                                           && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(outpay.ProjectId))
+                                           && (outpay.Date < RDate)
+                                   select new
+                                   {
+                                       Date = outpay.Date,
+                                       Sum = outpay.Sum,
+                                       ProjectId = prg.id,
+                                       Project = prg.ShortName,
+                                       IPA = prg.IPA
+                                   });
+
+            var _outPaymentsNew = (from outpay in db.ActualDebitsF1
+                                   join prg in db.Projects on outpay.ProjectId equals prg.id
+                                   where ((outpay.PaymentDate != null) && ((outpay.PaymentDate ?? RDate).Year == Year))
+                                            && (outpay.ProjectId != null)
+                                            && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(outpay.ProjectId ?? 0))
+                                            && (outpay.PaymentDate >= RDate)
+                                            && (outpay.StageName == "Paid")
+                                   select new
+                                   {
+                                       Date = outpay.PaymentDate??RDate,
+                                       Sum = outpay.ItemSum??0,
+                                       ProjectId = prg.id,
+                                       Project = prg.ShortName,
+                                       IPA = prg.IPA
+                                   });
+
+            var _outPayments = _outPaymentsOld.Union(_outPaymentsNew).ToList();
+
 
             var _outpaylist = (from t in _outPayments
                                group t by new { t.Date.Year, t.Date.Month } into g
@@ -156,7 +177,9 @@ namespace F_Result.Controllers
             }, JsonRequestBehavior.AllowGet);
 
         }
+        #endregion
 
+        #region ======================================Отчет "Анализ плановых показателей"============================================
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
         public ActionResult AnalysisOfPlanPayments()
         {
@@ -299,7 +322,7 @@ namespace F_Result.Controllers
                 prjlist = _prjListJson
             }, JsonRequestBehavior.AllowGet);
         }
-
+        #endregion
 
         #region ==============================Старые отчеты "Бюджетирование" и "Анализ прибыльности проектов"=====================================
 
@@ -1016,7 +1039,7 @@ namespace F_Result.Controllers
                                  && (aaoRep.WorkerName.Contains(_worker) || string.IsNullOrEmpty(_worker))
                                  && (aaoRep.DocNumber.Contains(_docNum) || string.IsNullOrEmpty(_docNum))
                                  && (aaoRep.Operation.Contains(_operation) || string.IsNullOrEmpty(_operation))
-                                 && (string.IsNullOrEmpty(_counteragent) ||  aaoRep.CounteragentName.ToString().Contains(_counteragent))
+                                 && (string.IsNullOrEmpty(_counteragent) || aaoRep.CounteragentName.ToString().Contains(_counteragent))
                                  && (aaoRep.Currency.Contains(_currency) || string.IsNullOrEmpty(_currency))
                                  && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(aaoRep.WorkerID)) //Фильтрация записей по связанным сотрудникам
                             )
@@ -1034,22 +1057,22 @@ namespace F_Result.Controllers
                                 Payed = aaoRep.Payed ?? 0, //Из того же материала! :)
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReport
-                                 {
-                                     ID = x.ID,
-                                     WorkerID = x.WorkerID,
-                                     WorkerName = x.WorkerName,
-                                     Date = x.Date,
-                                     DocNumber = x.DocNumber,
-                                     Operation = x.Operation,
-                                     Counteragent = x.Counteragent,
-                                     CounteragentName = x.CounteragentName,
-                                     Received = x.Received,
-                                     Payed = x.Payed,
-                                     Currency = x.Currency
-                                 }).ToList();
+                            {
+                                ID = x.ID,
+                                WorkerID = x.WorkerID,
+                                WorkerName = x.WorkerName,
+                                Date = x.Date,
+                                DocNumber = x.DocNumber,
+                                Operation = x.Operation,
+                                Counteragent = x.Counteragent,
+                                CounteragentName = x.CounteragentName,
+                                Received = x.Received,
+                                Payed = x.Payed,
+                                Currency = x.Currency
+                            }).ToList();
 
                 _aao = _aao.Where(x => (
-                                      (string.IsNullOrEmpty(_payed) || x.Payed.ToString().Contains(_payed)) 
+                                      (string.IsNullOrEmpty(_payed) || x.Payed.ToString().Contains(_payed))
                                    && (string.IsNullOrEmpty(_received) || x.Received.ToString().Contains(_received))
                                    && (filterWksIDs == null || filterWksIDs.Length == 0 || filterWksIDs.Contains(x.WorkerID))
                                   )).ToList();
@@ -1064,7 +1087,7 @@ namespace F_Result.Controllers
                 }
 
                 var _wksList = _aao
-                    .Select(x => new 
+                    .Select(x => new
                     {
                         WorkerId = x.WorkerID,
                         WorkerName = x.WorkerName,
@@ -1211,7 +1234,7 @@ namespace F_Result.Controllers
                 }
                 else
                 {
-                    _aao = _aao.OrderByDescending(x=>x.CDate).ToList();
+                    _aao = _aao.OrderByDescending(x => x.CDate).ToList();
                 }
 
                 var _wksList = _aao
