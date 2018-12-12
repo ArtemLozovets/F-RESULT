@@ -1415,17 +1415,18 @@ namespace F_Result.Controllers
                 ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 ws.Cells["A6"].Value = "Проект";
-                ws.Cells["B6"].Value = "Финансовый результат";
+                ws.Cells["B6"].Value = "Финансовый результат (начало\u00A0периода)";
                 ws.Cells["C6"].Value = "Доходы (план)";
                 ws.Cells["D6"].Value = "Доходы (факт)";
                 ws.Cells["E6"].Value = "\u0394 дох.";
                 ws.Cells["F6"].Value = "Расходы (план)";
                 ws.Cells["G6"].Value = "Расходы (факт)";
                 ws.Cells["H6"].Value = "\u0394 расх.";
+                ws.Cells["I6"].Value = "Финансовый результат (конец\u00A0периода)";
 
-                ws.Cells["A6:H6"].AutoFilter = true;
+                ws.Cells["A6:I6"].AutoFilter = true;
 
-                using (ExcelRange col = ws.Cells[6, 1, 6, 8])
+                using (ExcelRange col = ws.Cells[6, 1, 6, 9])
                 {
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     col.Style.Font.Size = 12;
@@ -1438,14 +1439,14 @@ namespace F_Result.Controllers
                 foreach (var item in _ads)
                 {
                     ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
-                    ws.Cells[string.Format("B{0}", row)].Value = item.prjres;
+                    ws.Cells[string.Format("B{0}", row)].Value = item.prjresSP;
                     ws.Cells[string.Format("C{0}", row)].Value = item.debitplan;
                     ws.Cells[string.Format("D{0}", row)].Value = item.debitfact;
                     ws.Cells[string.Format("E{0}", row)].Formula = string.Format("D{0}-C{0}", row);
                     ws.Cells[string.Format("F{0}", row)].Value = item.creditplan;
                     ws.Cells[string.Format("G{0}", row)].Value = item.creditfact;
                     ws.Cells[string.Format("H{0}", row)].Formula = string.Format("G{0}-F{0}", row);
-
+                    ws.Cells[string.Format("I{0}", row)].Value = item.prjresEP;
                     row++;
                 }
 
@@ -1474,10 +1475,23 @@ namespace F_Result.Controllers
                 cfRule3_2.Formula = "0";
                 cfRule3_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
 
+                var cfRule4_1 = ws.ConditionalFormatting.AddGreaterThan(ws.Cells[string.Format("I7:I{0}", row)]);
+                cfRule4_1.Formula = "0";
+                cfRule4_1.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#D2E7BE");
+
+                var cfRule4_2 = ws.ConditionalFormatting.AddLessThan(ws.Cells[string.Format("I7:I{0}", row)]);
+                cfRule4_2.Formula = "0";
+                cfRule4_2.Style.Fill.BackgroundColor.Color = ColorTranslator.FromHtml("#F8C9D3");
 
 
                 //Итоги
-                ws.Cells[string.Format("A{0}:B{0}", row)].Merge = true;
+                //  ws.Cells[string.Format("A{0}:B{0}", row)].Merge = true;
+                ws.Cells[string.Format("B{0}", row)].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                ws.Cells[string.Format("B{0}", row)].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                ws.Cells[string.Format("I{0}", row)].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                ws.Cells[string.Format("I{0}", row)].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+       
                 ws.Cells[string.Format("A{0}", row)].Value = "Итого";
                 ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
                 ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
@@ -1489,20 +1503,20 @@ namespace F_Result.Controllers
                 ws.Cells[string.Format("G{0}", row)].Formula = string.Format("SUM(G5:G{0})", row - 1);
                 ws.Cells[string.Format("H{0}", row)].Formula = string.Format("SUM(H5:H{0})", row - 1);
 
-                using (ExcelRange col = ws.Cells[row, 3, row, 8])
+                using (ExcelRange col = ws.Cells[row, 3, row, 9])
                 {
                     col.Style.Numberformat.Format = "#,##0.00";
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                     col.Style.Font.Bold = true;
                 }
 
-                using (ExcelRange col = ws.Cells[7, 2, row, 8])
+                using (ExcelRange col = ws.Cells[7, 2, row, 9])
                 {
                     col.Style.Numberformat.Format = "#,##0.00";
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 }
 
-                using (ExcelRange col = ws.Cells[6, 1, row, 8])
+                using (ExcelRange col = ws.Cells[6, 1, row, 9])
                 {
                     col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -1512,11 +1526,13 @@ namespace F_Result.Controllers
 
                 ws.Cells["A:AZ"].Style.Indent = 1;
                 ws.Cells["B6"].Style.WrapText = true;
+                ws.Cells["I6"].Style.WrapText = true;
                 ws.Row(6).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 ws.Cells["A:AZ"].AutoFitColumns();
                 ws.Column(2).Width = 23;
                 ws.Column(5).Width = 20;
                 ws.Column(8).Width = 20;
+                ws.Column(9).Width = 23;
 
                 string path = Server.MapPath("~/DownloadRPT/");
                 string repName = "APBReport_" + DateTime.Now.Ticks + ".xlsx";
@@ -1829,7 +1845,7 @@ namespace F_Result.Controllers
                 foreach (var item in _ads)
                 {
                     ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
-                    ws.Cells[string.Format("B{0}", row)].Value = item.prjres;
+                    ws.Cells[string.Format("B{0}", row)].Value = item.prjresSP;
                     ws.Cells[string.Format("C{0}", row)].Value = item.debitplan;
                     ws.Cells[string.Format("D{0}", row)].Value = item.debitfact;
                     ws.Cells[string.Format("E{0}", row)].Formula = string.Format("D{0}-C{0}", row);

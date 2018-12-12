@@ -438,14 +438,14 @@
                 order: [[0, "desc"]],
                 columns: [
                     { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "prjresSP", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpExp" },
                     { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfExp" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
                     { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
                     { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
-                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "prjresEP", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                 ],
 
                 fnCreatedRow: function (row, data, rowIndex) {
@@ -465,10 +465,10 @@
                     $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
                     // Выделение цветом дельта-ячеек
-                    if (data.prjres > 0) {
+                    if (data.prjresSP > 0) {
                         $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
-                    else if (data.prjres < 0) {
+                    else if (data.prjresSP < 0) {
                         $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
 
@@ -486,10 +486,10 @@
                         $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
                     
-                    if (data.prjres > 0) {
+                    if (data.prjresEP > 0) {
                         $('td:eq(8)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
-                    else if (data.prjres < 0) {
+                    else if (data.prjresEP < 0) {
                         $('td:eq(8)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
                 },
