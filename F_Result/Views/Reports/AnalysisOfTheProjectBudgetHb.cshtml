@@ -83,11 +83,12 @@
             <thead>
                 <tr>
                     <th rowspan="2">Проект</th>
-                    <th rowspan="2">Финансовый результат</th>
+                    <th rowspan="2">Финансовый результат (начало&nbsp;периода)</th>
                     <th colspan="2">Доходы</th>
                     <th rowspan="2">&#916;&nbsp;<sub>дох.</sub></th>
                     <th colspan="2">Расходы</th>
                     <th rowspan="2">&#916;&nbsp;<sub>расх.</sub></th>
+                    <th rowspan="2">Финансовый результат (конец&nbsp;периода)</th>
                 </tr>
                 <tr>
                     <th class="smallTH">План</th>
@@ -98,13 +99,15 @@
             </thead>
             <tfoot>
                 <tr class="tright">
-                    <th colspan="2">Итого</th>
+                    <th>Итого</th>
+                    <th style="text-align:center !important;">-</th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th style="text-align:center !important;">-</th>
                 </tr>
             </tfoot>
             <tbody></tbody>
@@ -441,7 +444,8 @@
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
                     { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
-                    { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
+                    { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                 ],
 
                 fnCreatedRow: function (row, data, rowIndex) {
@@ -481,6 +485,13 @@
                     else if (data.cdelta < 0) {
                         $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
+                    
+                    if (data.prjres > 0) {
+                        $('td:eq(8)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    }
+                    else if (data.prjres < 0) {
+                        $('td:eq(8)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    }
                 },
 
                 fnDrawCallback: function (settings) {
@@ -495,11 +506,11 @@
                     $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
                     $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(4)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(4)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
 
 
                     if (json.Result) {
