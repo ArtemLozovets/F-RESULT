@@ -416,13 +416,13 @@ input[type=checkbox]#isAllTimes {
     }
 
 /*---------------Flow Panel block--------------*/
+/*--------------ProjectFilterPanel-------------*/
 #flowPanel {
     z-index: 9999;
     padding: 0;
     position: fixed;
     width: 360px;
     border-radius: 0 0 0 6px;
-    /*border: 1px dashed #faa;*/
     height: calc(100% - 2px);
     background-color: #57A;
     top: 80px;
@@ -445,7 +445,7 @@ input[type=checkbox]#isAllTimes {
     box-shadow: -5px 0 8px rgba(0,0,0,0.3);
 }
 
-    #showButton:hover, #showButtonW:hover {
+#showButton:hover, #showButtonW:hover {
         color: #fff;
     }
 
@@ -454,7 +454,37 @@ input[type=checkbox]#isAllTimes {
     font-size:small !important;
 }
 
-#revText {
+/*--------------ExpenditureFilterPanel-------------*/
+
+#flowPanelExpend {
+    z-index: 9999;
+    padding: 0;
+    position: fixed;
+    width: 360px;
+    border-radius: 6px 0 0 0;
+    height: calc(100% - 2px);
+    background-color: #57A;
+    top: 80px;
+    left: -360px;
+    box-shadow: 5px 0 10px rgba(0,0,0,0.3);
+}
+
+#showButtonExpend {
+    float: right;
+    cursor: pointer;
+    display: block;
+    margin-right: -36px !important;
+    width: 36px;
+    height: 120px;
+    margin-top: 0;
+    background-color: #57A;
+    border-radius: 0 6px 6px 0;
+    color: #ddd;
+    padding: 10px;
+    box-shadow: 5px 0 8px rgba(0,0,0,0.3);
+}
+
+#revTextRight {
     margin-top: 8px;
     margin-left: -4px;
     display: block;
@@ -465,6 +495,19 @@ input[type=checkbox]#isAllTimes {
     -o-transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
+}
+
+#revTextLeft {
+    margin-top: 60px;
+    margin-left: -4px;
+    display: block;
+    font-weight: bold;
+    letter-spacing: .1em;
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg);
 }
 
 /*#endregion */
