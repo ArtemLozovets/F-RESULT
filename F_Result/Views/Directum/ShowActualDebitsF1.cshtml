@@ -60,7 +60,7 @@
         <div class="panel panel-default" id="filterPanel">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" href="#collapse1"><span class="text-info"><i class="glyphicon glyphicon-filter"></i>&nbsp;Фильтр</span>&nbsp;<span class="text-danger">(В РАЗРАБОТКЕ)</span></a>
+                    <a data-toggle="collapse" href="#collapse1"><span class="text-info"><i class="glyphicon glyphicon-filter"></i>&nbsp;Фильтр</span></a>
                 </h4>
             </div>
             <div id="collapse1" class="panel-collapse collapse">
@@ -93,7 +93,7 @@
             </div>
         </div>
     </div>
-    @* ----------------------------------------------- *@
+    @* ------------------------------------------------- *@
 
     <div class="row">
         <div class="col-md-6" id="resultMessage" style="display:block; height:30px;">
@@ -138,7 +138,7 @@
         </thead>
     </table>
 
-    <!-- #Плавающая панель -->
+    <!-- #Плавающая панель фильтрации по пректу-->
     <div id="flowPanel">
         <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">ПРОЕКТЫ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
@@ -162,6 +162,30 @@
         </div>
     </div>
     <!-- #endregion -->
+
+    <!-- #Плавающая панель фильтрации по статье расходов-->
+    <div id="flowPanelExpend">
+        <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revText">СТАТЬИ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;СТАТЬИ</span>
+        </div>
+
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="expend_Table">
+                <thead>
+                    <tr>
+                        <th>Статья</th>
+                        <th><input id="allExpendCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- #endregion -->
+
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
