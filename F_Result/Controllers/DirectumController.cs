@@ -463,7 +463,7 @@ namespace F_Result.Controllers
 
         //Список исходящих платежей Ф1
         [HttpPost]
-        public ActionResult LoadActualDebitsF1(int[] filterPrjIDs, string _status)
+        public ActionResult LoadActualDebitsF1(int[] filterPrjIDs, int[] filterExpendIDs, string _status)
         {
             try
             {
@@ -555,6 +555,7 @@ namespace F_Result.Controllers
                                      ProjectId = payment.ProjectId,
                                      ProjectName = payment.ProjectName,
                                      ItemSum = payment.ItemSum,
+                                     ExpenditureName = payment.ExpenditureName,
                                      ExpenditureId = payment.ExpenditureId,
                                      StageName = payment.StageName,
                                      DocumentDescr = payment.DocumentDescr,
@@ -574,6 +575,7 @@ namespace F_Result.Controllers
                                      ProjectId = x.ProjectId,
                                      ProjectName = x.ProjectName,
                                      ItemSum = x.ItemSum,
+                                     ExpenditureName = x.ExpenditureName,
                                      ExpenditureId = x.ExpenditureId,
                                      StageName = x.StageName,
                                      DocumentDescr = x.DocumentDescr,
@@ -581,7 +583,9 @@ namespace F_Result.Controllers
                                  }).ToList();
 
                 _payments = _payments.Where(x => (x.ItemSum.Value.ToString().Contains(_paymenttxt))
-                                               && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId.Value))).ToList();
+                                               && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId.Value))
+                                               && (filterExpendIDs == null || filterExpendIDs.Length == 0 || filterExpendIDs.Contains(x.ExpenditureId))
+                                ).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
@@ -594,8 +598,17 @@ namespace F_Result.Controllers
                         IPA = x.Select(z => z.IPA).First()
                     }).ToList();
 
+                List<ArticlesIDs> _articlesList = _payments.GroupBy(x => x.ExpenditureId).
+                    Select(x => new ArticlesIDs
+                    {
+                        AtId = x.Select(a => a.ExpenditureId).FirstOrDefault(),
+                        AtName = x.Select(a =>a.ExpenditureName).FirstOrDefault()
+
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _artListJson = jsonSerialiser.Serialize(_articlesList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -617,6 +630,7 @@ namespace F_Result.Controllers
                     fsum = fSum,
                     draw = draw,
                     prjlist = _prjListJson,
+                    artlist = _artListJson,
                     idslist = _IDsListJson,
                     sortcolumn = sortColumn,
                     sortdir = sortColumnDir,

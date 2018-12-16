@@ -5,10 +5,10 @@ $(function () {
     //Объявление глобальных переменных
     window._flagExpend = true;
     window._expendIDs = []; //Массив проектов таблицы отчета
-    window.filterExpendIDs = []; //Массив выбранных ID проектов в плавающей панели
+    window.filterExpendIDs = []; //Массив выбранных ID статей в плавающей панели
 
     //Обработчик ввода в поле фильтра таблицы
-    $('body').on('keyup change', '#expend_table_filter>label>input[type="search"]', function () {
+    $('body').on('keyup change', '#expend_Table_filter>label>input[type="search"]', function () {
         $('#allExpendCHB').prop('checked', 'checked').trigger('change');
     });
 
@@ -32,77 +32,56 @@ $(function () {
     });
 
     //Сброс/Установка всех чекбоксов выбора проекта
-    //$('#allPrgCHB').on('change', function () {
-    //    window.filterPrjIDs = [];
-    //    $('input:checkbox.prgSelectCHB').each(function () {
-    //        $(this).prop('checked', $('#allPrgCHB').prop('checked'));
-    //        if ($(this).is(":checked")) {
-    //            window.filterPrjIDs.push($(this).data('prjid'));
-    //        };
-    //    });
-    //    if (window.filterPrjIDs.length > 0) {
-    //        if ($('#flowPanel').data('mode') === 'chart') {
-    //            var _Year = $('#YDDL').val();
-    //            var chartType = $("#chartType").val();
-    //            GetChart(_Year, chartType);
-    //        }
-    //        else {
-    //            $("#gridtable").DataTable().draw();
-    //        }
-    //    };
-    //});
+    $('#allExpendCHB').on('change', function () {
+        window.filterExpendIDs = [];
+        $('input:checkbox.expendSelectCHB').each(function () {
+            $(this).prop('checked', $('#allExpendCHB').prop('checked'));
+            if ($(this).is(":checked")) {
+                window.filterExpendIDs.push($(this).data('atid'));
+            };
+        });
+        if (window.filterExpendIDs.length > 0) {
+                $("#gridtable").DataTable().draw();
+        };
+    });
 
     //Проверка состояния всех чекбоксов таблицы
-    //$('body').on('change', 'input:checkbox.prgSelectCHB', function () {
-    //    var allChecked = true;
-    //    window.filterPrjIDs = [];
-    //    $('input:checkbox.prgSelectCHB').each(function () {
-    //        if (!$(this).is(":checked")) {
-    //            allChecked = false;
-    //        } else if ($(this).is(":checked")) {
-    //            window.filterPrjIDs.push($(this).data('prjid'));
-    //        };
-    //    });
-    //    if (allChecked) {
-    //        $('#allPrgCHB').prop('checked', 'checked');
-    //    }
-    //    else if (!allChecked) {
-    //        $('#allPrgCHB').prop('checked', false);
-    //    }
-    //    if (window.filterPrjIDs.length > 0) {
-    //        if ($('#flowPanel').data('mode') === 'chart') {
-    //            var _Year = $('#YDDL').val();
-    //            var chartType = $("#chartType").val();
-    //            GetChart(_Year, chartType);
-    //        }
-    //        else {
-    //            $("#gridtable").DataTable().draw();
-    //        }
-    //    };
-    //});
+    $('body').on('change', 'input:checkbox.expendSelectCHB', function () {
+        var allChecked = true;
+        window.filterExpendIDs = [];
+        $('input:checkbox.expendSelectCHB').each(function () {
+            if (!$(this).is(":checked")) {
+                allChecked = false;
+            } else if ($(this).is(":checked")) {
+                window.filterExpendIDs.push($(this).data('atid'));
+            };
+        });
+        if (allChecked) {
+            $('#allExpendCHB').prop('checked', 'checked');
+        }
+        else if (!allChecked) {
+            $('#allExpendCHB').prop('checked', false);
+        }
+        if (window.filterExpendIDs.length > 0) {
+                $("#gridtable").DataTable().draw();
+        };
+    });
 
 });
 
 //Функция очистки массивов, сброса глобальных переменных и реинициализации таблицы отчета
 function globalExpendVarsClear() {
-    window._prjIDs = [];
-    window.filterPrjIDs = [];
-    window._flag = true;
-    $('#allPrgCHB').prop('checked', 'checked');
-    if ($('#flowPanel').data('mode') === 'chart') {
-        var _Year = $('#YDDL').val();
-        var chartType = $("#chartType").val();
-        GetChart(_Year, chartType);
-    }
-    else {
-        $("#gridtable").DataTable().draw();
-    }
+    window._expendIDs = [];
+    window.filterExpendIDs = [];
+    window._flagExpend = true;
+    $('#allExpendCHB').prop('checked', 'checked');
+    $("#gridtable").DataTable().draw();
 }
 
 //-----------------------------------------------------------------
-//Функция создания таблицы со списком проектов
+//Функция создания таблицы со списком статей
 function expendTableCrate() {
-    var prgTable = $('#prgtable').DataTable({
+    var expendTable = $('#expend_Table').DataTable({
         "scrollY": "360px",
         "scrollCollapse": true,
         scrollX: '100%',
@@ -111,32 +90,27 @@ function expendTableCrate() {
             zeroRecords: "Записи отсутствуют",
             infoEmpty: "Записи отсутствуют",
             search: "",
-            searchPlaceholder: "Проект...",
+            searchPlaceholder: "Статья...",
         },
         autoWidth: true,
         paging: false,
         processing: false,
         serverSide: false,
-        data: _prjIDs,
-        order: [[0, "desc"]],
-        'columnDefs': [
-            { 'orderData': [0], 'targets': [2] }
-        ],
+        data: _expendIDs,
         columns: [
-            { data: 'IPA', bSortable: true, visible: false, searchable: false },
-            { data: 'PrjId', bSortable: true, visible: false, searchable: false },
-            { data: 'ProjectName', bSortable: true, sWidth: '80%' },
+            { data: 'AtId', bSortable: true, visible: false, searchable: false },
+            { data: 'AtName', bSortable: true, sWidth: '80%' },
             {
                 data: null, sWidth: '20%',
                 bSortable: false,
                 render: function (data, type, row, meta) {
-                    var chkStr = '<div style="width:100%; text-align:center;"><input data-prjid="' + row['PrjId'] + '" class="prgSelectCHB" checked type="checkbox"></div>';
+                    var chkStr = '<div style="width:100%; text-align:center;"><input data-atid="' + row['AtId'] + '" class="expendSelectCHB" checked type="checkbox"></div>';
                     return chkStr;
                 }
             }
         ],
         fnDrawCallback: function (settings) {
-            $('#flowPanel').show();
+            $('#flowPanelExpend').show();
         }
     });
 

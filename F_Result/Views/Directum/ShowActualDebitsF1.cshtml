@@ -21,12 +21,12 @@
         overflow-wrap: break-word;
     }
 
-    #flowPanel div.dataTables_wrapper div.dataTables_filter {
+    #flowPanel div.dataTables_wrapper div.dataTables_filter, #flowPanelExpend div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
         margin-top: 10px;
     }
 
-    #flowPanel #prgtable_filter input {
+    #flowPanel #prgtable_filter input, #flowPanelExpend #expend_Table_filter input {
         width: 300px !important;
         margin-right: 8px;
     }
@@ -176,6 +176,7 @@
                    id="expend_Table">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Статья</th>
                         <th><input id="allExpendCHB" checked type="checkbox"></th>
                     </tr>
@@ -413,7 +414,7 @@
                         $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
                         //Инициализация таблицы проектов в плавающей панели---------
-                        if (window._flag) {
+                     //   if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
                             _prjIDs = JSON.parse(json.prjlist)
                             var pTable = $('#prgtable').DataTable();
@@ -421,7 +422,19 @@
                             prgTableCrate();
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
-                        };
+                       // };
+
+                        //Инициализация таблицы статей в плавающей панели---------
+                      //  if (window._flagExpend) {
+                            //Заполнение массива статей для таблицы в плавающей панели
+                            _expendIDs = JSON.parse(json.artlist)
+                            var expendTable = $('#expend_Table').DataTable();
+                            expendTable.destroy();
+                            expendTableCrate();
+                            $('#flowPanelExpend').height($('#expend_Table_wrapper').height() + 80);
+                            window._flagExpend = false;
+                       // };
+
                     },
                     ajax: {
                         url: "/Directum/LoadActualDebitsF1",
@@ -429,6 +442,7 @@
                         datatype: "json",
                         data: function (d) {
                             d.filterPrjIDs = window.filterPrjIDs;
+                            d.filterExpendIDs = window.filterExpendIDs;
                             d._status = $("#Status").val();
                         },
                         dataSrc: function (d) {
@@ -473,7 +487,7 @@
                         var _docDate = formatDate(data.DocumentDate);
                         var _org = data.Organization;
                         var _contract = '';
-                        var _expId = data.ExpenditureId;
+                        var _expName = data.ExpenditureName;
                         if (data.ContractDescr !== null) {
                             _contract = data.ContractDescr;
                         }
@@ -487,7 +501,7 @@
                         }
                         var prgTitleStr = 'Индекс активности: ' + _IPA;
                         prgTitleStr += '\r\nНомер документа: ' + _docNum + '\r\nДата документа: ' + _docDate + '\r\nСотрудник: ' + _wrk + '\r\nРуководитель проекта: ' + _prjmanager;
-                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатья: ' + _expId + '\r\nСтатус: ' + _status;
+                        prgTitleStr += '\r\nОрганизация: ' + _org + '\r\nДоговор: ' + _contract + '\r\nСтатья: ' + _expName + '\r\nСтатус: ' + _status;
 
                         $('.prgCellf', $(row)).attr('title', prgTitleStr);
                     },
@@ -527,10 +541,13 @@
 
     <script>
         function ClearFilter() {
+            globalVarsClear();
+            globalExpendVarsClear();
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
             });
+
             table.columns().search('').draw();
         }
     </script>

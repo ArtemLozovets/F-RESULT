@@ -147,8 +147,11 @@ namespace F_Result.Models
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal? ItemSum { get; set; }
 
+        [Display(Name = "ID статьи расходов")]
+        public int ExpenditureId { get; set; }
+
         [Display(Name = "Статья расходов")]
-        public string ExpenditureId { get; set; }
+        public string ExpenditureName { get; set; }
 
         [Display(Name = "Статус")]
         public string StageName { get; set; }

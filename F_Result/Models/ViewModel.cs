@@ -53,6 +53,13 @@ namespace F_Result.Models
 
     #endregion ----------------------------------------------------------
 
+    [NotMapped]
+    public class ArticlesIDs
+    {
+        public int AtId { get; set; }
+        public string AtName { get; set; }
+    }
+
     #region "Analysis of the project Profitability" table report -------------------
     [NotMapped]
     public class APPTableReport
@@ -80,6 +87,7 @@ namespace F_Result.Models
 
     }
 
+
     [NotMapped]
     public class APPTableReportTotal
     {
@@ -96,3 +104,4 @@ namespace F_Result.Models
 
     #endregion
 }
+
