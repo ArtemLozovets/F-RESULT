@@ -340,6 +340,9 @@
 
             $('body').on('keyup change', '.fCnt', function () {
                 var table = $('#gridtable').DataTable();
+                // Обновляем данные в таблицах плавающих панелей
+                window._flag = true;
+                window._flagExpend = true;
                 table.draw();
             });
 
@@ -414,7 +417,7 @@
                         $("#sumSpan").html('<input id="ad_OldBtn" type="button" class="btn btn-sm btn-primary" value="Данные F-Result" title = "Данные об исходящих платежах Ф1 до 01/09/18"/>&nbsp;<span class="sum-container">&sum;<sub>плат. </sub><span class="badge sum-block">' + _fSum + '&#8372;</span></span>');
 
                         //Инициализация таблицы проектов в плавающей панели---------
-                     //   if (window._flag) {
+                        if (window._flag) {
                             //Заполнение массива проектов для таблицы в плавающей панели
                             _prjIDs = JSON.parse(json.prjlist)
                             var pTable = $('#prgtable').DataTable();
@@ -422,10 +425,10 @@
                             prgTableCrate();
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
-                       // };
+                        };
 
                         //Инициализация таблицы статей в плавающей панели---------
-                      //  if (window._flagExpend) {
+                        if (window._flagExpend) {
                             //Заполнение массива статей для таблицы в плавающей панели
                             _expendIDs = JSON.parse(json.artlist)
                             var expendTable = $('#expend_Table').DataTable();
@@ -433,7 +436,7 @@
                             expendTableCrate();
                             $('#flowPanelExpend').height($('#expend_Table_wrapper').height() + 80);
                             window._flagExpend = false;
-                       // };
+                        };
 
                     },
                     ajax: {
@@ -510,10 +513,16 @@
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    // Обновляем данные в таблицах плавающих панелей
+                    window._flag = true;
+                    window._flagExpend = true;
                     table.column(colIdx).search(this.value).draw();
                 });
 
                 $('.dff', $('th')[colIdx]).on('change', function () {
+                    // Обновляем данные в таблицах плавающих панелей
+                    window._flag = true;
+                    window._flagExpend = true;
                     table.column(colIdx).search(this.value).draw();
                 });
             });
@@ -547,7 +556,6 @@
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
             });
-
             table.columns().search('').draw();
         }
     </script>
