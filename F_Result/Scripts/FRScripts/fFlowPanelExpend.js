@@ -16,10 +16,22 @@ $(function () {
     $('#showButtonExpend').on('click', function (e) {
         e.stopImmediatePropagation();
         if ($('#flowPanelExpend').hasClass('open')) {
-            $('#flowPanelExpend').animate({ left: -360 }, 500).removeClass('open');
+            $('#flowPanelExpend').animate({ left: -360 }, 500, function ()
+            {
+                $('#showButtonOrg').animate({ opacity: '1', marginTop:'140' }, 600);
+            })
+            .removeClass('open');
             $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right');
         } else {
-            $('#flowPanelExpend').animate({ left: 0 }, 500).addClass('open');
+            $('#flowPanelExpend').animate({ left: 0 }, 500, function ()
+            {
+                $('#flowPanelOrg').animate({ left: -360 }, 500, function () {
+                    $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: '0.5', marginTop:'0' }, 600);
+                }).removeClass('open').css('z-index', '10001', function () { $('#flowPanelExpand').css('z-index', '9999') });
+
+                $('#showButtonExpend').animate({ opacity: '1' }, 600);
+            })
+            .addClass('open');
             $('#showButtonExpend').removeClass('fa-arrow-right').addClass('fa-arrow-left');
         }
     });

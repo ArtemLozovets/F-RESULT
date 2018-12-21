@@ -45,6 +45,7 @@
 /// <reference path="frscripts/exportdata.js" />
 /// <reference path="frscripts/feedbackpanel.js" />
 /// <reference path="frscripts/fflowpanelexpend.js" />
+/// <reference path="frscripts/fflowpanelorg.js" />
 /// <reference path="frscripts/fflowpanelprj.js" />
 /// <reference path="frscripts/toparrow.js" />
 /// <reference path="frscripts/wksfilterflowpanel.js" />

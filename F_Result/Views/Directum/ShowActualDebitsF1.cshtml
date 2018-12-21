@@ -187,6 +187,30 @@
     </div>
     <!-- #endregion -->
 
+    <!-- #Плавающая панель фильтрации по организации-->
+    <div id="flowPanelOrg">
+        <i class="fa fa-arrow-right" id="showButtonOrg">&nbsp;<span id="revTextLeft" style="margin-top:120px !important;">ОРГАНИЗАЦИИ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Организации</span>
+        </div>
+
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="org_Table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Организация</th>
+                        <th><input id="allOrgCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- #endregion -->
+
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
@@ -202,6 +226,7 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/fFlowPanelPrj.js"></script>
     <script src="~/Scripts/FRScripts/fFlowPanelExpend.js"></script>
+    <script src="~/Scripts/FRScripts/fFlowPanelOrg.js"></script>
     <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@

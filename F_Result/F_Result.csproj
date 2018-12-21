@@ -577,6 +577,7 @@
     <Content Include="Scripts\DateRangePicker\jquery.daterangepicker.min.js" />
     <Content Include="Scripts\FRScripts\exportData.js" />
     <Content Include="Scripts\FRScripts\feedbackPanel.js" />
+    <Content Include="Scripts\FRScripts\fFlowPanelOrg.js" />
     <Content Include="Scripts\FRScripts\fFlowPanelExpend.js" />
     <Content Include="Scripts\FRScripts\wksFilterFlowPanel.js" />
     <Content Include="Scripts\html5shiv.js" />
