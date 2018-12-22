@@ -461,7 +461,7 @@ input[type=checkbox]#isAllTimes {
     padding: 0;
     position: fixed;
     width: 360px;
-    border-radius: 6px 0 0 0;
+    border-radius: 0 0 6px 0;
     height: calc(100% - 2px);
     background-color: #57A;
     top: 80px;
@@ -487,11 +487,11 @@ input[type=checkbox]#isAllTimes {
 /*--------------OrgFilterPanel-------------*/
 
 #flowPanelOrg {
-    z-index: 9990;
+    z-index: 10001;
     padding: 0;
     position: fixed;
     width: 360px;
-    border-radius: 6px 0 0 0;
+    border-radius: 0 0 6px 0;
     height: calc(100% - 2px);
     background-color: #57A;
     top: 80px;

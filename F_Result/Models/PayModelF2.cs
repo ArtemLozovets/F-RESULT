@@ -127,6 +127,9 @@ namespace F_Result.Models
         [Display(Name = "Контрагент")]
         public string Counteragent { get; set; }
 
+        [Display(Name = "ID Организации")]
+        public int OrganizationId { get; set; }
+
         [Display(Name = "Организация")]
         public string Organization { get; set; }
 

@@ -16,22 +16,20 @@ $(function () {
     $('#showButtonOrg').on('click', function (e) {
         e.stopImmediatePropagation();
         if ($('#flowPanelOrg').hasClass('open')) {
-            $('#showButtonExpend').animate({ opacity: '0' }, 600);
-            $('#flowPanelOrg').animate({ left: -360 }, 500, function ()
-            {
-                $('#showButtonOrg').animate({ marginTop: '140'}, 600);
-                $('#showButtonExpend').animate({ opacity: '1' }, 600);
-            })
-                .removeClass('open');
+            //Закрываем панель
+            $('#flowPanelOrg').animate({ left: -360, zIndex: 10001 }, 500, function () {
+                $('#flowPanelExpend').animate({ zIndex: 1001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
+                $('#showButtonOrg').animate({ marginTop: 140, opacity: 1 }, 600, function () { $('#showButtonExpend').animate({ opacity: 1 }, 600) });
+            }).removeClass('open');
             $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right');
         } else {
-            $('#flowPanelOrg').animate({ left: 0 }, 500, function ()
-            {
-                $('#showButtonOrg').animate({ marginTop: '0'}, 600);
-                $('#showButtonExpend').animate({ opacity: '0.5' }, 600);
-                $('#flowPanelExpand').animate({ left: -360 }, 500, function () {
-                    $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: '0.5', marginTop: '0' }, 600);
-                }).removeClass('open').css('z-index', '10001', function () { $('#flowPanelOrg').css('z-index', '9999'); alert('mamba!') });
+            //Открываем панель
+            $('#flowPanelOrg').animate({ left: 0 }, 500, function () {
+                $('#showButtonOrg').animate({ marginTop: 0, opacity: 1 }, 600);
+                $('#showButtonExpend').animate({ opacity: 0.5 }, 600);
+                $('#flowPanelExpend').animate({ left: -360 }, 500, function () {
+                    $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: 0.5, marginTop: 0 }, 600);
+                }).removeClass('open').animate({ zIndex: 10001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
             })
             .addClass('open');
             $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
@@ -39,8 +37,9 @@ $(function () {
     });
 
     $('body').on('click', function (e) {
-        $('#flowPanelOrg').animate({ left: -360 }, 500).removeClass('open');
-        $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right');
+        $('#flowPanelOrg').animate({ left: -360, zIndex: 10001 }, 500, function () {
+            $('#showButtonOrg').animate({ marginTop: 140, opacity: 1 }, 600, function () { $(this).removeClass('fa-arrow-left').addClass('fa-arrow-right') })
+        }).removeClass('open');
     }).on('click', '#flowPanelOrg', function (e) {
         e.stopPropagation();
     });
@@ -51,11 +50,11 @@ $(function () {
         $('input:checkbox.orgSelectCHB').each(function () {
             $(this).prop('checked', $('#allOrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
-                window.filterOrgIDs.push($(this).data('atid'));
+                window.filterOrgIDs.push($(this).data('orgid'));
             };
         });
         if (window.filterOrgIDs.length > 0) {
-                $("#gridtable").DataTable().draw();
+            $("#gridtable").DataTable().draw();
         };
     });
 
@@ -67,7 +66,7 @@ $(function () {
             if (!$(this).is(":checked")) {
                 allChecked = false;
             } else if ($(this).is(":checked")) {
-                window.filterOrgIDs.push($(this).data('atid'));
+                window.filterOrgIDs.push($(this).data('orgid'));
             };
         });
         if (allChecked) {
@@ -77,7 +76,7 @@ $(function () {
             $('#allOrgCHB').prop('checked', false);
         }
         if (window.filterOrgIDs.length > 0) {
-                $("#gridtable").DataTable().draw();
+            $("#gridtable").DataTable().draw();
         };
     });
 
@@ -118,7 +117,7 @@ function orgTableCrate() {
                 data: null, sWidth: '20%',
                 bSortable: false,
                 render: function (data, type, row, meta) {
-                    var chkStr = '<div style="width:100%; text-align:center;"><input data-atid="' + row['AtId'] + '" class="orgSelectCHB" checked type="checkbox"></div>';
+                    var chkStr = '<div style="width:100%; text-align:center;"><input data-orgid="' + row['AtId'] + '" class="orgSelectCHB" checked type="checkbox"></div>';
                     return chkStr;
                 }
             }

@@ -21,12 +21,16 @@
         overflow-wrap: break-word;
     }
 
-    #flowPanel div.dataTables_wrapper div.dataTables_filter, #flowPanelExpend div.dataTables_wrapper div.dataTables_filter {
+    #flowPanel div.dataTables_wrapper div.dataTables_filter, 
+    #flowPanelExpend div.dataTables_wrapper div.dataTables_filter,
+    #flowPanelOrg div.dataTables_wrapper div.dataTables_filter {
         text-align: center !important;
         margin-top: 10px;
     }
 
-    #flowPanel #prgtable_filter input, #flowPanelExpend #expend_Table_filter input {
+    #flowPanel #prgtable_filter input, 
+    #flowPanelExpend #expend_Table_filter input,
+    #flowPanelOrg #org_Table_filter input {
         width: 300px !important;
         margin-right: 8px;
     }
@@ -265,7 +269,6 @@
                 .bind('datepicker-open', function () {
                     $(this).data('dateRangePicker').clear();
                 });
-
             });
         });
     </script>
@@ -463,6 +466,17 @@
                             window._flagExpend = false;
                         };
 
+                        //Инициализация таблицы организаций в плавающей панели---------
+                        if (window._flagOrg) {
+                            //Заполнение массива статей для таблицы в плавающей панели
+                            _orgIDs = JSON.parse(json.orglist)
+                            var orgTable = $('#org_Table').DataTable();
+                            orgTable.destroy();
+                            orgTableCrate();
+                            $('#flowPanelOrg').height($('#org_Table_wrapper').height() + 80);
+                            window._flagOrg = false;
+                        };
+
                     },
                     ajax: {
                         url: "/Directum/LoadActualDebitsF1",
@@ -541,6 +555,7 @@
                     // Обновляем данные в таблицах плавающих панелей
                     window._flag = true;
                     window._flagExpend = true;
+                    window._flagOrg = true;
                     table.column(colIdx).search(this.value).draw();
                 });
 
@@ -548,6 +563,7 @@
                     // Обновляем данные в таблицах плавающих панелей
                     window._flag = true;
                     window._flagExpend = true;
+                    window._flagOrg = true;
                     table.column(colIdx).search(this.value).draw();
                 });
             });
