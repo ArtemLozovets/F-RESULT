@@ -24,15 +24,16 @@ $(function () {
             $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right');
         } else {
             //Открываем панель
-            $('#flowPanelOrg').animate({ left: 0 }, 500, function () {
-                $('#showButtonOrg').animate({ marginTop: 0, opacity: 1 }, 600);
-                $('#showButtonExpend').animate({ opacity: 0.5 }, 600);
-                $('#flowPanelExpend').animate({ left: -360 }, 500, function () {
-                    $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: 0.5, marginTop: 0 }, 600);
-                }).removeClass('open').animate({ zIndex: 10001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
-            })
-            .addClass('open');
-            $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
+            $('#showButtonOrg').animate({ marginTop: 0, opacity: 1 }, 600, function () {
+                $('#flowPanelOrg').animate({ left: 0 }, 500, function () {
+                    $('#showButtonExpend').animate({ opacity: 0.5 }, 600);
+                    $('#flowPanelExpend').animate({ left: -360 }, 500, function () {
+                        $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: 0.5, marginTop: 0 }, 600);
+                    }).removeClass('open').animate({ zIndex: 10001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
+                })
+                .addClass('open');
+                $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
+            });
         }
     });
 

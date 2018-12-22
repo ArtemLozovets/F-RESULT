@@ -34,6 +34,11 @@
         width: 300px !important;
         margin-right: 8px;
     }
+
+    div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
+        margin-top:-60px;
+    }
+
 </style>
 
 <div id="loadingImg">
@@ -473,7 +478,7 @@
                             var orgTable = $('#org_Table').DataTable();
                             orgTable.destroy();
                             orgTableCrate();
-                            $('#flowPanelOrg').height($('#org_Table_wrapper').height() + 80);
+                            $('#flowPanelOrg').height($('#org_Table_wrapper').height() - 60);
                             window._flagOrg = false;
                         };
 
@@ -485,6 +490,7 @@
                         data: function (d) {
                             d.filterPrjIDs = window.filterPrjIDs;
                             d.filterExpendIDs = window.filterExpendIDs;
+                            d.filterOrgIDs = window.filterOrgIDs;
                             d._status = $("#Status").val();
                         },
                         dataSrc: function (d) {
