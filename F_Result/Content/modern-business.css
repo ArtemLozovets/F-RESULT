@@ -143,8 +143,8 @@ footer {
         right: 100%;
         margin-top: -6px;
         margin-left: -1px;
-        -webkit-border-radius: 6px 0 0 6px;  
-        -moz-border-radius: 6px 0 0 6px; 
+        -webkit-border-radius: 6px 0 0 6px;
+        -moz-border-radius: 6px 0 0 6px;
         border-radius: 6px 0 0 6px;
     }
 
@@ -159,19 +159,20 @@ footer {
         border-width: 5px 0 5px 5px;
         border-right-color: #cccccc;
         margin-top: 5px;
-        margin-top:5px;margin-right:-10px;
+        margin-top: 5px;
+        margin-right: -10px;
         border-left-color: #aaa;
     }
 
-    .dropdown-submenu.sbm.open a.asbm{
-        background-color:rgba(68, 110, 155, 0.61);
+    .dropdown-submenu.sbm.open a.asbm {
+        background-color: rgba(68, 110, 155, 0.61);
     }
 
-    .dropdown-submenu.sbm.open a.asbm:after{
-        border-left-color: #fff;
-    }
+        .dropdown-submenu.sbm.open a.asbm:after {
+            border-left-color: #fff;
+        }
 
-    .dropdown-submenu.sbm > a.asbm:focus:after{
+    .dropdown-submenu.sbm > a.asbm:focus:after {
         border-left-color: #fff;
     }
 
@@ -416,18 +417,41 @@ input[type=checkbox]#isAllTimes {
     }
 
 /*---------------Flow Panel block--------------*/
+
+#flowPanel div.dataTables_wrapper div.dataTables_filter, 
+    #flowPanelExpend div.dataTables_wrapper div.dataTables_filter,
+    #flowPanelOrg div.dataTables_wrapper div.dataTables_filter {
+        text-align: center !important;
+        margin-top: 10px;
+    }
+
+    #flowPanel #prgtable_filter input, 
+    #flowPanelExpend #expend_Table_filter input,
+    #flowPanelOrg #org_Table_filter input {
+        width: 300px !important;
+        margin-right: 8px;
+    }
+
+    div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
+        margin-top:-166px;
+    }
+
+     div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
+        margin-top:-260px;
+    }
+
 /*--------------ProjectFilterPanel-------------*/
 #flowPanel {
-    z-index: 9999;
+    z-index: 9997;
     padding: 0;
     position: fixed;
     width: 360px;
     border-radius: 0 0 0 6px;
     height: calc(100% - 2px);
     background-color: #57A;
-    top: 80px;
+    top: 60px;
     right: -360px;
-    box-shadow: -5px 0 10px rgba(0,0,0,0.3);
+    /*box-shadow: -5px 0 10px rgba(0,0,0,0.3);*/
 }
 
 #showButton, #showButtonW {
@@ -445,13 +469,44 @@ input[type=checkbox]#isAllTimes {
     box-shadow: -5px 0 8px rgba(0,0,0,0.3);
 }
 
-#showButton:hover, #showButtonW:hover {
+    #showButton:hover, #showButtonW:hover {
         color: #fff;
     }
 
-#showButtonW{
-    height:144px;
-    font-size:small !important;
+#showButtonW {
+    height: 144px;
+    font-size: small !important;
+}
+
+/*--------------OrgFilterPanel-------------*/
+
+#flowPanelOrg {
+    z-index: 9998;
+    padding: 0;
+    position: fixed;
+    width: 360px;
+    border-radius: 6px 0 0 6px;
+    min-height:320px;
+    height: calc(100% - 2px);
+    background-color: #57A;
+    top: 60px;
+    right: -360px;
+    /*box-shadow: -5px 0 10px rgba(0,0,0,0.3);*/
+}
+
+#showButtonOrg {
+    float: left;
+    cursor: pointer;
+    display: block;
+    margin-left: -36px !important;
+    width: 36px;
+    height: 160px;
+    margin-top: 126px;
+    background-color: #57A;
+    border-radius: 6px 0 0 6px;
+    color: #ddd;
+    padding: 10px;
+    box-shadow: -5px 0 8px rgba(0,0,0,0.3);
 }
 
 /*--------------ExpenditureFilterPanel-------------*/
@@ -461,83 +516,41 @@ input[type=checkbox]#isAllTimes {
     padding: 0;
     position: fixed;
     width: 360px;
-    border-radius: 0 0 6px 0;
+    border-radius: 6px 0 0 6px;
     height: calc(100% - 2px);
     background-color: #57A;
-    top: 80px;
-    left: -360px;
-    box-shadow: 5px 0 10px rgba(0,0,0,0.3);
+    top: 60px;
+    right: -360px;
+    /*box-shadow: -5px 0 10px rgba(0,0,0,0.3);*/
 }
 
 #showButtonExpend {
-    float: right;
+    float: left;
     cursor: pointer;
     display: block;
-    margin-right: -36px !important;
+    margin-left: -36px !important;
     width: 36px;
-    height: 120px;
-    margin-top: 0;
+    height: 100px;
+    margin-top: 292px;
     background-color: #57A;
-    border-radius: 0 6px 6px 0;
+    border-radius: 6px 0 0 6px;
     color: #ddd;
     padding: 10px;
-    box-shadow: 5px 0 8px rgba(0,0,0,0.3);
+    box-shadow: -5px 0 8px rgba(0,0,0,0.3);
 }
 
-/*--------------OrgFilterPanel-------------*/
-
-#flowPanelOrg {
-    z-index: 10001;
-    padding: 0;
-    position: fixed;
-    width: 360px;
-    border-radius: 0 0 6px 0;
-    height: calc(100% - 2px);
-    background-color: #57A;
-    top: 80px;
-    left: -360px;
-    box-shadow: 5px 0 10px rgba(0,0,0,0.3);
-}
-
-#showButtonOrg {
-    float: right;
-    cursor: pointer;
-    display: block;
-    margin-right: -36px !important;
-    width: 36px;
-    height: 180px;
-    margin-top: 140px;
-    background-color: #57A;
-    border-radius: 0 6px 6px 0;
-    color: #ddd;
-    padding: 10px;
-    box-shadow: 5px 0 8px rgba(0,0,0,0.3);
-}
-
-#revTextRight {
+.revTextRight {
     margin-top: 8px;
     margin-left: -4px;
     display: block;
     font-weight: bold;
+    font-size:small;
     letter-spacing: .1em;
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
-}
-
-#revTextLeft {
-    margin-top: 60px;
-    margin-left: -4px;
-    display: block;
-    font-weight: bold;
-    letter-spacing: .1em;
-    -moz-transform: rotate(270deg);
-    -ms-transform: rotate(270deg);
-    -o-transform: rotate(270deg);
-    -webkit-transform: rotate(270deg);
-    transform: rotate(270deg);
 }
 
 /*#endregion */

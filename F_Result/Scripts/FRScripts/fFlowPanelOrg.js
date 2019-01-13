@@ -15,32 +15,31 @@ $(function () {
     //Блок скриптов для работы с плавающей панелью
     $('#showButtonOrg').on('click', function (e) {
         e.stopImmediatePropagation();
+        $('#flowPanel').animate({ right: -360 }, 500).removeClass('open');
+        $('#showButton').removeClass('fa-arrow-right').addClass('fa-arrow-left');
+        $('#flowPanelExpend').animate({ right: -360 }, 500).removeClass('open');
+        $('#showButtonExpend').removeClass('fa-arrow-right').addClass('fa-arrow-left');
+
         if ($('#flowPanelOrg').hasClass('open')) {
-            //Закрываем панель
-            $('#flowPanelOrg').animate({ left: -360, zIndex: 10001 }, 500, function () {
-                $('#flowPanelExpend').animate({ zIndex: 1001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
-                $('#showButtonOrg').animate({ marginTop: 140, opacity: 1 }, 600, function () { $('#showButtonExpend').animate({ opacity: 1 }, 600) });
+            $('#flowPanelOrg').animate({ right: -360 }, 500, function () {
+                $('#flowPanel').css('z-index', '9997').animate({ opacity: 1 }, 600);
+                $('#flowPanelExpend').css('z-index', '9999').animate({ opacity: 1 }, 600);
+                $(this).css('z-index', '9998');
             }).removeClass('open');
-            $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right');
+            $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
         } else {
-            //Открываем панель
-            $('#showButtonOrg').animate({ marginTop: 0, opacity: 1 }, 600, function () {
-                $('#flowPanelOrg').animate({ left: 0 }, 500, function () {
-                    $('#showButtonExpend').animate({ opacity: 0.5 }, 600);
-                    $('#flowPanelExpend').animate({ left: -360 }, 500, function () {
-                        $('#showButtonExpend').removeClass('fa-arrow-left').addClass('fa-arrow-right').animate({ opacity: 0.5, marginTop: 0 }, 600);
-                    }).removeClass('open').animate({ zIndex: 10001 }, 500, function () { $('#flowPanelOrg').css('z-index', '9999') });
-                })
-                .addClass('open');
-                $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
-            });
+            $('#flowPanelOrg').animate({ right: 0, opacity: 1 }, 500, function () {
+                $('#flowPanel').css('z-index', '9998').animate({ opacity: 0.5 }, 600);
+                $('#flowPanelExpend').css('z-index', '9999').animate({ opacity: 0.5 }, 600);
+                $(this).css('z-index', '9997');
+            }).addClass('open');
+            $('#showButtonOrg').removeClass('fa-arrow-left').addClass('fa-arrow-right');
         }
     });
 
     $('body').on('click', function (e) {
-        $('#flowPanelOrg').animate({ left: -360, zIndex: 10001 }, 500, function () {
-            $('#showButtonOrg').animate({ marginTop: 140, opacity: 1 }, 600, function () { $(this).removeClass('fa-arrow-left').addClass('fa-arrow-right') })
-        }).removeClass('open');
+        $('#flowPanelOrg').animate({ right: -360, opacity: 1  }, 500).removeClass('open');
+        $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
     }).on('click', '#flowPanelOrg', function (e) {
         e.stopPropagation();
     });

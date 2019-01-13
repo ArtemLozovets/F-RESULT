@@ -21,24 +21,6 @@
         overflow-wrap: break-word;
     }
 
-    #flowPanel div.dataTables_wrapper div.dataTables_filter, 
-    #flowPanelExpend div.dataTables_wrapper div.dataTables_filter,
-    #flowPanelOrg div.dataTables_wrapper div.dataTables_filter {
-        text-align: center !important;
-        margin-top: 10px;
-    }
-
-    #flowPanel #prgtable_filter input, 
-    #flowPanelExpend #expend_Table_filter input,
-    #flowPanelOrg #org_Table_filter input {
-        width: 300px !important;
-        margin-right: 8px;
-    }
-
-    div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
-        margin-top:-60px;
-    }
-
 </style>
 
 <div id="loadingImg">
@@ -149,7 +131,7 @@
 
     <!-- #Плавающая панель фильтрации по пректу-->
     <div id="flowPanel">
-        <i class="fa fa-arrow-left" id="showButton">&nbsp;<span id="revTextRight">ПРОЕКТЫ</span></i>
+        <i class="fa fa-arrow-left" id="showButton">&nbsp;<span class="revTextRight">ПРОЕКТЫ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
             <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
         </div>
@@ -172,33 +154,9 @@
     </div>
     <!-- #endregion -->
 
-    <!-- #Плавающая панель фильтрации по статье расходов-->
-    <div id="flowPanelExpend">
-        <i class="fa fa-arrow-right" id="showButtonExpend">&nbsp;<span id="revTextLeft">СТАТЬИ</span></i>
-        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
-            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;СТАТЬИ</span>
-        </div>
-
-        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
-            <table style="background-color:white; width:100%; margin-top:0 !important;"
-                   class="table table-bordered table-striped table-responsive table-hover gridtable"
-                   id="expend_Table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Статья</th>
-                        <th><input id="allExpendCHB" checked type="checkbox"></th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <!-- #endregion -->
-
     <!-- #Плавающая панель фильтрации по организации-->
     <div id="flowPanelOrg">
-        <i class="fa fa-arrow-right" id="showButtonOrg">&nbsp;<span id="revTextLeft" style="margin-top:120px !important;">ОРГАНИЗАЦИИ</span></i>
+        <i class="fa fa-arrow-left" id="showButtonOrg">&nbsp;<span class="revTextRight">ОРГАНИЗАЦИИ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
             <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Организации</span>
         </div>
@@ -220,6 +178,29 @@
     </div>
     <!-- #endregion -->
 
+    <!-- #Плавающая панель фильтрации по статье расходов-->
+    <div id="flowPanelExpend">
+        <i class="fa fa-arrow-left" id="showButtonExpend">&nbsp;<span class="revTextRight">СТАТЬИ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;СТАТЬИ</span>
+        </div>
+
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="expend_Table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Статья</th>
+                        <th><input id="allExpendCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- #endregion -->
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
