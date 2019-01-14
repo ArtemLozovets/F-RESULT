@@ -24,16 +24,6 @@
     .docCellf {
         /*min-width: 5em;*/
     }
-
-    #flowPanel div.dataTables_wrapper div.dataTables_filter {
-        text-align: center !important;
-        margin-top: 10px;
-    }
-
-    #flowPanel #prgtable_filter input {
-        width: 300px !important;
-        margin-right: 8px;
-    }
 </style>
 
 <div id="loadingImg">
@@ -121,6 +111,29 @@
         </div>
     </div>
     <!-- #endregion -->
+    <!-- #Плавающая панель фильтрации по статье расходов-->
+    <div id="flowPanelExpend">
+        <i class="fa fa-arrow-left" id="showButtonExpend">&nbsp;<span class="revTextRight">СТАТЬИ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;СТАТЬИ</span>
+        </div>
+
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="expend_Table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Статья</th>
+                        <th><input id="allExpendCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- #endregion -->
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
@@ -135,6 +148,7 @@
     <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/fFlowPanelPrj.js"></script>
+    <script src="~/Scripts/FRScripts/fFlowPanelExpend.js"></script>
     <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -347,7 +361,7 @@
                         var _dateFact = formatDate(data.StartDateFact);
                         var _planBenefit = data.planBenefit.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
                         var _planExpand = data.planExpand.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1 ");
-                        
+
                         var _IPA = 'Платежи отсутствуют';
                         if (data.IPA !== null) {
                             _IPA = moment(eval(data.IPA.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"))).format('DD/MM/YYYY');

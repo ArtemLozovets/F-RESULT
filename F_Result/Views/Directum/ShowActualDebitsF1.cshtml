@@ -580,6 +580,7 @@
         function ClearFilter() {
             globalVarsClear();
             globalExpendVarsClear();
+            globalOrgVarsClear();
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');

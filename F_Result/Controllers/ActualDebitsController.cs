@@ -48,7 +48,7 @@ namespace F_Result.Controllers
         //Список исходящих платежей
         [HttpPost]
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public ActionResult LoadAD(int[] filterPrjIDs)
+        public ActionResult LoadAD(int[] filterPrjIDs, int[] filterOrgIDs)
         {
             try
             {
@@ -146,8 +146,10 @@ namespace F_Result.Controllers
                             }).ToList();
 
                 _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum))
-                            && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))
-                            && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+                            && (x.UserFN.Contains(_userfn) || string.IsNullOrEmpty(_userfn))
+                            && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))
+                            && (filterOrgIDs == null || filterOrgIDs.Length == 0 || filterOrgIDs.Contains(x.OrganizationId))
+                            ).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _ads.Select(x => x.ActualDebitId).ToList();
@@ -160,8 +162,16 @@ namespace F_Result.Controllers
                         IPA = x.Select(z => z.IPA).First()
                     }).ToList();
 
+                List<ArticlesIDs> _organizationList = _ads.GroupBy(x => x.OrganizationId).
+                    Select(x => new ArticlesIDs
+                    {
+                        AtId = x.Select(a => a.OrganizationId).FirstOrDefault(),
+                        AtName = x.Select(a => a.OrganizationName).FirstOrDefault()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _orgListJson = jsonSerialiser.Serialize(_organizationList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -181,22 +191,15 @@ namespace F_Result.Controllers
                 return Json(new
                 {
                     sum = fSum,
-                    draw = draw
-                    ,
-                    prjlist = _prjListJson
-                    ,
-                    idslist = _IDsListJson
-                    ,
-                    sortcolumn = sortColumn
-                    ,
-                    sortdir = sortColumnDir
-                    ,
-                    recordsFiltered = totalRecords
-                    ,
-                    recordsTotal = totalRecords
-                    ,
-                    data = data
-                    ,
+                    draw = draw,
+                    prjlist = _prjListJson,
+                    orglist = _orgListJson,
+                    idslist = _IDsListJson,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }
