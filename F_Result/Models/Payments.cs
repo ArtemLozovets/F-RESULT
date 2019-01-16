@@ -15,6 +15,12 @@ namespace F_Result.Models
         [Display(Name = "Проект")]
         public string Project { get; set; }
 
+        [Display(Name = "ID организации")]
+        public int OrganizationId { get; set; }
+
+        [Display(Name = "Организация")]
+        public string Organization { get; set; }
+
         [Display(Name = "Руководитель проекта")]
         public string Chief { get; set; }
 

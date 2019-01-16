@@ -44,7 +44,7 @@ namespace F_Result.Controllers
 
         //Список входящих платежей 
         [HttpPost]
-        public ActionResult LoadPayments(int[] filterPrjIDs, bool? isExport)
+        public ActionResult LoadPayments(int[] filterPrjIDs, int[] filterOrgIDs, bool? isExport)
         {
             try
             {
@@ -122,7 +122,9 @@ namespace F_Result.Controllers
                                      PaymentDate = payment.PaymentDate,
                                      PaymentDesc = payment.PaymentDesc,
                                      planBenefit = prg.planBenefit,
-                                     planExpand = prg.planExpand
+                                     planExpand = prg.planExpand,
+                                     organizationId = payment.OrganizationId,
+                                     organization = payment.Organization
                                  }).AsEnumerable().Select(x => new PaymentsView
                                  {
                                      id = x.id,
@@ -146,14 +148,16 @@ namespace F_Result.Controllers
                                      PaymentDate = x.PaymentDate,
                                      PaymentDesc = x.PaymentDesc,
                                      planBenefit = x.planBenefit,
-                                     planExpand = x.planExpand
+                                     planExpand = x.planExpand,
+                                     OrganizationId = x.organizationId,
+                                     Organization = x.organization
                                  }).ToList();
 
                 _payments = _payments.Where(x => ((x.Payment.ToString().Contains(_paymenttxt)
                             || string.IsNullOrEmpty(_paymenttxt))
-                            && (filterPrjIDs == null
-                                    || filterPrjIDs.Length == 0
-                                    || filterPrjIDs.Contains(x.ProjectId)))).ToList();
+                            && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId)))
+                            && (filterOrgIDs == null || filterOrgIDs.Length == 0 || filterOrgIDs.Contains(x.OrganizationId))
+                          ).ToList();
 
                 List<APBFilterIDs> _prjList = _payments.GroupBy(x => x.ProjectId)
                     .Select(x => new APBFilterIDs
@@ -163,11 +167,19 @@ namespace F_Result.Controllers
                         IPA = x.Select(z => z.IPA).First()
                     }).ToList();
 
+                List<ArticlesIDs> _organizationList = _payments.GroupBy(x => x.OrganizationId).
+                    Select(x => new ArticlesIDs
+                    {
+                        AtId = x.Select(a => a.OrganizationId).FirstOrDefault(),
+                        AtName = x.Select(a => a.Organization).FirstOrDefault()
+                    }).ToList();
+
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _payments.Select(x => x.id).ToList();
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _orgListJson = jsonSerialiser.Serialize(_organizationList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -187,26 +199,17 @@ namespace F_Result.Controllers
                 var data = _payments.Skip(skip).Take(pageSize).ToList();
                 return Json(new
                 {
-                    psum = pSum
-                    ,
-                    fsum = fSum
-                    ,
-                    draw = draw
-                    ,
-                    recordsFiltered = totalRecords
-                    ,
-                    recordsTotal = totalRecords
-                    ,
-                    data = data
-                    ,
-                    prjlist = _prjListJson
-                    ,
-                    idslist = _IDsListJson
-                    ,
-                    sortcolumn = sortColumn
-                    ,
-                    sortdir = sortColumnDir
-                    ,
+                    psum = pSum,
+                    fsum = fSum,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    prjlist = _prjListJson,
+                    orglist = _orgListJson,
+                    idslist = _IDsListJson,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
                     errormessage = ""
                 }, JsonRequestBehavior.AllowGet);
             }
@@ -453,7 +456,7 @@ namespace F_Result.Controllers
             }
 
             //--Получаем список возможных статусов платежей для панели фильтров-------
-            List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().OrderBy(x=>x).ToList();
+            List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().OrderBy(x => x).ToList();
             var jsonSerialiser = new JavaScriptSerializer();
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
@@ -549,7 +552,7 @@ namespace F_Result.Controllers
                                      PaymentDate = payment.PaymentDate,
                                      WorkerName = payment.WorkerName,
                                      Counteragent = payment.Counteragent,
-                                     OrganizationId = payment.OrganizationId,   
+                                     OrganizationId = payment.OrganizationId,
                                      Organization = payment.Organization,
                                      ContractId = payment.ContractId,
                                      ContractDescr = payment.ContractDescr,
@@ -605,7 +608,7 @@ namespace F_Result.Controllers
                     Select(x => new ArticlesIDs
                     {
                         AtId = x.Select(a => a.ExpenditureId).FirstOrDefault(),
-                        AtName = x.Select(a =>a.ExpenditureName).FirstOrDefault()
+                        AtName = x.Select(a => a.ExpenditureName).FirstOrDefault()
 
                     }).ToList();
 
