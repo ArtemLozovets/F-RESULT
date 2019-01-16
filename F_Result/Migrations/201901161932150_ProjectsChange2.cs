@@ -3,7 +3,7 @@ namespace F_Result.Models
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class ProjectsChange1 : DbMigration
+    public partial class ProjectsChange2 : DbMigration
     {
         public override void Up()
         {

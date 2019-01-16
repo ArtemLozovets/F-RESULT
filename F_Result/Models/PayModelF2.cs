@@ -92,12 +92,20 @@ namespace F_Result.Models
 
     public class ActualDebitsF2 : PayModelF2
     {
+        [Display(Name = "ID Организации")]
+        public int OrganizationId { get; set; }
 
+        [Display(Name = "Организация")]
+        public string Organization { get; set; }
     }
 
     public class PaymentsF2 : PayModelF2
     {
+        [Display(Name = "ID Организации")]
+        public int OrganizationId { get; set; }
 
+        [Display(Name = "Организация")]
+        public string Organization { get; set; }
     }
 
     public partial class ActualDebitsF1
