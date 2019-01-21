@@ -198,25 +198,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Methods\UsrWksMethods.cs" />
-    <Compile Include="Migrations\201812072010427_ProjectsChange14.cs" />
-    <Compile Include="Migrations\201812072010427_ProjectsChange14.Designer.cs">
-      <DependentUpon>201812072010427_ProjectsChange14.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201812221836023_ProjectsChange.cs" />
-    <Compile Include="Migrations\201812221836023_ProjectsChange.Designer.cs">
-      <DependentUpon>201812221836023_ProjectsChange.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201901160949337_ProjectsChange1.cs" />
-    <Compile Include="Migrations\201901160949337_ProjectsChange1.Designer.cs">
-      <DependentUpon>201901160949337_ProjectsChange1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201901161932150_ProjectsChange2.cs" />
-    <Compile Include="Migrations\201901161932150_ProjectsChange2.Designer.cs">
-      <DependentUpon>201901161932150_ProjectsChange2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201901161958499_ProjectsChange3.cs" />
-    <Compile Include="Migrations\201901161958499_ProjectsChange3.Designer.cs">
-      <DependentUpon>201901161958499_ProjectsChange3.cs</DependentUpon>
+    <Compile Include="Migrations\201901210836454_ProjectsChange.cs" />
+    <Compile Include="Migrations\201901210836454_ProjectsChange.Designer.cs">
+      <DependentUpon>201901210836454_ProjectsChange.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\AAOReportCons.cs" />
     <Compile Include="Models\Account.cs" />
@@ -743,20 +727,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201812072010427_ProjectsChange14.resx">
-      <DependentUpon>201812072010427_ProjectsChange14.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201812221836023_ProjectsChange.resx">
-      <DependentUpon>201812221836023_ProjectsChange.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901160949337_ProjectsChange1.resx">
-      <DependentUpon>201901160949337_ProjectsChange1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901161932150_ProjectsChange2.resx">
-      <DependentUpon>201901161932150_ProjectsChange2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901161958499_ProjectsChange3.resx">
-      <DependentUpon>201901161958499_ProjectsChange3.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201901210836454_ProjectsChange.resx">
+      <DependentUpon>201901210836454_ProjectsChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

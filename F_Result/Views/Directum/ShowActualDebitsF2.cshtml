@@ -134,7 +134,8 @@
         </div>
     </div>
     <!-- #endregion -->
-    <!-- #Плавающая панель фильтрации по статье расходов-->
+
+    <!-- #Плавающая панель фильтрации по статьям-->
     <div id="flowPanelExpend">
         <i class="fa fa-arrow-left" id="showButtonExpend">&nbsp;<span class="revTextRight">СТАТЬИ</span></i>
         <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
@@ -357,7 +358,7 @@
 
                         //Инициализация таблицы организаций в плавающей панели---------
                         if (window._flagOrg) {
-                            //Заполнение массива статей для таблицы в плавающей панели
+                            //Заполнение массива организаций для таблицы в плавающей панели
                             _orgIDs = JSON.parse(json.orglist)
                             var orgTable = $('#org_Table').DataTable();
                             orgTable.destroy();

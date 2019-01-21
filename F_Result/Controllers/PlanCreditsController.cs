@@ -40,7 +40,7 @@ namespace F_Result.Controllers
         //Таблица плана доходов
         [HttpPost]
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
-        public ActionResult LoadPC(int[] filterPrjIDs)
+        public ActionResult LoadPC(int[] filterPrjIDs, int[] filterOrgIDs)
         {
             try
             {
@@ -141,23 +141,34 @@ namespace F_Result.Controllers
                                 planExpand = x.planExpand
                             }).ToList();
 
-                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum)) 
-                                        && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))
-                                        && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+                _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum))
+                                        && (x.UserFN.Contains(_userfn) || string.IsNullOrEmpty(_userfn))
+                                        && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))
+                                        && (filterOrgIDs == null || filterOrgIDs.Length == 0 || filterOrgIDs.Contains(x.OrganizationId))
+                                ).ToList();
 
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _ads.Select(x => x.PlanCreditId).ToList();
 
                 List<APBFilterIDs> _prjList = _ads.GroupBy(x => x.ProjectId)
-                    .Select(x => new APBFilterIDs {
+                    .Select(x => new APBFilterIDs
+                    {
                         PrjId = x.Select(z => z.ProjectId).First(),
                         ProjectName = x.Select(z => z.ProjectName).First(),
                         IPA = x.Select(z => z.IPA).First()
                     }).ToList();
 
+                List<ArticlesIDs> _organizationList = _ads.GroupBy(x => x.OrganizationId)
+                    .Select(x => new ArticlesIDs
+                    {
+                        AtId = x.Select(a => a.OrganizationId).FirstOrDefault(),
+                        AtName = x.Select(a => a.OrganizationName).FirstOrDefault()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _orgListJson = jsonSerialiser.Serialize(_organizationList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -174,16 +185,20 @@ namespace F_Result.Controllers
                 totalRecords = _ads.Count();
 
                 var data = _ads.Skip(skip).Take(pageSize);
-                return Json(new { fsum = fSum
-                    , draw = draw
-                    , recordsFiltered = totalRecords
-                    , recordsTotal = totalRecords
-                    , data = data
-                    , prjlist = _prjListJson
-                    , idslist = _IDsListJson
-                    , sortcolumn = sortColumn
-                    , sortdir = sortColumnDir
-                    , errormessage = "" }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    fsum = fSum,
+                    draw = draw,
+                    recordsFiltered = totalRecords,
+                    recordsTotal = totalRecords,
+                    data = data,
+                    prjlist = _prjListJson,
+                    orglist = _orgListJson,
+                    idslist = _IDsListJson,
+                    sortcolumn = sortColumn,
+                    sortdir = sortColumnDir,
+                    errormessage = ""
+                }, JsonRequestBehavior.AllowGet);
 
             }
             catch (Exception ex)
