@@ -98,7 +98,8 @@ namespace F_Result.Controllers
                                         && (payment.Manager.Contains(_manager) || string.IsNullOrEmpty(_manager))
                                         && (payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate || string.IsNullOrEmpty(_paymentdatetext)) //Диапазон дат
                                         && (payment.PaymentDesc.Contains(_paymentdesc) || string.IsNullOrEmpty(_paymentdesc))
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                        //Фильтрация записей по проектам для руководителей проектов                                               
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0) || WorkerIdsList.Contains(prg.ProjectManager ?? 0))
                                  select new
                                  {
                                      id = payment.id,
@@ -309,7 +310,8 @@ namespace F_Result.Controllers
                                         && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
                                         && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
                                         && (payment.Currency.Contains(_curr) || string.IsNullOrEmpty(_curr))
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
+                                         //Фильтрация записей по проектам для руководителей проектов                                               
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0) || WorkerIdsList.Contains(prg.ProjectManager ?? 0)))
                                  select new
                                  {
                                      id = payment.id,
@@ -558,7 +560,9 @@ namespace F_Result.Controllers
                                           && (string.IsNullOrEmpty(_worker) || payment.WorkerName.Contains(_worker))
                                           && (string.IsNullOrEmpty(_prjmanager) || prg.ChiefName.Contains(_prjmanager))
                                      //-------------------
-                                          && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))//Фильтрация записей по проектам для руководителей проектов                                          
+                                     //Фильтрация записей по проектам для руководителей проектов                                               
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0) || WorkerIdsList.Contains(prg.ProjectManager ?? 0))
+
                                  )
                                  select new
                                  {
@@ -768,7 +772,8 @@ namespace F_Result.Controllers
                                         && (payment.DocumentDescr.Contains(_docdescr) || string.IsNullOrEmpty(_docdescr))
                                         && (payment.Tags.Contains(_tags) || string.IsNullOrEmpty(_tags))
                                         && (payment.Currency.Contains(_curr) || string.IsNullOrEmpty(_curr))
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0))) //Фильтрация записей по проектам для руководителей проектов
+                                         //Фильтрация записей по проектам для руководителей проектов                                               
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0) || WorkerIdsList.Contains(prg.ProjectManager ?? 0)))
                                  select new
                                  {
                                      id = payment.id,
@@ -1109,7 +1114,8 @@ namespace F_Result.Controllers
                                         && (project.EndDateFact == _enddatefact || _enddatefact == null)
                                         && (project.StartDatePlan == _startdateplan || _startdateplan == null)
                                         && (project.EndDatePlan == _enddateplan || _enddateplan == null)
-                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(project.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
+                                     //Фильтрация записей по проектам для руководителей проектов                                               
+                                        && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(project.Chief ?? 0) || WorkerIdsList.Contains(project.ProjectManager ?? 0))
                                  select new
                                  {
                                      id = project.id,
