@@ -29,7 +29,7 @@ namespace F_Result.Controllers
                 ViewData["ProjectName"] = ProjectName;
             }
 
-            if (!String.IsNullOrEmpty(startDate) && !String.IsNullOrEmpty(endDate))
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
                 ViewData["Period"] = startDate + " - " + endDate;
             }
@@ -40,7 +40,7 @@ namespace F_Result.Controllers
         // Таблица плана расходов
         [Authorize(Roles = "Administrator, Chief, ProjectManager, Accountant, Financier")]
         [HttpPost]
-        public ActionResult LoadPD(int[] filterPrjIDs)
+        public ActionResult LoadPD(int[] filterPrjIDs, int[] filterOrgIDs)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace F_Result.Controllers
                 DateTime? _startagrdate = null;
                 DateTime? _endagrdate = null;
                 string _datetext = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault().ToString();
-                if (!String.IsNullOrEmpty(_datetext))
+                if (!string.IsNullOrEmpty(_datetext))
                 {
                     _datetext = _datetext.Trim();
                     int _length = (_datetext.Length) - (_datetext.IndexOf('-') + 2);
@@ -80,7 +80,7 @@ namespace F_Result.Controllers
                 string _sum = Request.Form.GetValues("columns[6][search][value]").FirstOrDefault().ToString();
                 string _periodtxt = Request.Form.GetValues("columns[7][search][value]").FirstOrDefault().ToString();
                 int _period;
-                Int32.TryParse(_periodtxt, out _period);
+                int.TryParse(_periodtxt, out _period);
 
                 var _ads = (from plandebit in db.PlanDebits
                             join prg in db.Projects on plandebit.ProjectId equals prg.id
@@ -95,7 +95,7 @@ namespace F_Result.Controllers
                                         && (prg.ChiefName.Contains(_chname) || string.IsNullOrEmpty(_chname))
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (plandebit.Appointment.Contains(_appointment) || string.IsNullOrEmpty(_appointment))
-                                        && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
+                                        && (pperiod.PlanningPeriodId == _period || string.IsNullOrEmpty(_periodtxt))
                                         && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0)) //Фильтрация записей по проектам для руководителей проектов
                             select new
                             {
@@ -142,8 +142,10 @@ namespace F_Result.Controllers
                             }).ToList();
 
                 _ads = _ads.Where(x => (x.Sum.ToString().Contains(_sum) || string.IsNullOrEmpty(_sum))
-                                       && (x.UserFN.Contains(_userfn) || String.IsNullOrEmpty(_userfn))
-                                       && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))).ToList();
+                                       && (x.UserFN.Contains(_userfn) || string.IsNullOrEmpty(_userfn))
+                                       && (filterPrjIDs == null || filterPrjIDs.Length == 0 || filterPrjIDs.Contains(x.ProjectId))
+                                       && (filterOrgIDs == null || filterOrgIDs.Length == 0 || filterOrgIDs.Contains(x.OrganizationId))
+                                  ).ToList();
 
                 //Список ID для передачи в ф-цию экспорта в Excel
                 List<int> _IDsList = _ads.Select(x => x.PlanDebitId).ToList();
@@ -155,8 +157,16 @@ namespace F_Result.Controllers
                         IPA = x.Select(z => z.IPA).First()
                     }).ToList();
 
+                List<ArticlesIDs> _organizationList = _ads.GroupBy(x => x.OrganizationId).
+                    Select(x => new ArticlesIDs
+                    {
+                        AtId = x.Select(a => a.OrganizationId).FirstOrDefault(),
+                        AtName = x.Select(a => a.OrganizationName).FirstOrDefault()
+                    }).ToList();
+
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _orgListJson = jsonSerialiser.Serialize(_organizationList);
                 var _IDsListJson = jsonSerialiser.Serialize(_IDsList);
 
 
@@ -177,6 +187,7 @@ namespace F_Result.Controllers
                 return Json(new { fsum = fSum
                     , draw = draw
                     , prjlist = _prjListJson
+                    , orglist = _orgListJson
                     , idslist = _IDsListJson
                     , sortcolumn = sortColumn
                     , sortdir = sortColumnDir

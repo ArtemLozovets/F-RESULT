@@ -9,18 +9,6 @@
 <link href="~/Content/DataTables/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
 <link href="~/Scripts/DateRangePicker/daterangepicker.min.css" rel="stylesheet" />
 <link href="~/Content/jquery.contextMenu.min.css" rel="stylesheet" />
-<style>
-    #flowPanel div.dataTables_wrapper div.dataTables_filter {
-        text-align: center !important;
-        margin-top: 10px;
-    }
-
-    #flowPanel #prgtable_filter input {
-        width: 300px !important;
-        margin-right: 8px;
-    }
-</style>
-
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -107,6 +95,29 @@
         </div>
     </div>
     <!-- #endregion -->
+    <!-- #Плавающая панель фильтрации по организации-->
+    <div id="flowPanelOrg">
+        <i class="fa fa-arrow-left" id="showButtonOrg">&nbsp;<span class="revTextRight">ОРГАНИЗАЦИИ</span></i>
+        <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+            <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Организации</span>
+        </div>
+
+        <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+            <table style="background-color:white; width:100%; margin-top:0 !important;"
+                   class="table table-bordered table-striped table-responsive table-hover gridtable"
+                   id="org_Table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Организация</th>
+                        <th><input id="allOrgCHB" checked type="checkbox"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- #endregion -->
 
     <a href="#" class="scrollup1">Наверх</a>
 </div>
@@ -122,6 +133,7 @@
     <script src="~/Scripts/DataTables/responsive.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/fFlowPanelPrj.js"></script>
+    <script src="~/Scripts/FRScripts/fFlowPanelOrg.js"></script>
     <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
@@ -342,6 +354,17 @@
                             $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                             window._flag = false;
                         };
+
+                        //Инициализация таблицы организаций в плавающей панели---------
+                        if (window._flagOrg) {
+                            //Заполнение массива организаций для таблицы в плавающей панели
+                            _orgIDs = JSON.parse(json.orglist)
+                            var orgTable = $('#org_Table').DataTable();
+                            orgTable.destroy();
+                            orgTableCrate();
+                            $('#flowPanelOrg').height($('#org_Table_wrapper').height() - 60);
+                            window._flagOrg = false;
+                        };
                     },
                     "ajax": {
                         "url": "/PlanDebits/LoadPD",
@@ -349,6 +372,7 @@
                         "datatype": "json",
                         "data": function (d) {
                             d.filterPrjIDs = window.filterPrjIDs;
+                            d.filterOrgIDs = window.filterOrgIDs;
                         },
                         "dataSrc": function (d) {
                             if (d.data.length === 0) {
@@ -414,10 +438,16 @@
 
             table.columns().eq(0).each(function (colIdx) {
                 $('.sb', $('th')[colIdx]).on('keyup change', function () {
+                    // Обновляем данные в таблицах плавающих панелей
+                    window._flag = true;
+                    window._flagOrg = true;
                     table.column(colIdx).search(this.value).draw();
                 });
 
                 $('.dff', $('th')[colIdx]).on('change', function () {
+                    // Обновляем данные в таблицах плавающих панелей
+                    window._flag = true;
+                    window._flagOrg = true;
                     table.column(colIdx).search(this.value).draw();
                 });
             });
@@ -427,11 +457,14 @@
         $('body').on('change', '#PeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             globalVarsClear();
+            globalOrgVarsClear();
             var table = $('#gridtable').DataTable();
             table.draw();
         });
 
         function ClearFilter() {
+            globalVarsClear();
+            globalOrgVarsClear();
             var table = $('#gridtable').DataTable();
             $(".sb, .dff").each(function (colIdx) {
                 $(this).val('');
