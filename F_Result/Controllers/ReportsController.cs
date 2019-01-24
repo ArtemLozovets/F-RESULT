@@ -565,7 +565,7 @@ namespace F_Result.Controllers
                 string repdt = RepDate.Value.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReportOld('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(string.Format("Select * from dbo.ufnAPPReportOld('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
@@ -747,7 +747,7 @@ namespace F_Result.Controllers
 
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReportHb('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReportHb('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -767,7 +767,7 @@ namespace F_Result.Controllers
                             (filterPrjIDs == null
                             || filterPrjIDs.Length == 0
                             || filterPrjIDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
@@ -879,7 +879,7 @@ namespace F_Result.Controllers
                 string repdt = RepDate.Value.ToString("yyyyMMdd");
 
                 //Запрос вызывает пользовательскую функцию "ufnAPPReport" хранящуюся на SQL-сервере.
-                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(String.Format("Select * from dbo.ufnAPPReportHb('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
+                List<APPTableReport> _ads = db.Database.SqlQuery<APPTableReport>(string.Format("Select * from dbo.ufnAPPReportHb('{0}', '{1}') ORDER BY prj DESC", repdt, ProjectName)).ToList();
 
                 List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
 
@@ -887,7 +887,7 @@ namespace F_Result.Controllers
                             (filterPrjIDs == null
                             || filterPrjIDs.Length == 0
                             || filterPrjIDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
@@ -1053,8 +1053,8 @@ namespace F_Result.Controllers
                                 Operation = aaoRep.Operation,
                                 Counteragent = aaoRep.Counteragent,
                                 CounteragentName = aaoRep.CounteragentName,
-                                Received = aaoRep.Received ?? 0, // Чижику привет!
-                                Payed = aaoRep.Payed ?? 0, //Из того же материала! :)
+                                Received = aaoRep.Received ?? 0, 
+                                Payed = aaoRep.Payed ?? 0, 
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReport
                             {

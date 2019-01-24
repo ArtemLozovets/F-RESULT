@@ -14,6 +14,7 @@ namespace F_Result.Models
         public decimal prjresSP { get; set; }
         public decimal prjresEP { get; set; }
         public string ProjectType { get; set; }
+        public int ProjectManager { get; set; }
         public string ProjectManagerName { get; set; }
         public string ChiefName { get; set; }
         public int Chief { get; set; }
@@ -67,6 +68,7 @@ namespace F_Result.Models
         public int prj { get; set; }
         public string ProjectName { get; set; }
         public string ProjectType { get; set; }
+        public int ProjectManager { get; set; }
         public string ProjectManagerName { get; set; }
         public string ChiefName { get; set; }
         public int Chief { get; set; }
