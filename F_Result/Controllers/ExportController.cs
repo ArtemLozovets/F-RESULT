@@ -1374,7 +1374,7 @@ namespace F_Result.Controllers
                             (IDs == null
                             || IDs.Length == 0
                             || IDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -1568,7 +1568,7 @@ namespace F_Result.Controllers
                             (IDs == null
                             || IDs.Length == 0
                             || IDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 if (sortColumn == "ProjectName")
@@ -1761,7 +1761,7 @@ namespace F_Result.Controllers
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -1781,7 +1781,7 @@ namespace F_Result.Controllers
                             (IDs == null
                             || IDs.Length == 0
                             || IDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))

@@ -98,7 +98,7 @@ namespace F_Result.Controllers
                                         && (org.Title.Contains(_organizationname) || string.IsNullOrEmpty(_organizationname))
                                         && (inc.Name.Contains(_incname) || string.IsNullOrEmpty(_incname))
                                         && (plancredit.Appointment.Contains(_appoinment) || string.IsNullOrEmpty(_appoinment))
-                                        && (pperiod.PlanningPeriodId == _period || String.IsNullOrEmpty(_periodtxt))
+                                        && (pperiod.PlanningPeriodId == _period || string.IsNullOrEmpty(_periodtxt))
                                 //Фильтрация записей по проектам для руководителей проектов                                               
                                         && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(prg.Chief ?? 0) || WorkerIdsList.Contains(prg.ProjectManager ?? 0))
                             select new

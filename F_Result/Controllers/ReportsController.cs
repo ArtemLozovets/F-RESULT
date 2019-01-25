@@ -433,7 +433,7 @@ namespace F_Result.Controllers
 
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReportOld('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReportOld('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -453,7 +453,7 @@ namespace F_Result.Controllers
                             (filterPrjIDs == null
                             || filterPrjIDs.Length == 0
                             || filterPrjIDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
@@ -573,7 +573,7 @@ namespace F_Result.Controllers
                             (filterPrjIDs == null
                             || filterPrjIDs.Length == 0
                             || filterPrjIDs.Contains(x.prj))
-                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief)) //Фильтрация записей по проектам для руководителей проектов
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
                 List<APBFilterIDs> _prjList = _ads
