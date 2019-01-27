@@ -112,15 +112,39 @@ namespace F_Result.Controllers
             ws.Column(1).Width = 40;
             ws.Column(1).Style.WrapText = true;
 
-            ws.Column(2).Width = 20;
+            ws.Column(2).Width = 24;
+            ws.Column(2).Style.WrapText = false;
 
             ws.Column(3).Width = 20;
+            ws.Column(3).Style.WrapText = false;
+
             ws.Column(4).Width = 50;
+            ws.Column(4).Style.WrapText = true;
+
             ws.Column(5).Width = 22;
+            ws.Column(5).Style.WrapText = true;
+
             ws.Column(6).Width = 20;
+            ws.Column(6).Style.WrapText = false;
+
             ws.Column(7).Width = 30;
-            ws.Column(8).Width = 15;
+            ws.Column(7).Style.WrapText = false;
+
+            ws.Column(8).Width = 16;
+            ws.Column(8).Style.WrapText = false;
+            ws.Column(8).Style.Indent = 1;
+
             ws.Column(9).Width = 15;
+            ws.Column(1).Style.WrapText = false;
+
+            using (ExcelRange col = ws.Cells[4, 1, row, 9])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PaymentsF1_" + DateTime.Now.Ticks + ".xlsx";
@@ -131,7 +155,7 @@ namespace F_Result.Controllers
         }
         #endregion
 
-        #region Исходящие платежи Ф1. Экспорт в Excel
+        #region Исходящие платежи Ф1. Экспорт в Excel (F-Result)
 
         public ActionResult ExportActualDebitsF1(string IDs, string sortColumn, string sortColumnDir)
         {
@@ -203,7 +227,7 @@ namespace F_Result.Controllers
             ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Исходящие платежи Ф1");
 
             ws.Cells["A1"].Value = "Название отчета:";
-            ws.Cells["B1"].Value = "\"ИСХОДЯЩИЕ ПЛАТЕЖИ Ф1\"";
+            ws.Cells["B1"].Value = "\"ИСХОДЯЩИЕ ПЛАТЕЖИ Ф1 (F-Result)\"";
             ws.Cells["A2"].Value = "Дата формирования:";
             ws.Cells["B2"].Value = DateTime.Now;
             ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
@@ -265,17 +289,33 @@ namespace F_Result.Controllers
 
             //ws.Cells["A:AZ"].AutoFitColumns();
 
-            ws.Column(1).Width = 40;
+            ws.Column(1).Width = 34;
             ws.Column(1).Style.WrapText = true;
 
             ws.Column(2).Width = 20;
+            ws.Column(2).Style.WrapText = false;
 
             ws.Column(3).Width = 20;
+            ws.Column(3).Style.WrapText = false;
+
             ws.Column(4).Width = 50;
+            ws.Column(4).Style.WrapText = true;
+
             ws.Column(5).Width = 35;
+            ws.Column(5).Style.WrapText = true;
+
             ws.Column(6).Width = 20;
             ws.Column(7).Width = 15;
             ws.Column(8).Width = 15;
+
+            using (ExcelRange col = ws.Cells[4, 1, row, 8])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "ADF1_" + DateTime.Now.Ticks + ".xlsx";
@@ -284,6 +324,177 @@ namespace F_Result.Controllers
             return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
 
         }
+        #endregion
+
+        #region Исходящие платежи Ф1. Экспорт в Excel (Directum)
+
+        public ActionResult ExportActualDebitsF1Dr(string IDs, string sortColumn, string sortColumnDir)
+        {
+            var IDsArray = new List<int>();
+            if (string.IsNullOrEmpty(IDs) || IDs == "[]")
+            {
+                return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+            }
+            IDsArray = JsonConvert.DeserializeObject<List<int>>(IDs);
+
+            var _payments = (from payment in db.ActualDebitsF1
+                             join prg in db.Projects on payment.ProjectId equals prg.id
+                             where (IDsArray.Contains(payment.id))
+                             select new
+                             {
+                                 id = payment.id,
+                                 ipa = prg.IPA,
+                                 DocumentNumber = payment.DocumentNumber,
+                                 DocumentDate = payment.DocumentDate,
+                                 PaymentDate = payment.PaymentDate,
+                                 WorkerName = payment.WorkerName,
+                                 Counteragent = payment.Counteragent,
+                                 OrganizationId = payment.OrganizationId,
+                                 Organization = payment.Organization,
+                                 ContractId = payment.ContractId,
+                                 ContractDescr = payment.ContractDescr,
+                                 ProjectId = payment.ProjectId,
+                                 ProjectName = payment.ProjectName,
+                                 ItemSum = payment.ItemSum,
+                                 ExpenditureName = payment.ExpenditureName,
+                                 ExpenditureId = payment.ExpenditureId,
+                                 StageName = payment.StageName,
+                                 DocumentDescr = payment.DocumentDescr,
+                                 ProjectManager = prg.ChiefName
+                             }).AsEnumerable().Select(x => new ActualDebitsF1
+                             {
+                                 id = x.id,
+                                 IPA = x.ipa,
+                                 DocumentNumber = x.DocumentNumber,
+                                 DocumentDate = x.DocumentDate,
+                                 PaymentDate = x.PaymentDate,
+                                 WorkerName = x.WorkerName,
+                                 Counteragent = x.Counteragent,
+                                 OrganizationId = x.OrganizationId,
+                                 Organization = x.Organization,
+                                 ContractId = x.ContractId,
+                                 ContractDescr = x.ContractDescr,
+                                 ProjectId = x.ProjectId,
+                                 ProjectName = x.ProjectName,
+                                 ItemSum = x.ItemSum,
+                                 ExpenditureName = x.ExpenditureName,
+                                 ExpenditureId = x.ExpenditureId,
+                                 StageName = x.StageName,
+                                 DocumentDescr = x.DocumentDescr,
+                                 ProjectManager = x.ProjectManager
+                             }).ToList();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            {
+                _payments = _payments.OrderBy(sortColumn + " " + sortColumnDir + ", id desc").ToList();
+            }
+            else
+            {
+                _payments = _payments.OrderByDescending(x => x.PaymentDate).ThenByDescending(x => x.id).ToList();
+            }
+
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Исходящие платежи Ф1");
+
+            ws.Cells["A1"].Value = "Название отчета:";
+            ws.Cells["B1"].Value = "\"ИСХОДЯЩИЕ ПЛАТЕЖИ Ф1 (Directum)\"";
+            ws.Cells["A2"].Value = "Дата формирования:";
+            ws.Cells["B2"].Value = DateTime.Now;
+            ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Cells["B1:B2"].Style.Font.Bold = true;
+            ws.Cells["B1:B2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+            ws.Cells["A4"].Value = "Проект";
+            ws.Cells["B4"].Value = "Организация";
+            ws.Cells["C4"].Value = "Контрагент";
+            ws.Cells["D4"].Value = "Примечание";
+            ws.Cells["E4"].Value = "Дата платежа";
+            ws.Cells["E4"].Style.Indent = 2;
+            ws.Cells["F4"].Value = "Сумма";
+
+            ws.Cells["A4:F4"].AutoFilter = true;
+
+            using (ExcelRange col = ws.Cells[4, 1, 4, 6])
+            {
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                col.Style.Font.Size = 12;
+                col.Style.Font.Bold = true;
+                col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
+            }
+
+            int row = 5;
+
+            foreach (var item in _payments)
+            {
+                ws.Cells[string.Format("A{0}", row)].Value = item.ProjectName;
+                ws.Cells[string.Format("B{0}", row)].Value = item.Organization;
+                ws.Cells[string.Format("C{0}", row)].Value = item.Counteragent;
+                ws.Cells[string.Format("D{0}", row)].Value = item.DocumentDescr;
+                ws.Cells[string.Format("E{0}", row)].Value = item.PaymentDate;
+                ws.Cells[string.Format("F{0}", row)].Value = item.ItemSum;
+
+                row++;
+            }
+
+            ws.Cells[string.Format("E{0}", row)].Value = "Итого:";
+            ws.Cells[string.Format("E{0}", row)].Style.Font.Bold = true;
+            ws.Cells[string.Format("F{0}", row)].Formula = string.Format("SUM(F5:F{0})", row - 1);
+            ws.Cells[string.Format("F{0}", row)].Style.Font.Bold = true;
+
+            using (ExcelRange col = ws.Cells[5, 5, row, 5])
+            {
+                col.Style.Numberformat.Format = "dd/MM/yyyy";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+
+            using (ExcelRange col = ws.Cells[5, 6, row, 6])
+            {
+                col.Style.Numberformat.Format = "#,##0.00";
+                col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            }
+
+            ws.Cells["A:AZ"].AutoFitColumns();
+
+            ws.Column(1).Width = 30;
+            ws.Column(1).Style.WrapText = true;
+
+            ws.Column(2).Width = 20;
+            ws.Column(2).Style.WrapText = true;
+
+            ws.Column(3).Width = 36;
+            ws.Column(3).Style.WrapText = true;
+
+            ws.Column(4).Width = 60;
+            ws.Column(4).Style.WrapText = true;
+
+            ws.Column(5).Width = 15;
+            ws.Column(5).Style.WrapText = true;
+
+            ws.Column(6).Width = 16;
+            ws.Column(6).Style.WrapText = false;
+
+
+            using (ExcelRange col = ws.Cells[4, 1, row, 6])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
+            ws.Row(1).Style.WrapText = false;
+            ws.Row(2).Style.WrapText = false;
+            ws.Row(4).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+            string path = Server.MapPath("~/DownloadRPT/");
+            string repName = "ADF1_" + DateTime.Now.Ticks + ".xlsx";
+            pck.SaveAs(new System.IO.FileInfo(path + repName));
+
+            return Json(new { filename = repName, result = true }, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region План доходов Ф1. Экспорт в Excel
@@ -736,8 +947,38 @@ namespace F_Result.Controllers
             }
 
             ws.Cells["A:AZ"].AutoFitColumns();
-            ws.Cells["A:AZ"].Style.Indent = 1;
+            //ws.Cells["A:AZ"].Style.Indent = 1;
+
+            ws.Column(1).Width = 34;
+            ws.Column(1).Style.WrapText = true;
+
+            ws.Column(3).Width = 10;
+            ws.Column(3).Style.WrapText = true;
+
+            ws.Column(6).Width = 50;
+            ws.Column(6).Style.WrapText = true;
+
+            ws.Column(8).Width = 22;
+            ws.Column(8).Style.WrapText = false;
+
             ws.Column(9).Width = 16;
+            ws.Column(9).Style.WrapText = false;
+
+            ws.Column(10).Width = 16;
+            ws.Column(10).Style.WrapText = false;
+
+            ws.Column(11).Width = 12;
+            ws.Column(11).Style.WrapText = false;
+            ws.Column(11).Style.Indent = 1;
+
+            using (ExcelRange col = ws.Cells[4, 1, row, 11])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PaymentsF2_" + DateTime.Now.Ticks + ".xlsx";
@@ -889,7 +1130,38 @@ namespace F_Result.Controllers
 
             ws.Cells["A:AZ"].AutoFitColumns();
             ws.Cells["A:AZ"].Style.Indent = 1;
+
+            using (ExcelRange col = ws.Cells[4, 1, row, 11])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
+            ws.Column(1).Width = 30;
+            ws.Column(1).Style.WrapText = true;
+
+            ws.Column(2).Width = 36;
+            ws.Column(2).Style.WrapText = true;
+
+            ws.Column(5).Width = 50;
+            ws.Column(5).Style.WrapText = true;
+
+            ws.Column(6).Width = 50;
+            ws.Column(6).Style.WrapText = true;
+
+            ws.Column(7).Width = 40;
+            ws.Column(7).Style.WrapText = true;
+
             ws.Column(9).Width = 16;
+            ws.Column(9).Style.WrapText = false;
+
+            ws.Column(10).Width = 18;
+            ws.Column(10).Style.WrapText = false;
+
+
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "ADF2_" + DateTime.Now.Ticks + ".xlsx";
@@ -1491,7 +1763,7 @@ namespace F_Result.Controllers
                 ws.Cells[string.Format("I{0}", row)].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 ws.Cells[string.Format("I{0}", row)].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
 
-       
+
                 ws.Cells[string.Format("A{0}", row)].Value = "Итого";
                 ws.Cells[string.Format("A{0}", row)].Style.Font.Bold = true;
                 ws.Cells[string.Format("A{0}", row)].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
