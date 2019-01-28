@@ -17,7 +17,7 @@ function APBExport2Excel(controllerName) {
 
     var idsArray = new Array();
     var arr_from_json = JSON.parse(json.prjlist);
-    
+
     for (var i = 0; i < arr_from_json.length; i++) {
         idsArray.push(arr_from_json[i].PrjId);
     }
@@ -34,9 +34,9 @@ function APBExport2Excel(controllerName) {
             , Period: json.Period
             , ProjectName: json.ProjectName
             , isAllTimes: json.isAllTimes
-});
+    });
 
-fnExport2Excel(controllerName, paramStr);
+    fnExport2Excel(controllerName, paramStr);
 };
 
 // #endregion
@@ -47,28 +47,30 @@ function AAOExport2Excel(controllerName) {
     var api = $('#gridtable').dataTable().api();
     var json = api.ajax.json();
 
-    var idsArray = new Array();
-    var arr_from_json = JSON.parse(json.prjlist);
-    
-    for (var i = 0; i < arr_from_json.length; i++) {
-        idsArray.push(arr_from_json[i].PrjId);
+    var wksIDsArray = new Array();
+    var arr_from_json = JSON.parse(json.filterWksIDs);
+
+    if (arr_from_json != null) {
+        for (var i = 0; i < arr_from_json.length; i++) {
+            wksIDsArray.push(arr_from_json[i]);
+        }
     }
 
-    var startPeriod = json.StartPeriod;
-    var endPeriod = json.EndPeriod;
-
-    var paramStr = JSON.stringify({
-        IDs: idsArray //!!!-Список проектов-!!!
+    var paramStr = JSON.stringify({ filterWksIDs: wksIDsArray
             , sortColumn: json.sortcolumn
             , sortColumnDir: json.sortdir
-            , startPeriod: startPeriod
-            , endPeriod: endPeriod
-            , Period: json.Period
-            , ProjectName: json.ProjectName
-            , isAllTimes: json.isAllTimes
-});
+            , _paymentdatetext: json.paymentdatetext
+            , worker: json.worker
+            , docNum: json.docNum
+            , operation: json.operation
+            , counteragent: json.counteragent
+            , received: json.received
+            , payed: json.payed
+            , currency: json.currency
+            , mode: json.mode
+    });
 
-fnExport2Excel(controllerName, paramStr);
+    fnExport2Excel(controllerName, paramStr);
 };
 
 // #endregion
@@ -92,8 +94,6 @@ function APPExport2Excel(controllerName) {
             , sortColumnDir: json.sortdir
             , repDate: moment(json.repDate).format('YYYYMMDD')
     });
-
-//    console.log(paramStr);
 
     fnExport2Excel(controllerName, paramStr);
 };

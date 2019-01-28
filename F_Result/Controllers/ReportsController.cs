@@ -96,8 +96,8 @@ namespace F_Result.Controllers
                                             && (outpay.StageName == "Paid")
                                    select new
                                    {
-                                       Date = outpay.PaymentDate??RDate,
-                                       Sum = outpay.ItemSum??0,
+                                       Date = outpay.PaymentDate ?? RDate,
+                                       Sum = outpay.ItemSum ?? 0,
                                        ProjectId = prg.id,
                                        Project = prg.ShortName,
                                        IPA = prg.IPA
@@ -1053,8 +1053,8 @@ namespace F_Result.Controllers
                                 Operation = aaoRep.Operation,
                                 Counteragent = aaoRep.Counteragent,
                                 CounteragentName = aaoRep.CounteragentName,
-                                Received = aaoRep.Received ?? 0, 
-                                Payed = aaoRep.Payed ?? 0, 
+                                Received = aaoRep.Received ?? 0,
+                                Payed = aaoRep.Payed ?? 0,
                                 Currency = aaoRep.Currency
                             }).AsEnumerable().Select(x => new AAOReport
                             {
@@ -1102,6 +1102,7 @@ namespace F_Result.Controllers
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _wksListJson = jsonSerialiser.Serialize(_wksList);
+                var _filterWksIDs = jsonSerialiser.Serialize(filterWksIDs); 
                 var _currTotalJson = jsonSerialiser.Serialize(currTotal);
 
                 //Количество сотрудников в данных отчета
@@ -1113,8 +1114,20 @@ namespace F_Result.Controllers
                 return Json(new
                 {
                     draw = draw,
+                    //---------Данные для функции експорта в MS Excel
                     sortcolumn = sortColumn,
                     sortdir = sortColumnDir,
+                    filterWksIDs = _filterWksIDs,
+                    paymentdatetext = _paymentdatetext,
+                    worker = _worker,
+                    docNum = _docNum,
+                    operation = _operation,
+                    counteragent = _counteragent,
+                    received = _received,
+                    payed = _payed,
+                    currency = _currency,
+                    mode = mode,
+                    //-------------------------
                     recordsFiltered = totalRecords,
                     recordsTotal = totalRecords,
                     wkslist = _wksListJson,
