@@ -1627,7 +1627,7 @@ namespace F_Result.Controllers
                 string PeriodName = db.PlanningPeriods.FirstOrDefault(x => x.PlanningPeriodId == Period).PeriodName.ToString();
 
                 //Запрос вызывает пользовательскую функцию "ufnAPBReportHb" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(String.Format("Select * from dbo.ufnAPBReportHb('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReportHb('{0}', '{1}', {2}, '{3}', {4})", startPeriod, endPeriod, Period, ProjectName, _isAllTimes)).ToList();
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -1663,7 +1663,7 @@ namespace F_Result.Controllers
 
                 ExcelPackage pck = new ExcelPackage();
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Бюджетирование");
-
+                
                 ws.Cells["A1"].Value = "Название отчета:";
                 ws.Cells["B1"].Value = "\"КОНТРОЛЬ ВЫПОЛНЕНИЯ БЮДЖЕТОВ\"";
                 ws.Cells["A2"].Value = "Дата формирования:";
@@ -2120,17 +2120,20 @@ namespace F_Result.Controllers
                     _aao = _aao.OrderByDescending(x => x.Date).ThenByDescending(x => x.ID).ToList();
                 }
 
-
                 //---------------------EXPORT----------------------//
 
                 ExcelPackage pck = new ExcelPackage();
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("ААО");
 
+                ws.Cells["A1:B1"].Merge = true;
+                ws.Cells["A2:B2"].Merge = true;
+                ws.Cells["A1:A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
                 ws.Cells["A1"].Value = "Название отчета:";
-                ws.Cells["B1"].Value = "\"АЛЬТЕРНАТИВНЫЙ АВАНСОВЫЙ ОТЧЕТ\"";
+                ws.Cells["C1"].Value = "\"АЛЬТЕРНАТИВНЫЙ АВАНСОВЫЙ ОТЧЕТ\"";
                 ws.Cells["A2"].Value = "Дата формирования:";
-                ws.Cells["B2"].Value = DateTime.Now;
-                ws.Cells["B2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+                ws.Cells["C2"].Value = DateTime.Now;
+                ws.Cells["C2"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
                 ws.Cells["B1:B4"].Style.Font.Bold = true;
                 ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -2194,6 +2197,29 @@ namespace F_Result.Controllers
                 ws.Column(1).Width = 15;
                 ws.Column(1).Style.WrapText = false;
                 ws.Column(1).Style.Indent = 1;
+
+                ws.Column(2).Width = 20;
+                ws.Column(2).Style.WrapText = false;
+
+                ws.Column(3).Width = 16;
+                ws.Column(3).Style.WrapText = false;
+
+                ws.Column(4).Width = 40;
+                ws.Column(4).Style.WrapText = true;
+
+                ws.Column(5).Width = 20;
+                ws.Column(5).Style.WrapText = false;
+
+                ws.Column(6).Width = 18;
+                ws.Column(6).Style.WrapText = false;
+
+                ws.Column(7).Width = 18;
+                ws.Column(7).Style.WrapText = false;
+
+                ws.Column(8).Width = 12;
+                ws.Column(8).Style.WrapText = false;
+                ws.Column(8).Style.Indent = 1;
+                ws.Column(8).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
                 string path = Server.MapPath("~/DownloadRPT/");
                 string repName = "AAOReport_" + DateTime.Now.Ticks + ".xlsx";
