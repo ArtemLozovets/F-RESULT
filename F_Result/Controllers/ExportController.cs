@@ -2034,7 +2034,7 @@ namespace F_Result.Controllers
             {
                 db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
 
-                //----------------------DATA-----------------------//
+                 //----------------------DATA-----------------------//
                 // Проверяем принадлежность текущего пользователя к ролям "Руководитель", "Финансист", "Администратор"
                 bool isChief = System.Web.HttpContext.Current.User.IsInRole("Chief");
                 bool isFinancier = System.Web.HttpContext.Current.User.IsInRole("Financier");
@@ -2105,6 +2105,11 @@ namespace F_Result.Controllers
                                 Currency = x.Currency
                             }).ToList();
 
+                if (_aao.Count == 0)
+                {
+                    return Json(new { result = false, message = "Отсутствуют данные для экспорта!" }, JsonRequestBehavior.AllowGet);
+                }
+
                 _aao = _aao.Where(x => (
                                       (string.IsNullOrEmpty(payed) || x.Payed.ToString().Contains(payed))
                                    && (string.IsNullOrEmpty(received) || x.Received.ToString().Contains(received))
@@ -2129,6 +2134,7 @@ namespace F_Result.Controllers
                 ws.Cells["A2:B2"].Merge = true;
                 ws.Cells["A1:A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
+                ws.Cells["A1:A2"].Style.Font.Bold = true;
                 ws.Cells["A1"].Value = "Название отчета:";
                 ws.Cells["C1"].Value = "\"АЛЬТЕРНАТИВНЫЙ АВАНСОВЫЙ ОТЧЕТ\"";
                 ws.Cells["A2"].Value = "Дата формирования:";
@@ -2138,18 +2144,18 @@ namespace F_Result.Controllers
                 ws.Cells["B1:B4"].Style.Font.Bold = true;
                 ws.Cells["B2:B4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                ws.Cells["A6"].Value = "Дата";
-                ws.Cells["B6"].Value = "Сльтрудник";
-                ws.Cells["C6"].Value = "Документ";
-                ws.Cells["D6"].Value = "Операция";
-                ws.Cells["E6"].Value = "Контрагент";
-                ws.Cells["F6"].Value = "Получено";
-                ws.Cells["G6"].Value = "Передано";
-                ws.Cells["H6"].Value = "Валюта";
+                ws.Cells["A4"].Value = "Дата";
+                ws.Cells["B4"].Value = "Сльтрудник";
+                ws.Cells["C4"].Value = "Документ";
+                ws.Cells["D4"].Value = "Операция";
+                ws.Cells["E4"].Value = "Контрагент";
+                ws.Cells["F4"].Value = "Получено";
+                ws.Cells["G4"].Value = "Передано";
+                ws.Cells["H4"].Value = "Валюта";
 
-                ws.Cells["A6:H6"].AutoFilter = true;
+                ws.Cells["A4:H4"].AutoFilter = true;
 
-                using (ExcelRange col = ws.Cells[6, 1, 6, 8])
+                using (ExcelRange col = ws.Cells[4, 1, 4, 8])
                 {
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     col.Style.Font.Size = 12;
@@ -2157,7 +2163,7 @@ namespace F_Result.Controllers
                     col.Style.Font.Color.SetColor(System.Drawing.Color.DarkGreen);
                 }
 
-                int row = 7;
+                int row = 5;
 
                 foreach (var item in _aao)
                 {
@@ -2173,19 +2179,19 @@ namespace F_Result.Controllers
                     row++;
                 }
 
-                using (ExcelRange col = ws.Cells[7, 1, row, 1])
+                using (ExcelRange col = ws.Cells[5, 1, row, 1])
                 {
                     col.Style.Numberformat.Format = "dd/MM/yyyy";
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 }
 
-                using (ExcelRange col = ws.Cells[7, 6, row, 8])
+                using (ExcelRange col = ws.Cells[5, 6, row, 8])
                 {
                     col.Style.Numberformat.Format = "#,##0.00";
                     col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 }
 
-                using (ExcelRange col = ws.Cells[6, 1, row - 1, 8])
+                using (ExcelRange col = ws.Cells[4, 1, row - 1, 8])
                 {
                     col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     col.Style.Border.Right.Style = ExcelBorderStyle.Thin;

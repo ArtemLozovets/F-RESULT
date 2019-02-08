@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
+using F_Result.Methods;
 
 namespace F_Result.Controllers
 {
@@ -30,6 +31,18 @@ namespace F_Result.Controllers
                         @ViewData["UserRole"] = currentRole.Description.ToString();
                     }
                 }
+
+                using (FRModel db = new FRModel())
+                {
+                    db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+
+                    List<int> WorkerIdsList = UsrWksMethods.GetWorkerId(db); // Получаем ID связанных сотрудников для пользователя в роли "Руководитель проекта"
+                    //Количество действующих проектов
+                    @ViewData["PrjCount"] = db.Projects.Where(x => (x.EndDateFact == null)
+                                                                    && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief ?? 0)))
+                                                                    .Count();
+                }
+
             }
             return View();
         }

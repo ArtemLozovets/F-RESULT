@@ -4,41 +4,102 @@
 }
 
 <style>
-    H1 {
-        text-shadow: -1px -1px #FFF, -2px -2px #FFF, -1px 1px #FFF, -2px 2px #FFF, 1px 1px #FFF, 2px 2px #FFF, 1px -1px #FFF, 2px -2px #FFF, -3px -3px 2px #BBB, -3px 3px 2px #BBB, 3px 3px 2px #BBB, 3px -3px 2px #BBB;
-        color: steelblue;
-        -moz-transition: all 1s;
-        -o-transition: all 1s;
-        -webkit-transition: all 1s;
-        transition: all 1s;
-        font-size: 4em;
+    .dashLink{
     }
 
-        H1:hover {
-            color: yellowgreen;
-        }
-
- </style>
+    .dashLink:hover{
+        color:#fff;
+    }
+</style>
 
 
 <div class="container">
+
     @if (Request.IsAuthenticated)
     {
-        <div style="width:100%; margin:5em auto; text-align:center;">
-            <h1>F-RESULT</h1>
-            <p>Добро пожаловать, @ViewData["FirstName"]!</p>
-            <p>Вы вошли как @ViewData["UserName"]</p>
-            <p>Ваша роль в системе - @ViewData["UserRole"]</p>
-            <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
+        //Dashboard block
+        <div class="row" id="dashBlock">
+            <div class="col-sm-4 text-center">
+                <div class="card bg-c-yellow update-card">
+                    <div class="card-block">
+                        <h3 class="text-white">@ViewData["PrjCount"]</h3>
+                        <h5 class="text-white">Проектов в работе</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="text-white footer-text">
+                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4 text-center">
+                <div class="card bg-c-green update-card">
+                    <div class="card-block">
+                        <h3 class="text-white">В РАЗРАБОТКЕ</h3>
+                        <h5 class="text-white">Запросов в работе</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="text-white footer-text">
+                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4 text-center">
+                <div class="card bg-c-lite-green update-card">
+                    <div class="card-block">
+                        <h3 class="text-white">В РАЗРАБОТКЕ</h3>
+                        <h5 class="text-white">Конверсия за 12 месяцев</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="text-white footer-text">
+                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <div class="card bg-c-pink update-card">
+                    <div class="card-block" style="color:#FFF; font-weight:normal">
+                        <p>Добро пожаловать, @ViewData["FirstName"]!</p>
+                        <p>Вы вошли как @ViewData["UserName"]</p>
+                        <p>Ваша роль в системе - @ViewData["UserRole"]</p>
+                        <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
+                    </div>
+                    <div class="card-footer" style="text-align:right !important">
+                        <p class="text-white footer-text">
+                            <a class="dashLink" title="Добавить отзыв" href="#" id="addComment"><i class="fa fa-comment" style="margin-right:10px;"></i></a>
+
+                            <a class="dashLink" title="Мой ААО" href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "",  Mode = "Wks" })">
+                                <i class="fa fa-cubes" style="margin-right:10px;"></i>
+                            </a>
+
+                            <a class="dashLink" title="Выйти" href="javascript:document.getElementById('logoutForm').submit()">
+                                <i class="glyphicon glyphicon-log-out" style="margin-right:10px;"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     }
 
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/moment.min.js"></script>
     <script>
         $(function () {
+
+            timeNow = moment().format('H:mm');
+            $(".upd_time").text(timeNow);
             setPosition();
         })
 
@@ -49,7 +110,7 @@
         function setPosition() {
             var wHeight = $(window).height();
             var fHeight = $('#footerBlock').height();
-            if (wHeight < 420) {
+            if (wHeight < 520) {
                 $('#footerBlock').hide();
             }
             else {

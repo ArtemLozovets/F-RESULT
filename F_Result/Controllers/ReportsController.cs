@@ -40,8 +40,6 @@ namespace F_Result.Controllers
             // График входящих платежей -------------------------------------------
             var _inPayments = (from inpay in db.Payments
                                join prg in db.Projects on inpay.ProjectId equals prg.id
-                               join ipa in db.ActivityIndexes on inpay.ProjectId equals ipa.ProjectId into ipatmp
-                               from ipa in ipatmp.DefaultIfEmpty()
                                where (inpay.PaymentDate.Value.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(inpay.ProjectId))
                                select new
                                {
@@ -49,7 +47,7 @@ namespace F_Result.Controllers
                                    Payment = inpay.Payment,
                                    ProjectId = prg.id,
                                    Project = prg.ShortName,
-                                   IPA = ipa.IPAValue
+                                   IPA = prg.IPA
                                }).ToList();
 
             var _inpaylist = (from t in _inPayments
@@ -188,9 +186,11 @@ namespace F_Result.Controllers
         }
 
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public JsonResult GetPlanData(int? Year, string filterPrjIDs)
+        public JsonResult GetPlanData(int? Year, string filterPrjIDs, int? planningPeriod)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+
+            ViewData["periodItems"] = new SelectList(db.PlanningPeriods, "PlanningPeriodId", "PeriodName");
 
             List<int> _filterPrjIDs = JsonConvert.DeserializeObject<List<int>>(filterPrjIDs);
 
@@ -199,22 +199,21 @@ namespace F_Result.Controllers
                 Year = DateTime.Today.Year;
             }
 
+
             var flt = _filterPrjIDs ?? Enumerable.Empty<int>(); //!---IF 'filterPrjIDs' is null 'filterPrjIDs.Contains(inpay.ProjectId)' raise exception 
 
             // График плановых доходов -------------------------------------------
 
             var _planCredits = (from pc in db.PlanCredits
                                 join prg in db.Projects on pc.ProjectId equals prg.id
-                                join ipa in db.ActivityIndexes on pc.ProjectId equals ipa.ProjectId into ipatmp
-                                from ipa in ipatmp.DefaultIfEmpty()
-                                where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId))
+                                where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId)) && (pc.PeriodId == planningPeriod)
                                 select new
                                 {
                                     Date = pc.Date,
                                     Sum = pc.Sum,
                                     ProjectId = prg.id,
                                     Project = prg.ShortName,
-                                    IPA = ipa.IPAValue
+                                    IPA = prg.IPA
                                 }).ToList();
 
             var _pclist = (from t in _planCredits
@@ -240,16 +239,14 @@ namespace F_Result.Controllers
 
             var _planDebits = (from pd in db.PlanDebits
                                join prg in db.Projects on pd.ProjectId equals prg.id
-                               join ipa in db.ActivityIndexes on pd.ProjectId equals ipa.ProjectId into ipatmp
-                               from ipa in ipatmp.DefaultIfEmpty()
-                               where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId))
+                               where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId)) && (pd.PeriodId == planningPeriod)
                                select new
                                {
                                    Date = pd.Date,
                                    Sum = pd.Sum,
                                    ProjectId = prg.id,
                                    Project = prg.ShortName,
-                                   IPA = ipa.IPAValue
+                                   IPA = prg.IPA
                                }).ToList();
 
             var _pdlist = (from t in _planDebits

@@ -418,27 +418,27 @@ input[type=checkbox]#isAllTimes {
 
 /*---------------Flow Panel block--------------*/
 
-#flowPanel div.dataTables_wrapper div.dataTables_filter, 
-    #flowPanelExpend div.dataTables_wrapper div.dataTables_filter,
-    #flowPanelOrg div.dataTables_wrapper div.dataTables_filter {
-        text-align: center !important;
-        margin-top: 10px;
-    }
+#flowPanel div.dataTables_wrapper div.dataTables_filter,
+#flowPanelExpend div.dataTables_wrapper div.dataTables_filter,
+#flowPanelOrg div.dataTables_wrapper div.dataTables_filter {
+    text-align: center !important;
+    margin-top: 10px;
+}
 
-    #flowPanel #prgtable_filter input, 
-    #flowPanelExpend #expend_Table_filter input,
-    #flowPanelOrg #org_Table_filter input {
-        width: 300px !important;
-        margin-right: 8px;
-    }
+#flowPanel #prgtable_filter input,
+#flowPanelExpend #expend_Table_filter input,
+#flowPanelOrg #org_Table_filter input {
+    width: 300px !important;
+    margin-right: 8px;
+}
 
-    div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
-        margin-top:-166px;
-    }
+div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row div.col-sm-12 {
+    margin-top: -166px;
+}
 
-     div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row  div.col-sm-12{
-        margin-top:-260px;
-    }
+div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row div.col-sm-12 {
+    margin-top: -260px;
+}
 
 /*--------------ProjectFilterPanel-------------*/
 #flowPanel {
@@ -486,7 +486,7 @@ input[type=checkbox]#isAllTimes {
     position: fixed;
     width: 360px;
     border-radius: 6px 0 0 6px;
-    min-height:320px;
+    min-height: 320px;
     height: calc(100% - 2px);
     background-color: #57A;
     top: 60px;
@@ -544,7 +544,7 @@ input[type=checkbox]#isAllTimes {
     margin-left: -4px;
     display: block;
     font-weight: bold;
-    font-size:small;
+    font-size: small;
     letter-spacing: .1em;
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
@@ -573,12 +573,63 @@ input[type=checkbox]#isAllTimes {
 }
 /*#endregion */
 
+/*#region Dashboard block */
+
+.card {
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 20px 0 rgba(69,90,100,.08);
+    box-shadow: 0 1px 20px 0 rgba(69,90,100,.08);
+    border: none;
+    margin-bottom: 2em;
+    margin-top: 1em;
+}
+
+.bg-c-yellow {
+    background: -webkit-gradient(linear,left top,right top,from(#fe9365),to(#feb798));
+    background: linear-gradient(to right,#fe9365,#feb798);
+}
+
+.bg-c-green {
+    background: -webkit-gradient(linear,left top,right top,from(#0ac282),to(#0df3a3));
+    background: linear-gradient(to right,#0ac282,#0df3a3);
+}
+
+.bg-c-lite-green {
+    background: -webkit-gradient(linear,left top,right top,from(#01a9ac),to(#01dbdf));
+    background: linear-gradient(to right,#01a9ac,#01dbdf);
+}
+
+.bg-c-pink {
+    background: -webkit-gradient(linear, left top, right top, from(#446e9b), to(#7ca9db));
+    background: linear-gradient(to right, #446e9b, #7ca9db);
+}
+
+.card-block {
+    padding: 1em;
+}
+
+.update-card .card-footer {
+    text-align: left;
+    background-color: transparent;
+    border-top: 1px solid #fff;
+    padding: .3em 0 .1em 1.6em;
+}
+
+.text-white {
+    color: #fff !important;
+}
+
+.footer-text {
+    font-size: medium;
+    font-weight: 100;
+}
+
+/*#endregion */
 
 /* ----------------RESPONSIVE---------------*/
-@media (max-width: 767px) {
-    .carousel {
-        height: 70%;
-        /* increases the carousel height so it looks good on phones */
+@media screen and (max-width: 767px) {
+    #dashBlock {
+        display: none;
     }
 }
 

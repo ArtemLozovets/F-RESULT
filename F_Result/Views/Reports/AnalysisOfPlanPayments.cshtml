@@ -53,7 +53,8 @@
         </div>
     </div>
 
-    <div class="row form-inline">
+
+    <div class="row form-inline" style="width:100%;">
         @Html.DropDownList("year", years, new
    {
        @class = "form-control form-inline input-sm",
@@ -64,6 +65,14 @@
             <option value="bar">Графбар</option>
             <option value="line">Линейная</option>
         </select>
+
+        @Html.DropDownList("PeriodDDL", (SelectList)ViewData["periodItems"], null, new
+               {
+                   @class = "form-control input-sm form-inline",
+                   name = "PeriodDDL",
+                   title = "Плановый период"
+               })
+
         <button class="btn btn-sm btn-primary" title="Сброс фильтра проектов" id="chartRefresh"><i class="glyphicon glyphicon-refresh"></i></button>
     </div>
 
@@ -119,38 +128,63 @@
     <script>
         $(function () {
             $('#loadingImg').hide();
+
+            //Читаем значение фильтра планового периода
+            if (localStorage.getItem('PlanningPeriod') !== null) {
+                var DDLVal = localStorage.getItem('PlanningPeriod');
+                $('#PeriodDDL').val(DDLVal);
+            }
+
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
-            GetChart(_Year, chartType);
+            var _planningPeriod = $('#PeriodDDL').val();
+            GetChart(_Year, chartType, _planningPeriod);
         });
 
         $('body').on('click', '#chartRefresh', function () {
             globalVarsClear();
         });
 
+        //Изменение отчетного года
         $('body').on('change', '#YDDL', function (e) {
             window._prjIDs = [];
             window.filterPrjIDs = [];
             window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
-            GetChart(_Year, chartType);
+            var _planningPeriod = $('#PeriodDDL').val();
+            GetChart(_Year, chartType, _planningPeriod);
         });
 
+        //Изменение типа диаграммы
         $('body').on('change', '#chartType', function (e) {
             window._prjIDs = [];
             window.filterPrjIDs = [];
             window._flag = true;
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
-            GetChart(_Year, chartType);
+            var _planningPeriod = $('#PeriodDDL').val();
+            GetChart(_Year, chartType, _planningPeriod);
         });
 
-        function GetChart(_Year, chartType) {
+        //Скрипт для работы с фильтром выбора планового периода
+        $('body').on('change', '#PeriodDDL', function () {
+            localStorage.setItem('PlanningPeriod', $(this).val());
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
+            var _Year = $('#YDDL').val();
+            var chartType = $("#chartType").val();
+            var _planningPeriod = $('#PeriodDDL').val();
+            GetChart(_Year, chartType, _planningPeriod);
+        });
+
+        function GetChart(_Year, chartType, _planningPeriod) {
             $('#loadingImg').show();
             $.get('/Reports/GetPlanData', {
                 Year: _Year,
-                filterPrjIDs: JSON.stringify(filterPrjIDs)
+                filterPrjIDs: JSON.stringify(filterPrjIDs),
+                planningPeriod: _planningPeriod
             },
                     function (data) {
                         $('#loadingImg').hide();
@@ -262,7 +296,7 @@
                     }
                 }
             });
-        };
+        }
 
     </script>
 

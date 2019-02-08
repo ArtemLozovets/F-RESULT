@@ -57,7 +57,8 @@ $(function () {
             if ($('#flowPanel').data('mode') === 'chart') {
                 var _Year = $('#YDDL').val();
                 var chartType = $("#chartType").val();
-                GetChart(_Year, chartType);
+                var _planningPeriod = $('#PeriodDDL').val();
+                GetChart(_Year, chartType, _planningPeriod);
             }
             else {
                 $("#gridtable").DataTable().draw();
@@ -86,7 +87,8 @@ $(function () {
             if ($('#flowPanel').data('mode') === 'chart') {
                 var _Year = $('#YDDL').val();
                 var chartType = $("#chartType").val();
-                GetChart(_Year, chartType);
+                var _planningPeriod = $('#PeriodDDL').val();
+                GetChart(_Year, chartType, _planningPeriod);
             }
             else {
                 $("#gridtable").DataTable().draw();
@@ -105,7 +107,8 @@ function globalVarsClear() {
     if ($('#flowPanel').data('mode') === 'chart') {
         var _Year = $('#YDDL').val();
         var chartType = $("#chartType").val();
-        GetChart(_Year, chartType);
+        var _planningPeriod = $('#PeriodDDL').val();
+        GetChart(_Year, chartType, _planningPeriod);
     }
     else {
         $("#gridtable").DataTable().draw();
