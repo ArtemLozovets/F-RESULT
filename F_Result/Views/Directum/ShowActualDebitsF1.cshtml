@@ -68,7 +68,8 @@
                         </div>
                         <div class="col-sm-3 form-inline text-right fCnt" style="margin:6px 0 0; ">
                             <select name="stateDDL" id="stateDDL" class="form-control input-sm" title="Статус платежа">
-                                <option value="All" selected="selected">Все платежи</option>
+                                <option value="All">Все платежи</option>
+                                <option value="PdRd" selected="selected">Paid+Ready</option>
                             </select>
                         </div>
                     </div>
@@ -332,7 +333,7 @@
             $.each(statusArray, function (text, text) {
                 $('#stateDDL').append($('<option></option>').val(text).html(text))
             });
-            $('#stateDDL').val('Paid').change();
+            $('#stateDDL').val('PdRd').change();
 
             //Скрипт для работы с контекстным меню панели фильтров
             $.contextMenu({
@@ -371,7 +372,7 @@
                 $('#docDateFlt').val('');
                 $('#docNumFlt').val('');
                 $('#contractFlt').val('');
-                $('#stateDDL').val('Paid');
+                $('#stateDDL').val('PdRd');
                 $('#wrkFlt').val('');
                 $('#pmFlt').val('');
                 ClearFilter();

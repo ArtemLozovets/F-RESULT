@@ -460,7 +460,7 @@ namespace F_Result.Controllers
                 if (firstPay ?? false)
                 {
                     startDate = Convert.ToDateTime(db.ActualDebitsF1
-                            .Where(x => x.ProjectId == ProjectId && x.StageName == "Paid")
+                            .Where(x => x.ProjectId == ProjectId && (x.StageName == "Paid" || x.StageName == "Ready"))
                             .OrderBy(x => x.PaymentDate)
                             .Select(x => x.PaymentDate)
                             .FirstOrDefault()).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
@@ -477,7 +477,6 @@ namespace F_Result.Controllers
             //--Получаем список возможных статусов платежей для панели фильтров-------
             List<string> StatusList = db.ActualDebitsF1.Select(x => x.StageName).Distinct().OrderBy(x => x).ToList();
             var jsonSerialiser = new JavaScriptSerializer();
-            ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
             ViewData["StatusList"] = jsonSerialiser.Serialize(StatusList);
 
             return View();
@@ -556,7 +555,7 @@ namespace F_Result.Controllers
                                           && (string.IsNullOrEmpty(_docDateText) || payment.DocumentDate >= _startdocdate && payment.DocumentDate <= _enddocdate) //Диапазон дат документа
                                           && (string.IsNullOrEmpty(_docNum) || payment.DocumentNumber == _docNum)
                                           && (string.IsNullOrEmpty(_contract) || payment.ContractDescr == _contract)
-                                          && (string.IsNullOrEmpty(_state) || payment.StageName == _state)
+                                          && (string.IsNullOrEmpty(_state) || payment.StageName == _state || (_state == "PdRd" && (payment.StageName == "Paid" || payment.StageName == "Ready")))
                                           && (string.IsNullOrEmpty(_worker) || payment.WorkerName.Contains(_worker))
                                           && (string.IsNullOrEmpty(_prjmanager) || prg.ChiefName.Contains(_prjmanager))
                                      //-------------------
