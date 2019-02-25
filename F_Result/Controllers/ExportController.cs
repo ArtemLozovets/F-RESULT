@@ -631,16 +631,26 @@ namespace F_Result.Controllers
 
             //ws.Cells["A:AZ"].AutoFitColumns();
 
-            ws.Column(1).Width = 40;
+            using (ExcelRange col = ws.Cells[4, 1, row, 7])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
+            ws.Column(1).Width = 30;
             ws.Column(1).Style.WrapText = true;
 
             ws.Column(2).Width = 20;
 
             ws.Column(3).Width = 20;
-            ws.Column(4).Width = 50;
+            ws.Column(4).Width = 60;
+            ws.Column(4).Style.WrapText = true;
             ws.Column(5).Width = 20;
             ws.Column(6).Width = 15;
-            ws.Column(7).Width = 15;
+            ws.Column(7).Width = 18;
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PCF1_" + DateTime.Now.Ticks + ".xlsx";
@@ -784,16 +794,26 @@ namespace F_Result.Controllers
 
             //ws.Cells["A:AZ"].AutoFitColumns();
 
-            ws.Column(1).Width = 40;
+            using (ExcelRange col = ws.Cells[4, 1, row, 7])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
+            ws.Column(1).Width = 30;
             ws.Column(1).Style.WrapText = true;
 
             ws.Column(2).Width = 20;
 
             ws.Column(3).Width = 20;
-            ws.Column(4).Width = 50;
+            ws.Column(4).Width = 60;
+            ws.Column(4).Style.WrapText = true;
             ws.Column(5).Width = 20;
             ws.Column(6).Width = 15;
-            ws.Column(7).Width = 15;
+            ws.Column(7).Width = 18;
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PDF1_" + DateTime.Now.Ticks + ".xlsx";
@@ -965,7 +985,7 @@ namespace F_Result.Controllers
             ws.Column(9).Width = 16;
             ws.Column(9).Style.WrapText = false;
 
-            ws.Column(10).Width = 16;
+            ws.Column(10).Width = 18;
             ws.Column(10).Style.WrapText = false;
 
             ws.Column(11).Width = 12;
@@ -1312,10 +1332,19 @@ namespace F_Result.Controllers
                 col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             }
 
+            using (ExcelRange col = ws.Cells[4, 1, row, 8])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
             ws.Cells["A:AZ"].Style.Indent = 1;
             ws.Cells["A:AZ"].AutoFitColumns();
             ws.Column(7).Width = 16;
-            ws.Column(8).Width = 15;
+            ws.Column(8).Width = 18;
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PCF2_" + DateTime.Now.Ticks + ".xlsx";
@@ -1465,10 +1494,23 @@ namespace F_Result.Controllers
                 col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             }
 
+            using (ExcelRange col = ws.Cells[4, 1, row, 8])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+            
             ws.Cells["A:AZ"].Style.Indent = 1;
             ws.Cells["A:AZ"].AutoFitColumns();
+            ws.Column(1).Width = 30;
+            ws.Column(1).Style.WrapText = true;
+            ws.Column(5).Width = 50;
+            ws.Column(5).Style.WrapText = true;
             ws.Column(7).Width = 16;
-            ws.Column(8).Width = 15;
+            ws.Column(8).Width = 18;
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "PDF2_" + DateTime.Now.Ticks + ".xlsx";
@@ -1593,10 +1635,19 @@ namespace F_Result.Controllers
                 col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             }
 
+            using (ExcelRange col = ws.Cells[4, 1, row-1, 7])
+            {
+                col.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                col.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                col.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            }
+
             ws.Cells["A:AZ"].Style.Indent = 1;
             ws.Cells["A:AZ"].AutoFitColumns();
-            ws.Column(7).Width = 16;
-            ws.Column(8).Width = 15;
+            ws.Column(6).Width = 18;
+            ws.Column(7).Width = 18;
 
             string path = Server.MapPath("~/DownloadRPT/");
             string repName = "ABalances_" + DateTime.Now.Ticks + ".xlsx";

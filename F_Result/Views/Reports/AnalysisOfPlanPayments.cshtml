@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="contentBlock" hidden>
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
@@ -127,7 +127,10 @@
     <script src="~/Scripts/Chart.js"></script>
     <script>
         $(function () {
-            $('#loadingImg').hide();
+            
+            $('#loadingImg').fadeOut(300, function () {
+                $('#contentBlock').fadeIn(500);
+            });
 
             //Читаем значение фильтра планового периода
             if (localStorage.getItem('PlanningPeriod') !== null) {

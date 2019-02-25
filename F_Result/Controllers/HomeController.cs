@@ -9,11 +9,13 @@ using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
 using F_Result.Methods;
 
+
 namespace F_Result.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
+
         public ActionResult Index()
         {
             if (Request.IsAuthenticated)
@@ -50,6 +52,34 @@ namespace F_Result.Controllers
         public ActionResult InDeveloping()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        [DoNotResetAuthCookie]
+        public ActionResult CheckAuth()
+        {
+            bool isAuth = false;
+            if (Request.IsAuthenticated)
+            {
+                isAuth = true;
+            }
+            return Json(isAuth, JsonRequestBehavior.AllowGet);
+        }
+
+
+        // Фильтр блокирует работу механизма SlidingExpiration путем запрета отправки клиенту нового тикета аутентификации. 
+        // Необходим в случаях, когда Ajax - запрос выполнется автоматически без участия пользователя 
+        // и не должен продлять время сессии пользовталя через SlidingExpiration.
+        public class DoNotResetAuthCookieAttribute : ActionFilterAttribute
+        {
+            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            {
+                var owinContext = System.Web.HttpContext.Current.GetOwinContext();
+                var owinResponse = owinContext.Response;
+
+                owinResponse.OnSendingHeaders(state =>
+                { owinResponse.Cookies.Delete("System_CK"); }, null);
+            }
         }
 
     }

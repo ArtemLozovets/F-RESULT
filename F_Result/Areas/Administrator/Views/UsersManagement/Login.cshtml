@@ -63,6 +63,7 @@
                 @*@Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })*@
             </section>
         </div>
+        @Html.Hidden("isLoginPage", true)
     </div>
 </div>
 @section Scripts {

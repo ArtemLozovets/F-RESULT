@@ -12,7 +12,7 @@
 });
 
 //Отображение панели добавления отзыва
-$('#addComment').on('click', function (e) {
+$('#addComment, #addCommentDash').on('click', function (e) {
     e.preventDefault();
     $('#draggable').fadeIn(500);
     $('#commentText').focus();

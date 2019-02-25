@@ -105,14 +105,14 @@
                                 </li>
 
                                 @*-----------------------Old Report-------------------
-                                <li class="divider"></li>
-                                <li id="repPlanAnalH">
-                                    <a href="@Url.Action("AnalysisOfTheProjectBudget", "Reports", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование (Old)</a>
-                                </li>
-                                <li id="repPrjProfitabilityH">
-                                    <a href="@Url.Action("AnalysisOfTheProjectProfitability", "Reports", new {Area = "" })"><i class="fa fa-pie-chart" style="margin-right:14px;"></i>&nbsp;Анализ прибыльности (Old)</a>
-                                </li>
-                                END-----------------------Old Report-----------------*@
+                                    <li class="divider"></li>
+                                    <li id="repPlanAnalH">
+                                        <a href="@Url.Action("AnalysisOfTheProjectBudget", "Reports", new {Area = "" })"><i class="fa fa-bar-chart" style="margin-right:10px;"></i>&nbsp;Бюджетирование (Old)</a>
+                                    </li>
+                                    <li id="repPrjProfitabilityH">
+                                        <a href="@Url.Action("AnalysisOfTheProjectProfitability", "Reports", new {Area = "" })"><i class="fa fa-pie-chart" style="margin-right:14px;"></i>&nbsp;Анализ прибыльности (Old)</a>
+                                    </li>
+                                    END-----------------------Old Report-----------------*@
 
                                 <!-- If current user is Administrator -->
                                 @if (this.User.IsInRole("Administrator") || this.User.IsInRole("Chief") || this.User.IsInRole("Financier"))
@@ -194,7 +194,7 @@
     @RenderSection("scripts", required: false)
 
     <script>
-        //Скрипт для работы с субменю пунков основного меню
+        //Скрипт для работы с субменю пунктов основного меню
         (function ($) {
             $(document).ready(function () {
                 $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
@@ -205,6 +205,24 @@
                 });
             });
         })(jQuery);
+
+        //Скрипт для проверки аутентификации текущего пользователя на сервере
+        (function worker() {
+            // Если мы не на странице аутентификации - отправляем запрос для проверки аутентификации такущего пользователя
+            if ($('#isLoginPage').val() !== 'True') { 
+                $.ajax({
+                    url: '/Home/CheckAuth',
+                    success: function (data) {
+                        if (data !== true) {
+                            window.location.href = '/Administrator/UsersManagement/Login';
+                        }
+                    },
+                    complete: function () {
+                        setTimeout(worker, 60000);
+                    }
+                });
+            }
+        })();
     </script>
 
 </body>
