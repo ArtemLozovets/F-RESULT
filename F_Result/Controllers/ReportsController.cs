@@ -91,7 +91,7 @@ namespace F_Result.Controllers
                                             && (outpay.ProjectId != null)
                                             && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(outpay.ProjectId ?? 0))
                                             && (outpay.PaymentDate >= RDate)
-                                            && (outpay.StageName == "Paid")
+                                            && (outpay.StageName == "Paid" || outpay.StageName == "Ready")
                                    select new
                                    {
                                        Date = outpay.PaymentDate ?? RDate,
