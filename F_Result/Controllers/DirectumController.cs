@@ -546,7 +546,7 @@ namespace F_Result.Controllers
                 var _payments = (from payment in db.ActualDebitsF1
                                  join prg in db.Projects on payment.ProjectId equals prg.id
                                  where ((string.IsNullOrEmpty(_paymentdatetext) || payment.PaymentDate >= _startpaymentdate && payment.PaymentDate <= _endpaymentdate) //Диапазон дат
-                                          && (string.IsNullOrEmpty(_status) || payment.StageName == _status)
+                                          && (string.IsNullOrEmpty(_status) || payment.StageName == _status || (_status == "PdRd" && (payment.StageName == "Paid" || payment.StageName == "Ready")))
                                           && (string.IsNullOrEmpty(_counteragent) || payment.Counteragent.Contains(_counteragent))
                                           && (string.IsNullOrEmpty(_organization) || payment.Organization.Contains(_organization))
                                           && (string.IsNullOrEmpty(_projectName) || payment.ProjectName.Contains(_projectName))

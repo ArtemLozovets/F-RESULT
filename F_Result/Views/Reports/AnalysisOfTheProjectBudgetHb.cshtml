@@ -220,13 +220,13 @@
 
                                 if ($('#isAllTimes').is(':checked')) {
                                     var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_", Status = "_status_"})';
-                                    url = url.replace('_prj_', prj).replace('_status_', 'Paid').replace(/amp;/g, '');
+                                    url = url.replace('_prj_', prj).replace('_status_', 'PdRd').replace(/amp;/g, '');
                                     window.open(url, '_blank');
                                 }
 
                                 else if (moment(json.StartPeriod) >= moment('01/09/2018', "DD/MM/YYYY")) {
                                     var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", Status = "_status_"})';
-                                    url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace('_status_', 'Paid').replace(/amp;/g, '');
+                                    url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace('_status_', 'PdRd').replace(/amp;/g, '');
                                     window.open(url, '_blank');
                                 }
 
