@@ -373,8 +373,8 @@ td.haveTitle::after {
 
 /*------Global Planning period filter------*/
 #PeriodDDL {
-    width: 160px;
-    margin: 0 -14px 10px 0;
+    width: 140px;
+    margin: 2px -14px 10px 0;
     float: right;
 }
 

@@ -73,6 +73,12 @@
                    title = "Плановый период"
                })
 
+        <select id="formDDL" class="form-control input-sm form-inline" style="width:100px; float:right; margin:2px 5px 0 0;" title="Форма плановых показателей">
+            <option value="f1f2" selected>Ф1 + Ф2</option>
+            <option value="f1">Форма 1</option>
+            <option value="f2">Форма 2</option>
+        </select>
+
         <button class="btn btn-sm btn-primary" title="Сброс фильтра проектов" id="chartRefresh"><i class="glyphicon glyphicon-refresh"></i></button>
     </div>
 
@@ -141,7 +147,8 @@
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             var _planningPeriod = $('#PeriodDDL').val();
-            GetChart(_Year, chartType, _planningPeriod);
+            var _formValue = $('#formDDL').val();
+            GetChart(_Year, chartType, _planningPeriod, _formValue);
         });
 
         $('body').on('click', '#chartRefresh', function () {
@@ -156,7 +163,8 @@
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             var _planningPeriod = $('#PeriodDDL').val();
-            GetChart(_Year, chartType, _planningPeriod);
+            var _formValue = $('#formDDL').val();
+            GetChart(_Year, chartType, _planningPeriod, _formValue);
         });
 
         //Изменение типа диаграммы
@@ -179,15 +187,29 @@
             var _Year = $('#YDDL').val();
             var chartType = $("#chartType").val();
             var _planningPeriod = $('#PeriodDDL').val();
-            GetChart(_Year, chartType, _planningPeriod);
+            var _formValue = $('#formDDL').val();
+            GetChart(_Year, chartType, _planningPeriod, _formValue);
         });
 
-        function GetChart(_Year, chartType, _planningPeriod) {
+        //Скрипт для работы с выпадающим списком выбора формы отчета
+        $('body').on('change', '#formDDL', function () {
+            window._prjIDs = [];
+            window.filterPrjIDs = [];
+            window._flag = true;
+            var _Year = $('#YDDL').val();
+            var chartType = $("#chartType").val();
+            var _planningPeriod = $('#PeriodDDL').val();
+            var _formValue = $('#formDDL').val();
+            GetChart(_Year, chartType, _planningPeriod, _formValue);
+        });
+
+        function GetChart(_Year, chartType, _planningPeriod, _formValue) {
             $('#loadingImg').show();
             $.get('/Reports/GetPlanData', {
                 Year: _Year,
                 filterPrjIDs: JSON.stringify(filterPrjIDs),
-                planningPeriod: _planningPeriod
+                planningPeriod: _planningPeriod,
+                formValue: _formValue
             },
                     function (data) {
                         $('#loadingImg').hide();
@@ -239,6 +261,7 @@
 
             var canvas = $('#myChart');
             var ctx = canvas.get(0).getContext("2d");
+            var _formName = $('#formDDL option:selected').text();
 
             var myChart = new Chart(ctx, {
                 type: chartType,
@@ -270,7 +293,7 @@
                         position: 'top',
                         fontSize: 14,
                         fontColor: '#46709D',
-                        text: 'Анализ плановых показателей за ' + _Year + ' год'
+                        text: 'Анализ плановых показателей за ' + _Year + ' год (' + _formName+')'
                     },
                     scales: {
                         yAxes: [{

@@ -112,6 +112,7 @@ namespace F_Result.Controllers
                                    Month = g.Key.Month,
                                    Total = g.Sum(t => t.Sum)
                                }).ToList();
+        
 
             List<decimal?> _outsum = new List<decimal?>();
             for (int i = 1; i < 13; i++)
@@ -185,8 +186,9 @@ namespace F_Result.Controllers
             return View();
         }
 
+
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier")]
-        public JsonResult GetPlanData(int? Year, string filterPrjIDs, int? planningPeriod)
+        public JsonResult GetPlanData(int? Year, string filterPrjIDs, int? planningPeriod, string formValue)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
 
@@ -199,12 +201,10 @@ namespace F_Result.Controllers
                 Year = DateTime.Today.Year;
             }
 
-
             var flt = _filterPrjIDs ?? Enumerable.Empty<int>(); //!---IF 'filterPrjIDs' is null 'filterPrjIDs.Contains(inpay.ProjectId)' raise exception 
 
             // График плановых доходов -------------------------------------------
-
-            var _planCredits = (from pc in db.PlanCredits
+            var _planCreditsF1 = (from pc in db.PlanCredits
                                 join prg in db.Projects on pc.ProjectId equals prg.id
                                 where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId)) && (pc.PeriodId == planningPeriod)
                                 select new
@@ -216,7 +216,36 @@ namespace F_Result.Controllers
                                     IPA = prg.IPA
                                 }).ToList();
 
-            var _pclist = (from t in _planCredits
+            var _planCreditsF2 = (from pc in db.PlanCreditsF2
+                                  join prg in db.Projects on pc.ProjectId equals prg.id
+                                  where (pc.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pc.ProjectId)) && (pc.PeriodId == planningPeriod)
+                                  select new
+                                  {
+                                      Date = pc.Date,
+                                      Sum = pc.Sum,
+                                      ProjectId = prg.id,
+                                      Project = prg.ShortName,
+                                      IPA = prg.IPA
+                                  }).ToList();
+
+            var _planCreditsAll = _planCreditsF1;
+            switch (formValue)
+            {
+                case "f1f2":
+                    _planCreditsAll = _planCreditsF1.Union(_planCreditsF2).ToList();
+                    break;
+                case "f1":
+                    _planCreditsAll = _planCreditsF1;
+                    break;
+                case "f2":
+                    _planCreditsAll = _planCreditsF2;
+                    break;
+                default:
+                    _planCreditsAll = _planCreditsF1.Union(_planCreditsF2).ToList();
+                    break;
+            }
+
+            var _pclist = (from t in _planCreditsAll
                            group t by new { t.Date.Year, t.Date.Month } into g
                            where g.Key.Year == Year
                            select new
@@ -237,7 +266,7 @@ namespace F_Result.Controllers
 
             // График плановых расходов -------------------------------------------
 
-            var _planDebits = (from pd in db.PlanDebits
+            var _planDebitsF1 = (from pd in db.PlanDebits
                                join prg in db.Projects on pd.ProjectId equals prg.id
                                where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId)) && (pd.PeriodId == planningPeriod)
                                select new
@@ -249,7 +278,37 @@ namespace F_Result.Controllers
                                    IPA = prg.IPA
                                }).ToList();
 
-            var _pdlist = (from t in _planDebits
+            var _planDebitsF2 = (from pd in db.PlanDebitsF2
+                                 join prg in db.Projects on pd.ProjectId equals prg.id
+                                 where (pd.Date.Year == Year) && (filterPrjIDs == null || flt.Count() == 0 || flt.Contains(pd.ProjectId)) && (pd.PeriodId == planningPeriod)
+                                 select new
+                                 {
+                                     Date = pd.Date,
+                                     Sum = pd.Sum,
+                                     ProjectId = prg.id,
+                                     Project = prg.ShortName,
+                                     IPA = prg.IPA
+                                 }).ToList();
+
+            var _planDebitsAll = _planDebitsF1;
+            switch (formValue)
+            {
+                case "f1f2":
+                    _planDebitsAll = _planDebitsF1.Union(_planDebitsF2).ToList();
+                    break;
+                case "f1":
+                    _planDebitsAll = _planDebitsF1;
+                    break;
+                case "f2":
+                    _planDebitsAll = _planDebitsF2;
+                    break;
+                default:
+                    _planDebitsAll = _planDebitsF1.Union(_planDebitsF2).ToList();
+                    break;
+            }
+
+
+            var _pdlist = (from t in _planDebitsAll
                            group t by new { t.Date.Year, t.Date.Month } into g
                            where g.Key.Year == Year
                            select new
@@ -278,7 +337,7 @@ namespace F_Result.Controllers
             var _pdMin = _pdsum.Min(x => x.Value);
             var _pdMax = _pdsum.Max(x => x.Value);
 
-            List<APBFilterIDs> _prjList = _planCredits
+            List<APBFilterIDs> _prjList = _planCreditsAll
                     .GroupBy(x => x.ProjectId)
                     .Select(x => new APBFilterIDs
                     {
@@ -288,7 +347,7 @@ namespace F_Result.Controllers
                     })
                     .OrderBy(x => x.IPA).ToList();
 
-            List<APBFilterIDs> _prjList1 = _planDebits
+            List<APBFilterIDs> _prjList1 = _planDebitsAll
                    .GroupBy(x => x.ProjectId)
                    .Select(x => new APBFilterIDs
                    {
