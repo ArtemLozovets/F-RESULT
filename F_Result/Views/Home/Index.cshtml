@@ -4,11 +4,8 @@
 }
 
 <style>
-    .dashLink{
-    }
-
-    .dashLink:hover{
-        color:#fff;
+    .dashLink:hover {
+        color: #fff;
     }
 </style>
 
@@ -19,70 +16,82 @@
     {
         //Dashboard block
         <div class="row" id="dashBlock">
-            <div class="col-sm-4 text-center">
-                <div class="card bg-c-yellow update-card">
+            <div class="col-sm-4" style="text-align:center;" id="sideDash">
+                <div class="card bg-c-yellow update-card" id="sideBlock">
                     <div class="card-block">
-                        <h3 class="text-white">@ViewData["PrjCount"]</h3>
-                        <h5 class="text-white">Проектов в работе</h5>
-                    </div>
-                    <div class="card-footer">
-                        <p class="text-white footer-text">
-                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
-                        </p>
+                        <h3 class="text-white">ЗАПРОСЫ</h3>
+                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h5 class="text-white">запросов в работе</h5>
+                        <hr class="dashHR" />
+                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h5 class="text-white">на контроле</h5>
+                        <hr class="dashHR" />
+                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h5 class="text-white">конверсия за 12 месяцев</h5>
+                        <hr class="dashHR" />
+                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h5 class="text-white">обработано за 12 месяцев</h5>
+                        <hr class="dashHR" />
+                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h5 class="text-white">всего за 12 месяцев</h5>
+                        <hr class="dashHR" />
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-4 text-center">
-                <div class="card bg-c-green update-card">
-                    <div class="card-block">
-                        <h3 class="text-white">В РАЗРАБОТКЕ</h3>
-                        <h5 class="text-white">Запросов в работе</h5>
-                    </div>
-                    <div class="card-footer">
-                        <p class="text-white footer-text">
-                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
-                        </p>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block" style="color:#FFF; font-weight:normal">
+                                <p>Добро пожаловать, @ViewData["FirstName"]!</p>
+                                <p>Вы вошли как @ViewData["UserName"]</p>
+                                <p>Ваша роль в системе - @ViewData["UserRole"]</p>
+                                <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
+                            </div>
+                            <div class="card-footer" style="text-align:right !important">
+                                <p class="text-white footer-text">
+                                    <a class="dashLink" title="Добавить отзыв" href="#" id="addCommentDash"><i class="fa fa-comment" style="margin-right:10px;"></i></a>
+
+                                    <a class="dashLink" title="Мой ААО" href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "",  Mode = "Wks" })">
+                                        <i class="fa fa-cubes" style="margin-right:10px;"></i>
+                                    </a>
+
+                                    <a class="dashLink" title="Выйти" href="javascript:document.getElementById('logoutForm').submit()">
+                                        <i class="glyphicon glyphicon-log-out" style="margin-right:10px;"></i>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-sm-4 text-center">
-                <div class="card bg-c-lite-green update-card">
-                    <div class="card-block">
-                        <h3 class="text-white">В РАЗРАБОТКЕ</h3>
-                        <h5 class="text-white">Конверсия за 12 месяцев</h5>
+                <div class="row">
+                    <div class="col-md-4 text-center" id="prjDash">
+                        <div class="card bg-c-green update-card">
+                            <div class="card-block">
+                                <h3 class="text-white">@ViewData["PrjCount"]</h3>
+                                <h5 class="text-white">проектов в работе</h5>
+                            </div>
+                            <div class="card-footer">
+                                <p class="text-white footer-text">
+                                    <i class="fa fa-clock-o"></i>&nbsp;<span class="upd_time"></span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <p class="text-white footer-text">
-                            <i class="fa fa-clock-o"></i>&nbsp;update:&nbsp;<span class="upd_time"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-sm-12 text-center">
-                <div class="card bg-c-pink update-card">
-                    <div class="card-block" style="color:#FFF; font-weight:normal">
-                        <p>Добро пожаловать, @ViewData["FirstName"]!</p>
-                        <p>Вы вошли как @ViewData["UserName"]</p>
-                        <p>Ваша роль в системе - @ViewData["UserRole"]</p>
-                        <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
-                    </div>
-                    <div class="card-footer" style="text-align:right !important">
-                        <p class="text-white footer-text">
-                            <a class="dashLink" title="Добавить отзыв" href="#" id="addCommentDash"><i class="fa fa-comment" style="margin-right:10px;"></i></a>
-
-                            <a class="dashLink" title="Мой ААО" href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "",  Mode = "Wks" })">
-                                <i class="fa fa-cubes" style="margin-right:10px;"></i>
-                            </a>
-
-                            <a class="dashLink" title="Выйти" href="javascript:document.getElementById('logoutForm').submit()">
-                                <i class="glyphicon glyphicon-log-out" style="margin-right:10px;"></i>
-                            </a>
-                        </p>
+                    <div class="col-md-8 text-center">
+                        <div class="card bg-c-lite-green update-card">
+                            <div class="card-block">
+                                <div id="chartContainer" style="height: 80px; max-width: 920px; margin: 0px auto;"></div>
+                            </div>
+                            <div class="card-footer">
+                                <p class="text-white footer-text">
+                                    <i class="fa fa-clock-o"></i>&nbsp;<span class="upd_time"></span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -91,12 +100,77 @@
 
 </div>
 
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script src="~/Scripts/moment.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+    <script>
+        window.onload = function () {
+
+            var options = {
+                animationEnabled: true,
+                theme: "dark",
+                title: {
+                    text: "В РАЗРАБОТКЕ"
+                },
+                axisX: {
+                    valueFormatString: "DD MMM"
+                },
+
+                toolTip: {
+                    shared: true
+                },
+                legend: {
+                    cursor: "pointer",
+                    verticalAlign: "bottom",
+                    horizontalAlign: "left",
+                    dockInsidePlotArea: true,
+                    itemclick: toogleDataSeries
+                },
+                data: [{
+                    type: "line",
+                    showInLegend: true,
+                    name: "Projected Sales",
+                    markerType: "square",
+                    xValueFormatString: "DD MMM, YYYY",
+                    color: "#F08080",
+                    yValueFormatString: "#,##0K",
+                    dataPoints: [
+                        { x: new Date(2017, 10, 1), y: 63 },
+                        { x: new Date(2017, 10, 2), y: 69 },
+                        { x: new Date(2017, 10, 3), y: 65 },
+                        { x: new Date(2017, 10, 4), y: 70 },
+                        { x: new Date(2017, 10, 5), y: 71 },
+                        { x: new Date(2017, 10, 6), y: 65 },
+                        { x: new Date(2017, 10, 7), y: 73 },
+                        { x: new Date(2017, 10, 8), y: 96 },
+                        { x: new Date(2017, 10, 9), y: 84 },
+                        { x: new Date(2017, 10, 10), y: 85 },
+                        { x: new Date(2017, 10, 11), y: 86 },
+                        { x: new Date(2017, 10, 12), y: 94 },
+                        { x: new Date(2017, 10, 13), y: 97 },
+                        { x: new Date(2017, 10, 14), y: 86 },
+                        { x: new Date(2017, 10, 15), y: 89 }
+                    ]
+                }]
+            };
+            $("#chartContainer").CanvasJSChart(options);
+
+            function toogleDataSeries(e) {
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+                e.chart.render();
+            }
+
+        }
+    </script>
+
     <script>
         $(function () {
-
             timeNow = moment().format('H:mm');
             $(".upd_time").text(timeNow);
             setPosition();
@@ -108,9 +182,14 @@
 
         function setPosition() {
             var wHeight = $(window).height();
+            var nHeight = $('#mainNavbar').height();
             var fHeight = $('#footerBlock').height();
-            if (wHeight < 520) {
+            var sideBlockHeight = wHeight - nHeight - fHeight - 10;
+            if (wHeight < 576) {
                 $('#footerBlock').hide();
+                if (sideBlockHeight >= 420) {
+                    $('#sideBlock').height(sideBlockHeight);
+                }
             }
             else {
                 $('#footerBlock')
@@ -118,6 +197,9 @@
                     .css('position', 'absolute')
                     .css('top', wHeight - fHeight)
                     .css('left', ($(window).width() / 2) - ($('#footerBlock').width() / 2));
+                if (sideBlockHeight >= 420) {
+                    $('#sideBlock').height(sideBlockHeight);
+                }
             };
         }
     </script>

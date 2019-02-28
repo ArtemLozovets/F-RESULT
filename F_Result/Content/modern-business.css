@@ -129,7 +129,7 @@ body {
 
 /* Footer Styles */
 footer {
-    margin: 20px 0;
+    margin: 14px 0;
 }
 
 
@@ -620,15 +620,29 @@ div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer d
 }
 
 .footer-text {
-    font-size: medium;
+    font-size: small;
     font-weight: 100;
+}
+
+.dashHR{
+    margin-top:-5px; 
+    border:none; 
+    background-color: #feb798; 
+    color:#feb798; 
+    height:2px;
 }
 
 /*#endregion */
 
 /* ----------------RESPONSIVE---------------*/
+
+@media screen and (max-width: 991px) {
+     #prjDash {
+        display: none;
+    }
+
 @media screen and (max-width: 767px) {
-    #dashBlock {
+    #sideDash, #prjDash {
         display: none;
     }
 }

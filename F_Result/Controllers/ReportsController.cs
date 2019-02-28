@@ -357,7 +357,7 @@ namespace F_Result.Controllers
                    })
                    .OrderBy(x => x.IPA).ToList();
 
-            _prjList.Union(_prjList1);
+            _prjList = _prjList.Union(_prjList1).ToList();
 
             var jsonSerialiser = new JavaScriptSerializer();
             var _prjListJson = jsonSerialiser.Serialize(_prjList);
