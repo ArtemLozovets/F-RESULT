@@ -19,20 +19,20 @@
             <div class="col-sm-4" style="text-align:center;" id="sideDash">
                 <div class="card bg-c-yellow update-card" id="sideBlock">
                     <div class="card-block">
-                        <h3 class="text-white">ЗАПРОСЫ</h3>
-                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h3 class="text-white">В&nbsp;РАЗРАБОТКЕ</h3>
+                        <h4 class="text-white">0</h4>
                         <h5 class="text-white">запросов в работе</h5>
                         <hr class="dashHR" />
-                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h4 class="text-white">0</h4>
                         <h5 class="text-white">на контроле</h5>
                         <hr class="dashHR" />
-                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h4 class="text-white">0</h4>
                         <h5 class="text-white">конверсия за 12 месяцев</h5>
                         <hr class="dashHR" />
-                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h4 class="text-white">0</h4>
                         <h5 class="text-white">обработано за 12 месяцев</h5>
                         <hr class="dashHR" />
-                        <h4 class="text-white">В РАЗРАБОТКЕ</h4>
+                        <h4 class="text-white">0</h4>
                         <h5 class="text-white">всего за 12 месяцев</h5>
                         <hr class="dashHR" />
                     </div>
@@ -40,32 +40,6 @@
             </div>
 
             <div class="col-sm-8">
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <div class="card bg-c-pink update-card">
-                            <div class="card-block" style="color:#FFF; font-weight:normal">
-                                <p>Добро пожаловать, @ViewData["FirstName"]!</p>
-                                <p>Вы вошли как @ViewData["UserName"]</p>
-                                <p>Ваша роль в системе - @ViewData["UserRole"]</p>
-                                <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
-                            </div>
-                            <div class="card-footer" style="text-align:right !important">
-                                <p class="text-white footer-text">
-                                    <a class="dashLink" title="Добавить отзыв" href="#" id="addCommentDash"><i class="fa fa-comment" style="margin-right:10px;"></i></a>
-
-                                    <a class="dashLink" title="Мой ААО" href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "",  Mode = "Wks" })">
-                                        <i class="fa fa-cubes" style="margin-right:10px;"></i>
-                                    </a>
-
-                                    <a class="dashLink" title="Выйти" href="javascript:document.getElementById('logoutForm').submit()">
-                                        <i class="glyphicon glyphicon-log-out" style="margin-right:10px;"></i>
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row">
                     <div class="col-md-4 text-center" id="prjDash">
                         <div class="card bg-c-green update-card">
@@ -89,6 +63,32 @@
                             <div class="card-footer">
                                 <p class="text-white footer-text">
                                     <i class="fa fa-clock-o"></i>&nbsp;<span class="upd_time"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <div class="card bg-c-pink update-card">
+                            <div class="card-block" style="color:#FFF; font-weight:normal">
+                                <p>Добро пожаловать, @ViewData["FirstName"]!</p>
+                                <p>Вы вошли как @ViewData["UserName"]</p>
+                                <p>Ваша роль в системе - @ViewData["UserRole"]</p>
+                                <p style="text-decoration:underline; text-transform:uppercase;">Мы желаем Вам приятной работы</p>
+                            </div>
+                            <div class="card-footer" style="text-align:right !important">
+                                <p class="text-white footer-text">
+                                    <a class="dashLink" title="Добавить отзыв" href="#" id="addCommentDash"><i class="fa fa-comment" style="margin-right:10px;"></i></a>
+
+                                    <a class="dashLink" title="Мой ААО" href="@Url.Action("AlternativeAdvance", "Reports", new { Area = "",  Mode = "Wks" })">
+                                        <i class="fa fa-cubes" style="margin-right:10px;"></i>
+                                    </a>
+
+                                    <a class="dashLink" title="Выйти" href="javascript:document.getElementById('logoutForm').submit()">
+                                        <i class="glyphicon glyphicon-log-out" style="margin-right:10px;"></i>
+                                    </a>
                                 </p>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
             var nHeight = $('#mainNavbar').height();
             var fHeight = $('#footerBlock').height();
             var sideBlockHeight = wHeight - nHeight - fHeight - 10;
-            if (wHeight < 576) {
+            if (wHeight < 546) {
                 $('#footerBlock').hide();
                 if (sideBlockHeight >= 420) {
                     $('#sideBlock').height(sideBlockHeight);
