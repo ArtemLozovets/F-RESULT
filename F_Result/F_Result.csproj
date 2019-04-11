@@ -756,7 +756,6 @@
     <Content Include="Views\PlanningPeriods\PPDelete.cshtml" />
     <Content Include="Views\PlanningPeriods\PPEdit.cshtml" />
     <Content Include="Views\PlanningPeriods\PPShow.cshtml" />
-    <Content Include="Views\Reports\AnalysisOfTheProjectBudget.cshtml" />
     <Content Include="Views\Directum\ShowExpenditures.cshtml" />
     <Content Include="Views\PlanCreditsF2\PCCreate.cshtml" />
     <Content Include="Views\PlanCreditsF2\PCDelete.cshtml" />
@@ -780,13 +779,12 @@
     <Content Include="Views\PlanDebitsF2\PDClone.cshtml" />
     <Content Include="Views\Directum\ShowPaymentsF2.cshtml" />
     <Content Include="Views\Directum\ShowActualDebitsF2.cshtml" />
-    <Content Include="Views\Reports\AnalysisOfTheProjectProfitability.cshtml" />
     <Content Include="Views\Feedback\CommentsShow.cshtml" />
     <Content Include="Views\Reports\AlternativeAdvance.cshtml" />
     <Content Include="Views\Reports\AlternativeAdvanceConsolidated.cshtml" />
     <Content Include="Views\Directum\ShowActualDebitsF1.cshtml" />
-    <Content Include="Views\Reports\AnalysisOfTheProjectBudgetHb.cshtml" />
-    <Content Include="Views\Reports\AnalysisOfTheProjectProfitabilityHb.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectBudget.cshtml" />
+    <Content Include="Views\Reports\AnalysisOfTheProjectProfitability.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

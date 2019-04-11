@@ -179,9 +179,18 @@
                             }
 
                             if (fClass.indexOf("fdF1") >= 0) {
-                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", firstPay = true })';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
+
+                                var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_"
+                                                                                                , startDate = "_startDate_"
+                                                                                                , endDate = "_endDate_"
+                                                                                                , Status = "_status_"
+                                                                                                , firstPay = true})';
+                                url = url.replace('_prj_', prj)
+                                                                .replace('_startDate_', startDate)
+                                                                .replace('_endDate_', endDate)
+                                                                .replace('_status_', 'PdRd')
+                                                                .replace(/amp;/g, '');
+                              window.open(url, '_blank');
                             }
 
                             if (fClass.indexOf("fdF2") >= 0) {

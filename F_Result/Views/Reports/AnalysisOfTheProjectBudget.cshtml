@@ -24,7 +24,6 @@
         width: 300px !important;
         margin-right: 8px;
     }
-
 </style>
 
 <div id="loadingImg">
@@ -56,16 +55,24 @@
             <label for="isAllPeriod" class="control-label">За весь период</label>
             @Html.CheckBox("isAllTimes", false, new { @class = "form-control", style = "width:16px;" })
 
-            <input type="text" style="width:10em;text-align:center; margin:0 0.4em;"
-                   id="startDate" placeholder="Базовая дата"
-                   title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+            <div class="input-group" style="max-width:10em;">
+                <span class="input-group-btn">
+                    <button id="prevRepNav" class="btn btn-primary btn-sm repNavBtn" type="button" title="Предыдущий отчетный период"><</button>
+                </span>
+                <input type="text" style="width:10em;text-align:center; margin:0;"
+                       id="startDate" placeholder="Базовая дата"
+                       title="Базовая дата для расчета начальной и конечной дат отчетного периода" class="form-control input-sm" value="" />
+                <span class="input-group-btn">
+                    <button id="nextRepNav" class="btn btn-primary btn-sm repNavBtn" type="button" title="Следующий отчетный период">></button>
+                </span>
+            </div>
 
             @Html.DropDownList("BudgetPeriodDDL", (SelectList)ViewData["periodItems"], null, new
        {
            @class = "form-control input-sm",
            name = "BudgetPeriodDDL",
            title = "Плановый период",
-           style = "display:inline-block; margin-bottom:-1px; margin-right:1.3em; width:16em;"
+           style = "display:inline-block; margin-bottom:0; margin-right:1.3em; width:16em;"
        })
 
         </div>
@@ -76,11 +83,12 @@
             <thead>
                 <tr>
                     <th rowspan="2">Проект</th>
-                    <th rowspan="2">Финансовый результат</th>
+                    <th rowspan="2">Финансовый результат (начало&nbsp;периода)</th>
                     <th colspan="2">Доходы</th>
                     <th rowspan="2">&#916;&nbsp;<sub>дох.</sub></th>
                     <th colspan="2">Расходы</th>
                     <th rowspan="2">&#916;&nbsp;<sub>расх.</sub></th>
+                    <th rowspan="2">Финансовый результат (конец&nbsp;периода)</th>
                 </tr>
                 <tr>
                     <th class="smallTH">План</th>
@@ -91,13 +99,15 @@
             </thead>
             <tfoot>
                 <tr class="tright">
-                    <th colspan="2">Итого</th>
+                    <th>Итого</th>
+                    <th style="text-align:center !important;">-</th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th style="text-align:center !important;">-</th>
                 </tr>
             </tfoot>
             <tbody></tbody>
@@ -129,6 +139,31 @@
     </div>
 </div>
 <!-- #endregion -->
+
+<!-- #Плавающая панель фильтрации по организации-->
+<div id="flowPanelOrg">
+    <i class="fa fa-arrow-left" id="showButtonOrg">&nbsp;<span class="revTextRight">ОРГАНИЗАЦИИ</span></i>
+    <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
+        <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Организации (В РАЗРАБОТКЕ)</span>
+    </div>
+
+    <div style="width:96%; background-color:white; margin: 10px auto; padding:0;">
+        <table style="background-color:white; width:100%; margin-top:0 !important;"
+               class="table table-bordered table-striped table-responsive table-hover gridtable"
+               id="org_Table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Организация</th>
+                    <th><input id="allOrgCHB" checked type="checkbox"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<!-- #endregion -->
+
 <a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
@@ -142,6 +177,7 @@
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/fFlowPanelPrj.js"></script>
+    <script src="~/Scripts/FRScripts/fFlowPanelOrg.js"></script>
     <script src="~/Scripts/FRScripts/exportData.js"></script>
 
     <script>
@@ -207,9 +243,25 @@
                             }
 
                             if (fClass.indexOf("dfExp") >= 0) {
-                                var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_"})';
-                                url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
-                                window.open(url, '_blank');
+
+                                if ($('#isAllTimes').is(':checked')) {
+                                    var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_", Status = "_status_"})';
+                                    url = url.replace('_prj_', prj).replace('_status_', 'PdRd').replace(/amp;/g, '');
+                                    window.open(url, '_blank');
+                                }
+
+                                else if (moment(json.StartPeriod) >= moment('01/09/2018', "DD/MM/YYYY")) {
+                                    var url = '@Url.Action("ShowActualDebitsF1", "Directum", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_", Status = "_status_"})';
+                                    url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace('_status_', 'PdRd').replace(/amp;/g, '');
+                                    window.open(url, '_blank');
+                                }
+
+                                else {
+                                    var url = '@Url.Action("ADShow", "ActualDebits", new { ProjectId = "_prj_", startDate = "_startDate_", endDate = "_endDate_" })';
+                                    url = url.replace('_prj_', prj).replace('_startDate_', startDate).replace('_endDate_', endDate).replace(/amp;/g, '');
+                                    window.open(url, '_blank');
+                                };
+
                             }
                             break;
 
@@ -281,6 +333,50 @@
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             globalVarsClear();
+        });
+
+        //Обработчик нажатия навигационных кнопок измененеия отчетного периода
+        $('.repNavBtn').on('click', function () {
+            var _stDate = moment($('#startDate').val(), 'DD/MM/YYYY').toDate();
+            var _period = $('#BudgetPeriodDDL option:selected').text();
+            switch (_period) {
+                case 'Неделя':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-7, 'days').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(7, 'days').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Месяц':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-1, 'months').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(1, 'months').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Квартал':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-3, 'months').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(3, 'months').format('DD/MM/YYYY');
+                    }
+                    break;
+                case 'Год':
+                    if ($(this).attr('id') === 'prevRepNav') {
+                        _stDate = moment(_stDate).add(-1, 'year').format('DD/MM/YYYY');
+                    }
+                    else {
+                        _stDate = moment(_stDate).add(1, 'year').format('DD/MM/YYYY');
+                    }
+                    break;
+                default:
+                    break;
+            }
+            $('#startDate').val(_stDate).trigger('change');
+
         });
 
         //Обработчик изменения состояния элемента "За весь период"
@@ -368,13 +464,14 @@
                 order: [[0, "desc"]],
                 columns: [
                     { data: "ProjectName", sWidth: '30%', name: "ProjectName", "class": "context-menu-one prgCellf haveTitle" },
-                    { data: "prjres", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "prjresSP", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "debitplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cpExp" },
                     { data: "debitfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one cfExp" },
                     { data: "ddelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                     { data: "creditplan", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dpExp" },
                     { data: "creditfact", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one dfExp" },
-                    { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" }
+                    { data: "cdelta", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
+                    { data: "prjresEP", sWidth: '10%', render: $.fn.dataTable.render.number('&nbsp;', ',', 2), bSortable: false, "class": "text-right context-menu-one" },
                 ],
 
                 fnCreatedRow: function (row, data, rowIndex) {
@@ -394,10 +491,10 @@
                     $('.prgCellf', $(row)).attr('title', prgTitleStr);
 
                     // Выделение цветом дельта-ячеек
-                    if (data.prjres > 0) {
+                    if (data.prjresSP > 0) {
                         $('td:eq(1)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
-                    else if (data.prjres < 0) {
+                    else if (data.prjresSP < 0) {
                         $('td:eq(1)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
                     }
 
@@ -414,6 +511,13 @@
                     else if (data.cdelta < 0) {
                         $('td:eq(7)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
                     }
+                    
+                    if (data.prjresEP > 0) {
+                        $('td:eq(8)', row).css('background-color', 'rgba(128, 200, 64, 0.3)');
+                    }
+                    else if (data.prjresEP < 0) {
+                        $('td:eq(8)', row).css('background-color', 'rgba(255, 99, 132, 0.3)');
+                    }
                 },
 
                 fnDrawCallback: function (settings) {
@@ -428,11 +532,11 @@
                     $(api.column(6).footer()).html(numFormat(json.total.CreditFactTotal));
                     $(api.column(7).footer()).html(numFormat(json.total.cDeltaTotal));
 
-                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
-                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(3)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    if (json.total.dDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(4)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    else if (json.total.dDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(4)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
 
-                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
-                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(6)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
+                    if (json.total.cDeltaTotal * 1 > 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(255, 99, 132, 0.3)'); }
+                    else if (json.total.cDeltaTotal * 1 < 0) { $('tr:eq(0) th:eq(7)', api.table().footer()).css('background-color', 'rgba(128, 200, 64, 0.3)'); }
 
 
                     if (json.Result) {
@@ -455,6 +559,17 @@
                         prgTableCrate();
                         $('#flowPanel').height($('#prgtable_wrapper').height() + 80);
                         window._flag = false;
+                    };
+
+                    //Инициализация таблицы организаций в плавающей панели---------
+                    if (window._flagOrg) {
+                        //Заполнение массива организаций для таблицы в плавающей панели
+                     //   _orgIDs = JSON.parse(json.orglist)
+                        var orgTable = $('#org_Table').DataTable();
+                        orgTable.destroy();
+                        orgTableCrate();
+                        $('#flowPanelOrg').height($('#org_Table_wrapper').height() + 100);
+                        window._flagOrg = false;
                     };
 
                     if (json.planningbalance != null) {
