@@ -333,6 +333,7 @@
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             globalVarsClear();
+           //globalOrgVarsClear();
         });
 
         //Обработчик нажатия навигационных кнопок измененеия отчетного периода
@@ -382,6 +383,7 @@
         //Обработчик изменения состояния элемента "За весь период"
         $('#isAllTimes').on('change', function () {
             globalVarsClear();
+           //globalOrgVarsClear();
             if ($(this).is(':checked')) {
                 $('#startDate').attr('disabled', 'disabled');
                 var table = $("#gridtable").DataTable();
@@ -442,6 +444,7 @@
                     //Получаем Id планового периода.
                     // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
                     data: function (d) {
+                        console.log('CHECK LINE!!!!');
                         var _isAllTimes = false;
                         if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
                         d.Period = $('#BudgetPeriodDDL').val();
@@ -449,6 +452,7 @@
                         d.IsAllTimes = _isAllTimes;
                         d.ProjectName = $('#gridtable_filter').val();
                         d.filterPrjIDs = window.filterPrjIDs;
+                        d.filterOrgIDs = window.filterOrgIDs;
                     },
                     dataSrc: function (d) {
                         $('#loadingImg').hide();
@@ -564,7 +568,7 @@
                     //Инициализация таблицы организаций в плавающей панели---------
                     if (window._flagOrg) {
                         //Заполнение массива организаций для таблицы в плавающей панели
-                     //   _orgIDs = JSON.parse(json.orglist)
+                        _orgIDs = JSON.parse(json.orglist)
                         var orgTable = $('#org_Table').DataTable();
                         orgTable.destroy();
                         orgTableCrate();
@@ -644,6 +648,7 @@
             .bind('datepicker-closed', function (event, obj) {
 
                 globalVarsClear();
+               // globalOrgVarsClear();
             })
 
             $('#startDate').on('change', function () {
@@ -653,6 +658,7 @@
                     $(this).val(nowDate);
                 };
                 globalVarsClear();
+                //globalOrgVarsClear();
             });
 
         });

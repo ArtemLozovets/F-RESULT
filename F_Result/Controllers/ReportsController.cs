@@ -392,9 +392,11 @@ namespace F_Result.Controllers
 
         //Получение данных для построения отчета "Бюджетирование" POST
         [Authorize(Roles = "Administrator, Chief, Accountant, Financier, ProjectManager")]
-        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs, string ProjectName)
+        public JsonResult GetAPB(int? Period, DateTime? BaseDate, bool IsAllTimes, int[] filterPrjIDs, int[] filterOrgIDs, string ProjectName)
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
+
+            System.Diagnostics.Debug.WriteLine("HRRRHRHRHRHRHHRH==========>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             try
             {
                 if (Period == null || BaseDate == null)
@@ -487,9 +489,17 @@ namespace F_Result.Controllers
 
                 var _isAllTimes = IsAllTimes ? 1 : 0;
 
-
+                string orgListStr = "''";
+                if (filterOrgIDs != null && filterOrgIDs.Count() > 0)
+                {
+                    orgListStr = string.Format("'{0}'", string.Join(",", filterOrgIDs));
+                }
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
-                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes)).ToList();
+                List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4}, {5})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes, orgListStr)).ToList();
+
+                //Запрос вызывает пользовательскую функцию "ufnAPBReport_OrgList" для построения списка организаций
+                List<APBOrgIDs> _orgListExpand = db.Database.SqlQuery<APBOrgIDs>(string.Format("Select * from dbo.ufnAPBReport_OrgList('{0}', '{1}', {2}, '{3}')", _startPeriod, _endPeriod, Period, ProjectName)).ToList();
+
 
                 //Проверяем роль пользователя
                 bool isAdministrator = System.Web.HttpContext.Current.User.IsInRole("Administrator");
@@ -512,7 +522,26 @@ namespace F_Result.Controllers
                             && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
-                List<APBFilterIDs> _prjList = _ads
+
+                _orgListExpand = _orgListExpand.Where(x =>
+                            (filterPrjIDs == null
+                            || filterPrjIDs.Length == 0
+                            || filterPrjIDs.Contains(x.prjId))
+                            && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
+                            ).ToList();
+
+
+                List<ArticlesIDs> _orgList = _orgListExpand.Select(x => new
+                {
+                    orgId = x.orgId,
+                    orgName = x.orgName
+                }).OrderBy(x => x.orgName).Distinct().AsEnumerable().Select(x => new ArticlesIDs
+                {
+                    AtId = x.orgId,
+                    AtName = x.orgName
+                }).ToList();
+
+                List <APBFilterIDs> _prjList = _ads
                     .Select(x => new APBFilterIDs
                     {
                         PrjId = x.prj,
@@ -522,6 +551,7 @@ namespace F_Result.Controllers
 
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
+                var _orgListJson = jsonSerialiser.Serialize(_orgList);
 
                 APBTableReportTotal total = new APBTableReportTotal
                 {
@@ -572,6 +602,7 @@ namespace F_Result.Controllers
                     total = total,
                     planningbalance = _PlanningBalance,
                     prjlist = _prjListJson,
+                    orglist = _orgListJson,
                     sortcolumn = sortColumn,
                     sortdir = sortColumnDir,
                     errormessage = ""

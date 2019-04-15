@@ -52,6 +52,17 @@ namespace F_Result.Models
         public DateTime? IPA { get; set; }
     }
 
+    // Данные для получения списка ID организаций в плавающей панели фильтрации по организациям отчета "Бюджетирование"
+    [NotMapped]
+    public class APBOrgIDs
+    {
+        public int orgId { get; set; }
+        public string orgName { get; set; }
+        public int prjId { get; set; }
+        public int ProjectManager { get; set; }
+        public int Chief { get; set; }
+    }
+
     #endregion ----------------------------------------------------------
 
     [NotMapped]

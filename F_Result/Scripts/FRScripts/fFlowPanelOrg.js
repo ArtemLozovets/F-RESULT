@@ -110,6 +110,7 @@ function orgTableCrate() {
         processing: false,
         serverSide: false,
         data: _orgIDs,
+        order: [[ 1, "asc" ]],
         columns: [
             { data: 'AtId', bSortable: true, visible: false, searchable: false },
             { data: 'AtName', bSortable: true, sWidth: '80%' },
