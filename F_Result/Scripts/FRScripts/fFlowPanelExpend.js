@@ -88,7 +88,6 @@ function globalExpendVarsClear() {
     window.filterExpendIDs = [];
     window._flagExpend = true;
     $('#allExpendCHB').prop('checked', 'checked');
-    $("#gridtable").DataTable().draw();
 }
 
 //-----------------------------------------------------------------

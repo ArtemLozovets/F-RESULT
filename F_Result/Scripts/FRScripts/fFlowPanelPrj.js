@@ -113,9 +113,6 @@ function globalVarsClear() {
         var _formValue = $('#formDDL').val();
         GetChart(_Year, chartType, _planningPeriod, _formValue);
     }
-    else {
-        $("#gridtable").DataTable().draw();
-    }
 }
 
 //-----------------------------------------------------------------

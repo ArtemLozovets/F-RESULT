@@ -116,7 +116,7 @@
 </div>
 
 <!-- #Плавающая панель -->
-<div id="flowPanel" hidden>
+<div id="flowPanel" hidden data-mode="APBRep">
     <i class="fa fa-arrow-left" id="showButton">&nbsp;<span class="revTextRight">ПРОЕКТЫ</span></i>
     <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
         <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;ПРОЕКТЫ</span>
@@ -141,7 +141,7 @@
 <!-- #endregion -->
 
 <!-- #Плавающая панель фильтрации по организации-->
-<div id="flowPanelOrg">
+<div id="flowPanelOrg" data-mode="APBRep">
     <i class="fa fa-arrow-left" id="showButtonOrg">&nbsp;<span class="revTextRight">ОРГАНИЗАЦИИ</span></i>
     <div style="width:100%; margin:20px auto; color:#eee" class="text-center">
         <span style="font-size:1.5em;"><i class="glyphicon glyphicon-briefcase"></i>&nbsp;Организации (В РАЗРАБОТКЕ)</span>
@@ -333,7 +333,8 @@
         $('body').on('change', '#BudgetPeriodDDL', function () {
             localStorage.setItem('PlanningPeriod', $(this).val());
             globalVarsClear();
-           //globalOrgVarsClear();
+            globalOrgVarsClear();
+            $("#gridtable").DataTable().draw();
         });
 
         //Обработчик нажатия навигационных кнопок измененеия отчетного периода
@@ -383,7 +384,7 @@
         //Обработчик изменения состояния элемента "За весь период"
         $('#isAllTimes').on('change', function () {
             globalVarsClear();
-           //globalOrgVarsClear();
+            globalOrgVarsClear();
             if ($(this).is(':checked')) {
                 $('#startDate').attr('disabled', 'disabled');
                 var table = $("#gridtable").DataTable();
@@ -648,7 +649,8 @@
             .bind('datepicker-closed', function (event, obj) {
 
                 globalVarsClear();
-               // globalOrgVarsClear();
+                globalOrgVarsClear();
+                $("#gridtable").DataTable().draw();
             })
 
             $('#startDate').on('change', function () {
@@ -658,7 +660,8 @@
                     $(this).val(nowDate);
                 };
                 globalVarsClear();
-                //globalOrgVarsClear();
+                globalOrgVarsClear();
+                $("#gridtable").DataTable().draw();
             });
 
         });

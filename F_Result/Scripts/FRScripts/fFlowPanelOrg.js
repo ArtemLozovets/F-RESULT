@@ -88,7 +88,6 @@ function globalOrgVarsClear() {
     window.filterOrgIDs = [];
     window._flagOrg = true;
     $('#allOrgCHB').prop('checked', 'checked');
-    $("#gridtable").DataTable().draw();
 }
 
 //-----------------------------------------------------------------

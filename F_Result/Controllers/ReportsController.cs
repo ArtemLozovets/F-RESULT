@@ -396,7 +396,6 @@ namespace F_Result.Controllers
         {
             db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s));
 
-            System.Diagnostics.Debug.WriteLine("HRRRHRHRHRHRHHRH==========>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             try
             {
                 if (Period == null || BaseDate == null)
@@ -494,6 +493,7 @@ namespace F_Result.Controllers
                 {
                     orgListStr = string.Format("'{0}'", string.Join(",", filterOrgIDs));
                 }
+
                 //Запрос вызывает пользовательскую функцию "ufnAPBReport" хранящуюся на SQL-сервере.
                 List<APBTableReport> _ads = db.Database.SqlQuery<APBTableReport>(string.Format("Select * from dbo.ufnAPBReport('{0}', '{1}', {2}, '{3}', {4}, {5})", _startPeriod, _endPeriod, Period, ProjectName, _isAllTimes, orgListStr)).ToList();
 
