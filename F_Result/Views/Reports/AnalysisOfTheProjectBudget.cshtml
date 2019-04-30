@@ -33,6 +33,7 @@
 </div>
 
 <input type="text" value="" id="gridtable_filter" hidden />
+<input type="text" value="true" id="isAPB" hidden />
 
 <div class="container">
     <div class="row">
@@ -445,15 +446,17 @@
                     //Получаем Id планового периода.
                     // Использование ф-ции необходимо для обновления значения выпадающего списка при повторной отправке запроса.
                     data: function (d) {
-                        console.log('CHECK LINE!!!!');
                         var _isAllTimes = false;
                         if ($('#isAllTimes').is(':checked')) { _isAllTimes = true };
+
+                        var orgListFromLS = JSON.parse(localStorage.getItem("checkOrgList")); //Читаем массив ID организаций из LocalStorage
+
                         d.Period = $('#BudgetPeriodDDL').val();
                         d.BaseDate = $('#startDate').val();
                         d.IsAllTimes = _isAllTimes;
                         d.ProjectName = $('#gridtable_filter').val();
                         d.filterPrjIDs = window.filterPrjIDs;
-                        d.filterOrgIDs = window.filterOrgIDs;
+                        d.filterOrgIDs = orgListFromLS;
                     },
                     dataSrc: function (d) {
                         $('#loadingImg').hide();
@@ -569,7 +572,8 @@
                     //Инициализация таблицы организаций в плавающей панели---------
                     if (window._flagOrg) {
                         //Заполнение массива организаций для таблицы в плавающей панели
-                        _orgIDs = JSON.parse(json.orglist)
+                        _orgIDs = JSON.parse(json.orglist);
+                        _orgSelIDs = JSON.parse(json.orglistsel);
                         var orgTable = $('#org_Table').DataTable();
                         orgTable.destroy();
                         orgTableCrate();

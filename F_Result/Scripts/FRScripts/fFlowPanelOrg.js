@@ -38,21 +38,28 @@ $(function () {
     });
 
     $('body').on('click', function (e) {
-        $('#flowPanelOrg').animate({ right: -360, opacity: 1  }, 500).removeClass('open');
+        $('#flowPanelOrg').animate({ right: -360, opacity: 1 }, 500).removeClass('open');
         $('#showButtonOrg').removeClass('fa-arrow-right').addClass('fa-arrow-left');
     }).on('click', '#flowPanelOrg', function (e) {
         e.stopPropagation();
     });
 
-    //Сброс/Установка всех чекбоксов выбора проекта
+    //Сброс/Установка всех чекбоксов выбора организации
     $('#allOrgCHB').on('change', function () {
         window.filterOrgIDs = [];
         $('input:checkbox.orgSelectCHB').each(function () {
             $(this).prop('checked', $('#allOrgCHB').prop('checked'));
             if ($(this).is(":checked")) {
                 window.filterOrgIDs.push($(this).data('orgid'));
-            };
+            }
         });
+
+        if ($('#isAPB').val() === 'true') {
+            _orderFlag = false
+            var serialObj = JSON.stringify(window.filterOrgIDs);
+            localStorage.setItem("checkOrgList", serialObj); //Пишем массив отмеченных организаций в LocalStorage
+        }
+
         if (window.filterOrgIDs.length > 0) {
             $("#gridtable").DataTable().draw();
         };
@@ -75,6 +82,12 @@ $(function () {
         else if (!allChecked) {
             $('#allOrgCHB').prop('checked', false);
         }
+
+        if ($('#isAPB').val() === 'true') {
+            var serialObj = JSON.stringify(window.filterOrgIDs);
+            localStorage.setItem("checkOrgList", serialObj); //Пишем массив неотмеченных в LocalStorage
+        }
+
         if (window.filterOrgIDs.length > 0) {
             $("#gridtable").DataTable().draw();
         };
@@ -91,8 +104,13 @@ function globalOrgVarsClear() {
 }
 
 //-----------------------------------------------------------------
-//Функция создания таблицы со списком статей
+//Функция создания таблицы со списком организаций
 function orgTableCrate() {
+    var _orderFlag = true;
+    if ($('#isAPB').val() === 'true') {
+        _orderFlag = false
+    }
+
     var orgTable = $('#org_Table').DataTable({
         "scrollY": "360px",
         "scrollCollapse": true,
@@ -109,7 +127,8 @@ function orgTableCrate() {
         processing: false,
         serverSide: false,
         data: _orgIDs,
-        order: [[ 1, "asc" ]],
+        bSort: _orderFlag,
+        order: [[1, "asc"]],
         columns: [
             { data: 'AtId', bSortable: true, visible: false, searchable: false },
             { data: 'AtName', bSortable: true, sWidth: '80%' },
@@ -124,6 +143,26 @@ function orgTableCrate() {
         ],
         fnDrawCallback: function (settings) {
             $('#flowPanelOrg').show();
+
+        },
+        fnCreatedRow: function (row, data, rowIndex) {
+            if (typeof _orgSelIDs !== 'undefined' && _orgSelIDs !== null) {
+                var isOrgExist = _orgSelIDs.includes(data.AtId);
+                if (isOrgExist) {
+                    $(row).css({ 'background-color': 'rgba(128, 200, 64, 0.5)', 'font-weight': 'bold' });
+                }
+            }
+
+            if ($('#isAPB').val() === 'true') {
+                var orgCheckList = JSON.parse(localStorage.getItem("checkOrgList"));
+                if (typeof orgCheckList !== 'undefined' && orgCheckList !== null) {
+                    var isOrgCheck = orgCheckList.includes(data.AtId);
+                    if (!isOrgCheck) {
+                        $('.orgSelectCHB', row).prop('checked', false);
+                        $('#allOrgCHB').prop('checked', false);
+                    }
+                }
+            }
         }
     });
 

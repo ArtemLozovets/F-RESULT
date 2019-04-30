@@ -530,16 +530,33 @@ namespace F_Result.Controllers
                             && (WorkerIdsList.FirstOrDefault() == -1 || WorkerIdsList.Contains(x.Chief) || WorkerIdsList.Contains(x.ProjectManager)) //Фильтрация записей по проектам для руководителей проектов
                             ).ToList();
 
+                //Список ID огранизаций данные по которым присутствуют в отчете
+                List<int> _orgListSel = _orgListExpand.Select(x => x.orgId).Distinct().ToList();
 
-                List<ArticlesIDs> _orgList = _orgListExpand.Select(x => new
+                //Список организаций данные по которым присутствуют в отчете
+                List<ArticlesIDs> _orgList = db.Organizations.Select(x => new
                 {
-                    orgId = x.orgId,
-                    orgName = x.orgName
+                    orgId = x.id,
+                    orgName = x.Title
                 }).OrderBy(x => x.orgName).Distinct().AsEnumerable().Select(x => new ArticlesIDs
                 {
                     AtId = x.orgId,
                     AtName = x.orgName
-                }).ToList();
+                }).Where(x=> _orgListSel.Contains(x.AtId)).ToList();
+
+
+                //Список организаций данные по которым отсутствуют в отчете
+                List<ArticlesIDs> _orgListL = db.Organizations.Select(x => new
+                {
+                    orgId = x.id,
+                    orgName = x.Title
+                }).OrderBy(x => x.orgName).Distinct().AsEnumerable().Select(x => new ArticlesIDs
+                {
+                    AtId = x.orgId,
+                    AtName = x.orgName
+                }).Where(x => !_orgListSel.Contains(x.AtId)).ToList();
+
+                _orgList = _orgList.Union(_orgListL).ToList();
 
                 List <APBFilterIDs> _prjList = _ads
                     .Select(x => new APBFilterIDs
@@ -552,7 +569,8 @@ namespace F_Result.Controllers
                 var jsonSerialiser = new JavaScriptSerializer();
                 var _prjListJson = jsonSerialiser.Serialize(_prjList);
                 var _orgListJson = jsonSerialiser.Serialize(_orgList);
-
+                var _orgListSelJson = jsonSerialiser.Serialize(_orgListSel);
+                
                 APBTableReportTotal total = new APBTableReportTotal
                 {
                     DebitPlanTotal = _ads.Sum(x => x.debitplan),
@@ -603,6 +621,7 @@ namespace F_Result.Controllers
                     planningbalance = _PlanningBalance,
                     prjlist = _prjListJson,
                     orglist = _orgListJson,
+                    orglistsel = _orgListSelJson,
                     sortcolumn = sortColumn,
                     sortdir = sortColumnDir,
                     errormessage = ""
