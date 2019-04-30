@@ -796,7 +796,9 @@
     <Folder Include="DownloadRPT\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
