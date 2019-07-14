@@ -573,6 +573,26 @@ div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer d
 }
 /*#endregion */
 
+/*#region name */
+/*Калькулятор остатка*/
+#draggableCalc {
+    position: fixed;
+    padding: 1em;
+    width: 60em;
+    opacity: 1;
+    border-radius: .5em;
+    background-color: #57A;
+    z-index: 99999;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.calcCurrInput {
+    width:100px;
+    margin:0 4px 0 4px;
+}
+
+/*#endregion */
+
 /*#region Dashboard block */
 
 .card {

@@ -21,8 +21,8 @@
     }
 
     /*Переопределяем длину поля ввода (media (min-width: 768px))*/
-    #flowPanel .custRow{
-        max-width:280px !important;
+    #flowPanel .custRow {
+        max-width: 280px !important;
     }
 
     #flowPanel #prgtable_filter input {
@@ -36,7 +36,7 @@
     }
 </style>
 
-@Html.Hidden("Mode", ViewData["Mode"]);
+@Html.Hidden("Mode", ViewData["Mode"])
 
 <div id="loadingImg">
     <div id="preloadImg">
@@ -119,6 +119,26 @@
     </div>
 </div>
 <!-- #endregion -->
+
+<div id="draggableCalc" hidden class="ui-widget-content">
+    <div class="row text-center">
+        <h3 class="text-white" style="margin-top:-10px; width:100%;">
+            ОСТАТОК&nbsp;<i class="text-danger">(В РАЗРАБОТКЕ)</i>
+            <button class="btn btn-sm btn-primary pull-right" style="margin-right:6px;" id="addBalance" title="Добавить остаток"><i class="fa fa-plus"></i></button>
+        </h3>
+    </div>
+    <div class="row text-center" id="addCalcPanel" hidden>
+        <div id="calcCTRLS"><i id="calcCurr"></i></div>
+    </div>
+
+    <div class="row text-center">
+        <h5 class="text-white">ПОЛЕ С ОСТАТКОМ</h5>
+    </div>
+
+    @*<button class="btn btn-primary btn-sm" id="sendComment1" disabled><i class="fa fa-save"></i>&nbsp;Отправить</button>*@
+    <button class="btn btn-primary pull-right btn-sm" id="hideCalc"><i class="fa fa-eye-slash"></i>&nbsp;Скрыть</button>
+</div>
+
 <a href="#" class="scrollup1">Наверх</a>
 
 @section Scripts {
@@ -133,6 +153,7 @@
     <script src="~/Scripts/FRScripts/wksFilterFlowPanel.js"></script>
     <script src="~/Scripts/FRScripts/toparrow.js"></script>
     <script src="~/Scripts/FRScripts/exportData.js"></script>
+    <script src="~/Scripts/FRScripts/calcPanel.js"></script>
 
     @*Блок скриптов для работы с DateRangePicker*@
     <script src="~/Scripts/moment.min.js"></script>
@@ -255,7 +276,6 @@
         })
     </script>
 
-
     <script>
         //-----------Функция создания таблицы отчета------------
         $(function () {
@@ -348,13 +368,21 @@
                     ],
 
                     fnDrawCallback: function (settings) {
+                        var controlTxt = '<button id="calcBtn" class="btn btn-sm btn-primary" title="Остаток"><i class="fa fa-calculator"></i></button>';
+                        controlTxt = controlTxt + '&nbsp;<input id="modeBtn" type="button" class="btn btn-sm btn-primary" value="Сводный" title = "Сводный авансовый отчет"/>';
                         if ($('#Mode').val() !== 'Exp') {
-                            $('#repMode').html('<input id="modeBtn" type="button" class="btn btn-sm btn-primary" value="Сводный" title = "Сводный авансовый отчет"/>');
+                            $('#repMode').html(controlTxt);
                         };
 
                         var numFormat = $.fn.dataTable.render.number('&nbsp;', ',', 2).display;
                         var api = this.api();
                         var json = api.ajax.json();
+
+                        var obj = $.parseJSON(json.currTotal);
+                        _currList = [];
+                        $.each(obj, function (key, value) {
+                            _currList.push(value['Currency']);
+                        });
 
                         //---------------------- Итоги ---------------------------
                         if (json.curTotalFlag === 1) {
@@ -391,7 +419,7 @@
                         }
                         //---------------------------------------------------------------------
 
-                        //Инициализация таблицы проектов в плавающей 
+                        //Инициализация таблицы проектов в плавающей панели
 
                         if (window._flag) {
                             if ($('#Mode').val() !== 'Exp') {
