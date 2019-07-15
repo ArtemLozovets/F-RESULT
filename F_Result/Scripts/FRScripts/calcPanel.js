@@ -3,13 +3,6 @@
 
     window._currList = []; //Массив типов валют
 
-    $('.calcCurrInput').bind("change keyup input click", function () {
-        alert('VALID');
-        if (this.value.match(/[^0-9]/g)) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        }
-    });
-
     var navbarHeight = $('#mainNavbar').height();
     $('#draggableCalc').css('top', navbarHeight + 10).css('left', 10);
     $('#draggableCalc').draggable({
@@ -20,6 +13,39 @@
         opacity: 0.5
     });
 
+
+    var defaultDate = new Date();
+    $('#balanceDate').dateRangePicker(
+                {
+                    customTopBar: 'Расчетная дата остатка',
+                    showWeekNumbers: true,
+                    startOfWeek: 'monday',
+                    singleDate: true,
+                    singleMonth: true,
+                    language: 'ru',
+                    startOfWeek: 'monday',
+                    separator: ' - ',
+                    format: 'DD/MM/YYYY',
+                    autoClose: true,
+                    monthSelect: true,
+                    yearSelect: true,
+                    setValue: function (s) {
+                        $(this).val(s);
+                    },
+                    customOpenAnimation: function (cb) {
+                        $(this).fadeIn(300, cb);
+                    },
+                    customCloseAnimation: function (cb) {
+                        $(this).fadeOut(300, cb);
+                    },
+                    showShortcuts: false,
+                    time: {
+                        enabled: false
+                    },
+                    extraClass: 'date-range-pickerM',
+                    setDate: defaultDate
+                })
+ 
 });
 
 
@@ -27,23 +53,36 @@
 $('body').on('click', '#calcBtn', function (e) {
     e.preventDefault();
 
+    $('#calcCurr').append('<div class="form-horizontal" id="currForm"></div>');
+
     $.each(_currList, function (key, value) {
-        input = jQuery('<input class="calcCurrInput form-control" id="curr"' + value + ' placeholder="' + value + '" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)">');
-        $('#calcCurr').append(input);
+
+        var input = '<div class="form-group">';
+        input += '<label for="curr' + value + '" class="control-label col-md-2 text-white">' + value + '</label>';
+        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr"' + value + ' placeholder="0,00" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
+        input += '</div>'
+        $('#currForm').append(input);
     });
 
-    //$('.calcCurrInput').bind("change keyup input click", function () {
-    //    if (this.value.match(/[^0-9,\.]/g)) {
-    //        //^[0-9]*\.[0-9]{2}$
-    //        this.value = this.value.replace(/[^0-9,\.]/g, '');
-    //    }
-    //});
+    $('#currForm').append('<button id="saveBalanceBtn" class="btn btn-primary float-left" title="Сохранить остаток"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Cохранить</button></div>');
 
-    $('.calcCurrInput').bind("blur", function () {
-        if (!this.value.match(/^[0-9]*\.[0-9]{2}$/g)) {
-            this.value = 'ERROR';
-        }
+    $('#saveBalanceBtn').bind("click", function () {
+        $('.calcCurrInput').bind("click", function () {
+            this.value = "";
+            $(this).css({ "background-color": "white", "color": "", "border": "" });
+        });
     });
+
+    $('#saveBalanceBtn').bind("click", function () {
+        this.blur();
+        $(".calcCurrInput").each(function (index) {
+            if (!this.value.match(/^[0-9]*\,[0-9]{2}$/g) && !this.value.match(/^[0-9]*$/g) && !this.value.match(/^[0-9]*\,[0-9]{1}$/g)) {
+                $(this).css({ "border": "1px solid red", "background-color": "rgba(255, 99, 132, 0.8)", "color": "white" });
+            }
+        });
+
+    });
+
 
     $(this).attr('disabled', 'true');
     $('#draggableCalc').fadeIn(500);
@@ -130,11 +169,11 @@ function commentAccept(status, cmId) {
     });
 }
 
-        //Separator replace. Convert "." to ","
-        function reppoint(elem) {
-            var d = elem.value;
-            if (d.indexOf(".") > 0) {
-                var outstr = d.replace(".", ",");
-                elem.value = outstr;
-            }
-        }
+//Separator replace. Convert "." to ","
+function reppoint(elem) {
+    var d = elem.value;
+    if (d.indexOf(".") > 0) {
+        var outstr = d.replace(".", ",");
+        elem.value = outstr;
+    }
+}

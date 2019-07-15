@@ -121,13 +121,18 @@
 <!-- #endregion -->
 
 <div id="draggableCalc" hidden class="ui-widget-content">
-    <div class="row text-center">
-        <h3 class="text-white" style="margin-top:-10px; width:100%;">
-            ОСТАТОК&nbsp;<i class="text-danger">(В РАЗРАБОТКЕ)</i>
-            <button class="btn btn-sm btn-primary pull-right" style="margin-right:6px;" id="addBalance" title="Добавить остаток"><i class="fa fa-plus"></i></button>
-        </h3>
+    <div class="row text-center" style="margin:-6px 0 12px 0;">
+        <h3 class="text-white"><i class="fa fa-calculator"></i>&nbsp;ОСТАТОК</h3>
     </div>
-    <div class="row text-center" id="addCalcPanel" hidden>
+
+    <div class="row text-center">
+        <div class="form-inline">
+            <input type="text" class="form-control input-sm form-inline" style="width:200px;" name="balanceDate" id="balanceDate" value="15/07/2019"/>
+            <button class="btn btn-sm btn-primary form-inline" id="addBalance" title="Добавить остаток"><i class="fa fa-plus"></i></button>
+        </div>
+    </div>
+
+    <div class="row text-center" id="addCalcPanel" hidden style="margin-top:10px;">
         <div id="calcCTRLS"><i id="calcCurr"></i></div>
     </div>
 
