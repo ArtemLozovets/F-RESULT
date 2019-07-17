@@ -184,6 +184,7 @@
     <Compile Include="Controllers\AccountsBalancesController.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\ActualDebitsController.cs" />
+    <Compile Include="Controllers\BalanceCalculatorController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -795,6 +796,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="DownloadRPT\" />
+    <Folder Include="Views\BalanceCalculator\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

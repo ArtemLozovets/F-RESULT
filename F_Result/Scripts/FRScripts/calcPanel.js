@@ -13,8 +13,6 @@
         opacity: 0.5
     });
 
-
-    var defaultDate = new Date();
     $('#balanceDate').dateRangePicker(
                 {
                     customTopBar: 'Расчетная дата остатка',
@@ -42,10 +40,13 @@
                     time: {
                         enabled: false
                     },
-                    extraClass: 'date-range-pickerM',
-                    setDate: defaultDate
+                    extraClass: 'date-range-pickerM'
                 })
- 
+
+    var nowDate = moment(new Date).format('DD/MM/YYYY');
+    $('#balanceDate').val(nowDate);
+
+
 });
 
 
@@ -64,7 +65,9 @@ $('body').on('click', '#calcBtn', function (e) {
         $('#currForm').append(input);
     });
 
-    $('#currForm').append('<button id="saveBalanceBtn" class="btn btn-primary float-left" title="Сохранить остаток"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Cохранить</button></div>');
+    var btnString = '<button id="closeBalanceBtn" class="btn btn-sm btn-primary"  title="Скрыть панель добавления остатка"><i class="glyphicon glyphicon glyphicon-remove"></i>&nbsp;Отмена</button>&nbsp;';
+    btnString += '<button id="saveBalanceBtn" class="btn btn-sm btn-primary" title="Сохранить остаток"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Cохранить</button></div>';
+    $('#currForm').append(btnString);
 
     $('#saveBalanceBtn').bind("click", function () {
         $('.calcCurrInput').bind("click", function () {
@@ -75,10 +78,44 @@ $('body').on('click', '#calcBtn', function (e) {
 
     $('#saveBalanceBtn').bind("click", function () {
         this.blur();
+        var isEmpty = true;
+        var isNotValid = false;
         $(".calcCurrInput").each(function (index) {
+
+            if (this.value !== '') {
+                isEmpty = false;
+            }
+
             if (!this.value.match(/^[0-9]*\,[0-9]{2}$/g) && !this.value.match(/^[0-9]*$/g) && !this.value.match(/^[0-9]*\,[0-9]{1}$/g)) {
                 $(this).css({ "border": "1px solid red", "background-color": "rgba(255, 99, 132, 0.8)", "color": "white" });
+                isNotValid = true;
             }
+
+        });
+
+        if (isNotValid) { return false; }
+
+        if (isEmpty) {
+            alert('Введите данные остатка!');
+            return false;
+        }
+        else {
+
+            var _balanceDate = $('#balanceDate').val();
+            saveBalanceFunc(_balanceDate);
+
+
+            $('#addCalcPanel').slideUp(500, function () {
+                $('#addBalance').removeAttr('disabled');
+            });
+        }
+
+    });
+
+    $('#closeBalanceBtn').bind("click", function () {
+        this.blur();
+        $('#addCalcPanel').slideUp(500, function () {
+            $('#addBalance').removeAttr('disabled');
         });
 
     });
@@ -101,24 +138,18 @@ $('#hideCalc').on('click', function () {
 //Добавление остатка
 $('body').on('click', '#addBalance', function (e) {
     e.preventDefault();
-    this.blur();
+    $(this).attr('disabled', "true").blur();
     $('#addCalcPanel').slideDown(500);
 
 });
 
 
-//Добавление отзыва
-$('#sendComment').on('click', function () {
-    var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
+// Функция сохранения остатка в БД
+function saveBalanceFunc(_balanceDate) {
 
-    if ($('#commentText').val().length == 0) {
-        alert('Введите текст отзыва');
-        return false;
-    }
+    var _url = "http://" + $(location).attr('host') + "/BalanceCalculator/AddBalance";
 
     $('#loadingImg').show();
-    var _cmText = $('#commentText').val();
-    var _cmUrl = $('#cmUrl').val();
 
     $.ajax({
         url: _url,
@@ -126,35 +157,7 @@ $('#sendComment').on('click', function () {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify({
-            cmText: _cmText,
-            cmUrl: _cmUrl
-        }),
-        success: function (data) {
-            if (!data.result) {
-                $('#loadingImg').hide(function () {
-                    alert(data.message);
-                });
-                return false;
-            }
-            $('#commentText').val('').trigger('change');
-            $('#draggable').fadeOut(500, function () {
-                $('#loadingImg').hide();
-            });
-        }
-    });
-});
-
-//Утверждение отзыва
-function commentAccept(status, cmId) {
-    $('#loadingImg').show();
-    $.ajax({
-        url: "../Feedback/CommentAccept",
-        type: "POST",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify({
-            CommentId: cmId,
-            State: status
+            balanceDate: _balanceDate
         }),
         success: function (data) {
             if (!data.result) {
@@ -164,7 +167,6 @@ function commentAccept(status, cmId) {
                 return false;
             }
             $('#loadingImg').hide();
-            $('#gridtable').DataTable().draw();
         }
     });
 }
@@ -177,3 +179,66 @@ function reppoint(elem) {
         elem.value = outstr;
     }
 }
+
+
+////Добавление отзыва
+//$('#sendComment').on('click', function () {
+//    var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
+
+//    if ($('#commentText').val().length == 0) {
+//        alert('Введите текст отзыва');
+//        return false;
+//    }
+
+//    $('#loadingImg').show();
+//    var _cmText = $('#commentText').val();
+//    var _cmUrl = $('#cmUrl').val();
+
+//    $.ajax({
+//        url: _url,
+//        type: "POST",
+//        contentType: "application/json; charset=utf-8",
+//        dataType: "json",
+//        data: JSON.stringify({
+//            cmText: _cmText,
+//            cmUrl: _cmUrl
+//        }),
+//        success: function (data) {
+//            if (!data.result) {
+//                $('#loadingImg').hide(function () {
+//                    alert(data.message);
+//                });
+//                return false;
+//            }
+//            $('#commentText').val('').trigger('change');
+//            $('#draggable').fadeOut(500, function () {
+//                $('#loadingImg').hide();
+//            });
+//        }
+//    });
+//});
+
+////Утверждение отзыва
+//function commentAccept(status, cmId) {
+//    $('#loadingImg').show();
+//    $.ajax({
+//        url: "../Feedback/CommentAccept",
+//        type: "POST",
+//        contentType: "application/json; charset=utf-8",
+//        dataType: "json",
+//        data: JSON.stringify({
+//            CommentId: cmId,
+//            State: status
+//        }),
+//        success: function (data) {
+//            if (!data.result) {
+//                $('#loadingImg').hide(function () {
+//                    alert(data.message);
+//                });
+//                return false;
+//            }
+//            $('#loadingImg').hide();
+//            $('#gridtable').DataTable().draw();
+//        }
+//    });
+//}
