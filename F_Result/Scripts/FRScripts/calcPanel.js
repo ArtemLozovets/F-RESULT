@@ -60,7 +60,7 @@ $('body').on('click', '#calcBtn', function (e) {
 
         var input = '<div class="form-group">';
         input += '<label for="curr' + value + '" class="control-label col-md-2 text-white">' + value + '</label>';
-        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr"' + value + ' placeholder="0,00" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
+        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr' + value + '" placeholder="0,00" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
         input += '</div>'
         $('#currForm').append(input);
     });
@@ -78,31 +78,38 @@ $('body').on('click', '#calcBtn', function (e) {
 
     $('#saveBalanceBtn').bind("click", function () {
         this.blur();
-        var isEmpty = true;
-        var isNotValid = false;
+        var _isEmpty = true;
+        var _isNotValid = false;
+        var _currData = {};
+
         $(".calcCurrInput").each(function (index) {
 
             if (this.value !== '') {
-                isEmpty = false;
+                _isEmpty = false;
             }
 
             if (!this.value.match(/^[0-9]*\,[0-9]{2}$/g) && !this.value.match(/^[0-9]*$/g) && !this.value.match(/^[0-9]*\,[0-9]{1}$/g)) {
                 $(this).css({ "border": "1px solid red", "background-color": "rgba(255, 99, 132, 0.8)", "color": "white" });
-                isNotValid = true;
+                _isNotValid = true;
+            }
+            else {
+                var _currName = $(this).attr('id').replace('curr', '');
+                _currData[_currName] = this.value;
             }
 
         });
 
-        if (isNotValid) { return false; }
+        if (_isNotValid) { return false; }
 
-        if (isEmpty) {
+        if (_isEmpty) {
             alert('Введите данные остатка!');
             return false;
         }
         else {
 
             var _balanceDate = $('#balanceDate').val();
-            saveBalanceFunc(_balanceDate);
+
+            saveBalanceFunc(_balanceDate, _currData);
 
 
             $('#addCalcPanel').slideUp(500, function () {
@@ -145,11 +152,13 @@ $('body').on('click', '#addBalance', function (e) {
 
 
 // Функция сохранения остатка в БД
-function saveBalanceFunc(_balanceDate) {
+function saveBalanceFunc(_balanceDate, _currData) {
 
     var _url = "http://" + $(location).attr('host') + "/BalanceCalculator/AddBalance";
 
     $('#loadingImg').show();
+
+    console.log('DATA=>', _currData);
 
     $.ajax({
         url: _url,
@@ -157,7 +166,8 @@ function saveBalanceFunc(_balanceDate) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify({
-            balanceDate: _balanceDate
+            balanceDate: _balanceDate,
+            currData: JSON.stringify(_currData)
         }),
         success: function (data) {
             if (!data.result) {

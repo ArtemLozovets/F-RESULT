@@ -29,7 +29,7 @@ namespace F_Result.Models
 
     public class ApplicationUser : IdentityUser
     {
-   
+
         [Display(Name = "Имя")]
         public string FirstName { get; set; }
 
@@ -49,17 +49,18 @@ namespace F_Result.Models
         [Display(Name = "Роль")]
         public string UserRoleName { get; set; }
 
-       public virtual ICollection<ActualDebit> ActualDebit { get; set; }
-       public virtual ICollection<PlanCredit> PlanCredit { get; set; }
-       public virtual ICollection<PlanDebit> PlanDebit { get; set; }
-       public virtual ICollection<PlanCreditF2> PlanCreditF2 { get; set; }
-       public virtual ICollection<PlanDebitF2> PlanDebitF2 { get; set; }
-       public virtual ICollection<Account> Account { get; set; }
-       public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
-       public virtual ICollection<Feedback> Feedback { get; set; }
-       public virtual ICollection<Feedback> Feedback1 { get; set; }
-       public virtual ICollection<UsrWksRelation> UsrWksRelation { get; set; }
-       public virtual ICollection<Settings> Settings { get; set; }
+        public virtual ICollection<ActualDebit> ActualDebit { get; set; }
+        public virtual ICollection<PlanCredit> PlanCredit { get; set; }
+        public virtual ICollection<PlanDebit> PlanDebit { get; set; }
+        public virtual ICollection<PlanCreditF2> PlanCreditF2 { get; set; }
+        public virtual ICollection<PlanDebitF2> PlanDebitF2 { get; set; }
+        public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<AccountsBalance> AccountsBalance { get; set; }
+        public virtual ICollection<Feedback> Feedback { get; set; }
+        public virtual ICollection<Feedback> Feedback1 { get; set; }
+        public virtual ICollection<Balance> Balance { get; set; }
+        public virtual ICollection<UsrWksRelation> UsrWksRelation { get; set; }
+        public virtual ICollection<Settings> Settings { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -98,7 +99,7 @@ namespace F_Result.Models
 
         static ApplicationDbContext()
         {
-           // Database.SetInitializer<ApplicationDbContext>(new AppContextInitializer());
+            // Database.SetInitializer<ApplicationDbContext>(new AppContextInitializer());
         }
         public ApplicationDbContext()
             : base("FResult", throwIfV1Schema: false)

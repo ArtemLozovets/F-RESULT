@@ -211,6 +211,7 @@
     <Compile Include="Models\ActualDebit.cs" />
     <Compile Include="Models\AAOReport.cs" />
     <Compile Include="Models\ASPVisitor.cs" />
+    <Compile Include="Models\Balance.cs" />
     <Compile Include="Models\DirectoryOfArticles.cs" />
     <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\FRModel.cs" />

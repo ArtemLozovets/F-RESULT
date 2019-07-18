@@ -196,6 +196,12 @@ namespace F_Result.Models
            .WithMany(m => m.Feedback1)
            .HasForeignKey(m => m.ApprovedUserId)
            .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Balance>()
+           .HasRequired(m => m.ApplicationUser)
+           .WithMany(m => m.Balance)
+           .HasForeignKey(m => m.UserId)
+           .WillCascadeOnDelete(false);
         }
 
         public DbSet<F_Result.Models.Payments> Payments { get; set; }
@@ -227,6 +233,7 @@ namespace F_Result.Models
         public DbSet<F_Result.Models.ActivityIndex> ActivityIndexes { get; set; }
         public DbSet<F_Result.Models.AAOReport> AAOReports { get; set; }
         public DbSet<F_Result.Models.AAOReportCons> AAOReportCons { get; set; }
+        public DbSet<F_Result.Models.Balance> Balance { get; set; }
 
     }
 }

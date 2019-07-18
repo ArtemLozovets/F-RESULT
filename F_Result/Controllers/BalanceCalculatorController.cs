@@ -17,11 +17,17 @@ namespace F_Result.Controllers
         private FRModel db = new FRModel();
 
         #region ----------- Добавление остатка -------------
-        public ActionResult AddBalance(string balanceDate)
+        public ActionResult AddBalance(string balanceDate, string currData)
         {
-            if (string.IsNullOrEmpty(balanceDate) || string.IsNullOrEmpty(balanceDate))
+            if (string.IsNullOrEmpty(balanceDate) || string.IsNullOrEmpty(currData))
             {
                 return Json(new { result = false, message = "Отсутствуют необходимые параметры" }, JsonRequestBehavior.AllowGet);
+            }
+
+            DateTime _balanceDate = new DateTime();
+
+            if (!DateTime.TryParse(balanceDate, out _balanceDate)) {
+                return Json(new { result = false, message = "Неверный формат даты остатка" }, JsonRequestBehavior.AllowGet);
             }
 
             try
@@ -30,11 +36,25 @@ namespace F_Result.Controllers
                 //Получаем идентификатор текущего пользователя
                 using (ApplicationDbContext aspdb = new ApplicationDbContext())
                 {
-                    var user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                    string user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                    dynamic currDataJson = JsonConvert.DeserializeObject(currData);
+
+                    foreach (var item in currDataJson)
+                    {
+                        Balance _balance = new Balance()
+                        {
+                            UserId = user,
+                            DateOfCreation = DateTime.Now,
+                            BalanceDate = _balanceDate,
+                            CurrencyName = item.Name,
+                            Sum = item.Value
+                        };
+
+                        db.Balance.Add(_balance);
+                    }
                 }
 
-                //  db.Feedback.Add(fb);
-                //db.SaveChanges();
+                db.SaveChanges();
                 return Json(new { result = true }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
