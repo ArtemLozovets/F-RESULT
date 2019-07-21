@@ -49,7 +49,6 @@
 
 });
 
-
 //Отображение панели добавления отзыва
 $('body').on('click', '#calcBtn', function (e) {
     e.preventDefault();
@@ -60,7 +59,7 @@ $('body').on('click', '#calcBtn', function (e) {
 
         var input = '<div class="form-group">';
         input += '<label for="curr' + value + '" class="control-label col-md-2 text-white">' + value + '</label>';
-        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr' + value + '" placeholder="0,00" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
+        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr' + value + '" placeholder="Сумма остатка в '+ value +' (0,00)" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
         input += '</div>'
         $('#currForm').append(input);
     });
@@ -88,7 +87,7 @@ $('body').on('click', '#calcBtn', function (e) {
                 _isEmpty = false;
             }
 
-            if (!this.value.match(/^[0-9]*\,[0-9]{2}$/g) && !this.value.match(/^[0-9]*$/g) && !this.value.match(/^[0-9]*\,[0-9]{1}$/g)) {
+            if ((!this.value.match(/^[0-9]*\,[0-9]{2}$/g) && !this.value.match(/^[0-9]*$/g) && !this.value.match(/^[0-9]*\,[0-9]{1}$/g)) || (this.value === '')) {
                 $(this).css({ "border": "1px solid red", "background-color": "rgba(255, 99, 132, 0.8)", "color": "white" });
                 _isNotValid = true;
             }
@@ -158,8 +157,6 @@ function saveBalanceFunc(_balanceDate, _currData) {
 
     $('#loadingImg').show();
 
-    console.log('DATA=>', _currData);
-
     $.ajax({
         url: _url,
         type: "POST",
@@ -189,66 +186,3 @@ function reppoint(elem) {
         elem.value = outstr;
     }
 }
-
-
-////Добавление отзыва
-//$('#sendComment').on('click', function () {
-//    var _url = "http://" + $(location).attr('host') + "/Feedback/CommentsCreate";
-
-//    if ($('#commentText').val().length == 0) {
-//        alert('Введите текст отзыва');
-//        return false;
-//    }
-
-//    $('#loadingImg').show();
-//    var _cmText = $('#commentText').val();
-//    var _cmUrl = $('#cmUrl').val();
-
-//    $.ajax({
-//        url: _url,
-//        type: "POST",
-//        contentType: "application/json; charset=utf-8",
-//        dataType: "json",
-//        data: JSON.stringify({
-//            cmText: _cmText,
-//            cmUrl: _cmUrl
-//        }),
-//        success: function (data) {
-//            if (!data.result) {
-//                $('#loadingImg').hide(function () {
-//                    alert(data.message);
-//                });
-//                return false;
-//            }
-//            $('#commentText').val('').trigger('change');
-//            $('#draggable').fadeOut(500, function () {
-//                $('#loadingImg').hide();
-//            });
-//        }
-//    });
-//});
-
-////Утверждение отзыва
-//function commentAccept(status, cmId) {
-//    $('#loadingImg').show();
-//    $.ajax({
-//        url: "../Feedback/CommentAccept",
-//        type: "POST",
-//        contentType: "application/json; charset=utf-8",
-//        dataType: "json",
-//        data: JSON.stringify({
-//            CommentId: cmId,
-//            State: status
-//        }),
-//        success: function (data) {
-//            if (!data.result) {
-//                $('#loadingImg').hide(function () {
-//                    alert(data.message);
-//                });
-//                return false;
-//            }
-//            $('#loadingImg').hide();
-//            $('#gridtable').DataTable().draw();
-//        }
-//    });
-//}
