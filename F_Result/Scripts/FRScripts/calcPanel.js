@@ -69,17 +69,15 @@ $('body').on('click', '#calcBtn', function (e) {
     $('#currForm').append(btnString);
 
     $('#saveBalanceBtn').bind("click", function () {
-        $('.calcCurrInput').bind("click", function () {
-            this.value = "";
-            $(this).css({ "background-color": "white", "color": "", "border": "" });
-        });
-    });
-
-    $('#saveBalanceBtn').bind("click", function () {
         this.blur();
         var _isEmpty = true;
         var _isNotValid = false;
         var _currData = {};
+
+        $('.calcCurrInput').bind("click", function () {
+            this.value = "";
+            $(this).css({ "background-color": "white", "color": "", "border": "" });
+        });
 
         $(".calcCurrInput").each(function (index) {
 
@@ -113,6 +111,7 @@ $('body').on('click', '#calcBtn', function (e) {
 
             $('#addCalcPanel').slideUp(500, function () {
                 $('#addBalance').removeAttr('disabled');
+                $('#balanceBlock').slideDown(500);
             });
         }
 
@@ -122,6 +121,7 @@ $('body').on('click', '#calcBtn', function (e) {
         this.blur();
         $('#addCalcPanel').slideUp(500, function () {
             $('#addBalance').removeAttr('disabled');
+            $('#balanceBlock').slideDown(500);
         });
 
     });
@@ -136,6 +136,7 @@ $('#hideCalc').on('click', function () {
     $('#draggableCalc').fadeOut(500, function () {
         $('#addCalcPanel').hide();
         $('#calcCurr').empty();
+        $('#addBalance').removeAttr('disabled');
         $('#calcBtn').removeAttr('disabled');
     });
 });
@@ -145,8 +146,9 @@ $('#hideCalc').on('click', function () {
 $('body').on('click', '#addBalance', function (e) {
     e.preventDefault();
     $(this).attr('disabled', "true").blur();
-    $('#addCalcPanel').slideDown(500);
-
+    $('#balanceBlock').slideUp(500, function () {
+        $('#addCalcPanel').slideDown(500);
+    });
 });
 
 
