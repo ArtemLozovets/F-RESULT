@@ -2,6 +2,7 @@
     //Инициализация панели добавления отзыва
 
     window._currList = []; //Массив типов валют
+    window._currBalance = []; //Массив остатков
 
     var navbarHeight = $('#mainNavbar').height();
     $('#draggableCalc').css('top', navbarHeight + 10).css('left', 10);
@@ -45,8 +46,7 @@
 
     var nowDate = moment(new Date).format('DD/MM/YYYY');
     $('#balanceDate').val(nowDate);
-
-
+    getBalanceFunc(nowDate);
 });
 
 //Отображение панели добавления отзыва
@@ -67,6 +67,11 @@ $('body').on('click', '#calcBtn', function (e) {
     var btnString = '<button id="closeBalanceBtn" class="btn btn-sm btn-primary"  title="Скрыть панель добавления остатка"><i class="glyphicon glyphicon glyphicon-remove"></i>&nbsp;Отмена</button>&nbsp;';
     btnString += '<button id="saveBalanceBtn" class="btn btn-sm btn-primary" title="Сохранить остаток"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Cохранить</button></div>';
     $('#currForm').append(btnString);
+
+    var balance = '<div class="form-group">';
+    balance += '<label for="curr' + window._currList[0] + '" class="control-label col-md-2 text-white">' + window._currList[0] + '</label>';
+    balance += '</div>';
+    $('#showBalance').append(balance);
 
     $('#saveBalanceBtn').bind("click", function () {
         this.blur();
@@ -108,7 +113,6 @@ $('body').on('click', '#calcBtn', function (e) {
 
             saveBalanceFunc(_balanceDate, _currData);
 
-
             $('#addCalcPanel').slideUp(500, function () {
                 $('#addBalance').removeAttr('disabled');
                 $('#balanceBlock').slideDown(500);
@@ -123,9 +127,7 @@ $('body').on('click', '#calcBtn', function (e) {
             $('#addBalance').removeAttr('disabled');
             $('#balanceBlock').slideDown(500);
         });
-
     });
-
 
     $(this).attr('disabled', 'true');
     $('#draggableCalc').fadeIn(500);
@@ -150,6 +152,36 @@ $('body').on('click', '#addBalance', function (e) {
         $('#addCalcPanel').slideDown(500);
     });
 });
+
+
+// Функция получения остатка
+function getBalanceFunc(_balanceDate) {
+    var _url = "http://" + $(location).attr('host') + "/BalanceCalculator/GetBalance";
+
+    $('#loadingImg').show();
+
+    $.ajax({
+        url: _url,
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            balanceDate: _balanceDate,
+        }),
+        success: function (data) {
+            if (!data.result) {
+                $('#loadingImg').hide(function () {
+                    alert(data.message);
+                });
+                return false;
+            }
+            else {
+                $('#loadingImg').hide();
+                window._currBalance.push(data.balanceValue);
+            }
+        }
+    });
+}
 
 
 // Функция сохранения остатка в БД

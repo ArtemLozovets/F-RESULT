@@ -16,6 +16,34 @@ namespace F_Result.Controllers
     {
         private FRModel db = new FRModel();
 
+        #region ----------- Расчет остатка -------------
+        public ActionResult GetBalance(string balanceDate)
+        {
+            if (string.IsNullOrEmpty(balanceDate))
+            {
+                return Json(new { result = false, message = "Отсутствуют необходимые параметры" }, JsonRequestBehavior.AllowGet);
+            }
+
+            DateTime _balanceDate = new DateTime();
+
+            if (!DateTime.TryParse(balanceDate, out _balanceDate))
+            {
+                return Json(new { result = false, message = "Неверный формат даты остатка" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+
+                return Json(new { result = true, balanceValue= "dddddddddddddddddddddddddd" }, JsonRequestBehavior.AllowGet);
+            }
+
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         #region ----------- Добавление остатка -------------
         public ActionResult AddBalance(string balanceDate, string currData)
         {
