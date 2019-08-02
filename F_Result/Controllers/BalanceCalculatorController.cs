@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using System.Linq.Dynamic;
 using System.Data.Entity;
 using Newtonsoft.Json; //!=====!
+using System.Web.Script.Serialization;
 
 namespace F_Result.Controllers
 {
@@ -33,8 +34,20 @@ namespace F_Result.Controllers
 
             try
             {
+                db.Database.Log = (s => System.Diagnostics.Debug.WriteLine(s)); //Debug Information====================
 
-                return Json(new { result = true, balanceValue= "dddddddddddddddddddddddddd" }, JsonRequestBehavior.AllowGet);
+                //Получаем идентификатор текущего пользователя
+                using (ApplicationDbContext aspdb = new ApplicationDbContext())
+                {
+                    string user = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+                    var _bal = db.Balance.Where(x => (x.BalanceDate == DateTime.Today) && (x.UserId == user)).Select(x => new { x.CurrencyName, x.Sum }).ToList();
+
+                    var jsonSerialiser = new JavaScriptSerializer();
+                    var _balListJson = jsonSerialiser.Serialize(_bal);
+
+                    return Json(new { result = true, balanceValue = _balListJson }, JsonRequestBehavior.AllowGet);
+                }
             }
 
             catch (Exception ex)
