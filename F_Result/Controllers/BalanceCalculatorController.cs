@@ -41,7 +41,7 @@ namespace F_Result.Controllers
                 {
                     string user = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
-                    var _bal = db.Balance.Where(x => (x.BalanceDate == DateTime.Today) && (x.UserId == user)).Select(x => new { x.CurrencyName, x.Sum }).ToList();
+                    var _bal = db.Balance.Where(x => (x.BalanceDate == _balanceDate) && (x.UserId == user)).Select(x => new { x.CurrencyName, x.Sum }).ToList();
 
                     var jsonSerialiser = new JavaScriptSerializer();
                     var _balListJson = jsonSerialiser.Serialize(_bal);

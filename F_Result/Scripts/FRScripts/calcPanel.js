@@ -1,8 +1,7 @@
 ﻿$(function () {
-    //Инициализация панели добавления отзыва
+    //Инициализация панели добавления остатка
 
     window._currList = []; //Массив типов валют
-    window._currBalance = []; //Массив остатков
 
     var navbarHeight = $('#mainNavbar').height();
     $('#draggableCalc').css('top', navbarHeight + 10).css('left', 10);
@@ -13,6 +12,10 @@
         cursor: "crosshair",
         opacity: 0.5
     });
+
+    // DateRange picker
+    var nowDate = moment(new Date).format('DD/MM/YYYY');
+    $('#balanceDate').val(nowDate);
 
     $('#balanceDate').dateRangePicker(
                 {
@@ -43,23 +46,26 @@
                     },
                     extraClass: 'date-range-pickerM'
                 })
+          .bind('datepicker-change', function (event, obj) {
+              //console.log(obj);
+              getBalanceFunc(obj.value);
+          });
 
-    var nowDate = moment(new Date).format('DD/MM/YYYY');
-    $('#balanceDate').val(nowDate);
-    getBalanceFunc(nowDate);
+    getBalanceFunc($('#balanceDate').val());
 });
 
-//Отображение панели добавления отзыва
+//Отображение калькулятора остатка
 $('body').on('click', '#calcBtn', function (e) {
     e.preventDefault();
 
+    //Отображение полей добавления остатка
     $('#calcCurr').append('<div class="form-horizontal" id="currForm"></div>');
 
     $.each(_currList, function (key, value) {
 
         var input = '<div class="form-group">';
         input += '<label for="curr' + value + '" class="control-label col-md-2 text-white">' + value + '</label>';
-        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr' + value + '" placeholder="Сумма остатка в '+ value +' (0,00)" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
+        input += '<div class="col-md-8"><input class="calcCurrInput form-control" id="curr' + value + '" placeholder="Сумма остатка в ' + value + ' (0,00)" onkeyup = "reppoint(this)"  @onchange = "reppoint(this)"></div>';
         input += '</div>'
         $('#currForm').append(input);
     });
@@ -68,11 +74,7 @@ $('body').on('click', '#calcBtn', function (e) {
     btnString += '<button id="saveBalanceBtn" class="btn btn-sm btn-primary" title="Сохранить остаток"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Cохранить</button></div>';
     $('#currForm').append(btnString);
 
-    var balance = '<div class="form-group">';
-    balance += '<label for="curr' + window._currList[0] + '" class="control-label col-md-2 text-white">' + window._currList[0] + '</label>';
-    balance += '</div>';
-    $('#showBalance').append(balance);
-
+    //Сохранение введенных остатков
     $('#saveBalanceBtn').bind("click", function () {
         this.blur();
         var _isEmpty = true;
@@ -143,6 +145,10 @@ $('#hideCalc').on('click', function () {
     });
 });
 
+//Отображение вычисленного остатка
+function showBalance(){
+
+}
 
 //Добавление остатка
 $('body').on('click', '#addBalance', function (e) {
@@ -176,8 +182,19 @@ function getBalanceFunc(_balanceDate) {
                 return false;
             }
             else {
+                //Отображение вычисленного остатка
+
+                var _balObj = JSON.parse(data.balanceValue);
+                console.log('OBJ=>', _balObj);
+
+                $.each(data.balanceValue, function (key, value) {
+                    var balance = '<div class="form-group">';
+                    balance += '<label for="curr' + window._currList[0] + '" class="control-label col-md-2 text-white">' + window._currList[0] + '</label>';
+                    balance += '</div>';
+                    $('#showBalance').append(balance);
+                });
+
                 $('#loadingImg').hide();
-                window._currBalance.push(data.balanceValue);
             }
         }
     });
