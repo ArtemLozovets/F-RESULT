@@ -433,11 +433,11 @@ input[type=checkbox]#isAllTimes {
 }
 
 div#org_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row div.col-sm-12 {
-    margin-top: -166px;
+    margin-top: 0;
 }
 
 div#expend_Table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer div.row div.col-sm-12 {
-    margin-top: -260px;
+    margin-top: 0;
 }
 
 /*--------------ProjectFilterPanel-------------*/
